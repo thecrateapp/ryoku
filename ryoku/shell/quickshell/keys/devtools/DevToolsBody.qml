@@ -305,6 +305,7 @@ Item {
                 text: root.selectedTool?.name ?? I18n.tr("No matching tools")
                 color: Tokens.ink
                 font.family: Tokens.display
+                font.weight: Tokens.displayWeight
                 font.pixelSize: Tokens.fValue
                 elide: Text.ElideRight
             }

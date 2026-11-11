@@ -143,6 +143,7 @@ PanelWindow {
                             text: root.positiveLabel
                             color: Tokens.ink
                             font.family: Tokens.display
+                            font.weight: Tokens.displayWeight
                             font.pixelSize: Tokens.fValue
                             elide: Text.ElideRight
                         }

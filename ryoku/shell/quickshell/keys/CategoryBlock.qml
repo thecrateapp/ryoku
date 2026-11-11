@@ -29,13 +29,13 @@ Column {
             Rectangle {
                 width: 4
                 height: 4
-                color: Tokens.ink
+                color: Tokens.labelAccent ? Tokens.caption : Tokens.ink
                 anchors.verticalCenter: parent.verticalCenter
             }
             Text {
                 anchors.verticalCenter: parent.verticalCenter
                 text: I18n.tr(block.name)
-                color: Tokens.ink
+                color: Tokens.labelAccent ? Tokens.caption : Tokens.ink
                 font.family: Tokens.ui
                 font.pixelSize: Tokens.fMicro
                 font.weight: Font.Medium

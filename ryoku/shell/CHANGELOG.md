@@ -8,6 +8,9 @@
   `labelAccent` and `selectFill` switches). The daemon drops unknown roles and
   malformed values, clamps the rest, and publishes the style as `themeStyle`
   in `shell.json`; built-in themes clear it.
+- **Kit and the shell sheets follow the theme style.** Kit's category rail and
+  captions, the control-center head, the confirmation dialog and the Stage hero
+  take the theme's navigation caps, accent marks, focus edge and display weight.
 - **The battery list widget's percentages read cleanly at any charge.** Below a
   full charge the dark text meant for the fill was drawn over the whole row, so
   the numbers on the empty part looked smudged; it now stops at the fill edge (#791).

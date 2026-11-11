@@ -73,6 +73,7 @@ Item {
                         ? I18n.tr("Turn phone support on") : I18n.tr("Connect your phone")
                     color: Tokens.ink
                     font.family: Tokens.display
+                    font.weight: Tokens.displayWeight
                     font.pixelSize: Tokens.fTitle
                     wrapMode: Text.WordWrap
                 }

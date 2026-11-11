@@ -77,6 +77,7 @@ Preview {
                 text: hero.mode
                 color: Tokens.ink
                 font.family: Tokens.display
+                font.weight: Tokens.displayWeight
                 font.pixelSize: Tokens.fHero
                 elide: Text.ElideRight
             }

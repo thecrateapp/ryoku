@@ -16,7 +16,7 @@ Rectangle {
     radius: Tokens.radius
     color: Tokens.paperLift
     border.width: editor.activeFocus ? 2 : Tokens.border
-    border.color: root.error ? Tokens.alert : (editor.activeFocus ? Tokens.ink : (hover.hovered ? Tokens.lineStrong : Tokens.line))
+    border.color: root.error ? Tokens.alert : (editor.activeFocus ? Tokens.focus : (hover.hovered ? Tokens.lineStrong : Tokens.line))
     clip: true
     Behavior on border.color {
         enabled: !Tokens.reduceMotion

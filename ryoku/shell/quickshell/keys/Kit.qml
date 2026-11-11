@@ -391,6 +391,7 @@ Item {
                 color: Tokens.ink
                 font.family: Tokens.display
                 font.pixelSize: Tokens.fTitle
+                font.weight: Tokens.displayWeight
             }
         }
 
@@ -456,7 +457,7 @@ Item {
             radius: Tokens.radius
             color: Tokens.paper
             border.width: searchInput.activeFocus ? 2 : Tokens.border
-            border.color: searchInput.activeFocus ? Tokens.ink : Tokens.line
+            border.color: searchInput.activeFocus ? Tokens.focus : Tokens.line
             Behavior on border.color {
                 enabled: !Tokens.reduceMotion
                 ColorAnimation { duration: Tokens.snap }
@@ -664,7 +665,7 @@ Item {
                                 radius: header ? 0 : Tokens.radius
                                 readonly property bool selected: !header && kitCard.currentTab
                                     && kitCard.currentTab.railCurrent === modelData.id
-                                color: selected ? Tokens.tint10
+                                color: selected ? (Tokens.selectFill ? Tokens.tint10 : "transparent")
                                     : (!header && railTap.pressed ? Tokens.tint16
                                     : (!header && railHover.hovered ? Tokens.tint5 : "transparent"))
                                 scale: !header && railTap.pressed ? 0.985 : 1
@@ -707,7 +708,7 @@ Item {
                                     anchors.bottom: parent.bottom
                                     anchors.bottomMargin: Tokens.s1
                                     text: I18n.tr(railItem.modelData.label).toUpperCase()
-                                    color: Tokens.inkFaint
+                                    color: Tokens.caption
                                     font.family: Tokens.ui
                                     font.pixelSize: Tokens.fTiny
                                     font.weight: Font.Medium
@@ -720,7 +721,7 @@ Item {
                                     width: 2
                                     height: parent.height - Tokens.s4
                                     radius: 1
-                                    color: Tokens.ink
+                                    color: Tokens.mark
                                     visible: railItem.selected
                                 }
                                 Text {
@@ -733,9 +734,12 @@ Item {
                                     anchors.verticalCenter: parent.verticalCenter
                                     text: I18n.tr(railItem.modelData.label)
                                     color: railItem.modelData.count === 0 ? Tokens.inkFaint
-                                        : (railItem.selected ? Tokens.ink : Tokens.inkDim)
+                                        : (railItem.selected ? Tokens.ink
+                                        : (railHover.hovered && Tokens.accentMarks ? Tokens.hoverInk : Tokens.inkDim))
                                     font.family: Tokens.ui
-                                    font.pixelSize: railItem.indented ? Tokens.fMicro : Tokens.fSmall
+                                    font.pixelSize: railItem.indented || Tokens.navCaps ? Tokens.fMicro : Tokens.fSmall
+                                    font.capitalization: Tokens.navCaps ? Font.AllUppercase : Font.MixedCase
+                                    font.letterSpacing: Tokens.trackNav
                                     elide: Text.ElideRight
                                 }
                                 Text {

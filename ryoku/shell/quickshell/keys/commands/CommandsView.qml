@@ -256,6 +256,7 @@ Item {
                             text: rowDelegate.modelData.libraryLabel.toUpperCase()
                             color: Tokens.ink
                             font.family: Tokens.display
+                            font.weight: Tokens.displayWeight
                             font.pixelSize: Tokens.fValue
                         }
 

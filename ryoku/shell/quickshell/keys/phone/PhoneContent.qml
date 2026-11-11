@@ -85,6 +85,7 @@ Item {
                 text: I18n.tr("Ryoku's shell isn't running, so your phone can't be reached.")
                 color: Tokens.ink
                 font.family: Tokens.display
+                font.weight: Tokens.displayWeight
                 font.pixelSize: Tokens.fTitle
                 wrapMode: Text.WordWrap
             }

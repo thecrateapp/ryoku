@@ -76,6 +76,7 @@ Item {
                         text: root.device ? String(root.device.name || I18n.tr("Phone")) : I18n.tr("Phone")
                         color: Tokens.ink
                         font.family: Tokens.display
+                        font.weight: Tokens.displayWeight
                         font.pixelSize: Tokens.fValue
                         elide: Text.ElideRight
                     }
