@@ -396,7 +396,7 @@ Item {
             anchors.right: field.right
             anchors.bottom: parent.bottom
             height: Math.max(1, root.s)
-            color: field.activeFocus ? Theme.bright : Theme.faint
+            color: field.activeFocus ? Theme.focusLine : Theme.faint
         }
     }
 

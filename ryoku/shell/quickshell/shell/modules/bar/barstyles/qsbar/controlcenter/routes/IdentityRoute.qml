@@ -102,7 +102,7 @@ Item {
                                 radius: page.tk ? Tokens.radius : 6
                                 color: markCardMa.containsMouse ? (page.tk ? Tokens.tint5 : "#111111") : "transparent"
                                 border.width: markCard.selected ? 2 : 1
-                                border.color: markCard.selected ? (page.tk ? Tokens.bone : "#cdc4ba")
+                                border.color: markCard.selected ? (page.tk ? Tokens.pickEdge : "#cdc4ba")
                                     : markCardMa.containsMouse ? (page.tk ? Tokens.ink : "#cccccc")
                                     : (page.tk ? Tokens.line : "#333333")
                                 Behavior on border.color { ColorAnimation { duration: page.tk ? Tokens.move : 160 } }
@@ -201,7 +201,7 @@ Item {
                                 radius: page.tk ? Tokens.radius : 6
                                 color: optMa.containsMouse ? (page.tk ? Tokens.tint5 : "#111111") : "transparent"
                                 border.width: optCard.selected ? 2 : 1
-                                border.color: optCard.selected ? (page.tk ? Tokens.bone : "#cdc4ba")
+                                border.color: optCard.selected ? (page.tk ? Tokens.pickEdge : "#cdc4ba")
                                     : optMa.containsMouse ? (page.tk ? Tokens.ink : "#cccccc")
                                     : (page.tk ? Tokens.line : "#333333")
                                 Behavior on border.color { ColorAnimation { duration: page.tk ? Tokens.move : 160 } }

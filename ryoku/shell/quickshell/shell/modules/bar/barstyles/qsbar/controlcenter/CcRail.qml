@@ -45,8 +45,18 @@ Item {
         x: rail.tk.gap
         height: rail.tk.navH
         radius: Tokens.radius
-        color: item.on ? Tokens.bone : (ma.containsMouse ? Tokens.tint5 : "transparent")
+        color: item.on ? (Tokens.selectFill ? Tokens.bone : "transparent")
+            : (ma.containsMouse && !Tokens.accentMarks ? Tokens.tint5 : "transparent")
         Behavior on color { ColorAnimation { duration: Tokens.snap } }
+
+        // a theme that drops the selection fill marks the live route with a bar
+        Rectangle {
+            visible: item.on && !Tokens.selectFill
+            anchors.left: parent.left
+            anchors.verticalCenter: parent.verticalCenter
+            width: 2; height: parent.height - Tokens.s4; radius: 1
+            color: Tokens.mark
+        }
 
         Row {
             anchors.left: parent.left
@@ -58,7 +68,7 @@ Item {
             // printed only on the selected route.
             UiText {
                 anchors.verticalCenter: parent.verticalCenter
-                visible: item.on
+                visible: item.on && Tokens.selectFill
                 text: "//"
                 color: Tokens.inkOnBoneDim
                 font.family: Tokens.mono
@@ -67,9 +77,12 @@ Item {
             UiText {
                 anchors.verticalCenter: parent.verticalCenter
                 text: I18n.tr(item.modelData.label)
-                color: item.on ? Tokens.inkOnBone : Tokens.inkDim
+                color: item.on ? (Tokens.selectFill ? Tokens.inkOnBone : Tokens.ink)
+                    : (ma.containsMouse && Tokens.accentMarks ? Tokens.hoverInk : Tokens.inkDim)
                 font.family: Tokens.ui
-                font.pixelSize: Tokens.fBody
+                font.pixelSize: Tokens.navCaps ? Tokens.fMicro : Tokens.fBody
+                font.capitalization: Tokens.navCaps ? Font.AllUppercase : Font.MixedCase
+                font.letterSpacing: Tokens.trackNav
                 font.weight: item.on ? Font.DemiBold : Font.Normal
             }
         }
@@ -82,14 +95,14 @@ Item {
                 anchors.verticalCenter: parent.verticalCenter
                 visible: item.count >= 0
                 text: String(item.count)
-                color: item.on ? Tokens.inkOnBoneDim : Tokens.inkFaint
+                color: item.on && Tokens.selectFill ? Tokens.inkOnBoneDim : Tokens.inkFaint
                 font.family: Tokens.mono
                 font.pixelSize: Tokens.fTiny
             }
             UiText {
                 anchors.verticalCenter: parent.verticalCenter
                 text: UiPreferences.text(item.modelData.gloss || "", "")
-                color: item.on ? Tokens.inkOnBoneDim : Tokens.inkFaint
+                color: item.on && Tokens.selectFill ? Tokens.inkOnBoneDim : Tokens.inkFaint
                 font.family: Tokens.jp
                 font.pixelSize: Tokens.fTiny
             }
@@ -182,7 +195,7 @@ Item {
                 anchors.leftMargin: rail.tk.gap * 2
                 anchors.bottom: parent.bottom
                 text: I18n.tr("COMMUNITY")
-                color: Tokens.inkFaint
+                color: Tokens.labelAccent ? Tokens.caption : Tokens.inkFaint
                 font.family: Tokens.mono
                 font.pixelSize: Tokens.fMicro
                 font.letterSpacing: Tokens.trackMark

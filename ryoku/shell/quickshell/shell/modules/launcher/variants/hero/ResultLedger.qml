@@ -85,10 +85,10 @@ GridView {
         Rectangle {
             anchors.fill: parent
             color: cell.entry && cell.entry.resultKey === root.selectedResultKey
-                ? Theme.drawerRaised : "transparent"
+                ? Theme.pickRow : "transparent"
             border.width: cell.entry && cell.entry.resultKey
                 === root.selectedResultKey ? 1 : 0
-            border.color: Theme.bright
+            border.color: Theme.pickEdge
         }
 
         Rectangle {

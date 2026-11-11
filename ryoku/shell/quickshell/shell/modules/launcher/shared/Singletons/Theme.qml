@@ -40,13 +40,20 @@ Singleton {
     readonly property color drawer: Ui.Tokens.paper
     readonly property color drawerRaised: Ui.Tokens.paperLift
     readonly property color frame: Ui.Tokens.lineStrong
-    readonly property color leadContainer: Config.matchWallpaper
+    // a theme with accent marks (themeStyle) also takes the bone role, its
+    // accent, for the lead and the active mode
+    readonly property color leadContainer: Config.matchWallpaper || Ui.Tokens.accentMarks
         ? Ui.Tokens.bone : cream
     readonly property color onLead: leadForeground(leadContainer)
     readonly property color onLeadDim: leadMetadata(onLead, leadContainer)
     readonly property color modeActive: leadContainer
     readonly property color onModeActive: onLead
     readonly property color modeIdle: Ui.Tokens.light ? Qt.rgba(1, 1, 1, 0.76) : Qt.rgba(0, 0, 0, 0.76)
+    // the focused search line and the picked result's edge follow the theme
+    // style; with none they stay the bright ink
+    readonly property color focusLine: Ui.Tokens.focusAccent ? Ui.Tokens.sun : bright
+    readonly property color pickEdge: Ui.Tokens.accentMarks ? Ui.Tokens.mark : bright
+    readonly property color pickRow: Ui.Tokens.selectFill ? drawerRaised : Ui.Tokens.rowWash
     readonly property color providerApps: Ui.Tokens.sun
     readonly property color providerFind: Config.matchWallpaper ? Scheme.accent2 : vermDim
     readonly property color providerRecent: Ui.Tokens.inkMuted

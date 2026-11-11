@@ -263,9 +263,9 @@ Item {
                                     width: formRow.cellW
                                     height: Tokens.px(58)
                                     radius: Tokens.radius
-                                    color: ftile.on ? Tokens.bone : (fma.containsMouse ? Tokens.tint5 : "transparent")
+                                    color: ftile.on ? Tokens.pickFill : (fma.containsMouse ? Tokens.tint5 : "transparent")
                                     border.width: Tokens.border
-                                    border.color: ftile.on ? Tokens.bone : Tokens.line
+                                    border.color: ftile.on ? Tokens.pickEdge : Tokens.line
                                     Behavior on color { ColorAnimation { duration: Tokens.snap } }
 
                                     Column {
@@ -278,7 +278,7 @@ Item {
                                         UiText {
                                             width: parent.width
                                             text: I18n.tr(ftile.modelData.label).toUpperCase()
-                                            color: ftile.on ? Tokens.inkOnBone : Tokens.inkDim
+                                            color: ftile.on ? Tokens.pickInk : Tokens.inkDim
                                             elide: Text.ElideRight
                                             font.family: Tokens.ui
                                             font.pixelSize: Tokens.fSmall
@@ -288,7 +288,7 @@ Item {
                                         UiText {
                                             width: parent.width
                                             text: I18n.tr(ftile.modelData.detail)
-                                            color: ftile.on ? Tokens.inkOnBoneDim : Tokens.inkFaint
+                                            color: ftile.on ? Tokens.pickInkDim : Tokens.inkFaint
                                             elide: Text.ElideRight
                                             font.family: Tokens.mono
                                             font.pixelSize: Tokens.fTiny

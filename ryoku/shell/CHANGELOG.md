@@ -1,6 +1,11 @@
 # Changelog: ryoku/shell/
 
 ## Unreleased
+- **QS Bar Settings and the hero launcher follow the theme style.** The
+  settings rail takes navigation caps and a mark bar, the Community caption the
+  accent, the form tiles a wash inside a mark edge, and the identity cards a
+  mark edge. The launcher's focused search line, picked result and active mode
+  take the theme's accent when the style asks for it.
 - **A user theme can pin palette roles and set the kit's style.** A
   `scheme.json` block may carry `roles` (catalog roles by name, such as an
   accent `inverseSurface`) and `style` (`lineAlpha`, `display`,
