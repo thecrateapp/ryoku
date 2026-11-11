@@ -365,6 +365,29 @@ Popular, New, and Updated rankings.
   converts it to its 34-role palette, so a downloaded scheme appears in the
   Color-scheme picker (Super+W and the Hub) and applies through `theme.theme`.
   Activation stays in that picker, never on install.
+  Each block may also carry two optional objects the reduced Noctalia set cannot
+  express. `roles` pins catalog roles by name (for example an accent-coloured
+  `inverseSurface`, which is what Ryoku.Ui paints selections with); an unknown
+  role or a value that is not `#rrggbb` is ignored. `style` sets the Ryoku.Ui
+  kit's non-colour look: `lineAlpha` (hairline strength, the ink alpha of
+  `Tokens.line`, 0.26 by default, clamped to 0.04-0.6) and `display` (the display
+  face, Fraunces by default), `displayWeight` (100-900), and switches that keep
+  the signature look when absent: `navCaps` (uppercase tracked navigation
+  labels), `accentMarks` (selection marks and hover text in the palette
+  secondary, and a switch that is on fills its track with the primary),
+  `focusAccent` (focused fields edge in the primary), `labelAccent` (section
+  captions in the secondary) and `selectFill` (false drops the fill behind a
+  selected row, which keeps its ink and gains a mark bar, and a picked tile or
+  card, which takes a faint primary wash inside a mark edge). The daemon publishes the style as `themeStyle` in
+  `shell.json` beside `themePalette` and drops it for built-in themes.
+
+  ```json
+  {"dark": {"mPrimary": "#06b6d4", "mSurface": "#0a0a0f", "mOnSurface": "#f1f5f9",
+            "roles": {"inverseSurface": "#67e8f9", "inverseOnSurface": "#0a0a0f"},
+            "style": {"lineAlpha": 0.1, "display": "Bricolage Grotesque",
+                      "displayWeight": 800, "navCaps": true, "accentMarks": true,
+                      "focusAccent": true, "labelAccent": true, "selectFill": false}}}
+  ```
 - **Bar styles:** expose the shipped runtime style manifests and the active
   `shell.json` value. The current development styles are all visible and report
   installed state. Settings retains selection and configuration.

@@ -1,6 +1,13 @@
 # Changelog: ryoku/shell/
 
 ## Unreleased
+- **A user theme can pin palette roles and set the kit's style.** A
+  `scheme.json` block may carry `roles` (catalog roles by name, such as an
+  accent `inverseSurface`) and `style` (`lineAlpha`, `display`,
+  `displayWeight` and the `navCaps`, `accentMarks`, `focusAccent`,
+  `labelAccent` and `selectFill` switches). The daemon drops unknown roles and
+  malformed values, clamps the rest, and publishes the style as `themeStyle`
+  in `shell.json`; built-in themes clear it.
 - **The battery list widget's percentages read cleanly at any charge.** Below a
   full charge the dark text meant for the fill was drawn over the whole row, so
   the numbers on the empty part looked smudged; it now stops at the fill edge (#791).

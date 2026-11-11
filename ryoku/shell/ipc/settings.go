@@ -1022,7 +1022,8 @@ func writeContract(full map[string]any, ns *settings) {
 }
 
 // resolveThemePalette syncs the derived state of the active theme: the passthrough
-// themePalette key here, and theme.json's followWallpaper next door.
+// themePalette and themeStyle keys here, and theme.json's followWallpaper next
+// door.
 //
 // the selected static theme's palette (role token -> hex) is copied in, or the key
 // is removed for the two dynamic variants (Default, Wallpaper), which have none.
@@ -1031,6 +1032,11 @@ func writeContract(full map[string]any, ns *settings) {
 func resolveThemePalette(full map[string]any, themeName string) {
 	// The live path is gated on theme.json, so the same selection has to reach it.
 	syncFollowWallpaper(themeName)
+	if style := lookupThemeStyle(themeName); style != nil {
+		full["themeStyle"] = style
+	} else {
+		delete(full, "themeStyle")
+	}
 	pal, ok := lookupThemePalette(themeName)
 	if !ok {
 		delete(full, "themePalette")

@@ -29,22 +29,97 @@ func userThemeDir() string {
 
 // noctaliaColors is the reduced Material set each Noctalia block carries. The
 // block's terminal sub-object is ignored: the catalog derives ANSI colours from
-// the roles, exactly as it does for every built-in theme.
+// the roles, exactly as it does for every built-in theme. Roles optionally pins
+// catalog roles the reduced set cannot express (an accent-coloured
+// inverseSurface, a surfaceContainerLow that is not the surface/variant midpoint)
+// by their catalog name.
 type noctaliaColors struct {
-	Primary          string `json:"mPrimary"`
-	OnPrimary        string `json:"mOnPrimary"`
-	Secondary        string `json:"mSecondary"`
-	OnSecondary      string `json:"mOnSecondary"`
-	Tertiary         string `json:"mTertiary"`
-	OnTertiary       string `json:"mOnTertiary"`
-	Error            string `json:"mError"`
-	OnError          string `json:"mOnError"`
-	Surface          string `json:"mSurface"`
-	OnSurface        string `json:"mOnSurface"`
-	SurfaceVariant   string `json:"mSurfaceVariant"`
-	OnSurfaceVariant string `json:"mOnSurfaceVariant"`
-	Outline          string `json:"mOutline"`
-	Shadow           string `json:"mShadow"`
+	Primary          string            `json:"mPrimary"`
+	OnPrimary        string            `json:"mOnPrimary"`
+	Secondary        string            `json:"mSecondary"`
+	OnSecondary      string            `json:"mOnSecondary"`
+	Tertiary         string            `json:"mTertiary"`
+	OnTertiary       string            `json:"mOnTertiary"`
+	Error            string            `json:"mError"`
+	OnError          string            `json:"mOnError"`
+	Surface          string            `json:"mSurface"`
+	OnSurface        string            `json:"mOnSurface"`
+	SurfaceVariant   string            `json:"mSurfaceVariant"`
+	OnSurfaceVariant string            `json:"mOnSurfaceVariant"`
+	Outline          string            `json:"mOutline"`
+	Shadow           string            `json:"mShadow"`
+	Roles            map[string]string `json:"roles"`
+	Style            *themeStyleSpec   `json:"style"`
+}
+
+// themeStyleSpec is a scheme's optional non-colour look for the Ryoku.Ui kit:
+// how strong hairlines are (the ink alpha of Tokens.line, 0.26 by default), the
+// display face and weight (Fraunces, regular), and a few switches for how
+// navigation and state read: uppercase tracked navigation labels, accent
+// selection marks and hover text, an accent focus edge, accent section
+// captions, and whether a selected row also fills. Absent fields keep the
+// signature look.
+type themeStyleSpec struct {
+	LineAlpha     *float64 `json:"lineAlpha"`
+	Display       string   `json:"display"`
+	DisplayWeight *int     `json:"displayWeight"`
+	NavCaps       *bool    `json:"navCaps"`
+	AccentMarks   *bool    `json:"accentMarks"`
+	FocusAccent   *bool    `json:"focusAccent"`
+	LabelAccent   *bool    `json:"labelAccent"`
+	SelectFill    *bool    `json:"selectFill"`
+}
+
+const (
+	minLineAlpha = 0.04
+	maxLineAlpha = 0.6
+)
+
+// themeStyleValues sanitises a style block into the shell.json themeStyle map;
+// nil when nothing usable is set, so a theme without a style writes no key.
+func themeStyleValues(spec *themeStyleSpec) map[string]any {
+	if spec == nil {
+		return nil
+	}
+	out := map[string]any{}
+	if spec.LineAlpha != nil {
+		a := *spec.LineAlpha
+		if a < minLineAlpha {
+			a = minLineAlpha
+		}
+		if a > maxLineAlpha {
+			a = maxLineAlpha
+		}
+		out["lineAlpha"] = a
+	}
+	if face := strings.TrimSpace(spec.Display); face != "" && len(face) <= 64 && !strings.ContainsAny(face, "\"\\\n\r\t") {
+		out["display"] = face
+	}
+	if spec.DisplayWeight != nil {
+		w := *spec.DisplayWeight
+		if w < 100 {
+			w = 100
+		}
+		if w > 900 {
+			w = 900
+		}
+		out["displayWeight"] = w
+	}
+	for key, v := range map[string]*bool{
+		"navCaps":     spec.NavCaps,
+		"accentMarks": spec.AccentMarks,
+		"focusAccent": spec.FocusAccent,
+		"labelAccent": spec.LabelAccent,
+		"selectFill":  spec.SelectFill,
+	} {
+		if v != nil {
+			out[key] = *v
+		}
+	}
+	if len(out) == 0 {
+		return nil
+	}
+	return out
 }
 
 // noctaliaScheme is the on-disk scheme.json: a dark and/or light block.
@@ -68,6 +143,7 @@ type userTheme struct {
 	Label    string
 	Provider string
 	Palette  map[string]string // the 34 catalog roles
+	Style    map[string]any    // sanitised themeStyle, nil when the scheme sets none
 }
 
 // userThemes loads and converts every installed scheme, id-sorted for a stable
@@ -115,7 +191,7 @@ func userThemes() []userTheme {
 		if label == "" {
 			label = id
 		}
-		out = append(out, userTheme{ID: id, Label: label, Provider: meta.Provider, Palette: pal})
+		out = append(out, userTheme{ID: id, Label: label, Provider: meta.Provider, Palette: pal, Style: themeStyleValues(block.Style)})
 	}
 	sort.Slice(out, func(i, j int) bool { return out[i].ID < out[j].ID })
 	return out
@@ -125,7 +201,26 @@ func userThemes() []userTheme {
 // elevation ramp runs surface -> surfaceVariant -> outline; each accent maps to
 // its Material role with the surface variant as its container. A block missing
 // the core roles (surface, onSurface, primary) is unusable and returns nil.
+// Entries in the block's roles object then replace derived roles; an unknown
+// role name or a value that is not #rrggbb is ignored, so a typo never blanks a
+// role.
 func noctaliaTo34(c noctaliaColors) map[string]string {
+	pal := deriveNoctalia34(c)
+	if pal == nil {
+		return nil
+	}
+	for name, value := range c.Roles {
+		if _, known := pal[name]; !known {
+			continue
+		}
+		if _, _, _, ok := parseHexRGB(value); ok && strings.HasPrefix(value, "#") {
+			pal[name] = strings.ToLower(value)
+		}
+	}
+	return pal
+}
+
+func deriveNoctalia34(c noctaliaColors) map[string]string {
 	if c.Surface == "" || c.OnSurface == "" || c.Primary == "" {
 		return nil
 	}
@@ -190,6 +285,20 @@ func lookupThemePalette(name string) (map[string]string, bool) {
 		}
 	}
 	return nil, false
+}
+
+// lookupThemeStyle resolves a theme.theme value to its themeStyle; built-in
+// themes carry none.
+func lookupThemeStyle(name string) map[string]any {
+	if _, ok := themePalettes[name]; ok {
+		return nil
+	}
+	for _, t := range userThemes() {
+		if t.ID == name {
+			return t.Style
+		}
+	}
+	return nil
 }
 
 // userThemeIDs lists the installed scheme ids, for theme.theme validation.

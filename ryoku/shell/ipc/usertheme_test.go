@@ -243,3 +243,129 @@ func TestDispatchThemeRemove(t *testing.T) {
 		t.Fatalf("applied scheme = %q after removing the active one, want Default", got)
 	}
 }
+
+func TestNoctaliaRolesOverrideDerivedRoles(t *testing.T) {
+	block := sampleBlock
+	block.Roles = map[string]string{
+		"inverseSurface":      "#67E8F9",
+		"inverseOnSurface":    "#0a0a0f",
+		"surfaceContainerLow": "#0f1016",
+	}
+	pal := noctaliaTo34(block)
+	want := map[string]string{
+		"inverseSurface":      "#67e8f9",
+		"inverseOnSurface":    "#0a0a0f",
+		"surfaceContainerLow": "#0f1016",
+	}
+	for role, value := range want {
+		if pal[role] != value {
+			t.Fatalf("role %q = %q, want %q", role, pal[role], value)
+		}
+	}
+	base := noctaliaTo34(sampleBlock)
+	for role, value := range base {
+		if _, pinned := want[role]; !pinned && pal[role] != value {
+			t.Fatalf("unpinned role %q changed: %q -> %q", role, value, pal[role])
+		}
+	}
+	if len(pal) != len(themeRoles) {
+		t.Fatalf("palette has %d roles, want %d", len(pal), len(themeRoles))
+	}
+}
+
+func TestNoctaliaRolesIgnoreUnknownAndMalformed(t *testing.T) {
+	block := sampleBlock
+	block.Roles = map[string]string{
+		"inverseSurface": "cyan",
+		"onSurface":      "#12345",
+		"primary":        "67e8f9",
+		"notARole":       "#67e8f9",
+	}
+	pal := noctaliaTo34(block)
+	base := noctaliaTo34(sampleBlock)
+	if len(pal) != len(base) {
+		t.Fatalf("an unknown role was added: %d roles, want %d", len(pal), len(base))
+	}
+	for role, value := range base {
+		if pal[role] != value {
+			t.Fatalf("role %q = %q, want the derived %q", role, pal[role], value)
+		}
+	}
+}
+
+func TestNoctaliaRolesFromSchemeJSON(t *testing.T) {
+	raw := `{"dark": {"mPrimary": "#06b6d4", "mSurface": "#0a0a0f", "mOnSurface": "#f1f5f9",
+		"roles": {"inverseSurface": "#67e8f9", "inverseOnSurface": "#0a0a0f"}}}`
+	var scheme noctaliaScheme
+	if err := json.Unmarshal([]byte(raw), &scheme); err != nil {
+		t.Fatal(err)
+	}
+	pal := noctaliaTo34(*scheme.Dark)
+	if pal["inverseSurface"] != "#67e8f9" || pal["inverseOnSurface"] != "#0a0a0f" {
+		t.Fatalf("roles from scheme.json not applied: %q / %q", pal["inverseSurface"], pal["inverseOnSurface"])
+	}
+}
+
+func TestThemeStyleValuesSanitise(t *testing.T) {
+	alpha := func(v float64) *float64 { return &v }
+	weight := func(v int) *int { return &v }
+	on := func(v bool) *bool { return &v }
+	cases := []struct {
+		name string
+		spec *themeStyleSpec
+		want map[string]any
+	}{
+		{"absent", nil, nil},
+		{"empty", &themeStyleSpec{}, nil},
+		{"set", &themeStyleSpec{LineAlpha: alpha(0.1), Display: " Bricolage Grotesque "},
+			map[string]any{"lineAlpha": 0.1, "display": "Bricolage Grotesque"}},
+		{"clamped low", &themeStyleSpec{LineAlpha: alpha(0)}, map[string]any{"lineAlpha": minLineAlpha}},
+		{"clamped high", &themeStyleSpec{LineAlpha: alpha(3)}, map[string]any{"lineAlpha": maxLineAlpha}},
+		{"bad face", &themeStyleSpec{Display: "Evil\"Font"}, nil},
+		{"switches and weight", &themeStyleSpec{DisplayWeight: weight(1200), NavCaps: on(true), SelectFill: on(false)},
+			map[string]any{"displayWeight": 900, "navCaps": true, "selectFill": false}},
+	}
+	for _, c := range cases {
+		got := themeStyleValues(c.spec)
+		if len(got) != len(c.want) {
+			t.Fatalf("%s: got %v, want %v", c.name, got, c.want)
+		}
+		for k, v := range c.want {
+			if got[k] != v {
+				t.Fatalf("%s: %s = %v, want %v", c.name, k, got[k], v)
+			}
+		}
+	}
+}
+
+func TestResolveThemePaletteWritesUserThemeStyle(t *testing.T) {
+	data := t.TempDir()
+	t.Setenv("XDG_DATA_HOME", data)
+	t.Setenv("XDG_CONFIG_HOME", t.TempDir())
+	dir := filepath.Join(data, "ryoku", "themes", "crate")
+	if err := os.MkdirAll(dir, 0o755); err != nil {
+		t.Fatal(err)
+	}
+	scheme := `{"dark": {"mPrimary": "#06b6d4", "mSurface": "#0a0a0f", "mOnSurface": "#f1f5f9",
+		"style": {"lineAlpha": 0.1, "display": "Bricolage Grotesque"}}}`
+	if err := os.WriteFile(filepath.Join(dir, "scheme.json"), []byte(scheme), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	full := map[string]any{}
+	resolveThemePalette(full, "crate")
+	style, ok := full["themeStyle"].(map[string]any)
+	if !ok || style["lineAlpha"] != 0.1 || style["display"] != "Bricolage Grotesque" {
+		t.Fatalf("themeStyle = %#v", full["themeStyle"])
+	}
+	if _, ok := full["themePalette"]; !ok {
+		t.Fatal("themePalette missing")
+	}
+	// a built-in theme clears it
+	for name := range themePalettes {
+		resolveThemePalette(full, name)
+		break
+	}
+	if _, ok := full["themeStyle"]; ok {
+		t.Fatal("themeStyle kept for a built-in theme")
+	}
+}
