@@ -396,6 +396,7 @@ Item {
                     text: tzp.selected ? tzp.selected.tz.replace(/_/g, " ") : I18n.tr("No zone selected")
                     color: Tokens.ink
                     font.family: Tokens.display
+                    font.weight: Tokens.displayWeight
                     font.pixelSize: Tokens.fValue
                 }
                 Text {

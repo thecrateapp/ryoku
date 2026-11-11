@@ -77,7 +77,7 @@ Column {
                     : view.run.phase === "error" ? (view.run.label !== "" ? I18n.tr("Update failed while %1").arg(view.run.label.toLowerCase()) : I18n.tr("Update failed"))
                     : view.run.starting && view.run.phase === "idle" ? I18n.tr("Starting the update\u2026")
                     : view.run.label !== "" ? I18n.tr(view.run.label) + "\u2026" : I18n.tr("Preparing\u2026")
-                color: Tokens.ink; font.family: Tokens.display
+                color: Tokens.ink; font.family: Tokens.display; font.weight: Tokens.displayWeight
                 font.pixelSize: Tokens.fValue
             }
         }

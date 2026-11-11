@@ -730,7 +730,7 @@ Item {
                 id: title
                 anchors.left: parent.left; anchors.verticalCenter: parent.verticalCenter
                 text: I18n.tr("Fastfetch"); color: Tokens.ink
-                font.family: Tokens.display; font.pixelSize: Tokens.fTitle
+                font.family: Tokens.display; font.pixelSize: Tokens.fTitle; font.weight: Tokens.displayWeight
             }
             Row {
                 anchors.right: parent.right
@@ -1061,9 +1061,9 @@ Item {
                                     readonly property bool on: pg.model.logo.kind === "image" && pg.model.logo.source === artTile.modelData.path
                                     width: 80; height: 80
                                     radius: Tokens.radius
-                                    color: artTile.on ? Tokens.tint10 : (artHov.hovered ? Tokens.tint5 : "transparent")
+                                    color: artTile.on ? (Tokens.selectFill ? Tokens.tint10 : Tokens.rowWash) : (artHov.hovered ? Tokens.tint5 : "transparent")
                                     border.width: Tokens.border
-                                    border.color: artTile.on ? Tokens.ink : (artHov.hovered ? Tokens.lineStrong : Tokens.line)
+                                    border.color: artTile.on ? Tokens.mark : (artHov.hovered ? Tokens.lineStrong : Tokens.line)
                                     Behavior on color { ColorAnimation { duration: Tokens.snap } }
                                     Behavior on border.color { ColorAnimation { duration: Tokens.snap } }
                                     Image {

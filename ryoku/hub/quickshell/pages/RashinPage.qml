@@ -331,7 +331,7 @@ Item {
             Row {
                 spacing: Tokens.s2
                 Text {
-                    text: fc.index; color: Tokens.ink; font.family: Tokens.display
+                    text: fc.index; color: Tokens.ink; font.family: Tokens.display; font.weight: Tokens.displayWeight
                     font.pixelSize: 12; anchors.verticalCenter: parent.verticalCenter
                 }
                 Text {
@@ -340,7 +340,7 @@ Item {
                 }
             }
             Text {
-                text: fc.name; color: Tokens.ink; font.family: Tokens.display; font.pixelSize: 21
+                text: fc.name; color: Tokens.ink; font.family: Tokens.display; font.pixelSize: 21; font.weight: Tokens.displayWeight
             }
             Text {
                 width: parent.width
@@ -422,7 +422,7 @@ Item {
             Text {
                 width: parent.width
                 text: ar.agent.name || ar.agent.id || ""
-                color: Tokens.ink; font.family: Tokens.display; font.pixelSize: 16; elide: Text.ElideRight
+                color: Tokens.ink; font.family: Tokens.display; font.pixelSize: 16; elide: Text.ElideRight; font.weight: Tokens.displayWeight
             }
             Text {
                 width: parent.width
@@ -547,7 +547,7 @@ Item {
                     anchors { left: parent.left; bottom: parent.bottom; leftMargin: Tokens.s5; bottomMargin: Tokens.s4 }
                     spacing: 3
                     Text {
-                        text: I18n.tr("RYOKU RASHIN"); color: Tokens.ink; font.family: Tokens.display
+                        text: I18n.tr("RYOKU RASHIN"); color: Tokens.ink; font.family: Tokens.display; font.weight: Tokens.displayWeight
                         font.pixelSize: Math.round(Math.min(pg.bodyW * 0.05, 40))
                     }
                     Row {
@@ -604,7 +604,7 @@ Item {
                             spacing: Tokens.s2
                             Text { visible: UiPreferences.showJapaneseGloss; text: "羅針"; color: Tokens.ink; font.family: Tokens.jp; font.pixelSize: 15; anchors.verticalCenter: parent.verticalCenter }
                             Text {
-                                text: I18n.tr("RASHIN"); color: Tokens.ink; font.family: Tokens.display
+                                text: I18n.tr("RASHIN"); color: Tokens.ink; font.family: Tokens.display; font.weight: Tokens.displayWeight
                                 font.pixelSize: 13; anchors.verticalCenter: parent.verticalCenter
                             }
                         }
@@ -646,7 +646,7 @@ Item {
                             spacing: Tokens.s2
                             Text { visible: UiPreferences.showJapaneseGloss; text: "徘徊"; color: Tokens.alert; font.family: Tokens.jp; font.pixelSize: 12; anchors.verticalCenter: parent.verticalCenter }
                             Text {
-                                text: I18n.tr("PROWL GATEWAY"); color: Tokens.ink; font.family: Tokens.display
+                                text: I18n.tr("PROWL GATEWAY"); color: Tokens.ink; font.family: Tokens.display; font.weight: Tokens.displayWeight
                                 font.pixelSize: 13; anchors.verticalCenter: parent.verticalCenter
                             }
                         }
@@ -788,10 +788,10 @@ Item {
                             readonly property bool sel: cb.modelData.active === true
                             height: 34
                             width: cbT.implicitWidth + Tokens.s4 * 2
-                            color: cb.sel ? Tokens.ink : "transparent"
+                            color: cb.sel ? Tokens.mark : "transparent"
                             opacity: cb.modelData.available ? 1 : 0.45
                             border.width: 1
-                            border.color: cb.sel ? Tokens.ink : Tokens.line
+                            border.color: cb.sel ? Tokens.mark : Tokens.line
                             Text {
                                 id: cbT
                                 anchors.centerIn: parent

@@ -196,6 +196,7 @@ Item {
             text: I18n.tr("Controls")
             color: Tokens.ink
             font.family: Tokens.display
+            font.weight: Tokens.displayWeight
             font.pixelSize: Tokens.fTitle
         }
         Text {

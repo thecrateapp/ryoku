@@ -474,7 +474,7 @@ Item {
         }
         Text {
             text: I18n.tr("Import config"); color: Tokens.ink
-            font.family: Tokens.display; font.pixelSize: Tokens.fTitle
+            font.family: Tokens.display; font.pixelSize: Tokens.fTitle; font.weight: Tokens.displayWeight
         }
         Text {
             width: Math.min(parent.width, 720)
@@ -1152,7 +1152,7 @@ Item {
                     }
                     Text {
                         text: pg.undone ? I18n.tr("Import undone") : I18n.tr("Your config is in")
-                        color: Tokens.ink; font.family: Tokens.display; font.pixelSize: Tokens.fHero
+                        color: Tokens.ink; font.family: Tokens.display; font.pixelSize: Tokens.fHero; font.weight: Tokens.displayWeight
                         anchors.verticalCenter: parent.verticalCenter
                     }
                 }

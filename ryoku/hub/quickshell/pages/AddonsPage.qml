@@ -855,6 +855,7 @@ Item {
                 text: I18n.tr("Add-ons")
                 color: Tokens.ink
                 font.family: Tokens.display
+                font.weight: Tokens.displayWeight
                 font.pixelSize: Tokens.fTitle
             }
             Btn {
@@ -1223,6 +1224,7 @@ Item {
                             text: I18n.tr("No add-ons installed")
                             color: Tokens.ink
                             font.family: Tokens.display
+                            font.weight: Tokens.displayWeight
                             font.pixelSize: Tokens.fValue
                         }
                         Text {

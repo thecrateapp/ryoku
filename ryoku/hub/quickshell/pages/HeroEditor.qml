@@ -268,7 +268,7 @@ Item {
         width: 78; height: 78; radius: Tokens.radius
         color: Tokens.paper
         border.width: tile.selected ? Tokens.border * 2 : Tokens.border
-        border.color: tile.selected ? Tokens.ink : Tokens.line
+        border.color: tile.selected ? Tokens.mark : Tokens.line
         Image {
             anchors.fill: parent; anchors.margins: Tokens.s2
             source: tile.art; fillMode: Image.PreserveAspectFit

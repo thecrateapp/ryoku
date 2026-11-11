@@ -200,9 +200,9 @@ Item {
                     height: cardFlow.tileH
                     radius: Tokens.radius
                     opacity: designCard.wearable ? 1.0 : 0.55
-                    color: designCard.worn ? Tokens.bone : (cardMouse.containsMouse ? Tokens.tint5 : "transparent")
+                    color: designCard.worn ? Tokens.pickFill : (cardMouse.containsMouse ? Tokens.tint5 : "transparent")
                     border.width: Tokens.border
-                    border.color: designCard.worn ? Tokens.bone : Tokens.line
+                    border.color: designCard.worn ? Tokens.pickEdge : Tokens.line
                     objectName: gallery.cardObjectPrefix + designCard.modelData.id
 
                     Rectangle {
@@ -211,7 +211,7 @@ Item {
                         width: 18
                         height: 18
                         radius: 3
-                        color: designCard.worn ? Tokens.inkOnBone : "transparent"
+                        color: designCard.worn && Tokens.selectFill ? Tokens.inkOnBone : "transparent"
                         anchors.top: parent.top
                         anchors.right: parent.right
                         anchors.topMargin: Tokens.s2
@@ -231,7 +231,7 @@ Item {
                         id: subshellMark
                         visible: designCard.subshell
                         text: I18n.tr("SUBSHELL")
-                        color: designCard.worn ? Tokens.inkOnBoneDim : Tokens.inkFaint
+                        color: designCard.worn ? Tokens.pickInkDim : Tokens.inkFaint
                         font.family: Tokens.mono
                         font.pixelSize: Tokens.fMicro
                         font.weight: Font.Medium
@@ -264,7 +264,7 @@ Item {
 
                         Text {
                             text: I18n.tr(designCard.modelData.name).toUpperCase()
-                            color: designCard.worn ? Tokens.inkOnBone : Tokens.inkDim
+                            color: designCard.worn ? Tokens.pickInk : Tokens.inkDim
                             font.family: Tokens.ui
                             font.pixelSize: 12
                             font.weight: Font.Medium
@@ -273,7 +273,7 @@ Item {
                         Text {
                             width: parent.width
                             text: designCard.subText
-                            color: designCard.worn ? Tokens.inkOnBoneDim : Tokens.inkFaint
+                            color: designCard.worn ? Tokens.pickInkDim : Tokens.inkFaint
                             font.family: Tokens.ui
                             font.pixelSize: Tokens.fTiny
                             elide: Text.ElideRight

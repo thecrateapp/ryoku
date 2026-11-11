@@ -169,6 +169,7 @@ Item {
                 : I18n.tr("Switch to %1").arg(sh.cap(sh.targetName))
             color: Tokens.ink
             font.family: Tokens.display
+            font.weight: Tokens.displayWeight
             font.pixelSize: Tokens.fHero
             elide: Text.ElideRight
         }

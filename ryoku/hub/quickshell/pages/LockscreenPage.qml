@@ -1023,6 +1023,7 @@ Item {
                 text: I18n.tr("Lockscreen")
                 color: Tokens.ink
                 font.family: Tokens.display
+                font.weight: Tokens.displayWeight
                 font.pixelSize: Tokens.fTitle
             }
             Btn {
@@ -1212,7 +1213,7 @@ Item {
                         width: parent.width; visible: pg.kconvertFor !== ""; topPadding: Tokens.s2; spacing: Tokens.s2
                         Text { width: parent.width; text: I18n.tr("That keyring is locked with a password. Enter it to switch it to no-password, or start fresh (your old keyring is backed up, never deleted)."); color: Tokens.inkMuted; font.family: Tokens.ui; font.pixelSize: Tokens.fSmall; wrapMode: Text.WordWrap }
                         Row { spacing: Tokens.s2
-                            Rectangle { anchors.verticalCenter: parent.verticalCenter; width: 240; height: Tokens.ctlH + 4; radius: Tokens.radius; color: "transparent"; border.width: Tokens.border; border.color: kpwField.activeFocus ? Tokens.ink : Tokens.line; Behavior on border.color { ColorAnimation { duration: Tokens.snap } }
+                            Rectangle { anchors.verticalCenter: parent.verticalCenter; width: 240; height: Tokens.ctlH + 4; radius: Tokens.radius; color: "transparent"; border.width: Tokens.border; border.color: kpwField.activeFocus ? Tokens.focus : Tokens.line; Behavior on border.color { ColorAnimation { duration: Tokens.snap } }
                                 TextInput { id: kpwField; anchors.fill: parent; anchors.leftMargin: Tokens.s3; anchors.rightMargin: Tokens.s3; verticalAlignment: TextInput.AlignVCenter; color: Tokens.ink; font.family: Tokens.ui; font.pixelSize: Tokens.fSmall; echoMode: TextInput.Password; selectByMouse: true; selectionColor: Tokens.ink; selectedTextColor: Tokens.inkOnBone; onAccepted: pg.kconvert(text)
                                     Text { anchors { left: parent.left; verticalCenter: parent.verticalCenter } visible: kpwField.text.length === 0; text: I18n.tr("Current keyring password"); color: Tokens.inkFaint; font.family: Tokens.ui; font.pixelSize: Tokens.fSmall }
                                 }
@@ -2082,7 +2083,7 @@ Item {
         radius: Tokens.radius
         color: chip.on ? Tokens.tint10 : (chHover.hovered ? Tokens.tint5 : "transparent")
         border.width: Tokens.border
-        border.color: chip.on ? Tokens.ink : (chHover.hovered ? Tokens.lineStrong : Tokens.line)
+        border.color: chip.on ? Tokens.mark : (chHover.hovered ? Tokens.lineStrong : Tokens.line)
         opacity: (((chip.kind === "security-key") ? (pg.skPending !== "") : (pg.kpending !== "")) && !chip.busy) ? 0.4 : 1
         Behavior on color { ColorAnimation { duration: Tokens.snap } }
         Behavior on border.color { ColorAnimation { duration: Tokens.snap } }
@@ -2146,9 +2147,9 @@ Item {
 
         implicitHeight: body.implicitHeight + Tokens.s6
         radius: Tokens.radius
-        color: tile.active ? Tokens.tint10 : (hover.hovered ? Tokens.tint5 : "transparent")
+        color: tile.active ? (Tokens.selectFill ? Tokens.tint10 : Tokens.rowWash) : (hover.hovered ? Tokens.tint5 : "transparent")
         border.width: Tokens.border
-        border.color: tile.active ? Tokens.ink : (hover.hovered ? Tokens.lineStrong : Tokens.line)
+        border.color: tile.active ? Tokens.mark : (hover.hovered ? Tokens.lineStrong : Tokens.line)
         Behavior on color { ColorAnimation { duration: Tokens.snap } }
         Behavior on border.color { ColorAnimation { duration: Tokens.snap } }
 
@@ -2156,7 +2157,7 @@ Item {
         Rectangle {
             anchors { top: parent.top; right: parent.right; topMargin: Tokens.s2; rightMargin: Tokens.s2 }
             width: 5; height: 5; radius: 2.5
-            color: Tokens.ink
+            color: Tokens.mark
             visible: tile.active
         }
 
@@ -2174,7 +2175,7 @@ Item {
                 radius: Tokens.radius
                 color: "transparent"
                 border.width: Tokens.border
-                border.color: (tile.active || hover.hovered) ? Tokens.ink : Tokens.line
+                border.color: tile.active ? Tokens.mark : (hover.hovered ? Tokens.hoverInk : Tokens.line)
                 clip: true
                 Behavior on border.color { ColorAnimation { duration: Tokens.snap } }
 

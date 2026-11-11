@@ -38,7 +38,7 @@ Row {
         Text {
             width: parent.width
             text: auth.run.promptTitle
-            color: Tokens.ink; font.family: Tokens.display; font.pixelSize: Tokens.fValue
+            color: Tokens.ink; font.family: Tokens.display; font.pixelSize: Tokens.fValue; font.weight: Tokens.displayWeight
             wrapMode: Text.WordWrap
         }
         Text {
@@ -59,7 +59,7 @@ Row {
                 radius: Tokens.radius
                 color: "transparent"
                 border.width: Tokens.border
-                border.color: auth.run.promptError !== "" ? Tokens.ink : (field.activeFocus ? Tokens.ink : Tokens.line)
+                border.color: auth.run.promptError !== "" ? Tokens.ink : (field.activeFocus ? Tokens.focus : Tokens.line)
                 Behavior on border.color { ColorAnimation { duration: Tokens.snap } }
 
                 TextInput {

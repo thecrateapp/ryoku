@@ -123,6 +123,11 @@
   `../shell/matugen/config.toml`).
 
 ### Added
+- **The Hub follows the theme style.** The rail takes navigation caps and a
+  mark bar instead of the bone fill, group and card captions take the accent,
+  picked tiles and cards (Bar Studio rails, launcher styles, overlay designs,
+  dictation models, displays) wash inside a mark edge when `selectFill` is off,
+  and focus edges and display titles follow the theme.
 - **Credits names the Game Bar's sources.** The ii-p3drovfx row now covers the
   Discord Voice widget it is based on, and end-4's illogical-impulse is credited
   for the overlay design (`quickshell/pages/CreditsPage.qml`, `../../NOTICE`).

@@ -131,6 +131,7 @@ Popup {
                     text: I18n.tr("A separate Ryoku account")
                     color: Tokens.ink
                     font.family: Tokens.display
+                    font.weight: Tokens.displayWeight
                     font.pixelSize: Tokens.fValue
                 }
                 Text {

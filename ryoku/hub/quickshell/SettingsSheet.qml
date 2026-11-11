@@ -889,7 +889,7 @@ Item {
                                             color: "transparent"
                                             radius: Tokens.radius
                                             border.width: ti.activeFocus ? 2 : Tokens.border
-                                            border.color: ti.activeFocus ? Tokens.ink : Tokens.line
+                                            border.color: ti.activeFocus ? Tokens.focus : Tokens.line
                                             TextInput {
                                                 id: ti
                                                 anchors.fill: parent
@@ -964,7 +964,7 @@ Item {
                                                 color: "transparent"
                                                 radius: Tokens.radius
                                                 border.width: lti.activeFocus ? 2 : Tokens.border
-                                                border.color: lti.activeFocus ? Tokens.ink : Tokens.line
+                                                border.color: lti.activeFocus ? Tokens.focus : Tokens.line
                                                 TextInput {
                                                     id: lti
                                                     anchors.fill: parent

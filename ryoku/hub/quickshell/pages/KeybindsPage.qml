@@ -855,7 +855,7 @@ Item {
         }
         Text {
             text: I18n.tr("Keybinds"); color: Tokens.ink
-            font.family: Tokens.display; font.pixelSize: Tokens.fTitle
+            font.family: Tokens.display; font.pixelSize: Tokens.fTitle; font.weight: Tokens.displayWeight
         }
         Text {
             width: Math.min(parent.width, 720)
@@ -1119,9 +1119,9 @@ Item {
                                     implicitWidth: chLbl.implicitWidth + Tokens.s4
                                     implicitHeight: 28
                                     radius: Tokens.radius
-                                    color: chip.sel ? Tokens.ink : (chHov.hovered ? Tokens.tint10 : "transparent")
+                                    color: chip.sel ? Tokens.mark : (chHov.hovered ? Tokens.tint10 : "transparent")
                                     border.width: Tokens.border
-                                    border.color: chip.sel ? Tokens.ink : (chHov.hovered ? Tokens.lineStrong : Tokens.line)
+                                    border.color: chip.sel ? Tokens.mark : (chHov.hovered ? Tokens.lineStrong : Tokens.line)
                                     Behavior on color { ColorAnimation { duration: Tokens.snap } }
                                     Text {
                                         id: chLbl
@@ -1193,7 +1193,7 @@ Item {
                                         opacity: shellChip.modelData.installed && !pg.shellBusy ? 1 : 0.35
                                         color: shellChip.selected ? Tokens.ink : (shellHover.hovered ? Tokens.tint10 : "transparent")
                                         border.width: Tokens.border
-                                        border.color: shellChip.selected ? Tokens.ink : Tokens.line
+                                        border.color: shellChip.selected ? Tokens.mark : Tokens.line
                                         Text {
                                             id: shellLabel
                                             anchors.centerIn: parent
@@ -1253,7 +1253,7 @@ Item {
                                         opacity: pg.shellBusy ? 0.35 : 1
                                         color: promptChip.selected ? Tokens.ink : (promptHover.hovered ? Tokens.tint10 : "transparent")
                                         border.width: Tokens.border
-                                        border.color: promptChip.selected ? Tokens.ink : Tokens.line
+                                        border.color: promptChip.selected ? Tokens.mark : Tokens.line
                                         Text {
                                             id: promptLabel
                                             anchors.centerIn: parent
@@ -1308,9 +1308,9 @@ Item {
                                         height: 82
                                         radius: Tokens.radius
                                         opacity: pg.starshipBusy ? 0.45 : 1
-                                        color: layoutCard.selected ? Tokens.ink : (layoutHover.hovered ? Tokens.tint10 : "transparent")
+                                        color: layoutCard.selected ? Tokens.mark : (layoutHover.hovered ? Tokens.tint10 : "transparent")
                                         border.width: Tokens.border
-                                        border.color: layoutCard.selected ? Tokens.ink : (layoutHover.hovered ? Tokens.lineStrong : Tokens.line)
+                                        border.color: layoutCard.selected ? Tokens.mark : (layoutHover.hovered ? Tokens.lineStrong : Tokens.line)
                                         Behavior on color { ColorAnimation { duration: Tokens.snap } }
                                         Text {
                                             anchors.left: parent.left
@@ -1374,7 +1374,7 @@ Item {
                                         opacity: pg.starshipBusy ? 0.45 : 1
                                         color: starshipPaletteChip.selected ? Tokens.ink : (paletteHover.hovered ? Tokens.tint10 : "transparent")
                                         border.width: Tokens.border
-                                        border.color: starshipPaletteChip.selected ? Tokens.ink : Tokens.line
+                                        border.color: starshipPaletteChip.selected ? Tokens.mark : Tokens.line
                                         Text {
                                             id: paletteLabel
                                             anchors.centerIn: parent
@@ -1463,14 +1463,15 @@ Item {
                             radius: Tokens.radius
                             readonly property bool active: !pg.searching && pg.selectedCat === railItem.modelData.name
                             readonly property bool dimmed: pg.searching && railItem.modelData.count === 0
-                            color: railItem.active ? Tokens.tint10 : (railHov.hovered ? Tokens.tint5 : "transparent")
+                            color: railItem.active ? (Tokens.selectFill ? Tokens.tint10 : "transparent")
+                                : (railHov.hovered && !Tokens.accentMarks ? Tokens.tint5 : "transparent")
                             Behavior on color { ColorAnimation { duration: Tokens.snap } }
 
                             Rectangle {
                                 anchors.left: parent.left
                                 anchors.verticalCenter: parent.verticalCenter
                                 width: 2; height: parent.height - Tokens.s4
-                                radius: 1; color: Tokens.ink
+                                radius: 1; color: Tokens.mark
                                 visible: railItem.active
                             }
                             Text {
@@ -1480,8 +1481,11 @@ Item {
                                 anchors.rightMargin: Tokens.s2
                                 anchors.verticalCenter: parent.verticalCenter
                                 text: railItem.modelData.label
-                                color: railItem.active ? Tokens.ink : (railItem.dimmed ? Tokens.inkFaint : Tokens.inkDim)
-                                font.family: Tokens.ui; font.pixelSize: Tokens.fSmall
+                                color: railItem.active ? Tokens.ink : (railItem.dimmed ? Tokens.inkFaint
+                                    : (railHov.hovered && Tokens.accentMarks ? Tokens.hoverInk : Tokens.inkDim))
+                                font.family: Tokens.ui; font.pixelSize: Tokens.navCaps ? Tokens.fMicro : Tokens.fSmall
+                                font.capitalization: Tokens.navCaps ? Font.AllUppercase : Font.MixedCase
+                                font.letterSpacing: Tokens.trackNav
                                 elide: Text.ElideRight
                             }
                             Text {

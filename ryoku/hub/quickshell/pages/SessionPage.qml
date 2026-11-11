@@ -202,7 +202,7 @@ Item {
         }
         Text {
             text: I18n.tr("Session"); color: Tokens.ink
-            font.family: Tokens.display; font.pixelSize: Tokens.fTitle
+            font.family: Tokens.display; font.pixelSize: Tokens.fTitle; font.weight: Tokens.displayWeight
         }
         Text {
             // a blurb is prose, so it keeps a reading cap while the body fills.

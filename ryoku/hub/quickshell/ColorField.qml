@@ -28,7 +28,7 @@ Rectangle {
     color: "transparent"
     radius: Tokens.radius
     border.width: hexIn.activeFocus ? 2 : Tokens.border
-    border.color: hexIn.activeFocus ? Tokens.ink : Tokens.line
+    border.color: hexIn.activeFocus ? Tokens.focus : Tokens.line
 
     Row {
         anchors.fill: parent
@@ -216,7 +216,7 @@ Rectangle {
                     color: "transparent"
                     radius: Tokens.radius
                     border.width: hexEdit.activeFocus ? 2 : Tokens.border
-                    border.color: hexEdit.activeFocus ? Tokens.ink : Tokens.line
+                    border.color: hexEdit.activeFocus ? Tokens.focus : Tokens.line
                     TextInput {
                         id: hexEdit
                         anchors.fill: parent

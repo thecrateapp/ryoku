@@ -664,7 +664,7 @@ Item {
                 anchors.verticalCenter: parent.verticalCenter
             }
         }
-        Text { text: I18n.tr("Animations"); color: Tokens.ink; font.family: Tokens.display; font.pixelSize: Tokens.fTitle }
+        Text { text: I18n.tr("Animations"); color: Tokens.ink; font.family: Tokens.display; font.pixelSize: Tokens.fTitle; font.weight: Tokens.displayWeight }
         Text {
             width: Math.min(parent.width, 720)
             text: I18n.tr("Pick a feel and watch it live; fine-tune any one animation under Advanced.")

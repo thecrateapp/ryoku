@@ -595,7 +595,7 @@ done
         }
         Text {
             text: I18n.tr("Machine"); color: Tokens.ink
-            font.family: Tokens.display; font.pixelSize: Tokens.fTitle
+            font.family: Tokens.display; font.pixelSize: Tokens.fTitle; font.weight: Tokens.displayWeight
         }
         Text {
             width: Math.min(parent.width, 720)
@@ -910,7 +910,7 @@ done
                             width: parent.width; height: 32
                             radius: Tokens.radius; color: "transparent"
                             border.width: nameIn.activeFocus ? 2 : Tokens.border
-                            border.color: nameIn.activeFocus ? Tokens.ink : Tokens.line
+                            border.color: nameIn.activeFocus ? Tokens.focus : Tokens.line
                             TextInput {
                                 id: nameIn
                                 anchors.fill: parent

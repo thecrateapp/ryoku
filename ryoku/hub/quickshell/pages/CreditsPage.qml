@@ -201,6 +201,7 @@ Item {
                         text: I18n.tr("GRATITUDE")
                         color: Tokens.ink
                         font.family: Tokens.display
+                        font.weight: Tokens.displayWeight
                         font.pixelSize: Tokens.fTitle
                     }
                 }
@@ -209,6 +210,7 @@ Item {
                     text: I18n.tr("The roots we grow from - every project, distro, and hand this build stands on.")
                     color: Tokens.inkMuted
                     font.family: Tokens.display
+                    font.weight: Tokens.displayWeight
                     font.italic: true
                     font.pixelSize: pg.fRole + 3
                     wrapMode: Text.WordWrap
@@ -296,6 +298,7 @@ Item {
                     text: I18n.tr("Fraunces 44")
                     color: Tokens.ink
                     font.family: Tokens.display
+                    font.weight: Tokens.displayWeight
                     font.pixelSize: Tokens.fTitle
                 }
                 Text {

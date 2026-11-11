@@ -1278,9 +1278,12 @@ Rectangle {
                                     anchors.verticalCenter: parent.verticalCenter
                                 }
                                 Text {
-                                    text: I18n.tr(grp.modelData.name); color: grp.activeGroup ? Tokens.inkDim : Tokens.inkFaint
-                                    font.family: Tokens.ui; font.pixelSize: 9
-                                    font.weight: Font.Medium; font.letterSpacing: 2
+                                    text: I18n.tr(grp.modelData.name)
+                                    color: Tokens.labelAccent ? Tokens.caption
+                                        : (grp.activeGroup ? Tokens.inkDim : Tokens.inkFaint)
+                                    font.family: Tokens.ui; font.pixelSize: Tokens.labelAccent ? Tokens.fMicro : 9
+                                    font.weight: Font.Medium
+                                    font.letterSpacing: Tokens.labelAccent ? Tokens.fMicro * 0.14 : 2
                                     anchors.verticalCenter: parent.verticalCenter
                                 }
                                 Rectangle {
@@ -1319,8 +1322,18 @@ Rectangle {
                                     anchors.fill: parent
                                     anchors.topMargin: 1; anchors.bottomMargin: 1
                                     radius: Tokens.radius
-                                    color: navItem.sel ? Tokens.bone : (nh.hovered ? Tokens.tint10 : "transparent")
+                                    color: navItem.sel ? (Tokens.selectFill ? Tokens.bone : "transparent")
+                                        : (nh.hovered && !Tokens.accentMarks ? Tokens.tint10 : "transparent")
                                     Behavior on color { ColorAnimation { duration: Tokens.snap } }
+                                }
+                                // a theme that drops the selection fill marks the
+                                // live section with a bar instead
+                                Rectangle {
+                                    visible: navItem.sel && !Tokens.selectFill
+                                    anchors.left: parent.left
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    width: 2; height: parent.height - Tokens.s4; radius: 1
+                                    color: Tokens.mark
                                 }
                                 // selection is typography, never a coloured bar:
                                 // the live section takes the sheet's // lead. On
@@ -1332,7 +1345,7 @@ Rectangle {
                                     spacing: Tokens.s2
                                     Text {
                                         id: navLead
-                                        visible: navItem.sel
+                                        visible: navItem.sel && Tokens.selectFill
                                         text: "//"
                                         color: Tokens.inkOnBoneDim
                                         font.family: Tokens.mono; font.pixelSize: 11
@@ -1341,12 +1354,16 @@ Rectangle {
                                     Text {
                                         id: navLatin
                                         text: I18n.tr(navItem.modelData.name)
-                                        color: navItem.sel ? Tokens.inkOnBone : Tokens.inkDim
-                                        font.family: Tokens.ui; font.pixelSize: 14
+                                        color: navItem.sel ? (Tokens.selectFill ? Tokens.inkOnBone : Tokens.ink)
+                                            : (nh.hovered && Tokens.accentMarks ? Tokens.hoverInk : Tokens.inkDim)
+                                        font.family: Tokens.ui
+                                        font.pixelSize: Tokens.navCaps ? Tokens.fMicro : 14
+                                        font.capitalization: Tokens.navCaps ? Font.AllUppercase : Font.MixedCase
+                                        font.letterSpacing: Tokens.trackNav
                                         anchors.verticalCenter: parent.verticalCenter
                                         elide: Text.ElideRight
                                         width: Math.max(0, navKana.x - Tokens.s2 - Tokens.s3
-                                            - (navItem.sel ? navLead.width + Tokens.s2 : 0))
+                                            - (navLead.visible ? navLead.width + Tokens.s2 : 0))
                                         Behavior on color { ColorAnimation { duration: Tokens.snap } }
                                     }
                                 }
@@ -1354,7 +1371,7 @@ Rectangle {
                                     id: navKana
                                     anchors { right: parent.right; rightMargin: Tokens.s3; verticalCenter: parent.verticalCenter }
                                     text: hub.showJapaneseGloss ? (hub.jpName[navItem.modelData.key] || "") : ""
-                                    color: navItem.sel ? Tokens.inkOnBoneDim : Tokens.inkFaint
+                                    color: navItem.sel && Tokens.selectFill ? Tokens.inkOnBoneDim : Tokens.inkFaint
                                     font.family: Tokens.jp; font.pixelSize: 12
                                     Behavior on color { ColorAnimation { duration: Tokens.snap } }
                                 }
@@ -1541,7 +1558,7 @@ Rectangle {
                     font.letterSpacing: Tokens.trackMark; anchors.verticalCenter: parent.verticalCenter
                 }
             }
-            Text { text: I18n.tr(hub.nameFor(hub.section)); color: Tokens.ink; font.family: Tokens.display; font.pixelSize: Tokens.fTitle }
+            Text { text: I18n.tr(hub.nameFor(hub.section)); color: Tokens.ink; font.family: Tokens.display; font.pixelSize: Tokens.fTitle; font.weight: Tokens.displayWeight }
             Item { width: 1; height: Tokens.s4 }
             Text {
                 text: I18n.tr("PORTING IN PROGRESS"); color: Tokens.inkDim; font.family: Tokens.ui

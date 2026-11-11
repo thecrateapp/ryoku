@@ -702,6 +702,7 @@ Item {
                 value: pg.f("text.name", pg.fv(SysInfo.sysUser))
                 color: Tokens.ink
                 font.family: Tokens.display
+                font.weight: Tokens.displayWeight
                 font.pixelSize: 104
                 fontSizeMode: Text.HorizontalFit
                 minimumPixelSize: 30
@@ -718,6 +719,7 @@ Item {
                 value: pg.f("text.tagline", I18n.tr("A live specimen - cracked, shot on black."))
                 color: Tokens.inkDim
                 font.family: Tokens.display
+                font.weight: Tokens.displayWeight
                 font.italic: true
                 font.pixelSize: Tokens.fRow
             }

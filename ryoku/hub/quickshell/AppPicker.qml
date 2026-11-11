@@ -66,6 +66,7 @@ Item {
             text: root.title
             color: Tokens.ink
             font.family: Tokens.display
+            font.weight: Tokens.displayWeight
             font.pixelSize: Tokens.fValue
         }
 
@@ -79,7 +80,7 @@ Item {
             radius: Tokens.radius
             color: "transparent"
             border.width: search.activeFocus ? 2 : Tokens.border
-            border.color: search.activeFocus ? Tokens.ink : Tokens.line
+            border.color: search.activeFocus ? Tokens.focus : Tokens.line
 
             TextInput {
                 id: search

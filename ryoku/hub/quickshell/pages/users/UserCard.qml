@@ -109,6 +109,7 @@ Item {
                     text: cardRoot.initialFor(cardRoot.userData)
                     color: Tokens.inkOnBone
                     font.family: Tokens.display
+                    font.weight: Tokens.displayWeight
                     font.pixelSize: 24
                 }
 
@@ -130,6 +131,7 @@ Item {
                     text: String(cardRoot.userData.fullName || cardRoot.userData.name || "")
                     color: Tokens.ink
                     font.family: Tokens.display
+                    font.weight: Tokens.displayWeight
                     font.pixelSize: Tokens.fValue
                     elide: Text.ElideRight
                 }

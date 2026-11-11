@@ -299,7 +299,7 @@ Item {
         }
         Text {
             text: I18n.tr("Dictation"); color: Tokens.ink
-            font.family: Tokens.display; font.pixelSize: Tokens.fTitle
+            font.family: Tokens.display; font.pixelSize: Tokens.fTitle; font.weight: Tokens.displayWeight
         }
         Text {
             width: Math.min(parent.width, 720)
@@ -494,9 +494,9 @@ Item {
                                 // tint10 + ink border + a corner dot, the same tell
                                 // Gallery uses for a content-rich tile (a full-card
                                 // invert would break the two-ink-levels bone rule).
-                                color: card.active ? Tokens.tint10 : (cardHov.hovered ? Tokens.tint5 : "transparent")
+                                color: card.active ? (Tokens.selectFill ? Tokens.tint10 : Tokens.rowWash) : (cardHov.hovered ? Tokens.tint5 : "transparent")
                                 border.width: Tokens.border
-                                border.color: card.active ? Tokens.ink : (cardHov.hovered ? Tokens.lineStrong : Tokens.line)
+                                border.color: card.active ? Tokens.mark : (cardHov.hovered ? Tokens.lineStrong : Tokens.line)
                                 Behavior on color { ColorAnimation { duration: Tokens.snap } }
                                 Behavior on border.color { ColorAnimation { duration: Tokens.snap } }
 
@@ -580,7 +580,7 @@ Item {
                                     anchors.right: parent.right; anchors.bottom: parent.bottom
                                     anchors.rightMargin: Tokens.s3; anchors.bottomMargin: Tokens.s2
                                     text: "\u25cf"
-                                    color: Tokens.ink
+                                    color: Tokens.mark
                                     font.pixelSize: 7
                                 }
 
@@ -702,7 +702,7 @@ Item {
                                 radius: Tokens.radius
                                 color: "transparent"
                                 border.width: keyInput.activeFocus ? 2 : Tokens.border
-                                border.color: keyInput.activeFocus ? Tokens.ink : (keyMa.containsMouse ? Tokens.lineStrong : Tokens.line)
+                                border.color: keyInput.activeFocus ? Tokens.focus : (keyMa.containsMouse ? Tokens.lineStrong : Tokens.line)
                                 Behavior on border.color { ColorAnimation { duration: Tokens.snap } }
 
                                 TextInput {

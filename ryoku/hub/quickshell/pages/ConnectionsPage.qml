@@ -1212,11 +1212,20 @@ Item {
                                 width: parent.width
                                 height: details.length ? 60 : 46
                                 radius: Tokens.radius
-                                color: netItem.isActive
-                                    ? Tokens.bone
-                                    : (rowHover.hovered ? Tokens.tint5 : "transparent")
+                                // inverted to bone only while the theme keeps the fill
+                                readonly property bool inv: netItem.isActive && Tokens.selectFill
+                                color: rowBg.inv ? Tokens.bone
+                                    : (netItem.isActive ? Tokens.rowWash
+                                    : (rowHover.hovered ? Tokens.tint5 : "transparent"))
                                 Behavior on color { ColorAnimation { duration: Tokens.snap } }
 
+                                Rectangle {
+                                    visible: netItem.isActive && !rowBg.inv
+                                    anchors.left: parent.left
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    width: 2; height: parent.height - Tokens.s4; radius: 1
+                                    color: Tokens.mark
+                                }
                                 HoverHandler { id: rowHover; cursorShape: Qt.PointingHandCursor }
                                 TapHandler { onTapped: wifi.activateNetwork(netItem.modelData) }
 
@@ -1226,7 +1235,7 @@ Item {
                                     anchors.leftMargin: Tokens.s4
                                     anchors.verticalCenter: parent.verticalCenter
                                     strength: netItem.strength
-                                    onBone: netItem.isActive
+                                    onBone: rowBg.inv
                                 }
 
                                 Column {
@@ -1240,7 +1249,7 @@ Item {
                                     Text {
                                         width: parent.width
                                         text: netItem.ssid
-                                        color: netItem.isActive ? Tokens.inkOnBone : Tokens.ink
+                                        color: rowBg.inv ? Tokens.inkOnBone : Tokens.ink
                                         font.family: Tokens.ui
                                         font.pixelSize: Tokens.fBody
                                         font.weight: netItem.isActive ? Font.DemiBold : Font.Medium
@@ -1254,7 +1263,7 @@ Item {
                                             : (netItem.known
                                                 ? (netItem.secured ? I18n.tr("Saved \u00b7 Secured") : I18n.tr("Saved \u00b7 Open"))
                                                 : (netItem.secured ? I18n.tr("Secured") : I18n.tr("Open")))
-                                        color: netItem.isActive ? Tokens.inkOnBoneDim : Tokens.inkMuted
+                                        color: rowBg.inv ? Tokens.inkOnBoneDim : Tokens.inkMuted
                                         font.family: Tokens.ui
                                         font.pixelSize: Tokens.fMicro
                                         font.weight: Font.Medium
@@ -1265,7 +1274,7 @@ Item {
                                         visible: rowBg.details.length > 0
                                         width: parent.width
                                         text: rowBg.details
-                                        color: netItem.isActive ? Tokens.inkOnBoneDim : Tokens.inkMuted
+                                        color: rowBg.inv ? Tokens.inkOnBoneDim : Tokens.inkMuted
                                         font.family: Tokens.mono
                                         font.pixelSize: Tokens.fMicro
                                         elide: Text.ElideRight
@@ -1282,13 +1291,13 @@ Item {
                                     Lock {
                                         anchors.verticalCenter: parent.verticalCenter
                                         visible: netItem.secured
-                                        tint: netItem.isActive ? Tokens.inkOnBone : Tokens.inkMuted
+                                        tint: rowBg.inv ? Tokens.inkOnBone : Tokens.inkMuted
                                     }
 
                                     Text {
                                         anchors.verticalCenter: parent.verticalCenter
                                         text: netItem.strength + "%"
-                                        color: netItem.isActive ? Tokens.inkOnBoneDim : Tokens.inkMuted
+                                        color: rowBg.inv ? Tokens.inkOnBoneDim : Tokens.inkMuted
                                         font.family: Tokens.ui
                                         font.pixelSize: Tokens.fMicro
                                         font.weight: Font.Medium
@@ -1409,7 +1418,7 @@ Item {
                                     radius: Tokens.radius
                                     color: "transparent"
                                     border.width: pwField.activeFocus ? 2 : Tokens.border
-                                    border.color: pwField.activeFocus ? Tokens.ink : Tokens.line
+                                    border.color: pwField.activeFocus ? Tokens.focus : Tokens.line
                                     Behavior on border.color { ColorAnimation { duration: Tokens.snap } }
 
                                     TextInput {
@@ -2228,7 +2237,7 @@ Item {
                 radius: Tokens.radius
                 color: "transparent"
                 border.width: Tokens.border
-                border.color: hs.hsActive ? Tokens.ink : Tokens.line
+                border.color: hs.hsActive ? Tokens.mark : Tokens.line
                 Behavior on border.color { ColorAnimation { duration: Tokens.snap } }
 
                 WifiGlyph {
@@ -2381,7 +2390,7 @@ Item {
             }
             Text {
                 text: I18n.tr("Connections"); color: Tokens.ink
-                font.family: Tokens.display; font.pixelSize: Tokens.fTitle
+                font.family: Tokens.display; font.pixelSize: Tokens.fTitle; font.weight: Tokens.displayWeight
             }
             Text {
                 width: Math.min(parent.width, 720)

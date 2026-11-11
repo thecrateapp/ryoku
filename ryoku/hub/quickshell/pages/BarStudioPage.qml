@@ -253,6 +253,7 @@ Item {
             text: page.subshellsOnly ? I18n.tr("Subshells") : I18n.tr("Bar Studio")
             color: Tokens.ink
             font.family: Tokens.display
+            font.weight: Tokens.displayWeight
             font.pixelSize: Tokens.fTitle
         }
         // One compact legend serves both Subshells and Bar Studio.
@@ -728,9 +729,9 @@ Item {
                                 width: (railRow.width - 3 * Tokens.s2) / 4
                                 height: 48
                                 radius: Tokens.radius
-                                color: plate.on ? Tokens.bone : (pma.containsMouse ? Tokens.tint5 : "transparent")
+                                color: plate.on ? Tokens.pickFill : (pma.containsMouse ? Tokens.tint5 : "transparent")
                                 border.width: Tokens.border
-                                border.color: plate.on ? Tokens.bone : Tokens.line
+                                border.color: plate.on ? Tokens.pickEdge : Tokens.line
                                 Behavior on color { ColorAnimation { duration: Tokens.snap } }
 
                                 Column {
@@ -738,7 +739,7 @@ Item {
                                     spacing: 2
                                     Text {
                                         text: labels.edge(plate.modelData).toUpperCase()
-                                        color: plate.on ? Tokens.inkOnBone : Tokens.inkDim
+                                        color: plate.on ? Tokens.pickInk : Tokens.inkDim
                                         font.family: Tokens.ui
                                         font.pixelSize: 11
                                         font.weight: Font.Medium
@@ -746,7 +747,7 @@ Item {
                                     }
                                     Text {
                                         text: plate.pRail.enabled ? I18n.tr("on · %1").arg(plate.count) : I18n.tr("off")
-                                        color: plate.on ? Tokens.inkOnBoneDim : Tokens.inkFaint
+                                        color: plate.on ? Tokens.pickInkDim : Tokens.inkFaint
                                         font.family: Tokens.mono
                                         font.pixelSize: Tokens.fTiny
                                     }

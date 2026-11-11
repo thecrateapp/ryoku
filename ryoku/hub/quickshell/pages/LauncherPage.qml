@@ -333,7 +333,7 @@ Item {
         }
         Text {
             text: I18n.tr("App Launcher"); color: Tokens.ink
-            font.family: Tokens.display; font.pixelSize: Tokens.fTitle
+            font.family: Tokens.display; font.pixelSize: Tokens.fTitle; font.weight: Tokens.displayWeight
         }
         Text {
             width: Math.min(parent.width, 720)
@@ -501,9 +501,9 @@ Item {
                                     height: styleRow.tileH
                                     radius: Tokens.radius
                                     opacity: styleTile.applyable ? 1.0 : 0.55
-                                    color: styleTile.on ? Tokens.bone : (styleMouse.containsMouse ? Tokens.tint5 : "transparent")
+                                    color: styleTile.on ? Tokens.pickFill : (styleMouse.containsMouse ? Tokens.tint5 : "transparent")
                                     border.width: Tokens.border
-                                    border.color: styleTile.on ? Tokens.bone : Tokens.line
+                                    border.color: styleTile.on ? Tokens.pickEdge : Tokens.line
                                     Behavior on color { ColorAnimation { duration: Tokens.snap } }
 
                                     Column {
@@ -518,7 +518,7 @@ Item {
                                             spacing: Tokens.s2
                                             Text {
                                                 text: String(styleTile.modelData.name || styleTile.modelData.id).toUpperCase()
-                                                color: styleTile.on ? Tokens.inkOnBone : Tokens.inkDim
+                                                color: styleTile.on ? Tokens.pickInk : Tokens.inkDim
                                                 font.family: Tokens.ui
                                                 font.pixelSize: 12
                                                 font.weight: Font.Medium
@@ -530,7 +530,7 @@ Item {
                                                 visible: styleTile.fromStore
                                                 anchors.verticalCenter: parent.verticalCenter
                                                 text: I18n.tr("STORE")
-                                                color: styleTile.on ? Tokens.inkOnBoneDim : Tokens.inkFaint
+                                                color: styleTile.on ? Tokens.pickInkDim : Tokens.inkFaint
                                                 font.family: Tokens.mono
                                                 font.pixelSize: Tokens.fTiny
                                                 font.letterSpacing: Tokens.trackLabel
@@ -539,7 +539,7 @@ Item {
                                         Text {
                                             width: parent.width
                                             text: styleTile.subText
-                                            color: styleTile.on ? Tokens.inkOnBoneDim : Tokens.inkFaint
+                                            color: styleTile.on ? Tokens.pickInkDim : Tokens.inkFaint
                                             font.family: Tokens.ui
                                             font.pixelSize: Tokens.fTiny
                                             elide: Text.ElideRight

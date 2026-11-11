@@ -66,6 +66,7 @@ Popup {
                 text: I18n.tr("Remove %1?").arg(dialog.userName)
                 color: Tokens.ink
                 font.family: Tokens.display
+                font.weight: Tokens.displayWeight
                 font.pixelSize: Tokens.fValue
                 wrapMode: Text.WordWrap
             }

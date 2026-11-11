@@ -347,6 +347,7 @@ Column {
                         text: root.canManage ? I18n.tr("Accounts on this computer") : I18n.tr("Ask an administrator")
                         color: Tokens.ink
                         font.family: Tokens.display
+                        font.weight: Tokens.displayWeight
                         font.pixelSize: Tokens.fRow
                     }
                     Text {

@@ -78,6 +78,7 @@ Popup {
                 text: I18n.tr("Storage limit for %1").arg(dialog.userName)
                 color: Tokens.ink
                 font.family: Tokens.display
+                font.weight: Tokens.displayWeight
                 font.pixelSize: Tokens.fValue
                 wrapMode: Text.WordWrap
             }

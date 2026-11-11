@@ -914,7 +914,7 @@ Item {
                 id: title
                 anchors.left: parent.left; anchors.verticalCenter: parent.verticalCenter
                 text: I18n.tr("Displays"); color: Tokens.ink
-                font.family: Tokens.display; font.pixelSize: Tokens.fTitle
+                font.family: Tokens.display; font.pixelSize: Tokens.fTitle; font.weight: Tokens.displayWeight
             }
             // the page's utility actions sit beside the title, per DESIGN section
             // 8. Each computes a layout and applies it through the seam. MIRROR is
@@ -990,9 +990,9 @@ Item {
                     height: { void pg.tick; return tile.m ? Math.max(28, pg.footH(tile.m) * tile.v.k) : 28; }
                     radius: Tokens.radius
                     antialiasing: false
-                    color: tile.on ? Tokens.tint10 : (th.hovered ? Tokens.tint5 : "transparent")
+                    color: tile.on ? (Tokens.selectFill ? Tokens.tint10 : Tokens.rowWash) : (th.hovered ? Tokens.tint5 : "transparent")
                     border.width: tile.on ? 2 : Tokens.border
-                    border.color: tile.on ? Tokens.ink : Tokens.line
+                    border.color: tile.on ? Tokens.mark : Tokens.line
                     opacity: tile.live ? 1 : 0.5
                     Behavior on color { ColorAnimation { duration: Tokens.snap } }
                     Behavior on border.color { ColorAnimation { duration: Tokens.snap } }
