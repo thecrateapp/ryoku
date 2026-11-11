@@ -28,8 +28,9 @@ func userThemeDir() string {
 }
 
 // noctaliaColors is the reduced Material set each Noctalia block carries. The
-// block's terminal sub-object is ignored: the catalog derives ANSI colours from
-// the roles, exactly as it does for every built-in theme. Roles optionally pins
+// catalog derives ANSI colours from the roles, exactly as it does for every
+// built-in theme; a block's terminal sub-object, when present, replaces that
+// derivation for the terminal templates only (term_* keys). Roles optionally pins
 // catalog roles the reduced set cannot express (an accent-coloured
 // inverseSurface, a surfaceContainerLow that is not the surface/variant midpoint)
 // by their catalog name.
@@ -50,6 +51,64 @@ type noctaliaColors struct {
 	Shadow           string            `json:"mShadow"`
 	Roles            map[string]string `json:"roles"`
 	Style            *themeStyleSpec   `json:"style"`
+	Terminal         *noctaliaTerminal `json:"terminal"`
+}
+
+// noctaliaTerminal is a Noctalia block's terminal palette: the sixteen ANSI
+// colours plus the surface, ink and cursor. A monochrome UI palette derives a
+// terminal of one accent repeated; a scheme that ships its own reads as intended.
+type noctaliaTerminal struct {
+	Foreground string       `json:"foreground"`
+	Background string       `json:"background"`
+	Cursor     string       `json:"cursor"`
+	CursorText string       `json:"cursorText"`
+	SelectionF string       `json:"selectionFg"`
+	SelectionB string       `json:"selectionBg"`
+	Normal     noctaliaANSI `json:"normal"`
+	Bright     noctaliaANSI `json:"bright"`
+}
+
+type noctaliaANSI struct {
+	Black   string `json:"black"`
+	Red     string `json:"red"`
+	Green   string `json:"green"`
+	Yellow  string `json:"yellow"`
+	Blue    string `json:"blue"`
+	Magenta string `json:"magenta"`
+	Cyan    string `json:"cyan"`
+	White   string `json:"white"`
+}
+
+// terminalValues maps a terminal block onto the term_* template keys
+// (term_color0..15, term_background, term_foreground, term_cursor,
+// term_cursor_text, term_selection_background, term_selection_foreground),
+// keeping only valid #rrggbb values; nil when the block sets none.
+func terminalValues(t *noctaliaTerminal) map[string]string {
+	if t == nil {
+		return nil
+	}
+	out := map[string]string{}
+	put := func(key, hex string) {
+		hex = strings.TrimSpace(hex)
+		if _, _, _, ok := parseHexRGB(hex); ok && strings.HasPrefix(hex, "#") {
+			out["term_"+key] = strings.ToLower(hex)
+		}
+	}
+	put("background", t.Background)
+	put("foreground", t.Foreground)
+	put("cursor", t.Cursor)
+	put("cursor_text", t.CursorText)
+	put("selection_background", t.SelectionB)
+	put("selection_foreground", t.SelectionF)
+	for i, set := range []noctaliaANSI{t.Normal, t.Bright} {
+		for j, hex := range []string{set.Black, set.Red, set.Green, set.Yellow, set.Blue, set.Magenta, set.Cyan, set.White} {
+			put(fmt.Sprintf("color%d", i*8+j), hex)
+		}
+	}
+	if len(out) == 0 {
+		return nil
+	}
+	return out
 }
 
 // themeStyleSpec is a scheme's optional non-colour look for the Ryoku.Ui kit:
@@ -144,6 +203,7 @@ type userTheme struct {
 	Provider string
 	Palette  map[string]string // the 34 catalog roles
 	Style    map[string]any    // sanitised themeStyle, nil when the scheme sets none
+	Terminal map[string]string // term_* template keys, nil when the scheme sets none
 }
 
 // userThemes loads and converts every installed scheme, id-sorted for a stable
@@ -191,7 +251,7 @@ func userThemes() []userTheme {
 		if label == "" {
 			label = id
 		}
-		out = append(out, userTheme{ID: id, Label: label, Provider: meta.Provider, Palette: pal, Style: themeStyleValues(block.Style)})
+		out = append(out, userTheme{ID: id, Label: label, Provider: meta.Provider, Palette: pal, Style: themeStyleValues(block.Style), Terminal: terminalValues(block.Terminal)})
 	}
 	sort.Slice(out, func(i, j int) bool { return out[i].ID < out[j].ID })
 	return out
@@ -296,6 +356,20 @@ func lookupThemeStyle(name string) map[string]any {
 	for _, t := range userThemes() {
 		if t.ID == name {
 			return t.Style
+		}
+	}
+	return nil
+}
+
+// lookupThemeTerminal resolves a theme.theme value to its term_* overrides;
+// built-in themes carry none.
+func lookupThemeTerminal(name string) map[string]string {
+	if _, ok := themePalettes[name]; ok {
+		return nil
+	}
+	for _, t := range userThemes() {
+		if t.ID == name {
+			return t.Terminal
 		}
 	}
 	return nil

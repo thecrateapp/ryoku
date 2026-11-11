@@ -1,6 +1,10 @@
 # Changelog: ryoku/shell/
 
 ## Unreleased
+- **A user theme can ship its own terminal colours.** A scheme block's
+  `terminal` object (Noctalia's shape) now reaches kitty and alacritty through
+  new `term_*` template keys; without one the terminal renders exactly as
+  before. A monochrome UI palette no longer means a terminal of one accent.
 - **QS Bar Settings and the hero launcher follow the theme style.** The
   settings rail takes navigation caps and a mark bar, the Community caption the
   accent, the form tiles a wash inside a mark edge, and the identity cards a

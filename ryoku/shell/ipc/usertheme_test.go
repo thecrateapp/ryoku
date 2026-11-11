@@ -369,3 +369,51 @@ func TestResolveThemePaletteWritesUserThemeStyle(t *testing.T) {
 		t.Fatal("themeStyle kept for a built-in theme")
 	}
 }
+
+func TestTerminalValuesMapsTheNoctaliaBlock(t *testing.T) {
+	term := &noctaliaTerminal{
+		Background: "#0A0A0F", Foreground: "#f1f5f9", CursorText: "bad",
+		Normal: noctaliaANSI{Black: "#0a0a0f", Red: "#ef4444", Cyan: "#06b6d4"},
+		Bright: noctaliaANSI{White: "#ffffff", Green: "nope"},
+	}
+	got := terminalValues(term)
+	want := map[string]string{
+		"term_background": "#0a0a0f", "term_foreground": "#f1f5f9",
+		"term_color0": "#0a0a0f", "term_color1": "#ef4444", "term_color6": "#06b6d4",
+		"term_color15": "#ffffff",
+	}
+	if len(got) != len(want) {
+		t.Fatalf("terminalValues = %v, want %v", got, want)
+	}
+	for k, v := range want {
+		if got[k] != v {
+			t.Errorf("%s = %q, want %q", k, got[k], v)
+		}
+	}
+	if terminalValues(nil) != nil || terminalValues(&noctaliaTerminal{Cursor: "x"}) != nil {
+		t.Error("an absent or empty terminal block must yield nil")
+	}
+}
+
+func TestShellPaletteTermKeepsBase16AndDefaultsTheTerminal(t *testing.T) {
+	pal := map[string]string{"surface": "#101010", "on_surface": "#eeeeee", "primary": "#06b6d4", "outline": "#555555"}
+	plain := matugenShellPalette(pal)
+	for _, k := range terminalBase16Keys {
+		if plain["term_"+k] != plain[k] {
+			t.Errorf("term_%s = %q, want the base16 %q", k, plain["term_"+k], plain[k])
+		}
+	}
+	if plain["term_cursor_text"] != plain["background"] || plain["term_selection_background"] != plain["color8"] {
+		t.Errorf("derived terminal keys drifted: %v", plain)
+	}
+	themed := matugenShellPaletteTerm(pal, map[string]string{"term_color2": "#22c55e", "term_background": "#000000", "bogus": "#123456"})
+	if themed["term_color2"] != "#22c55e" || themed["color2"] != plain["color2"] {
+		t.Errorf("terminal override leaked into base16: term_color2=%q color2=%q", themed["term_color2"], themed["color2"])
+	}
+	if themed["term_cursor_text"] != "#000000" {
+		t.Errorf("cursor text follows the terminal background: got %q", themed["term_cursor_text"])
+	}
+	if _, ok := themed["bogus"]; ok {
+		t.Error("only term_* keys may be laid over the palette")
+	}
+}

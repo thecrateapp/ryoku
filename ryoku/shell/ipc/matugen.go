@@ -713,7 +713,7 @@ func (d *daemon) matugenApplyStatic(name string) error {
 	}
 	refreshFolderIcons()
 	k := readMatugenKnobs()
-	fixed := matugenShellPalette(shell)
+	fixed := matugenShellPaletteTerm(shell, lookupThemeTerminal(name))
 	matugenRenderTemplates(fixed, fixed, fixed, staticPaletteMode(shell), k, false)
 	matugenReload(staticPaletteMode(shell), d.kdePaletteEmitter())
 	// A catalog theme has no ramps, so the last wallpaper's are now wrong. The
@@ -999,13 +999,54 @@ func matugenBase16(pal map[string]string) map[string]string {
 // base16 keys plus every raw Material 3 role, so a template resolves whether it
 // names base16 slots (kitty, Qt) or Material 3 roles (GTK, discord).
 func matugenShellPalette(pal map[string]string) map[string]string {
+	return matugenShellPaletteTerm(pal, nil)
+}
+
+// matugenShellPaletteTerm is matugenShellPalette with a theme's terminal block
+// (term_* keys, see terminalValues) laid over the terminal slots.
+func matugenShellPaletteTerm(pal, term map[string]string) map[string]string {
 	m := matugenBase16(pal)
 	for k, v := range pal {
 		if v != "" {
 			m[k] = v
 		}
 	}
+	applyTerminalPalette(m, term)
 	return m
+}
+
+// terminalBase16Keys are the base16 slots the terminal templates read through
+// their term_* twins.
+var terminalBase16Keys = []string{
+	"background", "foreground", "cursor",
+	"color0", "color1", "color2", "color3", "color4", "color5", "color6", "color7",
+	"color8", "color9", "color10", "color11", "color12", "color13", "color14", "color15",
+}
+
+// applyTerminalPalette gives the terminal templates (kitty, alacritty, ghostty)
+// their own keys: a theme's terminal block where it sets one, otherwise the
+// base16 slot every template used before, so a theme without the block renders
+// the terminal exactly as it did. The base16 slots themselves are never
+// touched: Qt, the border colours and the legacy readers keep the UI mapping.
+func applyTerminalPalette(m, term map[string]string) {
+	for k, v := range term {
+		if strings.HasPrefix(k, "term_") && v != "" {
+			m[k] = v
+		}
+	}
+	for _, k := range terminalBase16Keys {
+		if m["term_"+k] == "" {
+			m["term_"+k] = m[k]
+		}
+	}
+	derive := func(k, from string) {
+		if m[k] == "" {
+			m[k] = m[from]
+		}
+	}
+	derive("term_cursor_text", "term_background")
+	derive("term_selection_background", "term_color8")
+	derive("term_selection_foreground", "term_foreground")
 }
 
 // matugenRoleKeys maps matugen's snake_case Material 3 roles to the camelCase

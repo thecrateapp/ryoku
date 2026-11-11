@@ -378,7 +378,12 @@ Popular, New, and Updated rankings.
   `focusAccent` (focused fields edge in the primary), `labelAccent` (section
   captions in the secondary) and `selectFill` (false drops the fill behind a
   selected row, which keeps its ink and gains a mark bar, and a picked tile or
-  card, which takes a faint primary wash inside a mark edge). The daemon publishes the style as `themeStyle` in
+  card, which takes a faint primary wash inside a mark edge). A `terminal` object
+  in Noctalia's shape (`foreground`, `background`, `cursor`, `cursorText`,
+  `selectionFg`, `selectionBg`, and `normal` / `bright` with `black` through
+  `white`) gives the terminal templates (kitty, alacritty) the scheme's own ANSI
+  colours instead of the ones derived from the roles; the UI keeps the derived
+  base16 slots, and invalid values are dropped. The daemon publishes the style as `themeStyle` in
   `shell.json` beside `themePalette` and drops it for built-in themes.
 
   ```json
