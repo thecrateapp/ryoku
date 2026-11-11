@@ -7,7 +7,8 @@ import "Singletons"
 Column {
     id: sect
     property string title: ""
-    property color titleColor: Tokens.ink   // opt-in accent for a featured section head
+    // opt-in accent for a featured section head; a theme with labelAccent tints them all
+    property color titleColor: Tokens.labelAccent ? Tokens.caption : Tokens.ink
     property int gutter: Tokens.s2
     default property alias cells: flow.data
 

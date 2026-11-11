@@ -24,7 +24,7 @@ Rectangle {
     radius: Tokens.radius
     color: "transparent"
     border.width: input.activeFocus ? 2 : Tokens.border
-    border.color: input.activeFocus ? Tokens.ink : (hh.hovered ? Tokens.lineStrong : Tokens.line)
+    border.color: input.activeFocus ? Tokens.focus : (hh.hovered ? Tokens.lineStrong : Tokens.line)
     Behavior on border.color { ColorAnimation { duration: Tokens.snap } }
 
     function clear() { input.text = "" }

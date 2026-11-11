@@ -88,9 +88,12 @@ Singleton {
     readonly property color keycapOnLight: "#0d0d0f"
 
     // ── hairlines and tints (ink-derived, so they follow the resolved ink) ────
-    readonly property color line: Qt.rgba(t.ink.r, t.ink.g, t.ink.b, 0.26)
-    readonly property color lineSoft: Qt.rgba(t.ink.r, t.ink.g, t.ink.b, 0.13)
-    readonly property color lineStrong: Qt.rgba(t.ink.r, t.ink.g, t.ink.b, 0.42)
+    // hairline strength: a theme's style.lineAlpha (shell.json themeStyle), soft
+    // and strong keeping their 1:2 and 1.6:1 ratios to it
+    property real lineAlpha: 0.26
+    readonly property color line: Qt.rgba(t.ink.r, t.ink.g, t.ink.b, t.lineAlpha)
+    readonly property color lineSoft: Qt.rgba(t.ink.r, t.ink.g, t.ink.b, t.lineAlpha * 0.5)
+    readonly property color lineStrong: Qt.rgba(t.ink.r, t.ink.g, t.ink.b, Math.min(1, t.lineAlpha * 1.615))
     readonly property color tint5: Qt.rgba(t.ink.r, t.ink.g, t.ink.b, 0.05)   // surface hover
     readonly property color tint10: Qt.rgba(t.ink.r, t.ink.g, t.ink.b, 0.10)  // control hover
     readonly property color tint16: Qt.rgba(t.ink.r, t.ink.g, t.ink.b, 0.16)  // pressed
@@ -98,11 +101,35 @@ Singleton {
     // ── colour: sun is the live accent (the palette primary); alert stays a
     // fixed attention red so a badge always reads as an alert ─────────────────
     readonly property color sun: role("primary", "#e2342a")
+    // the bright accent for strokes and marks: the palette secondary
+    readonly property color sunHi: role("secondary", sun)
+
+    // ── theme style switches (shell.json themeStyle); defaults are the signature look
+    property bool navCaps: false        // navigation labels: uppercase, tracked micro
+    property bool accentMarks: false    // selection marks and hover text in sunHi
+    property bool focusAccent: false    // focused fields edge in sun instead of ink
+    property bool labelAccent: false    // section captions in sunHi instead of faint ink
+    property bool selectFill: true      // a selected row also fills
+    property int displayWeight: Font.Normal
+    readonly property color mark: accentMarks ? sunHi : ink
+    readonly property color hoverInk: accentMarks ? sunHi : ink
+    readonly property color focus: focusAccent ? sun : ink
+    readonly property color caption: labelAccent ? sunHi : inkFaint
+    readonly property real trackNav: navCaps ? fMicro * 0.14 : 0
+    // the live row of a list when the theme drops the bone inversion: a faint
+    // accent wash, marked by a bar (the row keeps its normal ink)
+    readonly property color rowWash: Qt.rgba(sun.r, sun.g, sun.b, 0.08)
+    // a picked tile or card (a style, a design, a rail): the bone block, or with
+    // selectFill off the wash inside a mark edge, the tile keeping its own ink
+    readonly property color pickFill: selectFill ? bone : rowWash
+    readonly property color pickEdge: selectFill ? bone : mark
+    readonly property color pickInk: selectFill ? inkOnBone : ink
+    readonly property color pickInkDim: selectFill ? inkOnBoneDim : inkDim
     readonly property color sunDeep: Qt.darker(sun, 1.3)
     readonly property color alert: "#e2342a"
 
     // ── type ─────────────────────────────────────────────────────────────
-    readonly property string display: "Fraunces"
+    property string display: "Fraunces"
     property string ui: "Space Grotesk"
     property string mono: "SpaceMono Nerd Font"
     readonly property string jp: "Noto Sans CJK JP"
@@ -278,6 +305,10 @@ Singleton {
         var widgets = ({});
         var monoFont = "SpaceMono Nerd Font";
         var uiFont = "Space Grotesk";
+        var lineAlpha = 0.26;
+        var displayFont = "Fraunces";
+        var displayWeight = Font.Normal;
+        var flags = { navCaps: false, accentMarks: false, focusAccent: false, labelAccent: false, selectFill: true };
         try {
             const txt = shellFile.text();
             if (txt) {
@@ -301,6 +332,16 @@ Singleton {
                 if (w && typeof w === "object" && w !== null)
                     widgets = w;
                 if (typeof o.fontFamily === "string" && o.fontFamily.length) { uiFont = o.fontFamily; monoFont = o.fontFamily; }
+                const st = o && o.themeStyle;
+                if (st && typeof st.lineAlpha === "number" && st.lineAlpha > 0 && st.lineAlpha <= 1)
+                    lineAlpha = st.lineAlpha;
+                if (st && typeof st.display === "string" && st.display.length)
+                    displayFont = st.display;
+                if (st && typeof st.displayWeight === "number")
+                    displayWeight = Math.max(100, Math.min(900, st.displayWeight));
+                for (const k in flags)
+                    if (st && typeof st[k] === "boolean")
+                        flags[k] = st[k];
             }
         } catch (e) {
             pal = null;
@@ -313,6 +354,14 @@ Singleton {
         t.widgetVisibility = widgets;
         t.ui = uiFont;
         t.mono = monoFont;
+        t.lineAlpha = lineAlpha;
+        t.display = displayFont;
+        t.displayWeight = displayWeight;
+        t.navCaps = flags.navCaps;
+        t.accentMarks = flags.accentMarks;
+        t.focusAccent = flags.focusAccent;
+        t.labelAccent = flags.labelAccent;
+        t.selectFill = flags.selectFill;
     }
     function refreshMatch() {
         try {

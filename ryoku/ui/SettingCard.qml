@@ -45,9 +45,12 @@ Item {
             spacing: Tokens.s2
             Text {
                 text: card.title
-                color: Tokens.inkDim
-                font.family: Tokens.ui; font.pixelSize: Tokens.fBody
-                font.weight: Font.Medium; font.letterSpacing: Tokens.trackLabel
+                color: Tokens.labelAccent ? Tokens.caption : Tokens.inkDim
+                font.family: Tokens.ui
+                font.pixelSize: Tokens.labelAccent ? Tokens.fMicro : Tokens.fBody
+                font.weight: Font.Medium
+                font.letterSpacing: Tokens.labelAccent ? Tokens.fMicro * 0.14 : Tokens.trackLabel
+                font.capitalization: Tokens.labelAccent ? Font.AllUppercase : Font.MixedCase
                 anchors.verticalCenter: parent.verticalCenter
             }
             Text {

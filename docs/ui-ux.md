@@ -94,6 +94,12 @@ than painting black. The three files are read as raw text and watched, because
 the `on*` Material role names defeat `JsonAdapter`'s signal-handler grammar and a
 removed `themePalette` key only reads as absent from raw text.
 
+A user scheme can also carry a `style` (see `docs/store.md`), which the daemon
+publishes as `shell.json` `themeStyle`: `lineAlpha` sets the ink alpha of `line`
+(with `lineSoft` at half and `lineStrong` at 1.6 times it; 0.26 by default) and
+`display` replaces the Fraunces display face. Built-in themes carry none, so
+they keep the signature look.
+
 |Token|Material role|Signature default|What it is|
 |---|---|---|---|
 |`paper`|`surface`|`#000000`|the sheet|

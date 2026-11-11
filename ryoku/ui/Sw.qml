@@ -20,10 +20,13 @@ Rectangle {
     implicitHeight: 24
     radius: Tokens.radius
     // off sits on a faint tint with a dim knob, on brightens the track and fills
-    // the knob: two signals for one state, so it reads at a glance.
-    color: tap.pressed ? Tokens.tint16 : (sw.on ? Tokens.tint16 : Tokens.tint5)
+    // the knob: two signals for one state, so it reads at a glance. A theme with
+    // accent marks fills the live track with the accent instead.
+    readonly property bool accentOn: sw.on && Tokens.accentMarks
+    color: sw.accentOn ? Tokens.sun : (tap.pressed || sw.on ? Tokens.tint16 : Tokens.tint5)
     border.width: Tokens.border
-    border.color: activeFocus ? Tokens.bone : (hh.hovered ? Tokens.lineStrong : Tokens.line)
+    border.color: activeFocus ? (Tokens.focusAccent ? Tokens.sunHi : Tokens.bone)
+        : (sw.accentOn ? Tokens.sun : (hh.hovered ? Tokens.lineStrong : Tokens.line))
     antialiasing: false
     Behavior on border.color { ColorAnimation { duration: Tokens.snap } }
     Behavior on color { ColorAnimation { duration: Tokens.snap } }
@@ -37,7 +40,7 @@ Rectangle {
         antialiasing: false
         // off is a dim knob on a hairline track, not an empty outline: the state
         // has to be readable at a glance, which an outlined box is not.
-        color: sw.on ? Tokens.ink : Tokens.inkDim
+        color: sw.accentOn ? Tokens.inkOnBone : (sw.on ? Tokens.ink : Tokens.inkDim)
         border.width: 0
         Behavior on x { NumberAnimation { duration: Tokens.snap; easing.type: Tokens.easeSnap } }
     }

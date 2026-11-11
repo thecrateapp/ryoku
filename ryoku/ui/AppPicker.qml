@@ -60,7 +60,7 @@ Rectangle {
         anchors.leftMargin: Tokens.s3; anchors.rightMargin: Tokens.s3; anchors.topMargin: Tokens.s2
         height: 30; color: "transparent"; radius: Tokens.radius
         border.width: q.activeFocus ? 2 : Tokens.border
-        border.color: q.activeFocus ? Tokens.ink : Tokens.line
+        border.color: q.activeFocus ? Tokens.focus : Tokens.line
         TextInput {
             id: q
             anchors.fill: parent; anchors.leftMargin: 8; anchors.rightMargin: 8
@@ -84,7 +84,7 @@ Rectangle {
         anchors.leftMargin: Tokens.s3; anchors.rightMargin: Tokens.s3; anchors.bottomMargin: Tokens.s3
         height: 30; color: "transparent"; radius: Tokens.radius
         border.width: cq.activeFocus ? 2 : Tokens.border
-        border.color: cq.activeFocus ? Tokens.ink : Tokens.line
+        border.color: cq.activeFocus ? Tokens.focus : Tokens.line
         TextInput {
             id: cq
             anchors.fill: parent; anchors.leftMargin: 8; anchors.rightMargin: 8

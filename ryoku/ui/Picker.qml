@@ -67,7 +67,7 @@ Rectangle {
             color: "transparent"
             radius: Tokens.radius
             border.width: q.activeFocus ? 2 : Tokens.border
-            border.color: q.activeFocus ? Tokens.ink : Tokens.line
+            border.color: q.activeFocus ? Tokens.focus : Tokens.line
             TextInput {
                 id: q
                 anchors.fill: parent

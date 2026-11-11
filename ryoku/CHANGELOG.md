@@ -171,6 +171,14 @@
   after the first update (`palette-bridge/vesktop/quickcss.sh`).
 
 ### Added
+- `ui/`: **The Ryoku.Ui kit reads the theme style.** `Tokens` exposes the
+  switches and the roles derived from them (`mark`, `hoverInk`, `focus`,
+  `caption`, `trackNav`, `rowWash`, and `pickFill`, `pickEdge`, `pickInk`,
+  `pickInkDim` for a picked tile); hairlines follow `lineAlpha` and display
+  text `displayWeight`. `Sw` fills its live track with the accent under
+  `accentMarks`, `SettingCard` and `Section` captions take `labelAccent`, and
+  fields and pickers edge with `focus`. With no style every value keeps the
+  signature look.
 - **Ryogami offers opt-in Spotify styling and palette bridge controls.**
   Integrations > Palette bridge adds neutral Spotify styling, accent strength,
   surface brightness, separate sidebar/player/card tint, independent button,
