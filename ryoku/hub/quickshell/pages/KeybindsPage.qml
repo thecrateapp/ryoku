@@ -1191,7 +1191,7 @@ Item {
                                         implicitHeight: 28
                                         radius: Tokens.radius
                                         opacity: shellChip.modelData.installed && !pg.shellBusy ? 1 : 0.35
-                                        color: shellChip.selected ? Tokens.ink : (shellHover.hovered ? Tokens.tint10 : "transparent")
+                                        color: shellChip.selected ? Tokens.mark : (shellHover.hovered ? Tokens.tint10 : "transparent")
                                         border.width: Tokens.border
                                         border.color: shellChip.selected ? Tokens.mark : Tokens.line
                                         Text {
@@ -1251,7 +1251,7 @@ Item {
                                         implicitHeight: 28
                                         radius: Tokens.radius
                                         opacity: pg.shellBusy ? 0.35 : 1
-                                        color: promptChip.selected ? Tokens.ink : (promptHover.hovered ? Tokens.tint10 : "transparent")
+                                        color: promptChip.selected ? Tokens.mark : (promptHover.hovered ? Tokens.tint10 : "transparent")
                                         border.width: Tokens.border
                                         border.color: promptChip.selected ? Tokens.mark : Tokens.line
                                         Text {
@@ -1372,7 +1372,7 @@ Item {
                                         implicitHeight: 28
                                         radius: Tokens.radius
                                         opacity: pg.starshipBusy ? 0.45 : 1
-                                        color: starshipPaletteChip.selected ? Tokens.ink : (paletteHover.hovered ? Tokens.tint10 : "transparent")
+                                        color: starshipPaletteChip.selected ? Tokens.mark : (paletteHover.hovered ? Tokens.tint10 : "transparent")
                                         border.width: Tokens.border
                                         border.color: starshipPaletteChip.selected ? Tokens.mark : Tokens.line
                                         Text {
