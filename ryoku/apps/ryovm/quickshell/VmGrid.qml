@@ -51,14 +51,21 @@ Item {
             required property int index
             width: list.width
             height: 66
-            color: Vm.selectedName === slot.modelData.name ? Tokens.bone : "transparent"
+            color: Vm.selectedName === slot.modelData.name ? Tokens.pickFill : "transparent"
             antialiasing: false
             Rectangle {
                 anchors.bottom: parent.bottom
                 width: parent.width
                 height: 1
-                color: Vm.selectedName === slot.modelData.name ? Tokens.inkOnBone : Tokens.lineSoft
+                color: Vm.selectedName === slot.modelData.name && Tokens.selectFill ? Tokens.inkOnBone : Tokens.lineSoft
                 opacity: 0.35
+            }
+            // with the fill off, the live row is marked by a bar
+            Rectangle {
+                visible: Vm.selectedName === slot.modelData.name && !Tokens.selectFill
+                width: 2
+                height: parent.height
+                color: Tokens.mark
             }
             Column {
                 anchors.left: parent.left
@@ -71,7 +78,7 @@ Item {
                     width: parent.width
                     text: slot.modelData.name
                     elide: Text.ElideRight
-                    color: Vm.selectedName === slot.modelData.name ? Tokens.inkOnBone : Tokens.ink
+                    color: Vm.selectedName === slot.modelData.name ? Tokens.pickInk : Tokens.ink
                     font.family: Tokens.ui
                     font.pixelSize: 12
                     font.weight: Font.Medium
@@ -81,7 +88,7 @@ Item {
                     text: (slot.modelData.running ? I18n.tr("RUNNING") : I18n.tr("STOPPED"))
                         + "  /  " + (slot.modelData.os || slot.modelData.guest || "-")
                     elide: Text.ElideRight
-                    color: Vm.selectedName === slot.modelData.name ? Tokens.inkOnBone : Tokens.inkMuted
+                    color: Vm.selectedName === slot.modelData.name ? Tokens.pickInk : Tokens.inkMuted
                     opacity: Vm.selectedName === slot.modelData.name ? 0.72 : 1
                     font.family: Tokens.mono
                     font.pixelSize: 9
@@ -98,14 +105,14 @@ Item {
                     anchors { left: parent.left; right: parent.left; rightMargin: -72; top: parent.top; bottom: parent.bottom }
                     values: Vm.series(slot.modelData.name, "cpu")
                     fixedMax: 100
-                    stroke: Vm.selectedName === slot.modelData.name ? Tokens.inkOnBone : Tokens.inkMuted
+                    stroke: Vm.selectedName === slot.modelData.name ? Tokens.pickInk : Tokens.inkMuted
                 }
                 Text {
                     anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter
                     text: slot.modelData.cores + "c\\n" + slot.modelData.ram
                     horizontalAlignment: Text.AlignRight
-                    color: Vm.selectedName === slot.modelData.name ? Tokens.inkOnBone : Tokens.inkFaint
+                    color: Vm.selectedName === slot.modelData.name ? Tokens.pickInk : Tokens.inkFaint
                     font.family: Tokens.mono
                     font.pixelSize: 8
                 }

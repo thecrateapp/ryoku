@@ -375,6 +375,7 @@ Item {
                 text: I18n.tr("Build a local machine")
                 color: Tokens.ink
                 font.family: Tokens.display
+                font.weight: Tokens.displayWeight
                 font.pixelSize: 24
             }
             Text {

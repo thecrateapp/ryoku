@@ -281,7 +281,7 @@ FocusScope {
         Text {
             anchors.centerIn: parent
             text: glyph
-            color: parent.activeFocus ? Tokens.ink : Tokens.inkDim
+            color: parent.activeFocus ? Tokens.focus : Tokens.inkDim
             font.family: Tokens.mono
             font.pixelSize: Tokens.fBody
         }

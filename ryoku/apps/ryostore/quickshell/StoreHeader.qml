@@ -95,7 +95,7 @@ Item {
             Text {
                 id: lead
                 text: "//"
-                visible: plate.current
+                visible: plate.current && Tokens.selectFill
                 color: Tokens.inkOnBoneDim
                 font.family: Tokens.mono
                 font.pixelSize: Tokens.fMicro
@@ -111,9 +111,13 @@ Item {
                 Text {
                     width: parent.width
                     text: I18n.tr(plate.label)
-                    color: plate.current ? Tokens.inkOnBone : (plate.activeFocus ? Tokens.ink : Tokens.inkDim)
+                    color: plate.current ? (Tokens.selectFill ? Tokens.inkOnBone : Tokens.ink)
+                        : (plate.activeFocus ? Tokens.focus
+                            : (pointer.hovered && Tokens.accentMarks ? Tokens.hoverInk : Tokens.inkDim))
                     font.family: Tokens.ui
-                    font.pixelSize: Tokens.fRow
+                    font.pixelSize: Tokens.navCaps ? Tokens.fMicro : Tokens.fRow
+                    font.capitalization: Tokens.navCaps ? Font.AllUppercase : Font.MixedCase
+                    font.letterSpacing: Tokens.trackNav
                     font.weight: Font.Medium
                     elide: Text.ElideRight
                     Behavior on color {
@@ -126,7 +130,7 @@ Item {
                     width: parent.width
                     visible: plate.note !== ""
                     text: I18n.tr(plate.note)
-                    color: plate.current ? Tokens.inkOnBoneDim : Tokens.inkMuted
+                    color: plate.current && Tokens.selectFill ? Tokens.inkOnBoneDim : Tokens.inkMuted
                     font.family: Tokens.ui
                     font.pixelSize: Tokens.fTiny
                     elide: Text.ElideRight
@@ -140,7 +144,7 @@ Item {
             Text {
                 id: sealText
                 text: plate.seal
-                color: plate.current ? Tokens.inkOnBoneDim : Tokens.inkFaint
+                color: plate.current && Tokens.selectFill ? Tokens.inkOnBoneDim : Tokens.inkFaint
                 font.family: Tokens.jp
                 font.pixelSize: Tokens.fBody
                 anchors.verticalCenter: parent.verticalCenter
@@ -365,8 +369,17 @@ Item {
             width: navColumn.width
             height: Tokens.rowH
             radius: Tokens.radius
-            color: Tokens.bone
+            // a theme that drops the selection fill slides a mark bar instead
+            color: Tokens.selectFill ? Tokens.bone : "transparent"
             opacity: navScroll.hasSelection ? 1 : 0
+
+            Rectangle {
+                visible: !Tokens.selectFill
+                anchors.left: parent.left
+                anchors.verticalCenter: parent.verticalCenter
+                width: 2; height: parent.height - Tokens.s4; radius: 1
+                color: Tokens.mark
+            }
 
             Behavior on y {
                 enabled: !header.reducedMotion
@@ -387,7 +400,7 @@ Item {
 
             Text {
                 text: I18n.tr("01 BROWSE")
-                color: header.view === "discover" ? Tokens.inkDim : Tokens.inkFaint
+                color: Tokens.labelAccent ? Tokens.caption : (header.view === "discover" ? Tokens.inkDim : Tokens.inkFaint)
                 font.family: Tokens.mono
                 font.pixelSize: Tokens.fMicro
                 font.letterSpacing: Tokens.trackLabel
@@ -418,7 +431,7 @@ Item {
 
             Text {
                 text: I18n.tr("02 YOUR STORE")
-                color: header.view === "library" ? Tokens.inkDim : Tokens.inkFaint
+                color: Tokens.labelAccent ? Tokens.caption : (header.view === "library" ? Tokens.inkDim : Tokens.inkFaint)
                 font.family: Tokens.mono
                 font.pixelSize: Tokens.fMicro
                 font.letterSpacing: Tokens.trackLabel

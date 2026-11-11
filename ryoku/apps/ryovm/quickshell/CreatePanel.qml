@@ -104,6 +104,7 @@ Item {
                     text: pane.os ? pane.os.name : ""
                     color: Tokens.ink
                     font.family: Tokens.display
+                    font.weight: Tokens.displayWeight
                     font.pixelSize: 22
                 }
             }

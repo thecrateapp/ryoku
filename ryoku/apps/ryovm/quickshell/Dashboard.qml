@@ -221,7 +221,7 @@ Item {
                         anchors.verticalCenter: parent.verticalCenter
                         spacing: 2
                         Text { text: cell.modelData.label; color: Tokens.inkMuted; font.family: Tokens.ui; font.pixelSize: 10 }
-                        Text { text: cell.modelData.value; color: Tokens.ink; font.family: Tokens.display; font.pixelSize: 26 }
+                        Text { text: cell.modelData.value; color: Tokens.ink; font.family: Tokens.display; font.pixelSize: 26; font.weight: Tokens.displayWeight }
                         Text {
                             width: cell.width - Tokens.s4
                             text: cell.modelData.sub
@@ -305,9 +305,11 @@ Item {
                         ? Vm.series(resourceRow.modelData.key, "cpu")
                         : (resourceRow.modelData.kind === "console"
                             ? [] : Remotes.series(resourceRow.modelData.key, "cpu"))
-                    color: sel ? Tokens.bone : "transparent"
+                    color: sel ? Tokens.pickFill : "transparent"
                     antialiasing: false
-                    Rectangle { anchors.bottom: parent.bottom; width: parent.width; height: 1; color: sel ? Tokens.inkOnBone : Tokens.lineSoft; opacity: 0.35 }
+                    Rectangle { anchors.bottom: parent.bottom; width: parent.width; height: 1; color: sel && Tokens.selectFill ? Tokens.inkOnBone : Tokens.lineSoft; opacity: 0.35 }
+                    // with the fill off, the live row is marked by a bar
+                    Rectangle { visible: sel && !Tokens.selectFill; width: 2; height: parent.height; color: Tokens.mark }
                     // a one-px ink lead marks a row that needs attention, so
                     // the eye finds it without relying on colour words alone.
                     Rectangle {
@@ -315,7 +317,7 @@ Item {
                         width: 2
                         visible: resourceRow.modelData.state === "down" || resourceRow.modelData.state === "warn"
                                  || resourceRow.modelData.auth === true
-                        color: sel ? Tokens.inkOnBone : Tokens.ink
+                        color: sel ? Tokens.pickInk : Tokens.ink
                     }
                     Column {
                         anchors.left: parent.left
@@ -330,7 +332,7 @@ Item {
                                   + (resourceRow.modelData.kind === "console" ? "  ⌁" : "")
                                   + (resourceRow.modelData.auth === true ? UiPreferences.text("  鍵", "") : "")
                             elide: Text.ElideRight
-                            color: sel ? Tokens.inkOnBone : Tokens.ink
+                            color: sel ? Tokens.pickInk : Tokens.ink
                             font.family: Tokens.ui
                             font.pixelSize: 12
                             font.weight: Font.Medium
@@ -339,7 +341,7 @@ Item {
                             width: parent.width
                             text: resourceRow.modelData.subtitle
                             elide: Text.ElideRight
-                            color: sel ? Tokens.inkOnBone : Tokens.inkMuted
+                            color: sel ? Tokens.pickInk : Tokens.inkMuted
                             opacity: sel ? 0.72 : 1
                             font.family: Tokens.mono
                             font.pixelSize: 9
@@ -349,7 +351,7 @@ Item {
                             text: resourceRow.modelData.reason || ""
                             visible: text.length > 0
                             elide: Text.ElideRight
-                            color: sel ? Tokens.inkOnBone : Tokens.inkFaint
+                            color: sel ? Tokens.pickInk : Tokens.inkFaint
                             font.family: Tokens.ui
                             font.pixelSize: 9
                         }
@@ -364,7 +366,7 @@ Item {
                         visible: resourceRow.series.length > 0
                         values: resourceRow.series
                         fixedMax: 100
-                        stroke: sel ? Tokens.inkOnBone : Tokens.inkMuted
+                        stroke: sel ? Tokens.pickInk : Tokens.inkMuted
                     }
                     Text {
                         id: stateLabel
@@ -372,7 +374,7 @@ Item {
                         anchors.rightMargin: Tokens.s3
                         anchors.verticalCenter: parent.verticalCenter
                         text: I18n.tr(resourceRow.modelData.state.toUpperCase())
-                        color: sel ? Tokens.inkOnBone : Tokens.inkFaint
+                        color: sel ? Tokens.pickInk : Tokens.inkFaint
                         font.family: Tokens.mono
                         font.pixelSize: 9
                     }
@@ -422,6 +424,7 @@ Item {
                         elide: Text.ElideRight
                         color: Tokens.ink
                         font.family: Tokens.display
+                        font.weight: Tokens.displayWeight
                         font.pixelSize: 28
                     }
                     Text {

@@ -177,6 +177,7 @@ Item {
                 text: stage.name.length > 0 ? stage.name : I18n.tr("machine")
                 color: Tokens.ink
                 font.family: Tokens.display
+                font.weight: Tokens.displayWeight
                 font.pixelSize: stage.name.length > 22 ? 21 : 28
             }
             Text {

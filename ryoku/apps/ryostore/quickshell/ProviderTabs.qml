@@ -67,7 +67,7 @@ Item {
             Text {
                 id: plateText
                 text: I18n.tr(plate.label)
-                color: plate.on ? Tokens.inkOnBone : (plate.activeFocus ? Tokens.ink : Tokens.inkDim)
+                color: plate.on ? Tokens.inkOnBone : (plate.activeFocus ? Tokens.focus : Tokens.inkDim)
                 font.family: Tokens.ui
                 font.pixelSize: 11
                 font.weight: Font.Medium

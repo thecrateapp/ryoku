@@ -19,15 +19,22 @@ Rectangle {
     readonly property bool selected: alias.length > 0 && Remotes.selectedAlias === alias
 
     implicitHeight: 68
-    color: selected ? Tokens.bone : "transparent"
+    color: selected ? Tokens.pickFill : "transparent"
     antialiasing: false
 
     Rectangle {
         anchors.bottom: parent.bottom
         width: parent.width
         height: 1
-        color: row.selected ? Tokens.inkOnBone : Tokens.lineSoft
+        color: row.selected && Tokens.selectFill ? Tokens.inkOnBone : Tokens.lineSoft
         opacity: 0.35
+    }
+    // with the fill off, the live row is marked by a bar
+    Rectangle {
+        visible: row.selected && !Tokens.selectFill
+        width: 2
+        height: parent.height
+        color: Tokens.mark
     }
 
     Column {
@@ -42,7 +49,7 @@ Rectangle {
             text: row.alias
                   + (row.needsAuth ? UiPreferences.text("  鍵", "") : "")
             elide: Text.ElideRight
-            color: row.selected ? Tokens.inkOnBone : Tokens.ink
+            color: row.selected ? Tokens.pickInk : Tokens.ink
             font.family: Tokens.ui
             font.pixelSize: 12
             font.weight: Font.Medium
@@ -54,7 +61,7 @@ Rectangle {
                 : (row.host && row.host.user ? row.host.user + "@" : "")
                     + (row.host ? (row.host.hostName || row.alias) : row.alias)
             elide: Text.ElideRight
-            color: row.selected ? Tokens.inkOnBone : Tokens.inkMuted
+            color: row.selected ? Tokens.pickInk : Tokens.inkMuted
             opacity: row.selected ? 0.72 : 1
             font.family: Tokens.mono
             font.pixelSize: 9
@@ -70,7 +77,7 @@ Rectangle {
         height: 30
         values: Remotes.series(row.alias, "cpu")
         fixedMax: 100
-        stroke: row.selected ? Tokens.inkOnBone : Tokens.inkMuted
+        stroke: row.selected ? Tokens.pickInk : Tokens.inkMuted
     }
 
     Column {
@@ -83,14 +90,14 @@ Rectangle {
         Text {
             anchors.right: parent.right
             text: I18n.tr(row.state.toUpperCase())
-            color: row.selected ? Tokens.inkOnBone : Tokens.inkMuted
+            color: row.selected ? Tokens.pickInk : Tokens.inkMuted
             font.family: Tokens.mono
             font.pixelSize: 8
         }
         Text {
             anchors.right: parent.right
             text: row.reach && row.reach.up ? row.reach.rttMs + " ms" : "-"
-            color: row.selected ? Tokens.inkOnBone : Tokens.inkFaint
+            color: row.selected ? Tokens.pickInk : Tokens.inkFaint
             opacity: row.selected ? 0.72 : 1
             font.family: Tokens.mono
             font.pixelSize: 8

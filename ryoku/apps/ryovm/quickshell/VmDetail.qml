@@ -125,7 +125,7 @@ Item {
                 anchors.rightMargin: Tokens.s3
                 anchors.verticalCenter: parent.verticalCenter
                 spacing: 3
-                Text { width: parent.width; text: pane.name; elide: Text.ElideRight; color: Tokens.ink; font.family: Tokens.display; font.pixelSize: 28 }
+                Text { width: parent.width; text: pane.name; elide: Text.ElideRight; color: Tokens.ink; font.family: Tokens.display; font.pixelSize: 28; font.weight: Tokens.displayWeight }
                 Text {
                     text: (pane.running ? I18n.tr("Running") : I18n.tr("Stopped"))
                         + "  /  " + (pane.vm ? (pane.vm.os || pane.vm.guest || "-") : "-")

@@ -90,9 +90,9 @@ Item {
                     required property var modelData
                     width: berthList.width
                     height: 58
-                    color: con.selectedId === modelData.id ? Tokens.bone : "transparent"
+                    color: con.selectedId === modelData.id ? Tokens.pickFill : "transparent"
                     border.width: Tokens.border
-                    border.color: con.selectedId === modelData.id ? Tokens.bone : Tokens.lineSoft
+                    border.color: con.selectedId === modelData.id ? Tokens.pickEdge : Tokens.lineSoft
                     antialiasing: false
                     Column {
                         anchors.left: parent.left
@@ -105,7 +105,7 @@ Item {
                             width: parent.width
                             elide: Text.ElideRight
                             text: berth.modelData.name
-                            color: con.selectedId === berth.modelData.id ? Tokens.inkOnBone : Tokens.ink
+                            color: con.selectedId === berth.modelData.id ? Tokens.pickInk : Tokens.ink
                             font.family: Tokens.ui; font.pixelSize: 12
                             font.weight: Font.Medium
                         }
@@ -113,7 +113,7 @@ Item {
                             width: parent.width
                             elide: Text.ElideRight
                             text: Remotes.consoleTarget(berth.modelData)
-                            color: con.selectedId === berth.modelData.id ? Tokens.inkOnBone : Tokens.inkMuted
+                            color: con.selectedId === berth.modelData.id ? Tokens.pickInk : Tokens.inkMuted
                             opacity: 0.8
                             font.family: Tokens.mono; font.pixelSize: 9
                         }
@@ -185,7 +185,7 @@ Item {
                             elide: Text.ElideRight
                             text: con.selected ? con.selected.name : ""
                             color: Tokens.ink
-                            font.family: Tokens.display; font.pixelSize: 26
+                            font.family: Tokens.display; font.pixelSize: 26; font.weight: Tokens.displayWeight
                         }
                         Text {
                             text: con.selected ? Remotes.consoleTarget(con.selected) : ""

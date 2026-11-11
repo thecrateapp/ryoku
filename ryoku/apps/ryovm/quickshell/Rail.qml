@@ -144,9 +144,11 @@ Item {
                                 anchors.verticalCenter: parent.verticalCenter
                             }
                             Text {
-                                text: grp.modelData.name; color: Tokens.inkFaint
-                                font.family: Tokens.ui; font.pixelSize: 9
-                                font.weight: Font.Medium; font.letterSpacing: 2
+                                text: grp.modelData.name
+                                color: Tokens.labelAccent ? Tokens.caption : Tokens.inkFaint
+                                font.family: Tokens.ui; font.pixelSize: Tokens.labelAccent ? Tokens.fMicro : 9
+                                font.weight: Font.Medium
+                                font.letterSpacing: Tokens.labelAccent ? Tokens.fMicro * 0.14 : 2
                                 anchors.verticalCenter: parent.verticalCenter
                             }
                             Rectangle {
@@ -174,15 +176,25 @@ Item {
                                 anchors.fill: parent
                                 anchors.topMargin: 1; anchors.bottomMargin: 1
                                 radius: Tokens.radius
-                                color: navItem.sel ? Tokens.bone : (nh.hovered ? Tokens.tint10 : "transparent")
+                                color: navItem.sel ? (Tokens.selectFill ? Tokens.bone : "transparent")
+                                    : (nh.hovered && !Tokens.accentMarks ? Tokens.tint10 : "transparent")
                                 Behavior on color { ColorAnimation { duration: Tokens.snap } }
+                            }
+                            // a theme that drops the selection fill marks the
+                            // live section with a bar instead
+                            Rectangle {
+                                visible: navItem.sel && !Tokens.selectFill
+                                anchors.left: parent.left
+                                anchors.verticalCenter: parent.verticalCenter
+                                width: 2; height: parent.height - Tokens.s4; radius: 1
+                                color: Tokens.mark
                             }
                             Row {
                                 x: Tokens.s3
                                 anchors.verticalCenter: parent.verticalCenter
                                 spacing: Tokens.s2
                                 Text {
-                                    visible: navItem.sel
+                                    visible: navItem.sel && Tokens.selectFill
                                     text: "//"
                                     color: Tokens.inkOnBoneDim
                                     font.family: Tokens.mono; font.pixelSize: 11
@@ -190,8 +202,12 @@ Item {
                                 }
                                 Text {
                                     text: navItem.modelData.name
-                                    color: navItem.sel ? Tokens.inkOnBone : Tokens.inkDim
-                                    font.family: Tokens.ui; font.pixelSize: 14
+                                    color: navItem.sel ? (Tokens.selectFill ? Tokens.inkOnBone : Tokens.ink)
+                                        : (nh.hovered && Tokens.accentMarks ? Tokens.hoverInk : Tokens.inkDim)
+                                    font.family: Tokens.ui
+                                    font.pixelSize: Tokens.navCaps ? Tokens.fMicro : 14
+                                    font.capitalization: Tokens.navCaps ? Font.AllUppercase : Font.MixedCase
+                                    font.letterSpacing: Tokens.trackNav
                                     anchors.verticalCenter: parent.verticalCenter
                                     Behavior on color { ColorAnimation { duration: Tokens.snap } }
                                 }
@@ -199,7 +215,7 @@ Item {
                             Text {
                                 anchors { right: parent.right; rightMargin: Tokens.s3; verticalCenter: parent.verticalCenter }
                                 text: UiPreferences.text(rail.jpName[navItem.modelData.key] || "", "")
-                                color: navItem.sel ? Tokens.inkOnBoneDim : Tokens.inkFaint
+                                color: navItem.sel && Tokens.selectFill ? Tokens.inkOnBoneDim : Tokens.inkFaint
                                 font.family: Tokens.jp; font.pixelSize: 12
                                 Behavior on color { ColorAnimation { duration: Tokens.snap } }
                             }

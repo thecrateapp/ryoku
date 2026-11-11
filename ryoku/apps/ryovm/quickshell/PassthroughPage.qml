@@ -122,6 +122,7 @@ Item {
                     text: I18n.tr("Direct-GPU virtual machines")
                     color: Tokens.ink
                     font.family: Tokens.display
+                    font.weight: Tokens.displayWeight
                     font.pixelSize: 22
                 }
                 Text {
@@ -457,6 +458,7 @@ Item {
                                 elide: Text.ElideRight
                                 color: Tokens.ink
                                 font.family: Tokens.display
+                                font.weight: Tokens.displayWeight
                                 font.pixelSize: 26
                             }
                             Text {

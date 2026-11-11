@@ -56,6 +56,7 @@ Item {
             text: root._initial
             color: Tokens.ink
             font.family: Tokens.display
+            font.weight: Tokens.displayWeight
             font.pixelSize: root.size * 0.5
         }
     }

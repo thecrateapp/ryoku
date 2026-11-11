@@ -38,6 +38,7 @@ Item {
             text: head.title
             color: head.titleColor
             font.family: Tokens.display
+            font.weight: Tokens.displayWeight
             font.pixelSize: Tokens.fHero
         }
         Text {

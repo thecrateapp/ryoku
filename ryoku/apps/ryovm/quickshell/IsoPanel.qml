@@ -53,6 +53,7 @@ Item {
                 text: pane.vmName.trim().length > 0 ? pane.vmName : I18n.tr("New machine from ISO")
                 color: Tokens.ink
                 font.family: Tokens.display
+                font.weight: Tokens.displayWeight
                 font.pixelSize: 22
             }
         }

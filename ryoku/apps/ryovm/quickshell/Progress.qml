@@ -27,6 +27,7 @@ Column {
         text: p.heading
         color: Tokens.ink
         font.family: Tokens.display
+        font.weight: Tokens.displayWeight
         font.pixelSize: 21
     }
     Text {
