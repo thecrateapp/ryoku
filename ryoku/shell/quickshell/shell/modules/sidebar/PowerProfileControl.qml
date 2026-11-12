@@ -46,10 +46,13 @@ Rectangle {
                 anchors.right: stateLabel.left
                 anchors.rightMargin: Tokens.s2 * root.s
                 text: I18n.tr("Power Profile")
-                color: Tokens.ink
-                font.family: Tokens.ui
-                font.pixelSize: Tokens.fRow * root.s
-                font.weight: Font.DemiBold
+                // a section caption under the theme style, the stock row heading otherwise
+                color: Tokens.labelAccent ? Tokens.caption : Tokens.ink
+                font.family: Tokens.navCaps ? Tokens.navFont : Tokens.ui
+                font.pixelSize: (Tokens.navCaps ? Tokens.fTiny : Tokens.fRow) * root.s
+                font.weight: Tokens.navCaps ? Font.Medium : Font.DemiBold
+                font.capitalization: Tokens.navCaps ? Font.AllUppercase : Font.MixedCase
+                font.letterSpacing: Tokens.navCaps ? Tokens.trackNav : 0
                 elide: Text.ElideRight
             }
 

@@ -8,6 +8,10 @@ import shell.services
 Item {
     id: root
     required property bool active
+    // a connected tile fills with bone in the stock look; a theme without the
+    // fill (selectFill off) washes it instead, and its badge and switch read
+    // as on a resting tile
+    readonly property bool filled: root.connected && Tokens.selectFill
 
     required property real s
     required property string label
@@ -40,9 +44,9 @@ Item {
         id: plate
         anchors.fill: parent
         radius: Tokens.radius * root.s * 1.5
-        color: root.connected ? Tokens.bone : body.hovered ? Tokens.tint10 : Tokens.paperLift
+        color: root.connected ? (Tokens.selectFill ? Tokens.bone : Tokens.pickFill) : body.hovered ? Tokens.tint10 : Tokens.paperLift
         border.width: Tokens.border
-        border.color: root.connected ? Tokens.bone : body.visualFocus ? Tokens.lineStrong : Tokens.lineSoft
+        border.color: root.connected ? (Tokens.selectFill ? Tokens.bone : Tokens.pickEdge) : body.visualFocus ? Tokens.lineStrong : Tokens.lineSoft
 
         Behavior on color {
             enabled: root.motionAllowed
@@ -85,7 +89,7 @@ Item {
                 width: (Tokens.s5 - Tokens.s1) * root.s
                 height: width
                 text: root.glyph
-                color: root.connected ? Tokens.inkOnBone : Tokens.inkDim
+                color: root.connected ? (Tokens.selectFill ? Tokens.inkOnBone : Tokens.pickInk) : Tokens.inkDim
                 font.family: "Material Symbols Rounded"
                 font.pixelSize: (Tokens.s5 - Tokens.s1) * root.s
                 horizontalAlignment: Text.AlignHCenter
@@ -109,7 +113,7 @@ Item {
                 Text {
                     width: parent.width
                     text: root.label
-                    color: root.connected ? Tokens.inkOnBone : Tokens.ink
+                    color: root.connected ? (Tokens.selectFill ? Tokens.inkOnBone : Tokens.pickInk) : Tokens.ink
                     font.family: Tokens.ui
                     font.pixelSize: Tokens.fRow * root.s
                     font.weight: Font.DemiBold
@@ -124,7 +128,7 @@ Item {
                 Text {
                     width: parent.width
                     text: root.detail
-                    color: root.connected ? Tokens.inkOnBone : Tokens.inkMuted
+                    color: root.connected ? (Tokens.selectFill ? Tokens.inkOnBone : Tokens.pickInkDim) : Tokens.inkMuted
                     opacity: root.connected ? 0.74 : 1
                     font.family: Tokens.ui
                     font.pixelSize: Tokens.fSmall * root.s
@@ -170,7 +174,7 @@ Item {
                                 width: parent.width
                                 height: (Tokens.s1 + signalSlot.index * Tokens.s1 / 2) * root.s
                                 radius: width / 2
-                                color: root.connected ? Tokens.inkOnBone : Tokens.inkDim
+                                color: root.connected ? (Tokens.selectFill ? Tokens.inkOnBone : Tokens.pickInk) : Tokens.inkDim
                                 opacity: root.radioOn && signalSlot.index < root.litBars ? 1 : 0.22
 
                                 Behavior on opacity {
@@ -200,9 +204,9 @@ Item {
                     width: implicitWidth
                     height: (Tokens.s5 - Tokens.s1) * root.s
                     radius: height / 2
-                    color: root.connected ? Tokens.inkOnBone : Tokens.tint10
+                    color: root.filled ? Tokens.inkOnBone : Tokens.tint10
                     border.width: Tokens.border
-                    border.color: root.connected ? Tokens.inkOnBone : Tokens.line
+                    border.color: root.filled ? Tokens.inkOnBone : Tokens.line
 
                     Behavior on color {
                         enabled: root.motionAllowed
@@ -217,7 +221,7 @@ Item {
                         id: countLabel
                         anchors.centerIn: parent
                         text: String(root.connectedCount)
-                        color: root.connected ? Tokens.bone : Tokens.inkDim
+                        color: root.filled ? Tokens.bone : Tokens.inkDim
                         font.family: Tokens.mono
                         font.pixelSize: Tokens.fTiny * root.s
                         font.weight: Font.DemiBold
@@ -252,11 +256,11 @@ Item {
         background: Rectangle {
             id: switchTrack
             radius: height / 2
-            color: radio.down ? (root.connected ? Tokens.inkOnBone : Tokens.tint16)
-                : root.radioOn ? (root.connected ? Tokens.inkOnBone : Tokens.bone) : Tokens.tint16
+            color: radio.down ? (root.filled ? Tokens.inkOnBone : Tokens.tint16)
+                : root.radioOn ? (root.filled ? Tokens.inkOnBone : Tokens.bone) : Tokens.tint16
             border.width: Tokens.border
-            border.color: radio.visualFocus ? (root.connected ? Tokens.inkOnBone : Tokens.bone)
-                : root.radioOn ? (root.connected ? Tokens.inkOnBone : Tokens.bone) : Tokens.lineStrong
+            border.color: radio.visualFocus ? (root.filled ? Tokens.inkOnBone : Tokens.bone)
+                : root.radioOn ? (root.filled ? Tokens.inkOnBone : Tokens.bone) : Tokens.lineStrong
 
             Behavior on color {
                 enabled: root.motionAllowed
@@ -274,7 +278,7 @@ Item {
                 anchors.verticalCenter: parent.verticalCenter
                 x: root.radioOn ? parent.width - width - Tokens.radius * root.s / 2
                     : Tokens.radius * root.s / 2
-                color: root.radioOn ? (root.connected ? Tokens.bone : Tokens.inkOnBone) : Tokens.inkDim
+                color: root.radioOn ? (root.filled ? Tokens.bone : Tokens.inkOnBone) : Tokens.inkDim
 
                 Behavior on x {
                     enabled: root.motionAllowed
