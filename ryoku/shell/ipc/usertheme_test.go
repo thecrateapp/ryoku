@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 )
 
@@ -415,5 +416,18 @@ func TestShellPaletteTermKeepsBase16AndDefaultsTheTerminal(t *testing.T) {
 	}
 	if _, ok := themed["bogus"]; ok {
 		t.Error("only term_* keys may be laid over the palette")
+	}
+}
+
+func TestThemeStyleValuesKeepsNavFont(t *testing.T) {
+	got := themeStyleValues(&themeStyleSpec{NavFont: "  JetBrainsMono Nerd Font  "})
+	if got["navFont"] != "JetBrainsMono Nerd Font" {
+		t.Fatalf("navFont = %v, want the trimmed family", got["navFont"])
+	}
+	if v := themeStyleValues(&themeStyleSpec{NavFont: "   "}); v != nil {
+		t.Errorf("a blank navFont must set nothing, got %v", v)
+	}
+	if v := themeStyleValues(&themeStyleSpec{NavFont: strings.Repeat("x", 200)}); v != nil {
+		t.Errorf("an over-long navFont must be dropped, got %v", v)
 	}
 }

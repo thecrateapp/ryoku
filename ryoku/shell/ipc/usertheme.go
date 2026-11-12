@@ -121,6 +121,7 @@ func terminalValues(t *noctaliaTerminal) map[string]string {
 type themeStyleSpec struct {
 	LineAlpha     *float64 `json:"lineAlpha"`
 	Display       string   `json:"display"`
+	NavFont       string   `json:"navFont"`
 	DisplayWeight *int     `json:"displayWeight"`
 	NavCaps       *bool    `json:"navCaps"`
 	AccentMarks   *bool    `json:"accentMarks"`
@@ -153,6 +154,9 @@ func themeStyleValues(spec *themeStyleSpec) map[string]any {
 	}
 	if face := strings.TrimSpace(spec.Display); face != "" && len(face) <= 64 && !strings.ContainsAny(face, "\"\\\n\r\t") {
 		out["display"] = face
+	}
+	if face := strings.TrimSpace(spec.NavFont); face != "" && len(face) <= 64 && !strings.ContainsAny(face, "\"\\\n\r\t") {
+		out["navFont"] = face
 	}
 	if spec.DisplayWeight != nil {
 		w := *spec.DisplayWeight

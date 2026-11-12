@@ -131,6 +131,9 @@ Singleton {
     // ── type ─────────────────────────────────────────────────────────────
     property string display: "Fraunces"
     property string ui: "Space Grotesk"
+    // the navigation face (rails, tabs, section captions): a theme style can name
+    // one (themeStyle.navFont); it defaults to the UI face
+    property string navFont: ui
     property string mono: "SpaceMono Nerd Font"
     readonly property string jp: "Noto Sans CJK JP"
 
@@ -307,6 +310,7 @@ Singleton {
         var uiFont = "Space Grotesk";
         var lineAlpha = 0.26;
         var displayFont = "Fraunces";
+        var navFontValue = "";
         var displayWeight = Font.Normal;
         var flags = { navCaps: false, accentMarks: false, focusAccent: false, labelAccent: false, selectFill: true };
         try {
@@ -337,6 +341,8 @@ Singleton {
                     lineAlpha = st.lineAlpha;
                 if (st && typeof st.display === "string" && st.display.length)
                     displayFont = st.display;
+                if (st && typeof st.navFont === "string" && st.navFont.length)
+                    navFontValue = st.navFont;
                 if (st && typeof st.displayWeight === "number")
                     displayWeight = Math.max(100, Math.min(900, st.displayWeight));
                 for (const k in flags)
@@ -356,6 +362,7 @@ Singleton {
         t.mono = monoFont;
         t.lineAlpha = lineAlpha;
         t.display = displayFont;
+        t.navFont = navFontValue || t.ui;
         t.displayWeight = displayWeight;
         t.navCaps = flags.navCaps;
         t.accentMarks = flags.accentMarks;

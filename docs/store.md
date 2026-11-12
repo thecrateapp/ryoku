@@ -371,7 +371,9 @@ Popular, New, and Updated rankings.
   role or a value that is not `#rrggbb` is ignored. `style` sets the Ryoku.Ui
   kit's non-colour look: `lineAlpha` (hairline strength, the ink alpha of
   `Tokens.line`, 0.26 by default, clamped to 0.04-0.6) and `display` (the display
-  face, Fraunces by default), `displayWeight` (100-900), and switches that keep
+  face, Fraunces by default), `displayWeight` (100-900), `navFont` (the
+  navigation face for rails, tabs and section captions, the UI face by default;
+  used when `navCaps` is on), and switches that keep
   the signature look when absent: `navCaps` (uppercase tracked navigation
   labels), `accentMarks` (selection marks and hover text in the palette
   secondary, and a switch that is on fills its track with the primary),
