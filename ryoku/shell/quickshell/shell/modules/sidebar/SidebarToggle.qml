@@ -71,17 +71,17 @@ QQC.AbstractButton {
         Rectangle {
             id: track
             anchors { right: parent.right; verticalCenter: parent.verticalCenter }
-            width: 48 * root.s
-            height: 28 * root.s
+            width: (Tokens.controlsCrate ? 34 : 48) * root.s
+            height: (Tokens.controlsCrate ? 18 : 28) * root.s
             radius: height / 2
-            color: root.on ? Tokens.bone : Tokens.tint16
+            color: Tokens.controlsCrate ? (root.on ? Qt.rgba(Tokens.mark.r, Tokens.mark.g, Tokens.mark.b, 0.12) : "transparent") : root.on ? Tokens.bone : Tokens.tint16
             border.width: Tokens.border
-            border.color: root.on ? Tokens.bone : Tokens.lineStrong
+            border.color: Tokens.controlsCrate ? (root.on ? Tokens.mark : Tokens.line) : root.on ? Tokens.bone : Tokens.lineStrong
             Rectangle {
-                width: 20 * root.s; height: width; radius: width / 2
+                width: (Tokens.controlsCrate ? 10 : 20) * root.s; height: width; radius: width / 2
                 anchors.verticalCenter: parent.verticalCenter
                 x: root.on ? track.width - width - 4 * root.s : 4 * root.s
-                color: root.on ? Tokens.inkOnBone : Tokens.inkDim
+                color: Tokens.controlsCrate ? (root.on ? Tokens.mark : Tokens.inkDim) : root.on ? Tokens.inkOnBone : Tokens.inkDim
                 Behavior on x {
                     enabled: !Motion.reduce && !Tokens.reduceMotion
                     NumberAnimation { duration: Tokens.snap; easing.type: Tokens.easeSnap }

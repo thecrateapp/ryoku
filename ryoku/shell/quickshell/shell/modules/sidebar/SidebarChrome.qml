@@ -61,10 +61,13 @@ Item {
                 : root.page === "bluetooth" ? I18n.tr("Bluetooth")
                 : root.page === "plugins" ? I18n.tr("Extensions")
                 : I18n.tr("Controls")
-            color: Tokens.ink
-            font.family: Tokens.ui
-            font.pixelSize: Tokens.fBody * root.s
-            font.weight: Font.DemiBold
+            // crate-mark: the panel title is an accent mono caption
+            color: Tokens.controlsCrate ? (Tokens.labelAccent ? Tokens.caption : Tokens.ink) : Tokens.ink
+            font.family: Tokens.controlsCrate ? Tokens.mono : Tokens.ui
+            font.pixelSize: (Tokens.controlsCrate ? Tokens.fMicro : Tokens.fBody) * root.s
+            font.weight: Tokens.controlsCrate ? Font.Normal : Font.DemiBold
+            font.capitalization: Tokens.controlsCrate ? Font.AllUppercase : Font.MixedCase
+            font.letterSpacing: Tokens.controlsCrate ? Tokens.trackLabel : 0
             elide: Text.ElideRight
         }
 

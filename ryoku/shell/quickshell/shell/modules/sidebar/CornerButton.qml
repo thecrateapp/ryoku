@@ -24,9 +24,9 @@ QQC.AbstractButton {
     Accessible.name: text
     background: Rectangle {
         radius: Tokens.radius * root.s * 1.5
-        color: root.accented ? root.plate : root.down ? Tokens.tint16 : root.hovered ? Tokens.tint10 : root.subtle ? "transparent" : Tokens.tint5
-        border.width: Tokens.border
-        border.color: root.visualFocus ? Tokens.sun : root.accented ? Qt.alpha(Tokens.sun, 0.2) : "transparent"
+        color: Tokens.controlsCrate ? "transparent" : root.accented ? root.plate : root.down ? Tokens.tint16 : root.hovered ? Tokens.tint10 : root.subtle ? "transparent" : Tokens.tint5
+        border.width: Tokens.controlsCrate ? (root.visualFocus ? Tokens.border : 0) : Tokens.border
+        border.color: Tokens.controlsCrate ? Tokens.focus : root.visualFocus ? Tokens.sun : root.accented ? Qt.alpha(Tokens.sun, 0.2) : "transparent"
         Behavior on color { enabled: root.motionAllowed; ColorAnimation { duration: Tokens.snap } }
     }
     contentItem: Item {
@@ -38,7 +38,7 @@ QQC.AbstractButton {
             width: root.text === "" ? parent.width : 20 * root.s
             visible: root.glyph !== ""
             text: root.glyph
-            color: root.accented ? root.accentInk : Tokens.inkDim
+            color: Tokens.controlsCrate ? (root.accented || root.hovered ? Tokens.mark : Tokens.inkSecondary) : root.accented ? root.accentInk : Tokens.inkDim
             font.family: "Material Symbols Rounded"
             font.pixelSize: 20 * root.s
             horizontalAlignment: Text.AlignHCenter
@@ -54,7 +54,7 @@ QQC.AbstractButton {
             anchors.verticalCenter: parent.verticalCenter
             visible: root.text !== ""
             text: root.text
-            color: root.accented ? root.accentInk : Tokens.ink
+            color: Tokens.controlsCrate ? (root.accented || root.hovered ? Tokens.mark : Tokens.inkSecondary) : root.accented ? root.accentInk : Tokens.ink
             font.family: Tokens.ui
             font.pixelSize: Tokens.fSmall * root.s
             font.weight: Font.Medium

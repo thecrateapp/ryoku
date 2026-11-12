@@ -34,8 +34,10 @@ Item {
 
     QtObject {
         id: palette
-        readonly property color memory: Tokens.role("secondary", Tokens.inkDim)
-        readonly property color gpu: Tokens.role("tertiary", Tokens.inkMuted)
+        // crate-mark: CPU in the mark, memory in the light thumb cyan, GPU in grey
+        readonly property color cpu: Tokens.controlsCrate ? Tokens.mark : Tokens.sun
+        readonly property color memory: Tokens.controlsCrate ? Tokens.thumb : Tokens.role("secondary", Tokens.inkDim)
+        readonly property color gpu: Tokens.controlsCrate ? Tokens.inkDim : Tokens.role("tertiary", Tokens.inkMuted)
     }
 
     implicitHeight: (root.showIdentity ? (Tokens.s7 + Tokens.s3) * s : 0)
@@ -427,7 +429,7 @@ Item {
 
                 Repeater {
                     model: [
-                        { label: I18n.tr("CPU"), color: Tokens.sun },
+                        { label: I18n.tr("CPU"), color: palette.cpu },
                         { label: I18n.tr("MEM"), color: palette.memory },
                         { label: I18n.tr("GPU"), color: palette.gpu }
                     ]
@@ -468,7 +470,7 @@ Item {
                     active: root.active
                     s: root.s
                     channels: ["cpu", "memory", "gpu"]
-                    colors: [Tokens.sun, palette.memory, palette.gpu]
+                    colors: [palette.cpu, palette.memory, palette.gpu]
                     fill: true
                     showGrid: true
                     detailPoints: false

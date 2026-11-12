@@ -80,9 +80,9 @@ Item {
         }
         background: Rectangle {
             radius: Tokens.radius * root.s
-            color: root.muted ? Tokens.bone : iconButton.down ? Tokens.tint16 : iconButton.hovered ? Tokens.tint10 : Tokens.tint5
-            border.width: Tokens.border
-            border.color: iconButton.visualFocus ? Tokens.bone : root.muted ? Tokens.bone : Tokens.lineSoft
+            color: Tokens.controlsCrate ? "transparent" : root.muted ? Tokens.bone : iconButton.down ? Tokens.tint16 : iconButton.hovered ? Tokens.tint10 : Tokens.tint5
+            border.width: Tokens.controlsCrate ? (iconButton.visualFocus ? Tokens.border : 0) : Tokens.border
+            border.color: Tokens.controlsCrate ? Tokens.focus : iconButton.visualFocus ? Tokens.bone : root.muted ? Tokens.bone : Tokens.lineSoft
             Behavior on color {
                 enabled: root.motionAllowed
                 ColorAnimation { duration: Tokens.snap }
@@ -90,9 +90,9 @@ Item {
         }
         contentItem: Text {
             text: root.glyph
-            color: root.muted ? Tokens.inkOnBone : Tokens.inkDim
+            color: Tokens.controlsCrate ? (root.muted ? Tokens.alert : iconButton.hovered ? Tokens.mark : Tokens.inkSecondary) : root.muted ? Tokens.inkOnBone : Tokens.inkDim
             font.family: "Material Symbols Rounded"
-            font.pixelSize: Tokens.fValue * root.s
+            font.pixelSize: (Tokens.controlsCrate ? 20 : Tokens.fValue) * root.s
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
             Accessible.ignored: true

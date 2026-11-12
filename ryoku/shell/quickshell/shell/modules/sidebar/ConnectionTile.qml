@@ -243,8 +243,8 @@ Item {
         anchors.right: parent.right
         anchors.rightMargin: Tokens.s3 * root.s
         anchors.verticalCenter: parent.verticalCenter
-        width: (Tokens.s6 + Tokens.s1 / 2) * root.s
-        height: (Tokens.s5 - Tokens.s1) * root.s
+        width: (Tokens.controlsCrate ? 34 : Tokens.s6 + Tokens.s1 / 2) * root.s
+        height: (Tokens.controlsCrate ? 18 : Tokens.s5 - Tokens.s1) * root.s
         hoverEnabled: true
         enabled: root.available
         Accessible.role: Accessible.CheckBox
@@ -256,10 +256,12 @@ Item {
         background: Rectangle {
             id: switchTrack
             radius: height / 2
-            color: radio.down ? (root.filled ? Tokens.inkOnBone : Tokens.tint16)
+            color: Tokens.controlsCrate ? (root.radioOn ? Qt.rgba(Tokens.mark.r, Tokens.mark.g, Tokens.mark.b, 0.12) : "transparent")
+                : radio.down ? (root.filled ? Tokens.inkOnBone : Tokens.tint16)
                 : root.radioOn ? (root.filled ? Tokens.inkOnBone : Tokens.bone) : Tokens.tint16
             border.width: Tokens.border
-            border.color: radio.visualFocus ? (root.filled ? Tokens.inkOnBone : Tokens.bone)
+            border.color: Tokens.controlsCrate ? (radio.visualFocus ? Tokens.focus : root.radioOn ? Tokens.mark : Tokens.line)
+                : radio.visualFocus ? (root.filled ? Tokens.inkOnBone : Tokens.bone)
                 : root.radioOn ? (root.filled ? Tokens.inkOnBone : Tokens.bone) : Tokens.lineStrong
 
             Behavior on color {
@@ -272,13 +274,13 @@ Item {
             }
 
             Rectangle {
-                width: (Tokens.s4 - Tokens.s1 / 2) * root.s
+                width: (Tokens.controlsCrate ? 10 : Tokens.s4 - Tokens.s1 / 2) * root.s
                 height: width
                 radius: width / 2
                 anchors.verticalCenter: parent.verticalCenter
-                x: root.radioOn ? parent.width - width - Tokens.radius * root.s / 2
-                    : Tokens.radius * root.s / 2
-                color: root.radioOn ? (root.filled ? Tokens.bone : Tokens.inkOnBone) : Tokens.inkDim
+                x: root.radioOn ? parent.width - width - (Tokens.controlsCrate ? 4 : Tokens.radius / 2) * root.s
+                    : (Tokens.controlsCrate ? 4 : Tokens.radius / 2) * root.s
+                color: Tokens.controlsCrate ? (root.radioOn ? Tokens.mark : Tokens.inkDim) : root.radioOn ? (root.filled ? Tokens.bone : Tokens.inkOnBone) : Tokens.inkDim
 
                 Behavior on x {
                     enabled: root.motionAllowed
