@@ -26,7 +26,7 @@ Item {
     signal expandedRequested(bool expanded)
 
     // crate-mark: one 36 px row (icon, mono caption, Beam, value, chevron)
-    implicitHeight: (Tokens.controlsCrate ? 36 : Tokens.rowH) * s
+    implicitHeight: (Tokens.controlsCrate ? 28 : Tokens.rowH) * s
     opacity: available ? 1 : 0.58
     Behavior on opacity {
         enabled: root.motionAllowed

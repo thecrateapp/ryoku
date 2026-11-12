@@ -128,7 +128,7 @@ Item {
     Column {
         id: stack
         width: parent.width
-        spacing: Tokens.s1 * root.s
+        spacing: (Tokens.controlsCrate ? 6 : Tokens.s1) * root.s
 
         LevelSlider {
             id: volume

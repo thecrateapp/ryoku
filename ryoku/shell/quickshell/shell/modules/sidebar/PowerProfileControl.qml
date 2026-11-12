@@ -16,7 +16,7 @@ Rectangle {
         "performance": "Performance"
     })
 
-    implicitHeight: content.implicitHeight + Tokens.s3 * root.s * 2
+    implicitHeight: content.implicitHeight + (Tokens.controlsCrate ? 0 : Tokens.s3 * root.s * 2)
     radius: Tokens.radius * root.s * 1.5
     // crate-mark: the profile sits on the panel, no card
     color: Tokens.controlsCrate ? "transparent" : Tokens.paperLift

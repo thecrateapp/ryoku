@@ -115,8 +115,8 @@ Item {
                     text: root.label
                     color: root.connected ? (Tokens.selectFill ? Tokens.inkOnBone : Tokens.pickInk) : Tokens.ink
                     font.family: Tokens.ui
-                    font.pixelSize: Tokens.fRow * root.s
-                    font.weight: Font.DemiBold
+                    font.pixelSize: (Tokens.controlsCrate ? 13 : Tokens.fRow) * root.s
+                    font.weight: Tokens.controlsCrate ? Font.Normal : Font.DemiBold
                     elide: Text.ElideRight
 
                     Behavior on color {

@@ -285,6 +285,7 @@ Item {
                 anchors.left: parent.left
                 anchors.right: parent.right
                 anchors.top: parent.top
+                anchors.topMargin: (Tokens.controlsCrate ? 32 : 0) * root.s
                 text: I18n.tr("CPU")
                 textFormat: Text.PlainText
                 color: Tokens.controlsCrate ? Tokens.inkSubtle : Tokens.inkMuted
@@ -491,7 +492,7 @@ Item {
                     channels: ["cpu", "memory", "gpu"]
                     colors: [palette.cpu, palette.memory, palette.gpu]
                     fill: true
-                    showGrid: true
+                    showGrid: !Tokens.controlsCrate
                     detailPoints: false
                     lineWidth: Tokens.border * root.s
                 }
@@ -508,7 +509,7 @@ Item {
                 + (root.showBattery && root.monitor.batteryAvailable ? 1 : 0)
             width: Tokens.controlsCrate ? body.width : Math.max(0, Math.floor(body.width - cpuZone.width - graphZone.width
                 - body.spacing * ((cpuZone.visible ? 1 : 0) + (graphZone.visible ? 1 : 0))))
-            height: Tokens.controlsCrate ? visibleMeterCount * 26 * root.s : body.height
+            height: Tokens.controlsCrate ? visibleMeterCount * 28 * root.s : body.height
             spacing: 0
             clip: true
 
@@ -571,7 +572,9 @@ Item {
                 tooltipText: root.monitor.networkInterface.length > 0
                              ? I18n.tr("Interface %1").arg(root.monitor.networkInterface)
                              : ""
-                meterContent: Component {
+                meterContent: Tokens.controlsCrate ? null : networkSpark
+                Component {
+                    id: networkSpark
                     VitalSparkline {
                         monitor: root.monitor
                         active: root.active && networkMeter.visible
