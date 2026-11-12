@@ -216,7 +216,7 @@ Item {
                 anchors.margins: -4
                 color: "transparent"
                 border.width: Tokens.border
-                border.color: Tokens.bone
+                border.color: Tokens.focusAccent ? Tokens.focus : Tokens.bone
             }
             Keys.onPressed: event => {
                 if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter || event.key === Qt.Key_Space) {
@@ -238,7 +238,7 @@ Item {
             width: Math.max(30, implicitWidth)
             color: Tokens.ink
             font.family: Tokens.ui; font.pixelSize: Tokens.fBody; font.weight: Font.Light
-            selectionColor: Tokens.bone
+            selectionColor: Tokens.selectFill ? Tokens.bone : Tokens.sun
             selectedTextColor: Tokens.inkOnBone
             anchors.verticalCenter: parent.verticalCenter
             horizontalAlignment: TextInput.AlignRight

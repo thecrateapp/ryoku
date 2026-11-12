@@ -26,7 +26,7 @@ Item {
         anchors.verticalCenter: parent.verticalCenter
         width: parent.width * slid.frac
         height: 4
-        color: Tokens.ink
+        color: Tokens.mark
         antialiasing: false
     }
     Rectangle {
@@ -34,7 +34,7 @@ Item {
         anchors.verticalCenter: parent.verticalCenter
         width: 6
         height: 17
-        color: Tokens.ink
+        color: Tokens.mark
         antialiasing: false
     }
     HoverHandler { id: hh; cursorShape: Qt.PointingHandCursor }

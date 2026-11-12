@@ -105,12 +105,12 @@ Rectangle {
                         required property string modelData
                         width: col.width
                         height: 30
-                        color: rh.hovered ? Tokens.bone : "transparent"
+                        color: rh.hovered ? (Tokens.selectFill ? Tokens.bone : Tokens.rowWash) : "transparent"
                         Behavior on color { ColorAnimation { duration: 70 } }
                         Text {
                             anchors { left: parent.left; leftMargin: 8; verticalCenter: parent.verticalCenter }
                             text: pick._display(parent.modelData)
-                            color: rh.hovered ? Tokens.inkOnBone : (pick.current === parent.modelData ? Tokens.ink : Tokens.inkDim)
+                            color: rh.hovered ? (Tokens.selectFill ? Tokens.inkOnBone : Tokens.ink) : (pick.current === parent.modelData ? Tokens.ink : Tokens.inkDim)
                             font.family: Tokens.ui
                             font.pixelSize: 13
                         }
@@ -118,7 +118,7 @@ Rectangle {
                             anchors { right: parent.right; rightMargin: 8; verticalCenter: parent.verticalCenter }
                             visible: pick.current === parent.modelData
                             text: "●"
-                            color: rh.hovered ? Tokens.inkOnBone : Tokens.ink
+                            color: rh.hovered && Tokens.selectFill ? Tokens.inkOnBone : Tokens.mark
                             font.pixelSize: 7
                         }
                         HoverHandler { id: rh; cursorShape: Qt.PointingHandCursor }

@@ -40,7 +40,7 @@ Item {
     Rectangle {
         anchors.fill: parent
         radius: Tokens.radius
-        color: hh.hovered ? Qt.rgba(205 / 255, 196 / 255, 186 / 255, 0.05) : "transparent"
+        color: hh.hovered ? Tokens.tint5 : "transparent"
         border.width: Tokens.border
         border.color: hh.hovered ? Tokens.lineStrong : Tokens.line
         Behavior on color { ColorAnimation { duration: Tokens.snap } }

@@ -120,7 +120,7 @@ Rectangle {
                     required property var modelData
                     readonly property bool sel: pick.current === appRow.modelData.cmd
                     width: lc.width; height: 34
-                    color: arh.hovered ? Tokens.bone : "transparent"
+                    color: arh.hovered ? (Tokens.selectFill ? Tokens.bone : Tokens.rowWash) : "transparent"
                     Behavior on color { ColorAnimation { duration: 70 } }
                     Column {
                         anchors { left: parent.left; leftMargin: 8; right: selMark.left; rightMargin: 6; verticalCenter: parent.verticalCenter }
@@ -128,13 +128,13 @@ Rectangle {
                         Text {
                             width: parent.width
                             text: appRow.modelData.name
-                            color: arh.hovered ? Tokens.inkOnBone : (appRow.sel ? Tokens.ink : Tokens.inkDim)
+                            color: arh.hovered ? (Tokens.selectFill ? Tokens.inkOnBone : Tokens.ink) : (appRow.sel ? Tokens.ink : Tokens.inkDim)
                             font.family: Tokens.ui; font.pixelSize: 12; elide: Text.ElideRight
                         }
                         Text {
                             width: parent.width
                             text: appRow.modelData.cmd
-                            color: arh.hovered ? Tokens.inkOnBone : Tokens.inkFaint
+                            color: arh.hovered && Tokens.selectFill ? Tokens.inkOnBone : Tokens.inkFaint
                             font.family: Tokens.mono; font.pixelSize: 9; elide: Text.ElideRight
                         }
                     }
@@ -142,7 +142,7 @@ Rectangle {
                         id: selMark
                         anchors { right: parent.right; rightMargin: 8; verticalCenter: parent.verticalCenter }
                         visible: appRow.sel
-                        text: "\u25CF"; color: arh.hovered ? Tokens.inkOnBone : Tokens.ink; font.pixelSize: 7
+                        text: "\u25CF"; color: arh.hovered && Tokens.selectFill ? Tokens.inkOnBone : Tokens.mark; font.pixelSize: 7
                     }
                     HoverHandler { id: arh; cursorShape: Qt.PointingHandCursor }
                     TapHandler { onTapped: pick.picked(appRow.modelData.cmd) }

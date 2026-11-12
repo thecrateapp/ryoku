@@ -6,6 +6,9 @@ Rectangle {
 
     property alias text: lab.text
     property bool primary: false
+    // a navigation action (Open, Browse): no fill, the mark on the edge and the
+    // label; it wins over primary when both are set
+    property bool outline: false
     property bool armed: true
     property bool compact: false
     property bool motionEnabled: !Tokens.reduceMotion
@@ -33,16 +36,18 @@ Rectangle {
     // (the reader needs to see what is there and why it is inert), while the
     // dimming keeps it from reading as available.
     opacity: armed ? 1 : 0.5
-    color: primary && armed ? Tokens.bone : (tap.pressed && armed ? Tokens.tint16 : (bh.hovered && armed ? Tokens.tint10 : "transparent"))
+    color: outline ? (bh.hovered && armed ? Tokens.rowWash : "transparent")
+        : (primary && armed ? Tokens.bone : (tap.pressed && armed ? Tokens.tint16 : (bh.hovered && armed ? Tokens.tint10 : "transparent")))
     border.width: Tokens.border
-    border.color: activeFocus ? Tokens.bone : (primary && armed ? Tokens.bone : (bh.hovered && armed ? Tokens.lineStrong : Tokens.line))
+    border.color: activeFocus ? (Tokens.focusAccent ? Tokens.focus : Tokens.bone)
+        : (outline ? Tokens.mark : (primary && armed ? Tokens.bone : (bh.hovered && armed ? Tokens.lineStrong : Tokens.line)))
     Behavior on color { enabled: btn.motionEnabled; ColorAnimation { duration: Tokens.snap } }
     Behavior on opacity { enabled: btn.motionEnabled; NumberAnimation { duration: Tokens.snap } }
 
     Text {
         id: lab
         anchors.centerIn: parent
-        color: btn.primary && btn.armed ? Tokens.inkOnBone : Tokens.ink
+        color: btn.outline ? Tokens.mark : (btn.primary && btn.armed ? Tokens.inkOnBone : Tokens.ink)
         font.family: Tokens.ui
         font.pixelSize: btn.compact ? 10 : 11
         font.weight: Font.Medium
