@@ -66,3 +66,14 @@ test("a colour with alpha (#aarrggbb, as QML writes it) becomes an opaque stroke
   assert.ok(!/^<svg [^>]*opacity=/.test(svg("lock", "#ff8800")));
 });
 
+
+test("the freedesktop icon names the OSD emits resolve too", () => {
+  assert.equal(resolve("audio-volume-high"), "volume-loud");
+  assert.equal(resolve("audio-volume-medium"), "volume");
+  assert.equal(resolve("audio-volume-low"), "volume-small");
+  assert.equal(resolve("audio-volume-muted"), "volume-cross");
+  assert.equal(resolve("microphone-sensitivity-high"), "microphone-2");
+  assert.equal(resolve("microphone-sensitivity-muted"), "microphone-2-off");
+  assert.equal(resolve("brightness-low"), "sun");
+  assert.equal(resolve("input-keyboard"), "keyboard");
+});

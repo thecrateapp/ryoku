@@ -19,6 +19,8 @@ PanelWindow {
     // scale applies only to the shipped panel and its slide headroom.
     readonly property real us: Tokens.uiScaleFor(modelData ? modelData.name : "")
     readonly property real pad: 16 * win.us
+    // crate-mark: 14 px top and bottom, 16 px at the sides
+    readonly property real padY: (Tokens.controlsCrate ? 14 : 16) * win.us
     readonly property real osdScale: Config.barStyle === "nacre"
         ? Config.normalizedNacre.osdScale : 1
     readonly property real slide: 18 * win.us
@@ -77,9 +79,9 @@ PanelWindow {
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.bottom: parent.bottom
         width: osd.implicitWidth + win.pad * 2
-        height: osd.implicitHeight + win.pad * 2
-        radius: Theme.radiusWindow * win.us
-        color: Theme.surface
+        height: osd.implicitHeight + win.padY * 2
+        radius: (Tokens.controlsCrate ? 10 : Theme.radiusWindow) * win.us
+        color: Tokens.controlsCrate ? Tokens.popover : Theme.surface
         opacity: Theme.windowOpacity * win.prog
         border.width: Theme.borderWidth
         border.color: Theme.frameLine
@@ -91,7 +93,10 @@ PanelWindow {
         Osd {
             id: osd
             anchors.fill: parent
-            anchors.margins: win.pad
+            anchors.leftMargin: win.pad
+            anchors.rightMargin: win.pad
+            anchors.topMargin: win.padY
+            anchors.bottomMargin: win.padY
             kind: win.kind
             us: win.us
             value: feed.value
