@@ -25,7 +25,8 @@ Item {
     signal muteRequested()
     signal expandedRequested(bool expanded)
 
-    implicitHeight: Tokens.rowH * s
+    // crate-mark: one 36 px row (icon, mono caption, Beam, value, chevron)
+    implicitHeight: (Tokens.controlsCrate ? 36 : Tokens.rowH) * s
     opacity: available ? 1 : 0.58
     Behavior on opacity {
         enabled: root.motionAllowed
@@ -68,7 +69,7 @@ Item {
         id: iconButton
         anchors.left: parent.left
         anchors.verticalCenter: parent.verticalCenter
-        width: Tokens.rowH * root.s
+        width: (Tokens.controlsCrate ? 28 : Tokens.rowH) * root.s
         height: width
         enabled: root.available && root.muteEnabled
         hoverEnabled: true
@@ -109,14 +110,18 @@ Item {
     Text {
         id: labelText
         anchors.left: iconButton.right
-        anchors.leftMargin: Tokens.s3 * root.s
-        anchors.top: parent.top
+        anchors.leftMargin: (Tokens.controlsCrate ? Tokens.s2 : Tokens.s3) * root.s
+        anchors.top: Tokens.controlsCrate ? undefined : parent.top
         anchors.topMargin: Tokens.s1 * root.s
+        anchors.verticalCenter: Tokens.controlsCrate ? parent.verticalCenter : undefined
+        width: Tokens.controlsCrate ? 72 * root.s : implicitWidth
         text: root.label
-        color: Tokens.ink
-        font.family: Tokens.ui
-        font.pixelSize: Tokens.fRow * root.s
-        font.weight: Font.Medium
+        color: Tokens.controlsCrate ? Tokens.inkSubtle : Tokens.ink
+        font.family: Tokens.controlsCrate ? Tokens.mono : Tokens.ui
+        font.pixelSize: (Tokens.controlsCrate ? Tokens.fMicro : Tokens.fRow) * root.s
+        font.weight: Tokens.controlsCrate ? Font.Normal : Font.Medium
+        font.capitalization: Tokens.controlsCrate ? Font.AllUppercase : Font.MixedCase
+        font.letterSpacing: Tokens.controlsCrate ? Tokens.trackLabel : 0
         elide: Text.ElideRight
     }
 
@@ -125,8 +130,9 @@ Item {
         property bool editing: false
         anchors.right: chevron.left
         anchors.rightMargin: Tokens.s2 * root.s
-        anchors.top: parent.top
-        width: Math.max(Tokens.s7 * root.s, percentLabel.implicitWidth + Tokens.s2 * root.s)
+        anchors.top: Tokens.controlsCrate ? undefined : parent.top
+        anchors.verticalCenter: Tokens.controlsCrate ? parent.verticalCenter : undefined
+        width: Tokens.controlsCrate ? Math.max(44 * root.s, percentLabel.implicitWidth + Tokens.s1 * root.s) : Math.max(Tokens.s7 * root.s, percentLabel.implicitWidth + Tokens.s2 * root.s)
         height: Tokens.ctlH * root.s
         hoverEnabled: true
         enabled: root.available
@@ -150,8 +156,8 @@ Item {
                 text: !root.available ? "—" : root.muted ? I18n.tr("Muted") : root.displayPercent + "%"
                 color: root.muted || !root.available ? Tokens.inkFaint : Tokens.ink
                 font.family: Tokens.mono
-                font.pixelSize: Tokens.fMicro * root.s
-                horizontalAlignment: Text.AlignHCenter
+                font.pixelSize: (Tokens.controlsCrate ? 12 : Tokens.fMicro) * root.s
+                horizontalAlignment: Tokens.controlsCrate ? Text.AlignRight : Text.AlignHCenter
                 verticalAlignment: Text.AlignVCenter
             }
             TextInput {
@@ -213,11 +219,12 @@ Item {
 
     QQC.Slider {
         id: slider
-        anchors.left: iconButton.right
-        anchors.leftMargin: Tokens.s3 * root.s
-        anchors.right: chevron.visible ? chevron.left : parent.right
-        anchors.rightMargin: chevron.visible ? Tokens.s2 * root.s : 0
-        anchors.bottom: parent.bottom
+        anchors.left: Tokens.controlsCrate ? labelText.right : iconButton.right
+        anchors.leftMargin: (Tokens.controlsCrate ? Tokens.s2 : Tokens.s3) * root.s
+        anchors.right: Tokens.controlsCrate ? exactButton.left : (chevron.visible ? chevron.left : parent.right)
+        anchors.rightMargin: Tokens.controlsCrate ? Tokens.s2 * root.s : (chevron.visible ? Tokens.s2 * root.s : 0)
+        anchors.bottom: Tokens.controlsCrate ? undefined : parent.bottom
+        anchors.verticalCenter: Tokens.controlsCrate ? parent.verticalCenter : undefined
         height: Tokens.ctlH * root.s
         from: root.from
         to: 1

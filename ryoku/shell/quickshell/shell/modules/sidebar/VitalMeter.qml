@@ -30,11 +30,12 @@ Item {
     Text {
         id: heading
         anchors.left: parent.left
-        anchors.top: parent.top
-        width: Math.min(implicitWidth, Math.max(0, parent.width - Tokens.s7 * root.s))
+        anchors.top: Tokens.controlsCrate ? undefined : parent.top
+        anchors.verticalCenter: Tokens.controlsCrate ? parent.verticalCenter : undefined
+        width: Tokens.controlsCrate ? 72 * root.s : Math.min(implicitWidth, Math.max(0, parent.width - Tokens.s7 * root.s))
         text: root.label.toUpperCase()
         textFormat: Text.PlainText
-        color: Tokens.inkMuted
+        color: Tokens.controlsCrate ? Tokens.inkSubtle : Tokens.inkMuted
         font.family: Tokens.mono
         font.pixelSize: Tokens.fMicro * root.s
         font.letterSpacing: Tokens.trackLabel * root.s
@@ -43,25 +44,31 @@ Item {
 
     Text {
         id: value
-        anchors.left: heading.right
+        anchors.left: Tokens.controlsCrate ? undefined : heading.right
         anchors.leftMargin: Tokens.s2 * root.s
         anchors.right: parent.right
-        anchors.top: parent.top
+        anchors.top: Tokens.controlsCrate ? undefined : parent.top
+        anchors.verticalCenter: Tokens.controlsCrate ? parent.verticalCenter : undefined
+        width: Tokens.controlsCrate ? Math.min(implicitWidth, parent.width * 0.5) : undefined
         text: root.valueText
         textFormat: Text.PlainText
         color: Tokens.ink
-        font.family: Tokens.ui
-        font.pixelSize: Tokens.fSmall * root.s
-        font.weight: Font.DemiBold
+        font.family: Tokens.controlsCrate ? Tokens.mono : Tokens.ui
+        font.pixelSize: (Tokens.controlsCrate ? 12 : Tokens.fSmall) * root.s
+        font.weight: Tokens.controlsCrate ? Font.Normal : Font.DemiBold
         elide: Text.ElideLeft
         horizontalAlignment: Text.AlignRight
     }
 
     Item {
         id: meterSlot
-        anchors.left: parent.left
-        anchors.right: parent.right
-        anchors.bottom: parent.bottom
+        // crate-mark: the meter sits inline between the caption and the value
+        anchors.left: Tokens.controlsCrate ? heading.right : parent.left
+        anchors.leftMargin: Tokens.controlsCrate ? Tokens.s2 * root.s : 0
+        anchors.right: Tokens.controlsCrate ? value.left : parent.right
+        anchors.rightMargin: Tokens.controlsCrate ? Tokens.s3 * root.s : 0
+        anchors.bottom: Tokens.controlsCrate ? undefined : parent.bottom
+        anchors.verticalCenter: Tokens.controlsCrate ? parent.verticalCenter : undefined
         height: root.meterContent ? Tokens.s3 * root.s : (Tokens.controlsCrate ? 8 * root.s : Tokens.border * 3 * root.s)
         clip: true
 

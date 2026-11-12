@@ -18,8 +18,9 @@ Rectangle {
 
     implicitHeight: content.implicitHeight + Tokens.s3 * root.s * 2
     radius: Tokens.radius * root.s * 1.5
-    color: Tokens.paperLift
-    border.width: Tokens.border
+    // crate-mark: the profile sits on the panel, no card
+    color: Tokens.controlsCrate ? "transparent" : Tokens.paperLift
+    border.width: Tokens.controlsCrate ? 0 : Tokens.border
     border.color: Tokens.lineSoft
     Accessible.name: I18n.tr("Power Profile")
     Accessible.description: I18n.tr("System-wide CPU and device policy")

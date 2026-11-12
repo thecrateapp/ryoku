@@ -255,21 +255,23 @@ Item {
         }
     }
 
-    Row {
+    // crate-mark: CPU and the activity graph side by side, the meters below as a
+    // full-width list; the stock look keeps the three zones in one row
+    Flow {
         id: body
         visible: root.hasReadings
         anchors.left: parent.left
         anchors.right: parent.right
         anchors.top: root.showIdentity ? identity.bottom : parent.top
         anchors.topMargin: root.showIdentity && visible ? Tokens.s3 * root.s : 0
-        height: visible ? Tokens.s7 * 3 * root.s : 0
+        height: visible ? (Tokens.controlsCrate ? childrenRect.height : Tokens.s7 * 3 * root.s) : 0
         spacing: Tokens.s4 * root.s
 
         Item {
             id: cpuZone
             visible: root.showCpu || root.showTemperature
-            width: visible ? (Tokens.s7 * 3 + Tokens.s2) * root.s : 0
-            height: parent.height
+            width: visible ? (Tokens.controlsCrate ? 120 : Tokens.s7 * 3 + Tokens.s2) * root.s : 0
+            height: Tokens.controlsCrate ? 96 * root.s : body.height
             clip: true
 
             Text {
@@ -383,7 +385,7 @@ Item {
             }
 
             VitalCores {
-                visible: root.showCpu
+                visible: root.showCpu && !Tokens.controlsCrate
                 anchors.left: parent.left
                 anchors.right: parent.right
                 anchors.top: cpuReading.bottom
@@ -397,8 +399,8 @@ Item {
         Item {
             id: graphZone
             visible: root.showGraph
-            width: visible ? (Tokens.s7 * 4 + Tokens.s5) * root.s : 0
-            height: parent.height
+            width: visible ? (Tokens.controlsCrate ? Math.max(0, body.width - cpuZone.width - (cpuZone.visible ? body.spacing : 0)) : (Tokens.s7 * 4 + Tokens.s5) * root.s) : 0
+            height: Tokens.controlsCrate ? 96 * root.s : body.height
             clip: true
 
             readonly property bool inlineLegend: activityLabel.implicitWidth
@@ -487,9 +489,9 @@ Item {
                 + (root.showNetwork && root.monitor.networkAvailable ? 1 : 0)
                 + (root.showDisk && root.monitor.diskAvailable && root.monitor.storageTotalGiB > 0 ? 1 : 0)
                 + (root.showBattery && root.monitor.batteryAvailable ? 1 : 0)
-            width: Math.max(0, body.width - cpuZone.width - graphZone.width
-                - body.spacing * ((cpuZone.visible ? 1 : 0) + (graphZone.visible ? 1 : 0)))
-            height: parent.height
+            width: Tokens.controlsCrate ? body.width : Math.max(0, Math.floor(body.width - cpuZone.width - graphZone.width
+                - body.spacing * ((cpuZone.visible ? 1 : 0) + (graphZone.visible ? 1 : 0))))
+            height: Tokens.controlsCrate ? visibleMeterCount * 26 * root.s : body.height
             spacing: 0
             clip: true
 
