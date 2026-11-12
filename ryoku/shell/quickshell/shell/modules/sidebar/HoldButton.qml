@@ -174,7 +174,7 @@ QQC.AbstractButton {
                 width: normalLabel.visible ? Tokens.s5 * root.s : parent.width
                 visible: root.glyph !== ""
                 text: root.glyph
-                color: Tokens.inkDim
+                color: Tokens.controlsCrate ? (root.hovered ? Tokens.mark : Tokens.inkSecondary) : Tokens.inkDim
                 font.family: "Material Symbols Rounded"
                 font.pixelSize: Tokens.fBody * root.s + Tokens.s2 * root.s
                 horizontalAlignment: Text.AlignHCenter
@@ -193,7 +193,7 @@ QQC.AbstractButton {
                 anchors.verticalCenter: parent.verticalCenter
                 visible: root.labelled && root.width >= implicitWidth + (root.glyph !== "" ? (Tokens.s6 + Tokens.s5) * root.s : Tokens.s5 * root.s)
                 text: root.text
-                color: Tokens.ink
+                color: Tokens.controlsCrate ? (root.hovered ? Tokens.ink : Tokens.inkSecondary) : Tokens.ink
                 font.family: Tokens.ui
                 font.pixelSize: Tokens.fSmall * root.s
                 font.weight: Font.Medium
@@ -221,7 +221,7 @@ QQC.AbstractButton {
                     width: normalLabel.visible ? Tokens.s5 * root.s : parent.width
                     visible: root.glyph !== ""
                     text: root.glyph
-                    color: Tokens.inkOnBone
+                    color: Tokens.controlsCrate ? Tokens.mark : Tokens.inkOnBone
                     font.family: "Material Symbols Rounded"
                     font.pixelSize: Tokens.fBody * root.s + Tokens.s2 * root.s
                     horizontalAlignment: Text.AlignHCenter
@@ -239,7 +239,7 @@ QQC.AbstractButton {
                     anchors.verticalCenter: parent.verticalCenter
                     visible: normalLabel.visible
                     text: root.text
-                    color: Tokens.inkOnBone
+                    color: Tokens.controlsCrate ? Tokens.mark : Tokens.inkOnBone
                     font.family: Tokens.ui
                     font.pixelSize: Tokens.fSmall * root.s
                     font.weight: Font.Medium
