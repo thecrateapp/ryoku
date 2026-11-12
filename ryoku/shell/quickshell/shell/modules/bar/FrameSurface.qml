@@ -3,6 +3,7 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import "popouts"
 import shell.services
+import Ryoku.Ui.Singletons as Ui
 
 // One Ryoku-owned surface riding the shared Popout. Credential prompts, voice,
 // capture, and small rail cards mount on demand.
@@ -44,7 +45,11 @@ Popout {
 
     // Surfaces size to their content at the monitor UI scale (unlike the fixed
     // reference-pixel menus). A full-span sidebar fills the frame top-to-bottom.
-    openW: Math.max(root.minWidth * root.s, body.item ? body.item.implicitWidth : 0)
+    // crate-mark: the password prompts are the mock-up's 380 px dialog at the kit's
+    // sizes, not grown with the monitor scale like the other surfaces
+    readonly property bool kitPrompt: Ui.Tokens.controlsCrate && (root.kind === "polkit" || root.kind === "keyring")
+    readonly property real bodyScale: root.kitPrompt ? 1 : root.s
+    openW: Math.max(root.kitPrompt ? 380 : root.minWidth * root.s, body.item ? body.item.implicitWidth : 0)
     // A full-span sidebar fills the frame top-to-bottom; other surfaces size to
     // content.
     openH: root.fullSpan ? root.height
@@ -109,7 +114,7 @@ Popout {
     Component {
         id: polkitBody
         PolkitPopout {
-            s: root.s
+            s: root.bodyScale
             open: root.effectiveOpen
             onCloseRequested: root.requestClose()
         }
@@ -117,7 +122,7 @@ Popout {
     Component {
         id: keyringBody
         KeyringPopout {
-            s: root.s
+            s: root.bodyScale
             open: root.effectiveOpen
             onCloseRequested: root.requestClose()
         }
