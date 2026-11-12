@@ -305,7 +305,9 @@ PanelWindow {
                                     color: root.sectionInk
                                     font.family: root.mono
                                     font.pixelSize: 10
-                                    font.letterSpacing: 0.5
+                                    // the popup card's caption rule
+                                    font.capitalization: Tokens.navCaps ? Font.AllUppercase : Font.MixedCase
+                                    font.letterSpacing: Tokens.navCaps ? Tokens.trackNav : 0.5
                                     width: parent.width
                                     elide: Text.ElideRight
                                 }

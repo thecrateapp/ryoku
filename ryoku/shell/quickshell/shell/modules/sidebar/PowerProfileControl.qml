@@ -49,7 +49,7 @@ Rectangle {
                 // a section caption under the theme style, the stock row heading otherwise
                 color: Tokens.labelAccent ? Tokens.caption : Tokens.ink
                 font.family: Tokens.navCaps ? Tokens.navFont : Tokens.ui
-                font.pixelSize: (Tokens.navCaps ? Tokens.fTiny : Tokens.fRow) * root.s
+                font.pixelSize: (Tokens.navCaps ? Tokens.fMicro : Tokens.fRow) * root.s
                 font.weight: Tokens.navCaps ? Font.Medium : Font.DemiBold
                 font.capitalization: Tokens.navCaps ? Font.AllUppercase : Font.MixedCase
                 font.letterSpacing: Tokens.navCaps ? Tokens.trackNav : 0

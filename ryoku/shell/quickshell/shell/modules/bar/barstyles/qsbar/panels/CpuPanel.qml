@@ -138,7 +138,7 @@ PanelWindow {
                     anchors.rightMargin: 16
                     anchors.verticalCenter: parent.verticalCenter
                     text: I18n.tr("KERNEL %1").arg(root.kernelRelease)
-                    color: root.sectionInk
+                    color: root.sumiHi
                     font.family: root.mono
                     font.pixelSize: 9
                 }

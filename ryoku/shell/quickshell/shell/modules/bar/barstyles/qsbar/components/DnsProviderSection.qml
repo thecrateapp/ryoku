@@ -88,7 +88,7 @@ Column {
             anchors.left: parent.left
             anchors.verticalCenter: parent.verticalCenter
             text: I18n.tr("DNS PROVIDER")
-            color: section.theme.sumiHi
+            color: section.theme.sectionInk
             font.family: section.theme.mono
             font.pixelSize: 10
             font.letterSpacing: 1

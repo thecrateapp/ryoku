@@ -151,8 +151,10 @@ Rectangle {
 
     radius: card.unifiedFrame ? 0 : Theme.radiusWidget * card.us
     // a theme style keeps the frame a hairline; the countdown carries the accent
-    border.width: card.unifiedFrame ? 0 : (Ui.Tokens.styled ? 1 : Theme.borderWidth) * card.us
-    border.color: Ui.Tokens.styled ? Ui.Tokens.line : Theme.outline
+    // a critical card (no countdown) keeps the full accent frame
+    readonly property bool critical: card.n().urgency === 2
+    border.width: card.unifiedFrame ? 0 : (Ui.Tokens.styled && !card.critical ? 1 : Theme.borderWidth) * card.us
+    border.color: Ui.Tokens.styled ? (card.critical ? Ui.Tokens.mark : Ui.Tokens.line) : Theme.outline
     color: card.unifiedFrame ? "transparent" : Theme.surface
     implicitHeight: card.animatedImplicitHeight
 
@@ -381,7 +383,8 @@ Rectangle {
                     width: actionCol.width
                     height: actionLabel.implicitHeight + Theme.paddingSm * 2 * card.us
                     radius: Theme.radiusWidget * card.us
-                    color: actionBtn.filled ? (actionHov.hovered ? Theme.vermLit : Theme.primary)
+                    color: actionBtn.filled ? (Ui.Tokens.accentMarks ? (actionHov.hovered ? Ui.Tokens.hoverInk : Ui.Tokens.mark)
+                                                 : (actionHov.hovered ? Theme.vermLit : Theme.primary))
                         : (actionHov.hovered ? Ui.Tokens.rowWash : "transparent")
                     border.width: actionBtn.filled ? 0 : 1
                     border.color: Ui.Tokens.mark
@@ -394,7 +397,7 @@ Rectangle {
                         width: parent.width - Theme.paddingMd * 2 * card.us
                         horizontalAlignment: Text.AlignHCenter
                         text: actionBtn.modelData.text
-                        color: actionBtn.filled ? Theme.onPrimary : Ui.Tokens.mark
+                        color: actionBtn.filled ? (Ui.Tokens.accentMarks ? Ui.Tokens.paper : Theme.onPrimary) : Ui.Tokens.mark
                         font.family: Theme.fontPrimary
                         font.pixelSize: Theme.fontSm * card.us
                         font.weight: Font.Bold

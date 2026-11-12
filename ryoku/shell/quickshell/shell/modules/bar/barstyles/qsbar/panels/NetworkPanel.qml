@@ -565,7 +565,7 @@ PanelWindow {
                 Row {
                     width: parent.width
                     visible: netPanel.mode === "wifi"
-                    UiText { text: I18n.tr("SSID"); color: root.sectionInk; font.family: root.mono; font.pixelSize: 11; width: parent.width * 0.4 }
+                    UiText { text: I18n.tr("SSID"); color: root.sumiHi; font.family: root.mono; font.pixelSize: 11; width: parent.width * 0.4 }
                     UiText { text: netPanel.ssid; color: root.ink; font.family: root.mono; font.pixelSize: 11; width: parent.width * 0.6; elide: Text.ElideRight }
                 }
                 Row {

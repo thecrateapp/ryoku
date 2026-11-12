@@ -301,9 +301,9 @@ Item {
             implicitHeight: statusBody.implicitHeight + Tokens.s4 * root.s * 2
             height: implicitHeight
             radius: Tokens.radius * root.s * 2
-            color: Network.activeSsid !== "" ? Tokens.bone : Tokens.paperLift
+            color: Network.activeSsid !== "" ? (Tokens.selectFill ? Tokens.bone : Tokens.pickFill) : Tokens.paperLift
             border.width: Tokens.border
-            border.color: Network.activeSsid !== "" ? Tokens.bone : Tokens.lineSoft
+            border.color: Network.activeSsid !== "" ? (Tokens.selectFill ? Tokens.bone : Tokens.pickEdge) : Tokens.lineSoft
 
             Behavior on color {
                 enabled: root.motionAllowed
@@ -322,11 +322,11 @@ Item {
                     width: 52 * root.s
                     height: width
                     radius: width / 2
-                    color: Network.activeSsid !== "" ? Tokens.inkOnBone : Tokens.tint10
+                    color: Network.activeSsid !== "" && Tokens.selectFill ? Tokens.inkOnBone : Tokens.tint10
                     Text {
                         anchors.centerIn: parent
                         text: !Network.wifiPresent || !Network.wifiRadio ? "wifi_off" : root.signalGlyph(Network.wifi.strength)
-                        color: Network.activeSsid !== "" ? Tokens.bone : Tokens.inkDim
+                        color: Network.activeSsid !== "" ? (Tokens.selectFill ? Tokens.bone : Tokens.mark) : Tokens.inkDim
                         font.family: "Material Symbols Rounded"
                         font.pixelSize: 25 * root.s
                     }
@@ -342,7 +342,7 @@ Item {
                             : Network.activeSsid ? Network.activeSsid
                             : Network.wifiConnectivity === "Connecting" ? I18n.tr("Connecting…")
                             : I18n.tr("Ready to connect")
-                        color: Network.activeSsid !== "" ? Tokens.inkOnBone : Tokens.ink
+                        color: Network.activeSsid !== "" ? (Tokens.selectFill ? Tokens.inkOnBone : Tokens.pickInk) : Tokens.ink
                         font.family: Tokens.ui
                         font.pixelSize: Tokens.fValue * root.s
                         font.weight: Font.DemiBold
@@ -355,7 +355,7 @@ Item {
                             : Network.activeSsid ? I18n.tr("Connected · %1% signal").arg(Network.wifi.strength || 0)
                             : root.scanning ? I18n.tr("Searching for nearby networks…")
                             : I18n.tr("Choose a network below.")
-                        color: Network.activeSsid !== "" ? Tokens.inkOnBone : Tokens.inkMuted
+                        color: Network.activeSsid !== "" ? (Tokens.selectFill ? Tokens.inkOnBone : Tokens.pickInkDim) : Tokens.inkMuted
                         font.family: Tokens.ui
                         font.pixelSize: Tokens.fSmall * root.s
                         wrapMode: Text.WrapAtWordBoundaryOrAnywhere
@@ -372,9 +372,9 @@ Item {
                     onClicked: Network.disconnectWifi()
                     background: Rectangle {
                         radius: Tokens.radius * root.s * 1.5
-                        color: disconnectButton.down || disconnectButton.hovered ? Tokens.inkOnBone : "transparent"
+                        color: disconnectButton.down || disconnectButton.hovered ? (Tokens.selectFill ? Tokens.inkOnBone : Tokens.rowWash) : "transparent"
                         border.width: Tokens.border
-                        border.color: Tokens.inkOnBone
+                        border.color: Tokens.selectFill ? Tokens.inkOnBone : Tokens.mark
                         Behavior on color {
                             enabled: root.motionAllowed
                             ColorAnimation { duration: Tokens.snap }
@@ -383,7 +383,7 @@ Item {
                     contentItem: Text {
                         id: disconnectLabel
                         text: I18n.tr("Disconnect")
-                        color: disconnectButton.down || disconnectButton.hovered ? Tokens.bone : Tokens.inkOnBone
+                        color: disconnectButton.down || disconnectButton.hovered ? (Tokens.selectFill ? Tokens.bone : Tokens.mark) : (Tokens.selectFill ? Tokens.inkOnBone : Tokens.mark)
                         font.family: Tokens.ui
                         font.pixelSize: Tokens.fBody * root.s
                         font.weight: Font.Medium
@@ -428,11 +428,11 @@ Item {
                     implicitHeight: Math.max(64 * root.s, apCopy.implicitHeight + Tokens.s3 * root.s * 2)
                     height: implicitHeight
                     radius: Tokens.radius * root.s * 1.5
-                    color: apRow.selected ? Tokens.bone
+                    color: apRow.selected ? (Tokens.selectFill ? Tokens.bone : Tokens.pickFill)
                         : apHover.hovered ? Tokens.tint10
                         : apRow.modelData.saved ? Tokens.tint10 : Tokens.tint5
                     border.width: Tokens.border
-                    border.color: apRow.selected ? Tokens.bone : apHover.hovered ? Tokens.lineStrong : Tokens.lineSoft
+                    border.color: apRow.selected ? (Tokens.selectFill ? Tokens.bone : Tokens.pickEdge) : apHover.hovered ? Tokens.lineStrong : Tokens.lineSoft
 
                     Behavior on color {
                         enabled: root.motionAllowed
@@ -451,7 +451,7 @@ Item {
                         width: 30 * root.s
                         horizontalAlignment: Text.AlignHCenter
                         text: root.signalGlyph(apRow.modelData.strength)
-                        color: apRow.selected ? Tokens.inkOnBone : Tokens.inkDim
+                        color: apRow.selected ? (Tokens.selectFill ? Tokens.inkOnBone : Tokens.pickInk) : Tokens.inkDim
                         font.family: "Material Symbols Rounded"
                         font.pixelSize: 23 * root.s
                     }
@@ -466,7 +466,7 @@ Item {
                         Text {
                             width: parent.width
                             text: apRow.modelData.ssid || ""
-                            color: apRow.selected ? Tokens.inkOnBone : Tokens.ink
+                            color: apRow.selected ? (Tokens.selectFill ? Tokens.inkOnBone : Tokens.pickInk) : Tokens.ink
                             font.family: Tokens.ui
                             font.pixelSize: Tokens.fRow * root.s
                             font.weight: Font.DemiBold
@@ -478,7 +478,7 @@ Item {
                                 + (apRow.modelData.saved ? " · " + I18n.tr("Saved") : "")
                                 + (root.multiBandSsids[apRow.modelData.ssid] && apRow.modelData.band ? " · " + I18n.tr("%1 GHz").arg(apRow.modelData.band) : "")
                                 + " · " + I18n.tr("%1% signal").arg(apRow.modelData.strength || 0)
-                            color: apRow.selected ? Tokens.inkOnBone : Tokens.inkMuted
+                            color: apRow.selected ? (Tokens.selectFill ? Tokens.inkOnBone : Tokens.pickInkDim) : Tokens.inkMuted
                             font.family: Tokens.ui
                             font.pixelSize: Tokens.fSmall * root.s
                             elide: Text.ElideRight

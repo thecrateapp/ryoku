@@ -129,7 +129,7 @@ Item {
                     width: parent.width
                     text: root.detail
                     color: root.connected ? (Tokens.selectFill ? Tokens.inkOnBone : Tokens.pickInkDim) : Tokens.inkMuted
-                    opacity: root.connected ? 0.74 : 1
+                    opacity: root.filled ? 0.74 : 1
                     font.family: Tokens.ui
                     font.pixelSize: Tokens.fSmall * root.s
                     elide: Text.ElideRight

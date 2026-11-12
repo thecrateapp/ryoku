@@ -298,7 +298,7 @@ PanelWindow {
                     anchors.rightMargin: 16
                     anchors.verticalCenter: parent.verticalCenter
                     text: I18n.tr("DRIVES: %1").arg(root.storageDrives.length)
-                    color: root.sectionInk
+                    color: root.sumiHi
                     font.family: root.mono
                     font.pixelSize: 9
                     font.letterSpacing: 0.5
