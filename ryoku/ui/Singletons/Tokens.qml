@@ -56,6 +56,8 @@ Singleton {
     // ── paper ────────────────────────────────────────────────────────────
     readonly property color paper: role("surface", defaultPaper)
     readonly property color paperLift: role("surfaceContainerLow", defaultPaperLift)
+    // a popover or panel surface, one step above paperLift
+    readonly property color popover: role("surfaceContainer", paperLift)
 
     // ── mode flag ────────────────────────────────────────────────────────
     // True when the resolved surface is light. Decoration authored for a dark
@@ -74,6 +76,11 @@ Singleton {
     // wallpaper dimmed onSurfaceVariant, which read as "options hard to see".
     readonly property color inkMuted: Qt.rgba(inkDim.r, inkDim.g, inkDim.b, 0.88)
     readonly property color inkFaint: Qt.rgba(inkDim.r, inkDim.g, inkDim.b, 0.68)
+    // the crate-mark text ramp: secondary ink, a subtle caption tone and a faint
+    // rule tone, all from the palette so a light theme keeps them legible
+    readonly property color inkSecondary: Qt.rgba(ink.r, ink.g, ink.b, 0.78)
+    readonly property color inkSubtle: Qt.rgba(inkDim.r, inkDim.g, inkDim.b, 0.78)
+    readonly property color inkFaint2: Qt.rgba(inkDim.r, inkDim.g, inkDim.b, 0.42)
 
     // ── bone stock (inverted): the Material inverse-surface pair, so the light
     // plate and its dark ink keep contrast on a light OR dark theme ───────────
@@ -127,6 +134,10 @@ Singleton {
     // the live row of a list when the theme drops the bone inversion: a faint
     // accent wash, marked by a bar (the row keeps its normal ink)
     readonly property color rowWash: Qt.rgba(sun.r, sun.g, sun.b, 0.08)
+    // the Beam's colours and the hover edge of chips and rows (crate-mark)
+    readonly property color thumb: mixRole(sunHi, ink, 0.5)
+    readonly property color beamTail: mixRole(sun, sunHi, 0.5)
+    readonly property color markHover: Qt.rgba(mark.r, mark.g, mark.b, 0.4)
     // a picked tile or card (a style, a design, a rail): the bone block, or with
     // selectFill off the wash inside a mark edge, the tile keeping its own ink
     readonly property color pickFill: selectFill ? bone : rowWash
@@ -155,14 +166,17 @@ Singleton {
     readonly property int fHero: px(34)     // a headline readout
     // a theme style's density "compact" sets the denser scale the Crate panels use
     property bool compact: false
+    // a theme style's controls "crate": the crate-mark geometry for the kit
+    // (straight chips, the Beam slider, plateless icon buttons, mono labels)
+    property bool controlsCrate: false
     readonly property int fValue: px(compact ? 22 : 26)    // a cell's value
     readonly property int fRow: px(compact ? 13 : 15)      // a row name
     readonly property int fBody: px(compact ? 12 : 14)
     readonly property int fSmall: px(compact ? 11 : 13)    // descriptions
-    readonly property int fMicro: px(compact ? 10 : 11)    // tracked labels
+    readonly property int fMicro: px(11)    // tracked labels (crate-mark's 11 px in both scales)
     readonly property int fTiny: px(9)      // corner tags, struck defaults
 
-    readonly property real trackLabel: 1.4   // letter-spacing for micro labels
+    readonly property real trackLabel: controlsCrate ? fMicro * 0.14 : 1.4   // letter-spacing for micro labels
     readonly property real trackMark: 2.2    // for eyebrows and section marks
 
     // ── space ────────────────────────────────────────────────────────────
@@ -341,8 +355,11 @@ Singleton {
                 const w = displays && displays.widgets;
                 if (w && typeof w === "object" && w !== null)
                     widgets = w;
-                if (typeof o.fontFamily === "string" && o.fontFamily.length) { uiFont = o.fontFamily; monoFont = o.fontFamily; }
                 style = ThemeStyle.readStyle(o && o.themeStyle);
+                if (typeof o.fontFamily === "string" && o.fontFamily.length) { uiFont = o.fontFamily; monoFont = o.fontFamily; }
+                // a style that names its mono keeps it over the user's single family
+                if (style.mono.length)
+                    monoFont = style.mono;
             }
         } catch (e) {
             pal = null;
@@ -362,6 +379,7 @@ Singleton {
         t.displayWeight = style.displayWeight;
         t.displayWeightSet = style.displayWeightSet;
         t.compact = style.compact;
+        t.controlsCrate = style.controlsCrate;
         t.navCaps = style.flags.navCaps;
         t.accentMarks = style.flags.accentMarks;
         t.focusAccent = style.flags.focusAccent;

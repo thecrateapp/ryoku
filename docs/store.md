@@ -378,7 +378,10 @@ Popular, New, and Updated rankings.
   holding a quote, a backslash or a control character is dropped), `density`
   (`"compact"` sets the denser type and row scale: rows 13 px, body 12, descriptions
   11, tracked labels 10, values 22, row height 40; anything else keeps the regular
-  scale), and switches that keep
+  scale), `controls` (`"crate"` opts into the crate-mark control geometry: straight
+  32 px chips, the Beam slider and progress, plateless icon buttons and mono labels;
+  anything else keeps the stock controls), `mono` (the mono face a style keeps even
+  when the user sets one family for the shell; checked like `navFont`), and switches that keep
   the signature look when absent: `navCaps` (uppercase tracked navigation
   labels), `accentMarks` (selection marks and hover text in the palette
   secondary, and a switch that is on fills its track with the primary),

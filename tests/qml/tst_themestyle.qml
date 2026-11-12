@@ -49,6 +49,15 @@ TestCase {
         compare(ThemeStyle.readStyle({ density: 3 }).compact, false)
     }
 
+    function test_controls_and_mono_are_read() {
+        compare(ThemeStyle.readStyle(undefined).controlsCrate, false)
+        compare(ThemeStyle.readStyle(undefined).mono, "")
+        compare(ThemeStyle.readStyle({ controls: "crate" }).controlsCrate, true)
+        compare(ThemeStyle.readStyle({ controls: "pill" }).controlsCrate, false)
+        compare(ThemeStyle.readStyle({ mono: "JetBrainsMono Nerd Font" }).mono, "JetBrainsMono Nerd Font")
+        compare(ThemeStyle.readStyle({ mono: 7 }).mono, "")
+    }
+
     function test_out_of_range_line_alpha_is_ignored() {
         compare(ThemeStyle.readStyle({ lineAlpha: 0 }).lineAlpha, 0.26)
         compare(ThemeStyle.readStyle({ lineAlpha: 3 }).lineAlpha, 0.26)

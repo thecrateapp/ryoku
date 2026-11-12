@@ -453,3 +453,25 @@ func TestThemeStyleValuesKeepsOnlyKnownDensity(t *testing.T) {
 		}
 	}
 }
+
+func TestThemeStyleValuesKeepsControlsCrate(t *testing.T) {
+	if got := themeStyleValues(&themeStyleSpec{Controls: " crate "}); got["controls"] != "crate" {
+		t.Fatalf("controls = %v, want crate", got["controls"])
+	}
+	for _, c := range []string{"", "pill", "Crate\x00", "stock"} {
+		if v := themeStyleValues(&themeStyleSpec{Controls: c}); v != nil {
+			t.Errorf("controls %q must set nothing, got %v", c, v)
+		}
+	}
+}
+
+func TestThemeStyleValuesKeepsMonoFace(t *testing.T) {
+	if got := themeStyleValues(&themeStyleSpec{Mono: "  JetBrainsMono Nerd Font "}); got["mono"] != "JetBrainsMono Nerd Font" {
+		t.Fatalf("mono = %v, want the trimmed family", got["mono"])
+	}
+	for _, m := range []string{"   ", "Bad\"Face", "Bad\x1bFace", strings.Repeat("x", 80)} {
+		if v := themeStyleValues(&themeStyleSpec{Mono: m}); v != nil {
+			t.Errorf("mono %q must be dropped, got %v", m, v)
+		}
+	}
+}

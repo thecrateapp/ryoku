@@ -124,6 +124,8 @@ type themeStyleSpec struct {
 	Display       string   `json:"display"`
 	NavFont       string   `json:"navFont"`
 	Density       string   `json:"density"`
+	Controls      string   `json:"controls"`
+	Mono          string   `json:"mono"`
 	DisplayWeight *int     `json:"displayWeight"`
 	NavCaps       *bool    `json:"navCaps"`
 	AccentMarks   *bool    `json:"accentMarks"`
@@ -172,6 +174,14 @@ func themeStyleValues(spec *themeStyleSpec) map[string]any {
 	// default, so it and anything unknown set nothing
 	if strings.TrimSpace(spec.Density) == "compact" {
 		out["density"] = "compact"
+	}
+	// "crate" opts the theme into the crate-mark control geometry (straight chips,
+	// the Beam slider, plateless icon buttons, mono labels); anything else is stock
+	if strings.TrimSpace(spec.Controls) == "crate" {
+		out["controls"] = "crate"
+	}
+	if face := strings.TrimSpace(spec.Mono); safeFace(face) {
+		out["mono"] = face
 	}
 	if spec.DisplayWeight != nil {
 		w := *spec.DisplayWeight
