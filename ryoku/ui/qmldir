@@ -51,3 +51,10 @@ PlaceMath 1.0 lib/place.js
 KeypressMath 1.0 lib/keypress.js
 BtName 1.0 lib/bluetooth.js
 AuraMath 1.0 lib/aura.js
+Beam 1.0 Beam.qml
+Chip 1.0 Chip.qml
+PickRow 1.0 PickRow.qml
+IconButton 1.0 IconButton.qml
+TrackLabel 1.0 TrackLabel.qml
+Divider 1.0 Divider.qml
+PageHeader 1.0 PageHeader.qml
