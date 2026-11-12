@@ -2,6 +2,8 @@ pragma ComponentBehavior: Bound
 
 import QtQuick
 import shell.services
+import Ryoku.Ui as Kit
+import Ryoku.Ui.Singletons as Ui
 import "../../components"
 
 /**
@@ -48,16 +50,24 @@ Rectangle {
         ? Math.round(150 * card.s)
         : Math.round(textCol.implicitHeight + card.pad * 2)
 
-    radius: Math.round(14 * card.s)
+    // crate-mark: the mock-up's tile: radius 8, a 1 px edge, the pick wash
+    readonly property bool crate: Ui.Tokens.controlsCrate
+    radius: Math.round((card.crate ? 8 : 14) * card.s)
     // Rounded corners must clip the thumbnail too, so image cards render through
     // a layer; text tiles keep their content inside and need no mask.
     layer.enabled: card.isImage
     layer.smooth: true
-    color: card.selected
+    color: card.crate
+        ? (card.selected ? Ui.Tokens.pickFill : hover.hovered ? Ui.Tokens.tint5 : "transparent")
+        : card.selected
         ? Theme.surfaceContainerHighest
         : (hover.hovered ? Theme.surfaceContainerHigh : Theme.surfaceContainer)
-    border.width: card.selected ? Math.max(2, Math.round(2 * card.s)) : Theme.borderWidth
-    border.color: card.selected
+    border.width: card.crate ? 1 : card.selected ? Math.max(2, Math.round(2 * card.s)) : Theme.borderWidth
+    border.color: card.crate
+        ? (card.selected ? Ui.Tokens.pickEdge
+            : card.starred ? Qt.rgba(Ui.Tokens.mark.r, Ui.Tokens.mark.g, Ui.Tokens.mark.b, 0.35)
+            : hover.hovered ? Ui.Tokens.markHover : Ui.Tokens.line)
+        : card.selected
         ? Theme.primary
         : (card.starred ? Qt.rgba(Theme.primary.r, Theme.primary.g, Theme.primary.b, 0.6) : Theme.outlineVariant)
 
@@ -76,7 +86,7 @@ Rectangle {
         height: Math.round(parent.height * 0.45)
         radius: width / 2
         color: Theme.primary
-        visible: card.selected
+        visible: card.selected && !card.crate
     }
 
     // Whole-card hover, passive so it stays true while the pointer is over the
@@ -186,11 +196,20 @@ Rectangle {
             height: width
             radius: width / 2
             visible: hover.hovered || card.selected
-            color: delArea.containsMouse
+            color: delArea.containsMouse && !card.crate
                 ? Qt.rgba(Theme.error.r, Theme.error.g, Theme.error.b, 0.16)
                 : "transparent"
 
+            Kit.Glyph {
+                visible: card.crate
+                anchors.centerIn: parent
+                name: "delete"
+                size: Math.round(16 * card.s)
+                color: delArea.containsMouse ? Ui.Tokens.alert : Ui.Tokens.inkSecondary
+            }
+
             MaterialIcon {
+                visible: !card.crate
                 anchors.centerIn: parent
                 text: "delete"
                 fill: 0
@@ -216,13 +235,23 @@ Rectangle {
             height: width
             radius: width / 2
             visible: hover.hovered || card.starred || card.selected
-            color: card.starred
+            color: card.crate ? (card.isImage ? Qt.rgba(0, 0, 0, 0.3) : "transparent")
+                : card.starred
                 ? Qt.rgba(Theme.primary.r, Theme.primary.g, Theme.primary.b, 0.20)
                 : (starArea.containsMouse
                     ? Qt.rgba(card.controlInk.r, card.controlInk.g, card.controlInk.b, 0.14)
                     : (card.isImage ? Qt.rgba(0, 0, 0, 0.3) : "transparent"))
 
+            Kit.Glyph {
+                visible: card.crate
+                anchors.centerIn: parent
+                name: "star"
+                size: Math.round(16 * card.s)
+                color: card.starred || starArea.containsMouse ? Ui.Tokens.mark : Ui.Tokens.inkSecondary
+            }
+
             MaterialIcon {
+                visible: !card.crate
                 anchors.centerIn: parent
                 text: "star"
                 fill: card.starred ? 1 : 0

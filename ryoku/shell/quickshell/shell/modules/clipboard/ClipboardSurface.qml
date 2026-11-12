@@ -6,6 +6,7 @@ import Quickshell
 import Quickshell.Wayland
 import shell.services
 import Ryoku.Ui.Singletons
+import Ryoku.Ui as Kit
 import "../../components"
 import "../../utils/fuzzy.js" as Fuzzy
 import "../../services/lib/screens.js" as Screens
@@ -129,8 +130,8 @@ Scope {
     readonly property real widthPercent: Math.max(40, Math.min(90, root.layout.widthPercent === undefined ? 65 : Number(root.layout.widthPercent)))
     readonly property real heightPercent: Math.max(24, Math.min(72, root.layout.heightPercent === undefined ? 42 : Number(root.layout.heightPercent)))
     readonly property real bottomPercent: Math.max(0, Math.min(20, root.layout.bottomPercent === undefined ? 0 : Number(root.layout.bottomPercent)))
-    readonly property real panelRadius: Math.max(0, Math.min(32, root.layout.panelRadius === undefined ? 18 : Number(root.layout.panelRadius)))
-    readonly property real paneRadius: Math.max(0, Math.min(32, root.layout.paneRadius === undefined ? 12 : Number(root.layout.paneRadius)))
+    readonly property real panelRadius: Math.max(0, Math.min(32, root.layout.panelRadius === undefined ? (Tokens.controlsCrate ? 10 : 18) : Number(root.layout.panelRadius)))
+    readonly property real paneRadius: Math.max(0, Math.min(32, root.layout.paneRadius === undefined ? (Tokens.controlsCrate ? 10 : 12) : Number(root.layout.paneRadius)))
     readonly property real cardRadius: Math.max(0, Math.min(32, root.layout.cardRadius === undefined ? 9 : Number(root.layout.cardRadius)))
 
     // A single pane: header (icon, title, count), a hairline, the card list, and
@@ -283,7 +284,8 @@ Scope {
         radius: Math.round(root.paneRadius * pane.s)
         color: Qt.rgba(Theme.surface.r, Theme.surface.g, Theme.surface.b, 0.35)
         border.width: Theme.borderWidth
-        border.color: pane.active ? Qt.rgba(Theme.primary.r, Theme.primary.g, Theme.primary.b, 0.5) : Theme.outlineVariant
+        border.color: Tokens.controlsCrate ? (pane.active ? Tokens.pickEdge : Tokens.line)
+            : pane.active ? Qt.rgba(Theme.primary.r, Theme.primary.g, Theme.primary.b, 0.5) : Theme.outlineVariant
         Behavior on border.color { ColorAnimation { duration: Motion.rowFade; easing.type: Motion.easeType; easing.bezierCurve: Motion.easeCurve } }
 
         Item {
@@ -302,11 +304,23 @@ Scope {
                 spacing: Math.round(8 * pane.s)
 
                 MaterialIcon {
+                    id: materialGlyph0
                     anchors.verticalCenter: parent.verticalCenter
                     text: pane.glyph
                     fill: 0
                     font.pixelSize: Math.round(Theme.iconSm * pane.s)
-                    color: Theme.onSurface
+                    readonly property color ink: Theme.onSurface
+                    color: materialGlyph0Solar.drawn ? "transparent" : materialGlyph0.ink
+
+                    // crate-mark: the kit catalogue's Solar glyph over the font glyph
+                    Kit.Glyph {
+                        id: materialGlyph0Solar
+                        visible: materialGlyph0Solar.drawn
+                        anchors.centerIn: parent
+                        name: pane.glyph
+                        color: materialGlyph0.ink
+                        size: Math.round((Math.round(Theme.iconSm * pane.s)) * 0.85)
+                    }
                 }
                 Text {
                     anchors.verticalCenter: parent.verticalCenter
@@ -328,7 +342,7 @@ Scope {
                 anchors.leftMargin: Math.round(14 * pane.s)
                 anchors.verticalCenter: parent.verticalCenter
                 height: Math.round(24 * pane.s)
-                radius: height / 2
+                radius: Tokens.controlsCrate ? Math.round(6 * pane.s) : height / 2
                 // Compact: it grows with the pane but never crowds the count chip.
                 // Plain x/width arithmetic -- anchor lines do not subtract.
                 width: Math.min(Math.round(260 * pane.s),
@@ -336,7 +350,8 @@ Scope {
                                          countChip.x - (titleRow.x + titleRow.width) - Math.round(24 * pane.s)))
                 color: Qt.rgba(Theme.onSurface.r, Theme.onSurface.g, Theme.onSurface.b, input.activeFocus ? 0.10 : 0.05)
                 border.width: 1
-                border.color: input.activeFocus
+                border.color: Tokens.controlsCrate ? (input.activeFocus ? Tokens.mark : Tokens.line)
+                    : input.activeFocus
                     ? Qt.rgba(Theme.primary.r, Theme.primary.g, Theme.primary.b, 0.75)
                     : Theme.outlineVariant
                 Behavior on color { ColorAnimation { duration: Motion.rowFade; easing.type: Motion.easeType; easing.bezierCurve: Motion.easeCurve } }
@@ -350,7 +365,18 @@ Scope {
                     text: "search"
                     fill: 0
                     font.pixelSize: Math.round(Theme.iconSm * pane.s * 0.8)
-                    color: input.activeFocus ? Theme.onSurfaceVariant : Qt.rgba(Theme.onSurfaceVariant.r, Theme.onSurfaceVariant.g, Theme.onSurfaceVariant.b, 0.75)
+                    readonly property color ink: input.activeFocus ? Theme.onSurfaceVariant : Qt.rgba(Theme.onSurfaceVariant.r, Theme.onSurfaceVariant.g, Theme.onSurfaceVariant.b, 0.75)
+                    color: magSolar.drawn ? "transparent" : mag.ink
+
+                    // crate-mark: the kit catalogue's Solar glyph over the font glyph
+                    Kit.Glyph {
+                        id: magSolar
+                        visible: magSolar.drawn
+                        anchors.centerIn: parent
+                        name: "search"
+                        color: mag.ink
+                        size: Math.round((Math.round(Theme.iconSm * pane.s * 0.8)) * 0.85)
+                    }
                 }
 
                 Text {
@@ -473,7 +499,8 @@ Scope {
                     text: "close"
                     fill: 0
                     font.pixelSize: Math.round(Theme.iconSm * pane.s * 0.75)
-                    color: clearArea.containsMouse ? Theme.onSurface : Theme.onSurfaceVariant
+                    readonly property color ink: clearArea.containsMouse ? Theme.onSurface : Theme.onSurfaceVariant
+                    color: clearSolar.drawn ? "transparent" : clear.ink
                     MouseArea {
                         id: clearArea
                         anchors.fill: parent
@@ -484,6 +511,16 @@ Scope {
                             input.text = "";
                             input.forceActiveFocus();
                         }
+                    }
+
+                    // crate-mark: the kit catalogue's Solar glyph over the font glyph
+                    Kit.Glyph {
+                        id: clearSolar
+                        visible: clearSolar.drawn
+                        anchors.centerIn: parent
+                        name: "close"
+                        color: clear.ink
+                        size: Math.round((Math.round(Theme.iconSm * pane.s * 0.75)) * 0.85)
                     }
                 }
             }
@@ -575,11 +612,23 @@ Scope {
             visible: pane.items.length === 0
 
             MaterialIcon {
+                id: materialGlyph3
                 anchors.horizontalCenter: parent.horizontalCenter
                 text: pane.emptyGlyph
                 fill: 0
                 font.pixelSize: Math.round(Theme.iconLg * pane.s)
-                color: Qt.rgba(Theme.onSurfaceVariant.r, Theme.onSurfaceVariant.g, Theme.onSurfaceVariant.b, 0.5)
+                readonly property color ink: Qt.rgba(Theme.onSurfaceVariant.r, Theme.onSurfaceVariant.g, Theme.onSurfaceVariant.b, 0.5)
+                color: materialGlyph3Solar.drawn ? "transparent" : materialGlyph3.ink
+
+                // crate-mark: the kit catalogue's Solar glyph over the font glyph
+                Kit.Glyph {
+                    id: materialGlyph3Solar
+                    visible: materialGlyph3Solar.drawn
+                    anchors.centerIn: parent
+                    name: pane.emptyGlyph
+                    color: materialGlyph3.ink
+                    size: Math.round((Math.round(Theme.iconLg * pane.s)) * 0.85)
+                }
             }
             Text {
                 width: parent.width
