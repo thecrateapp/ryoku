@@ -93,7 +93,7 @@ Item {
             text: root.glyph
             color: Tokens.controlsCrate ? (root.muted ? Tokens.alert : iconButton.hovered ? Tokens.mark : Tokens.inkSecondary) : root.muted ? Tokens.inkOnBone : Tokens.inkDim
             font.family: "Material Symbols Rounded"
-            font.pixelSize: (Tokens.controlsCrate ? 20 : Tokens.fValue) * root.s
+            font.pixelSize: (Tokens.controlsCrate ? 18 : Tokens.fValue) * root.s
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
             Accessible.ignored: true
@@ -114,7 +114,7 @@ Item {
         anchors.top: Tokens.controlsCrate ? undefined : parent.top
         anchors.topMargin: Tokens.s1 * root.s
         anchors.verticalCenter: Tokens.controlsCrate ? parent.verticalCenter : undefined
-        width: Tokens.controlsCrate ? 72 * root.s : implicitWidth
+        width: Tokens.controlsCrate ? 88 * root.s : implicitWidth
         text: root.label
         color: Tokens.controlsCrate ? Tokens.inkSubtle : Tokens.ink
         font.family: Tokens.controlsCrate ? Tokens.mono : Tokens.ui

@@ -34,8 +34,8 @@ Rectangle {
         anchors.left: parent.left
         anchors.right: parent.right
         anchors.verticalCenter: parent.verticalCenter
-        anchors.margins: Tokens.s3 * root.s
-        spacing: Tokens.s2 * root.s
+        anchors.margins: (Tokens.controlsCrate ? 0 : Tokens.s3) * root.s
+        spacing: (Tokens.controlsCrate ? Tokens.s3 : Tokens.s2) * root.s
 
         Item {
             width: parent.width

@@ -45,14 +45,33 @@ Item {
         Column {
             id: overview
             width: overviewScroll.width
-            spacing: Tokens.s3 * root.s
+            spacing: (Tokens.controlsCrate ? Tokens.s4 : Tokens.s3) * root.s
 
             Repeater {
                 model: SidebarState.visibleSections
 
-                delegate: Loader {
-                    id: sectionLoader
+                delegate: Item {
+                    id: sectionSlot
                     required property var modelData
+                    // crate-mark: a hairline above the tiles (strong) and the levels (quiet);
+                    // the bottom bar draws its own
+                    readonly property bool ruled: Tokens.controlsCrate && (modelData.id === "connections" || modelData.id === "levels")
+                    readonly property real ruleGap: ruled ? Tokens.s4 * root.s + 1 : 0
+                    width: overview.width
+                    height: ruleGap + sectionLoader.height
+                    visible: sectionLoader.height > 0
+
+                    Rectangle {
+                        visible: sectionSlot.ruled
+                        width: parent.width
+                        height: 1
+                        color: sectionSlot.modelData.id === "connections" ? Tokens.line : Tokens.lineSoft
+                    }
+
+                Loader {
+                    id: sectionLoader
+                    readonly property var modelData: sectionSlot.modelData
+                    y: sectionSlot.ruleGap
                     width: overview.width
                     active: root.currentPage === "controls"
                     sourceComponent: modelData.id === "vitals" ? vitalsSection
@@ -72,6 +91,7 @@ Item {
                             easing.type: Tokens.ease
                         }
                     }
+                }
                 }
             }
         }

@@ -96,7 +96,7 @@ Item {
 
         Rectangle {
             id: divider
-            visible: sessionActions.actionCount > 0 && (toggles.hasControls || gear.visible)
+            visible: !Tokens.controlsCrate && sessionActions.actionCount > 0 && (toggles.hasControls || gear.visible)
             anchors.verticalCenter: parent.verticalCenter
             width: Tokens.border
             height: Tokens.ctlH * root.s

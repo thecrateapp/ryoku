@@ -40,7 +40,10 @@ Item {
         readonly property color gpu: Tokens.controlsCrate ? Tokens.inkDim : Tokens.role("tertiary", Tokens.inkMuted)
     }
 
-    implicitHeight: (root.showIdentity ? (Tokens.s7 + Tokens.s3) * s : 0)
+    // crate-mark: the height follows the flowed vitals (CPU and graph, then meters)
+    implicitHeight: Tokens.controlsCrate
+        ? (root.showIdentity ? 40 * s : 0) + (root.showIdentity && root.hasReadings ? Tokens.s4 * s : 0) + (root.hasReadings ? body.height : 0)
+        : (root.showIdentity ? (Tokens.s7 + Tokens.s3) * s : 0)
         + (root.showIdentity && root.hasReadings ? Tokens.s3 * s : 0)
         + (root.hasReadings ? Tokens.s7 * 3 * s : 0)
     clip: true
@@ -152,14 +155,15 @@ Item {
         anchors.left: parent.left
         anchors.right: parent.right
         anchors.top: parent.top
-        height: visible ? (Tokens.s7 + Tokens.s3) * root.s : 0
+        height: visible ? (Tokens.controlsCrate ? 40 : Tokens.s7 + Tokens.s3) * root.s : 0
         clip: true
 
         Rectangle {
             id: avatar
+            visible: !Tokens.controlsCrate
             anchors.left: parent.left
             anchors.verticalCenter: parent.verticalCenter
-            width: Tokens.s6 * root.s
+            width: (Tokens.controlsCrate ? 0 : Tokens.s6) * root.s
             height: width
             radius: width / 2
             color: Tokens.role("primaryContainer", Tokens.tint10)
@@ -190,7 +194,7 @@ Item {
 
         Column {
             anchors.left: avatar.right
-            anchors.leftMargin: Tokens.s2 * root.s
+            anchors.leftMargin: (Tokens.controlsCrate ? 0 : Tokens.s2) * root.s
             anchors.right: clockBlock.left
             anchors.rightMargin: Tokens.s4 * root.s
             anchors.verticalCenter: parent.verticalCenter
@@ -243,6 +247,7 @@ Item {
             }
 
             Text {
+                visible: !Tokens.controlsCrate
                 width: parent.width
                 text: Qt.formatDateTime(clock.date, I18n.tr("ddd, MMM d"))
                 textFormat: Text.PlainText
@@ -263,7 +268,7 @@ Item {
         anchors.left: parent.left
         anchors.right: parent.right
         anchors.top: root.showIdentity ? identity.bottom : parent.top
-        anchors.topMargin: root.showIdentity && visible ? Tokens.s3 * root.s : 0
+        anchors.topMargin: root.showIdentity && visible ? (Tokens.controlsCrate ? Tokens.s4 : Tokens.s3) * root.s : 0
         height: visible ? (Tokens.controlsCrate ? childrenRect.height : Tokens.s7 * 3 * root.s) : 0
         spacing: Tokens.s4 * root.s
 
@@ -282,7 +287,7 @@ Item {
                 anchors.top: parent.top
                 text: I18n.tr("CPU")
                 textFormat: Text.PlainText
-                color: Tokens.inkMuted
+                color: Tokens.controlsCrate ? Tokens.inkSubtle : Tokens.inkMuted
                 font.family: Tokens.mono
                 font.pixelSize: Tokens.fMicro * root.s
                 font.letterSpacing: Tokens.trackLabel * root.s
@@ -310,8 +315,8 @@ Item {
                           : I18n.tr("—")
                     textFormat: Text.PlainText
                     color: Tokens.ink
-                    font.family: Tokens.ui
-                    font.pixelSize: Tokens.fHero * root.s
+                    font.family: Tokens.controlsCrate ? Tokens.mono : Tokens.ui
+                    font.pixelSize: (Tokens.controlsCrate ? 30 : Tokens.fHero) * root.s
                 fontSizeMode: Text.HorizontalFit
                 minimumPixelSize: Tokens.fBody * root.s
                     font.weight: Font.Light
@@ -331,9 +336,11 @@ Item {
                     anchors.right: temperaturePill.visible ? temperaturePill.left : parent.right
                     anchors.rightMargin: temperaturePill.visible ? Tokens.s2 * root.s : 0
                     anchors.top: cpuPercent.bottom
-                    text: displayed.cpuFrequency > 0
+                    text: (displayed.cpuFrequency > 0
                           ? I18n.tr("%1 GHz").arg(displayed.cpuFrequency.toFixed(2))
-                          : I18n.tr("—")
+                          : I18n.tr("—"))
+                          + (Tokens.controlsCrate && root.showTemperature && root.monitor.cpuTempAvailable
+                             ? " · " + I18n.tr("%1 °C").arg(Math.round(displayed.cpuTemperature)) : "")
                     textFormat: Text.PlainText
                     color: Tokens.inkMuted
                     font.family: Tokens.ui
@@ -343,7 +350,7 @@ Item {
 
                 Rectangle {
                     id: temperaturePill
-                    visible: root.showTemperature && root.monitor.cpuTempAvailable
+                    visible: root.showTemperature && root.monitor.cpuTempAvailable && !Tokens.controlsCrate
                     anchors.right: parent.right
                     anchors.verticalCenter: cpuPercent.verticalCenter
                     width: temperatureRow.implicitWidth + Tokens.s1 * root.s * 2
@@ -415,7 +422,7 @@ Item {
                 width: graphZone.inlineLegend ? implicitWidth : parent.width
                 text: I18n.tr("ACTIVITY")
                 textFormat: Text.PlainText
-                color: Tokens.inkMuted
+                color: Tokens.controlsCrate ? Tokens.inkSubtle : Tokens.inkMuted
                 font.family: Tokens.mono
                 font.pixelSize: Tokens.fMicro * root.s
                 font.letterSpacing: Tokens.trackLabel * root.s
@@ -441,7 +448,7 @@ Item {
                         spacing: Tokens.s1 * root.s
 
                         Text {
-                            text: I18n.tr("●")
+                            text: Tokens.controlsCrate ? "—" : I18n.tr("●")
                             textFormat: Text.PlainText
                             color: parent.modelData.color
                             font.family: Tokens.mono
@@ -457,6 +464,16 @@ Item {
                         }
                     }
                 }
+            }
+
+            Rectangle {
+                visible: Tokens.controlsCrate
+                anchors.left: parent.left
+                anchors.right: parent.right
+                anchors.top: activityLabel.bottom
+                anchors.topMargin: Tokens.s2 * root.s
+                height: 1
+                color: Tokens.line
             }
 
             Loader {

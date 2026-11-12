@@ -150,7 +150,8 @@ Item {
                 anchors.right: parent.right
                 anchors.rightMargin: radio.width + (Tokens.s3 + Tokens.s2) * root.s
                 anchors.verticalCenter: parent.verticalCenter
-                width: root.kind === "wifi" ? signalRow.implicitWidth
+                visible: !Tokens.controlsCrate
+                width: Tokens.controlsCrate ? 0 : root.kind === "wifi" ? signalRow.implicitWidth
                     : root.kind === "bluetooth" && root.connectedCount > 0 ? badge.implicitWidth : 0
                 height: (Tokens.s5 - Tokens.s1) * root.s
 
