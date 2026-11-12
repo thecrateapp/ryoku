@@ -5,7 +5,8 @@ import "Singletons"
 // An icon button. Under controls "crate" it is crate-mark's: an 18 px glyph with
 // no plate, secondary ink, the mark on hover and when on, a 44 px hit area.
 // Otherwise it keeps IconBtn's stock square plate. The icon is either a 24-unit
-// SVG path (`path`, stroked like Solar line icons) or a font glyph (`glyph`).
+// SVG path (`path`, stroked like Solar line icons) or a glyph name (`glyph`),
+// drawn through Glyph: the catalogue's Solar icon under crate, else the font.
 Item {
     id: ib
 
@@ -60,14 +61,14 @@ Item {
             PathSvg { path: ib.path }
         }
     }
-    Text {
+    // a glyph name: the kit catalogue's Solar icon under crate, the font glyph otherwise
+    Glyph {
         visible: ib.path.length === 0
         anchors.centerIn: parent
-        text: ib.glyph
+        name: ib.glyph
         color: ib.ink
-        font.family: ib.glyphFont
-        font.pixelSize: ib.crate ? ib.iconSize : 12
-        Behavior on color { ColorAnimation { duration: 150 } }
+        fallbackFont: ib.glyphFont
+        size: ib.crate ? ib.iconSize : 12
     }
 
     HoverHandler { id: hover; enabled: ib.enabled; cursorShape: Qt.PointingHandCursor }

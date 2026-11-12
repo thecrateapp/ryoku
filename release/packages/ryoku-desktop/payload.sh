@@ -154,6 +154,8 @@ EOF
   # the Qt import path. The catalog it used to carry now lives once at
   # /usr/share/ryoku/i18n, which every runtime reads.
   rm -f "$pkgdir/usr/lib/qt6/qml/Ryoku/Ui/install.sh"
+  # tools/ builds lib/glyphs.js from the vendored Solar export; authoring only
+  rm -r "$pkgdir/usr/lib/qt6/qml/Ryoku/Ui/tools"
   rm -rf "$pkgdir/usr/lib/qt6/qml/Ryoku/Ui/__pycache__"
   chmod -R u=rwX,go=rX "$pkgdir/usr/lib/qt6/qml/Ryoku/PluginKit"
 

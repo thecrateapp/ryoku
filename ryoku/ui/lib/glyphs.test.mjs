@@ -1,0 +1,73 @@
+import assert from "node:assert/strict";
+import test from "node:test";
+import { createRequire } from "node:module";
+
+const require = createRequire(import.meta.url);
+const { resolve, has, svg, dataUri, ICONS, ALIAS } = require("./glyphs.js");
+
+test("a Material name resolves to its catalogue glyph", () => {
+  assert.equal(resolve("volume_up"), "volume-loud");
+  assert.equal(resolve("expand_more"), "alt-arrow-down");
+  assert.equal(resolve("volume-loud"), "volume-loud");
+  assert.equal(resolve("no_such_glyph"), "");
+  assert.equal(has("lock"), true);
+  assert.equal(has("lan"), false);
+});
+
+test("every alias points at a glyph that exists", () => {
+  for (const [from, to] of Object.entries(ALIAS))
+    assert.ok(ICONS[to], `${from} -> ${to} is missing`);
+});
+
+test("the Controls panel's glyphs are all covered", () => {
+  const used = ["lock", "dark_mode", "logout", "restart_alt", "power_settings_new", "bedtime",
+    "light_mode", "coffee", "notifications_off", "mic", "mic_off", "sports_esports", "settings",
+    "arrow_back", "extension", "tune", "close", "vpn_lock", "wifi", "wifi_off", "bluetooth",
+    "bluetooth_disabled", "expand_more", "volume_up", "volume_down", "volume_mute", "volume_off",
+    "brightness_low", "brightness_medium", "brightness_high"];
+  for (const name of used)
+    assert.ok(has(name), `${name} has no glyph`);
+});
+
+test("svg paints the strokes in the asked colour with Solar's 1.5 px line and 50 % secondary layer", () => {
+  const out = svg("lock", "#67e8f9");
+  assert.ok(out.startsWith("<svg "));
+  assert.ok(out.includes('stroke="#67e8f9"'));
+  assert.ok(out.includes('stroke-width="1.5"'));
+  assert.ok(out.includes('opacity="0.5"'));
+  assert.ok(!out.includes("currentColor"));
+  assert.ok(!out.includes("var(--"));
+});
+
+test("svg refuses an unknown glyph or a colour that is not a hex", () => {
+  assert.equal(svg("no_such_glyph", "#ffffff"), "");
+  assert.equal(svg("lock", "red"), "");
+  assert.equal(svg("lock", "#fff\"/><script"), "");
+});
+
+test("an off glyph is its on glyph struck through", () => {
+  assert.ok(svg("mic_off", "#ffffff").includes('d="M3 3L21 21"'));
+  assert.ok(!svg("mic", "#ffffff").includes('d="M3 3L21 21"'));
+});
+
+test("dataUri is an encoded SVG data URL an Image can load", () => {
+  const uri = dataUri("sun", "#abe2ee");
+  assert.ok(uri.startsWith("data:image/svg+xml;utf8,"));
+  assert.ok(!uri.includes("#"));
+  assert.ok(decodeURIComponent(uri.slice(24)).includes('stroke="#abe2ee"'));
+  assert.equal(dataUri("no_such_glyph", "#abe2ee"), "");
+});
+
+test("a colour with alpha (#aarrggbb, as QML writes it) becomes an opaque stroke and an svg opacity", () => {
+  const out = svg("lock", "#80ff8800");
+  assert.ok(out.includes('stroke="#ff8800"'), out.slice(0, 200));
+  assert.ok(!out.includes("#80ff8800"));
+  assert.ok(/^<svg [^>]*opacity="0\.502"/.test(out));
+  assert.ok(!/^<svg [^>]*opacity=/.test(svg("lock", "#ff8800")));
+});
+
+test("a zero-length round-capped stroke (Solar's dots) becomes a filled circle Qt can draw", () => {
+  const out = svg("wifi", "#67e8f9");
+  assert.ok(!/d="M[0-9.]+ [0-9.]+H[0-9.]+"/.test(out), "a zero-length path is left");
+  assert.ok(/<circle cx="12\.02" cy="19\.46" r="0\.75" fill="#67e8f9"/.test(out), out);
+});

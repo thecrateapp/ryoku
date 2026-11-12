@@ -34,4 +34,16 @@ inline std::array<float, 3> ruleYs(const PlotArea& area) {
     return {area.top, area.top + area.height * 0.5f, baseline(area)};
 }
 
+// a line's solid core half-width and where its antialiased edge fades out: the
+// core is half the width (never under half a pixel), the feather is the fade
+struct LineBands {
+    float inner = 0.5f;
+    float outer = 0.5f;
+};
+
+inline LineBands lineBands(float width, float feather) {
+    const float inner = std::max(0.5f, width * 0.5f);
+    return {inner, inner + std::max(0.0f, feather)};
+}
+
 } // namespace systemgraph

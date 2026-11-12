@@ -2,6 +2,7 @@ pragma ComponentBehavior: Bound
 
 import QtQuick
 import Ryoku.Ui.Singletons
+import Ryoku.Ui as Kit
 import shell.services
 
 Item {
@@ -122,21 +123,16 @@ Item {
             Accessible.name: root.statusTileLabel
             Accessible.description: root.statusTileDetail
 
-            Text {
+            // the kit catalogue's Solar glyph under crate, the Material glyph otherwise
+            Kit.Glyph {
                 id: statusGlyph
                 anchors.left: parent.left
                 anchors.leftMargin: Tokens.s3 * root.s
                 anchors.verticalCenter: parent.verticalCenter
-                width: (Tokens.s5 - Tokens.s1) * root.s
-                height: width
-                text: root.statusChips.length > 1 ? "lan"
+                size: (Tokens.controlsCrate ? 18 : Tokens.s5 - Tokens.s1) * root.s
+                name: root.statusChips.length > 1 ? "lan"
                     : root.statusChips.length === 1 ? root.statusChips[0].glyph : ""
-                color: Tokens.inkDim
-                font.family: "Material Symbols Rounded"
-                font.pixelSize: (Tokens.s5 - Tokens.s1) * root.s
-                horizontalAlignment: Text.AlignHCenter
-                verticalAlignment: Text.AlignVCenter
-                Accessible.ignored: true
+                color: Tokens.controlsCrate ? Tokens.inkSecondary : Tokens.inkDim
             }
 
             Column {
@@ -201,13 +197,11 @@ Item {
                         anchors.centerIn: parent
                         spacing: Tokens.s1 * root.s
 
-                        Text {
+                        Kit.Glyph {
                             anchors.verticalCenter: parent.verticalCenter
-                            text: chip.modelData.glyph
-                            color: Tokens.inkDim
-                            font.family: "Material Symbols Rounded"
-                            font.pixelSize: Tokens.fBody * root.s
-                            Accessible.ignored: true
+                            name: chip.modelData.glyph
+                            color: Tokens.controlsCrate ? Tokens.inkSecondary : Tokens.inkDim
+                            size: Tokens.fBody * root.s
                         }
 
                         Text {

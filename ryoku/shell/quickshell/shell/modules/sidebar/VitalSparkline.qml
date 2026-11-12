@@ -17,7 +17,7 @@ Item {
     property bool showGrid: false
     property bool detailPoints: false
     property real lineWidth: Tokens.border * s
-    // crate-mark graph: 1 px lines inset 6 px, three faint rules, only the first
+    // crate-mark graph: crisp 1 px lines inset 6 px, three faint rules, only the first
     // channel filled, and a dot in a halo at each line's head
     property bool crate: Tokens.controlsCrate
 
@@ -35,6 +35,7 @@ Item {
         detailPoints: root.detailPoints
         gridColor: root.crate ? Qt.rgba(Tokens.ink.r, Tokens.ink.g, Tokens.ink.b, 0.06) : Tokens.lineSoft
         lineWidth: root.crate ? 1 : root.lineWidth
+        lineFeather: root.crate ? 0.5 : 1.25
         inset: root.crate ? 6 * root.s : -1
         gridStyle: root.crate ? "rules" : "cells"
         fillChannels: root.crate && root.channels.length > 0 ? [root.channels[0]] : []

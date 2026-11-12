@@ -61,3 +61,4 @@ PageHeader 1.0 PageHeader.qml
 MeterRow 1.0 MeterRow.qml
 LevelRow 1.0 LevelRow.qml
 RowsMath 1.0 lib/rows.js
+Glyph 1.0 Glyph.qml

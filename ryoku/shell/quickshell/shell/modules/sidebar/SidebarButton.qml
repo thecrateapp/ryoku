@@ -3,6 +3,7 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import QtQuick.Controls as QQC
 import Ryoku.Ui.Singletons
+import Ryoku.Ui as Kit
 import shell.services
 
 QQC.AbstractButton {
@@ -41,10 +42,20 @@ QQC.AbstractButton {
             anchors { left: parent.left; verticalCenter: parent.verticalCenter }
             width: 20 * root.s
             text: root.glyph
-            color: Tokens.controlsCrate ? (root.primary ? Tokens.paper : root.hovered ? Tokens.mark : Tokens.inkSecondary) : (root.primary ? Tokens.inkOnBone : Tokens.inkDim)
+            readonly property color ink: Tokens.controlsCrate ? (root.primary ? Tokens.paper : root.hovered ? Tokens.mark : Tokens.inkSecondary) : (root.primary ? Tokens.inkOnBone : Tokens.inkDim)
+            color: iconGlyph.drawn ? "transparent" : icon.ink
             font.family: "Material Symbols Rounded"
             font.pixelSize: 20 * root.s
             Accessible.ignored: true
+            // crate-mark: the kit catalogue's Solar glyph over the font glyph
+            Kit.Glyph {
+                id: iconGlyph
+                visible: iconGlyph.drawn
+                anchors.centerIn: parent
+                name: root.glyph
+                color: icon.ink
+                size: 18 * root.s
+            }
         }
         Text {
             id: label

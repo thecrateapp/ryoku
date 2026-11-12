@@ -27,6 +27,15 @@ int main() {
     // never negative on a tiny item
     PlotArea c = plotArea(4.f, 4.f, 6.f, 3.f);
     assert(c.width >= 0.f && c.height >= 0.f);
+    // a line's solid core and antialiased edge: the stock 1.25 px feather, and the
+    // crate 0.5 px one that keeps a 1 px line reading as 1 px
+    LineBands stock = lineBands(1.f, 1.25f);
+    assert(near(stock.inner, 0.5f) && near(stock.outer, 1.75f));
+    LineBands crisp = lineBands(1.f, 0.5f);
+    assert(near(crisp.inner, 0.5f) && near(crisp.outer, 1.0f));
+    LineBands wide = lineBands(2.f, 1.25f);
+    assert(near(wide.inner, 1.0f) && near(wide.outer, 2.25f));
+    assert(near(lineBands(0.2f, -3.f).inner, 0.5f) && near(lineBands(0.2f, -3.f).outer, 0.5f));
     std::puts("systemgraph-layout: ok");
     return 0;
 }

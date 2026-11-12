@@ -177,7 +177,7 @@ void clearRemainder(ColorNode* node, int offset) {
 }
 
 void appendAntialiasedLine(Vertex* vertices, int& offset, const Point& from, const Point& to, float width,
-                           const Rgba& transparent, const Rgba& solid) {
+                           float feather, const Rgba& transparent, const Rgba& solid) {
     const float dx = to.x - from.x;
     const float dy = to.y - from.y;
     const float length = std::hypot(dx, dy);
@@ -185,8 +185,9 @@ void appendAntialiasedLine(Vertex* vertices, int& offset, const Point& from, con
         return;
     const float nx = -dy / length;
     const float ny = dx / length;
-    const float inner = std::max(0.5f, width * 0.5f);
-    const float outer = inner + 1.25f;
+    const systemgraph::LineBands bands = systemgraph::lineBands(width, feather);
+    const float inner = bands.inner;
+    const float outer = bands.outer;
 
     const Point fromOuterLow{from.x - nx * outer, from.y - ny * outer};
     const Point fromInnerLow{from.x - nx * inner, from.y - ny * inner};
@@ -435,6 +436,15 @@ void SystemGraph::setInset(qreal inset) {
         return;
     m_inset = inset;
     emit insetChanged();
+    markVisualDirty();
+}
+
+void SystemGraph::setLineFeather(qreal feather) {
+    feather = std::clamp(feather, 0.0, 4.0);
+    if (qFuzzyCompare(m_lineFeather + 1.0, feather + 1.0))
+        return;
+    m_lineFeather = feather;
+    emit lineFeatherChanged();
     markVisualDirty();
 }
 
@@ -724,7 +734,7 @@ QSGNode* SystemGraph::updatePaintNode(QSGNode* oldNode, UpdatePaintNodeData*) {
                         appendFill(fillVertices, fillOffset, from, current, systemgraph::baseline(area), fillTop,
                                    fillBottom);
                     appendAntialiasedLine(lineVertices, lineOffset, from, current, static_cast<float>(m_lineWidth),
-                                          lineTransparent, lineSolid);
+                                          static_cast<float>(m_lineFeather), lineTransparent, lineSolid);
                 }
                 previous = current;
             }

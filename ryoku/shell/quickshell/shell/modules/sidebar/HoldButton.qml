@@ -3,6 +3,7 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import QtQuick.Controls as QQC
 import Ryoku.Ui.Singletons
+import Ryoku.Ui as Kit
 import shell.services
 
 QQC.AbstractButton {
@@ -174,11 +175,21 @@ QQC.AbstractButton {
                 width: normalLabel.visible ? Tokens.s5 * root.s : parent.width
                 visible: root.glyph !== ""
                 text: root.glyph
-                color: Tokens.controlsCrate ? (root.hovered ? Tokens.mark : Tokens.inkSecondary) : Tokens.inkDim
+                readonly property color ink: Tokens.controlsCrate ? (root.hovered ? Tokens.mark : Tokens.inkSecondary) : Tokens.inkDim
+                color: normalIconGlyph.drawn ? "transparent" : normalIcon.ink
                 font.family: "Material Symbols Rounded"
                 font.pixelSize: Tokens.fBody * root.s + Tokens.s2 * root.s
                 horizontalAlignment: Text.AlignHCenter
                 Accessible.ignored: true
+                // crate-mark: the kit catalogue's Solar glyph over the font glyph
+                Kit.Glyph {
+                    id: normalIconGlyph
+                    visible: normalIconGlyph.drawn
+                    anchors.centerIn: parent
+                    name: root.glyph
+                    color: normalIcon.ink
+                    size: 18 * root.s
+                }
                 scale: root.down || holdState.active ? 0.9 : 1
                 Behavior on scale {
                     enabled: holdState.motionAllowed
@@ -221,11 +232,21 @@ QQC.AbstractButton {
                     width: normalLabel.visible ? Tokens.s5 * root.s : parent.width
                     visible: root.glyph !== ""
                     text: root.glyph
-                    color: Tokens.controlsCrate ? Tokens.mark : Tokens.inkOnBone
+                    readonly property color ink: Tokens.controlsCrate ? Tokens.mark : Tokens.inkOnBone
+                    color: filledIconGlyph.drawn ? "transparent" : filledIcon.ink
                     font.family: "Material Symbols Rounded"
                     font.pixelSize: Tokens.fBody * root.s + Tokens.s2 * root.s
                     horizontalAlignment: Text.AlignHCenter
                     Accessible.ignored: true
+                    // crate-mark: the kit catalogue's Solar glyph over the font glyph
+                    Kit.Glyph {
+                        id: filledIconGlyph
+                        visible: filledIconGlyph.drawn
+                        anchors.centerIn: parent
+                        name: root.glyph
+                        color: filledIcon.ink
+                        size: 18 * root.s
+                    }
                     scale: root.down || holdState.active ? 0.9 : 1
                     Behavior on scale {
                         enabled: holdState.motionAllowed

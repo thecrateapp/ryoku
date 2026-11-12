@@ -3,6 +3,7 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import QtQuick.Controls as QQC
 import Ryoku.Ui.Singletons
+import Ryoku.Ui as Kit
 import shell.services
 
 Item {
@@ -89,12 +90,23 @@ Item {
                 width: (Tokens.s5 - Tokens.s1) * root.s
                 height: width
                 text: root.glyph
-                color: root.connected ? (Tokens.selectFill ? Tokens.inkOnBone : Tokens.pickInk) : Tokens.inkDim
+                readonly property color ink: Tokens.controlsCrate ? (root.connected ? Tokens.mark : Tokens.inkSecondary)
+                    : root.connected ? (Tokens.selectFill ? Tokens.inkOnBone : Tokens.pickInk) : Tokens.inkDim
+                color: iconGlyph.drawn ? "transparent" : icon.ink
                 font.family: "Material Symbols Rounded"
                 font.pixelSize: (Tokens.s5 - Tokens.s1) * root.s
                 horizontalAlignment: Text.AlignHCenter
                 verticalAlignment: Text.AlignVCenter
                 Accessible.ignored: true
+                // crate-mark: the kit catalogue's Solar glyph over the font glyph
+                Kit.Glyph {
+                    id: iconGlyph
+                    visible: iconGlyph.drawn
+                    anchors.centerIn: parent
+                    name: root.glyph
+                    color: icon.ink
+                    size: 18 * root.s
+                }
 
                 Behavior on color {
                     enabled: root.motionAllowed
