@@ -5,6 +5,8 @@ import QtQuick.Effects
 import Quickshell
 import Quickshell.Widgets
 import shell.services
+import Ryoku.Ui as Kit
+import Ryoku.Ui.Singletons as Ui
 import "../../components"
 import "../../utils/artcolor.js" as ArtColor
 
@@ -98,12 +100,23 @@ Item {
         width: 22
         height: 22
         Rectangle {
+            visible: !Ui.Tokens.controlsCrate
             anchors.fill: parent
             radius: width / 2
             color: tb.accentFill ? media.accent
                 : (tbHover.hovered ? Qt.rgba(Theme.onSurface.r, Theme.onSurface.g, Theme.onSurface.b, 0.1) : "transparent")
         }
+        // crate-mark: plateless, a Solar glyph in the mark for play/pause, secondary
+        // ink with the mark on hover for the other moves
+        Kit.Glyph {
+            visible: Ui.Tokens.controlsCrate
+            anchors.centerIn: parent
+            name: tb.glyph
+            size: 14
+            color: tb.accentFill || tbHover.hovered ? Ui.Tokens.mark : Ui.Tokens.inkSecondary
+        }
         GlyphIcon {
+            visible: !Ui.Tokens.controlsCrate
             anchors.centerIn: parent
             width: tb.accentFill ? 13 : 12
             height: width

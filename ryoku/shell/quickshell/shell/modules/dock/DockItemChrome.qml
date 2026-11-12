@@ -4,6 +4,8 @@ import QtQuick
 import QtQuick.Effects
 import Quickshell
 import shell.services
+import Ryoku.Ui as Kit
+import Ryoku.Ui.Singletons as Ui
 
 // Static per-item chrome for every dock form except islands (whose pill lives in
 // DockItem's magnified content). This layer is a child of the item, not its
@@ -100,9 +102,11 @@ Item {
 
             Text {
                 text: (chrome.item.ordinal + 1 < 10 ? "0" : "") + (chrome.item.ordinal + 1)
-                color: chrome.item.isActive ? chrome.band.inkOnBone : chrome.band.inkFaint
+                color: chrome.item.isActive ? chrome.band.inkOnBone
+                    : Ui.Tokens.controlsCrate ? Ui.Tokens.inkSubtle : chrome.band.inkFaint
                 font.family: Theme.mono
-                font.pixelSize: 8
+                // crate-mark: 10 px, the closest to the 11 px caption a ledger cell holds
+                font.pixelSize: Ui.Tokens.controlsCrate ? 10 : 8
                 anchors.margins: 4
                 anchors.left:   (chrome.horizontal || chrome.outerRight) ? ledger.left : undefined
                 anchors.right:  (!chrome.horizontal && chrome.outerLeft) ? ledger.right : undefined
@@ -163,9 +167,11 @@ Item {
             // clear of the icon centred in the cell above it.
             Text {
                 text: tanzaku.abbr
-                color: tanzaku.run ? chrome.band.inkOnBone : chrome.band.inkFaint
+                color: tanzaku.run ? chrome.band.inkOnBone
+                    : Ui.Tokens.controlsCrate ? Ui.Tokens.inkSubtle : chrome.band.inkFaint
                 font.family: Theme.mono
-                font.pixelSize: 9
+                font.pixelSize: Ui.Tokens.controlsCrate ? 10 : 9
+                font.letterSpacing: Ui.Tokens.controlsCrate ? Ui.Tokens.trackLabel : 0
                 font.weight: Font.Medium
                 anchors.margins: 3
                 anchors.horizontalCenter: chrome.horizontal ? strip.horizontalCenter : undefined
