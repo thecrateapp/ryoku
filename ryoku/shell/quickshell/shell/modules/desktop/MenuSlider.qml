@@ -2,6 +2,8 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import "Singletons"
 import Ryoku.Ui.Singletons
+import Ryoku.Ui.Singletons as Ui
+import Ryoku.Ui as Kit
 
 // Stage sheets can be narrower than desktop menus, so the label and readout
 // surrender width before the Folio-style track is allowed to collapse.
@@ -23,6 +25,8 @@ Item {
     implicitHeight: 34
     implicitWidth: 9 + lbl.implicitWidth + 13 + 160 + 13 + val.implicitWidth + 9
 
+    // crate-mark: a tracked mono caption, the kit Beam, a mono value
+    readonly property bool crate: Ui.Tokens.controlsCrate
     readonly property real frac: sld.to > sld.from
         ? Math.max(0, Math.min(1, (sld.value - sld.from) / (sld.to - sld.from))) : 0
 
@@ -33,15 +37,18 @@ Item {
             leftMargin: 9
             verticalCenter: parent.verticalCenter
         }
-        width: Math.min(implicitWidth, Math.max(0,
+        // crate-mark: at least the kit rows' 72 px caption column, so a menu's
+        // beams start together
+        width: Math.min(sld.crate ? Math.max(72, implicitWidth) : implicitWidth, Math.max(0,
             sld.width - 18 - 26 - 56 - val.width))
-        text: I18n.tr(sld.label)
-        color: Theme.inkSoft
+        text: sld.crate ? I18n.tr(sld.label).toUpperCase() : I18n.tr(sld.label)
+        color: sld.crate ? Ui.Tokens.inkSubtle : Theme.inkSoft
         elide: Text.ElideRight
         maximumLineCount: 1
-        font.family: Theme.font
-        font.pixelSize: 13
-        font.weight: Font.DemiBold
+        font.family: sld.crate ? Ui.Tokens.mono : Theme.font
+        font.pixelSize: sld.crate ? Ui.Tokens.fMicro : 13
+        font.weight: sld.crate ? Font.Normal : Font.DemiBold
+        font.letterSpacing: sld.crate ? Ui.Tokens.trackLabel : 0
     }
 
     Text {
@@ -54,12 +61,12 @@ Item {
         width: Math.min(implicitWidth, Math.max(0, sld.width * 0.22))
         horizontalAlignment: Text.AlignRight
         text: sld.valueText
-        color: Theme.inkDim
+        color: sld.crate ? Ui.Tokens.ink : Theme.inkDim
         elide: Text.ElideRight
         maximumLineCount: 1
         font.family: Theme.mono
-        font.pixelSize: 9
-        font.weight: Font.Medium
+        font.pixelSize: sld.crate ? 12 : 9
+        font.weight: sld.crate ? Font.Normal : Font.Medium
     }
 
     Item {
@@ -69,7 +76,18 @@ Item {
         height: 26
         anchors.verticalCenter: parent.verticalCenter
 
+        Kit.Beam {
+            visible: sld.crate
+            anchors.verticalCenter: parent.verticalCenter
+            width: parent.width
+            height: 24
+            interactive: false
+            value: sld.frac
+            hotHint: drag.containsMouse || drag.pressed
+        }
+
         Rectangle {
+            visible: !sld.crate
             anchors.verticalCenter: parent.verticalCenter
             width: parent.width
             height: 2
@@ -84,6 +102,7 @@ Item {
         }
 
         Rectangle {
+            visible: !sld.crate
             width: 12
             height: 12
             radius: 6

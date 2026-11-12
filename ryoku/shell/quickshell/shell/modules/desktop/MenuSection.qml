@@ -15,9 +15,12 @@ Item {
     width: parent ? parent.width : 0
     implicitHeight: sec.label.length > 0 ? 26 : 13
 
+    // crate-mark: the kit's tracked mono caption over a hairline, no tick
+    readonly property bool crate: Ui.Tokens.controlsCrate
+
     Rectangle {
         id: tick
-        visible: sec.label.length > 0
+        visible: sec.label.length > 0 && !sec.crate
         anchors.verticalCenter: parent.verticalCenter
         width: 2
         height: 8
@@ -34,10 +37,10 @@ Item {
     TextMetrics {
         id: labelMetrics
         text: sec.label.toUpperCase()
-        font.family: Theme.font
-        font.pixelSize: 9
-        font.weight: Font.DemiBold
-        font.letterSpacing: 1.6
+        font.family: sec.crate ? Ui.Tokens.mono : Theme.font
+        font.pixelSize: sec.crate ? Ui.Tokens.fMicro : 9
+        font.weight: sec.crate ? Font.Normal : Font.DemiBold
+        font.letterSpacing: sec.crate ? Ui.Tokens.trackLabel : 1.6
     }
 
     Text {
@@ -57,18 +60,19 @@ Item {
     Text {
         id: cap
         visible: sec.label.length > 0
-        x: gl.visible ? gl.x + gl.width + 7 : tick.x + tick.width + 7
+        x: gl.visible ? gl.x + gl.width + 7 : sec.crate ? 0 : tick.x + tick.width + 7
         width: visible ? Math.min(labelMetrics.advanceWidth,
             Math.max(0, sec.width - x - 7)) : 0
         anchors.verticalCenter: parent.verticalCenter
         text: sec.label.toUpperCase()
-        color: Qt.rgba(Theme.ink.r, Theme.ink.g, Theme.ink.b, 0.78)
+        color: sec.crate ? (Ui.Tokens.labelAccent ? Ui.Tokens.caption : Ui.Tokens.inkSubtle)
+            : Qt.rgba(Theme.ink.r, Theme.ink.g, Theme.ink.b, 0.78)
         elide: Text.ElideRight
         maximumLineCount: 1
-        font.family: Theme.font
-        font.pixelSize: 9
-        font.weight: Font.DemiBold
-        font.letterSpacing: 1.6
+        font.family: sec.crate ? Ui.Tokens.mono : Theme.font
+        font.pixelSize: sec.crate ? Ui.Tokens.fMicro : 9
+        font.weight: sec.crate ? Font.Normal : Font.DemiBold
+        font.letterSpacing: sec.crate ? Ui.Tokens.trackLabel : 1.6
     }
 
     Rectangle {
@@ -76,6 +80,6 @@ Item {
         width: Math.max(0, sec.width - x)
         anchors.verticalCenter: parent.verticalCenter
         height: 1
-        color: Qt.rgba(Theme.ink.r, Theme.ink.g, Theme.ink.b, 0.4)
+        color: sec.crate ? Ui.Tokens.line : Qt.rgba(Theme.ink.r, Theme.ink.g, Theme.ink.b, 0.4)
     }
 }
