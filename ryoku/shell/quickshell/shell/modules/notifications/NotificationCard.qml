@@ -4,6 +4,7 @@ import QtQuick
 import QtQuick.Shapes
 import Quickshell
 import shell.services
+import Ryoku.Ui.Singletons as Ui
 import "../../components"
 
 // One notification card, shared by the history panel and the popup surface
@@ -149,8 +150,9 @@ Rectangle {
     }
 
     radius: card.unifiedFrame ? 0 : Theme.radiusWidget * card.us
-    border.width: card.unifiedFrame ? 0 : Theme.borderWidth * card.us
-    border.color: Theme.outline
+    // a theme style keeps the frame a hairline; the countdown carries the accent
+    border.width: card.unifiedFrame ? 0 : (Ui.Tokens.styled ? 1 : Theme.borderWidth) * card.us
+    border.color: Ui.Tokens.styled ? Ui.Tokens.line : Theme.outline
     color: card.unifiedFrame ? "transparent" : Theme.surface
     implicitHeight: card.animatedImplicitHeight
 
@@ -221,10 +223,13 @@ Rectangle {
                 anchors.rightMargin: Theme.paddingSm * card.us
                 anchors.verticalCenter: parent.verticalCenter
                 text: card.n().appName || ""
-                color: Theme.onSurfaceVariant
-                font.family: Theme.fontPrimary
+                // the app's name reads as a caption under the theme style
+                color: Ui.Tokens.labelAccent ? Ui.Tokens.caption : Theme.onSurfaceVariant
+                font.family: Ui.Tokens.navCaps ? Ui.Tokens.navFont : Theme.fontPrimary
                 font.pixelSize: Theme.fontSm * card.us
                 font.weight: Font.Medium
+                font.capitalization: Ui.Tokens.navCaps ? Font.AllUppercase : Font.MixedCase
+                font.letterSpacing: Ui.Tokens.navCaps ? Ui.Tokens.trackNav : 0
                 elide: Text.ElideRight
             }
 
@@ -365,6 +370,10 @@ Rectangle {
                 delegate: Rectangle {
                     id: actionBtn
                     required property var modelData
+                    required property int index
+                    // D4 under a theme style: the first action confirms (filled), the
+                    // rest navigate (outlined); the stock look fills every action
+                    readonly property bool filled: !Ui.Tokens.styled || actionBtn.index === 0
 
                     // the column by id, not `parent`: a Repeater delegate has no
                     // parent while it is being created, so a notification that
@@ -372,7 +381,10 @@ Rectangle {
                     width: actionCol.width
                     height: actionLabel.implicitHeight + Theme.paddingSm * 2 * card.us
                     radius: Theme.radiusWidget * card.us
-                    color: actionHov.hovered ? Theme.vermLit : Theme.primary
+                    color: actionBtn.filled ? (actionHov.hovered ? Theme.vermLit : Theme.primary)
+                        : (actionHov.hovered ? Ui.Tokens.rowWash : "transparent")
+                    border.width: actionBtn.filled ? 0 : 1
+                    border.color: Ui.Tokens.mark
 
                     Behavior on color { ColorAnimation { duration: Motion.rowFade; easing.type: Motion.easeType; easing.bezierCurve: Motion.easeCurve } }
 
@@ -382,7 +394,7 @@ Rectangle {
                         width: parent.width - Theme.paddingMd * 2 * card.us
                         horizontalAlignment: Text.AlignHCenter
                         text: actionBtn.modelData.text
-                        color: Theme.onPrimary
+                        color: actionBtn.filled ? Theme.onPrimary : Ui.Tokens.mark
                         font.family: Theme.fontPrimary
                         font.pixelSize: Theme.fontSm * card.us
                         font.weight: Font.Bold
@@ -413,7 +425,7 @@ Rectangle {
         visible: card.countingDown
         asynchronous: true
 
-        readonly property real sw: Theme.borderWidth * card.us + 1
+        readonly property real sw: (Ui.Tokens.styled ? 1 : Theme.borderWidth) * card.us + 1
         readonly property real o: sw / 2
         readonly property real w: Math.max(0, width - sw)
         readonly property real h: Math.max(0, height - sw)
