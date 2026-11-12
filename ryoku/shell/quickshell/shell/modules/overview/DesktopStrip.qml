@@ -56,7 +56,8 @@ Row {
                 anchors.fill: parent
                 radius: Theme.radius
                 color: (dcard.dropHot || dcard.viewed || dcard.activeD) ? Qt.alpha(Theme.brand, 0.09) : Theme.cardBot
-                border.width: (dcard.viewed || dcard.activeD || dcard.dropHot) ? 2 : 1
+                // crate-mark: a 1 px edge; the accent carries the state
+                border.width: (dcard.viewed || dcard.activeD || dcard.dropHot) && !Tokens.controlsCrate ? 2 : 1
                 border.color: dcard.dropHot ? Theme.brand
                     : dcard.activeD ? Theme.brand
                     : dcard.viewed ? Theme.vermLit
@@ -75,7 +76,7 @@ Row {
                         color: dcard.activeD ? Theme.brand : (dcard.isNew ? Theme.faint : Theme.cream)
                         font.family: Theme.mono
                         font.pixelSize: 13 * strip.s
-                        font.letterSpacing: 2 * strip.s
+                        font.letterSpacing: (Tokens.controlsCrate ? 13 * 0.14 : 2) * strip.s
                         font.weight: Font.DemiBold
                     }
 

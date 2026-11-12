@@ -141,7 +141,8 @@ Item {
         anchors.fill: parent
         radius: Theme.radius
         color: cell.active ? Qt.alpha(Theme.brand, 0.08) : Theme.cardBot
-        border.width: (cell.active || cell.hot || cell.selected) ? 2 : 1
+        // crate-mark: a 1 px edge; the accent carries the state
+        border.width: (cell.active || cell.hot || cell.selected) && !Tokens.controlsCrate ? 2 : 1
         border.color: cell.hot ? Theme.brand
             : cell.active ? Theme.brand
             : cell.selected ? Theme.vermLit
@@ -255,7 +256,7 @@ Item {
             color: Theme.faint
             font.family: Theme.mono
             font.pixelSize: 10 * cell.s
-            font.letterSpacing: 2 * cell.s
+            font.letterSpacing: (Tokens.controlsCrate ? 10 * 0.14 : 2) * cell.s
         }
 
         // scrolling tape: the slice currently on screen, framed within the whole
@@ -317,7 +318,7 @@ Item {
                 height: Math.max(16 * cell.s, tile.modelData.fh * mini.height)
                 radius: Theme.radius
                 color: Theme.tileBg
-                border.width: (tileMa.containsMouse || closeMa.containsMouse) ? 2 : 1
+                border.width: (tileMa.containsMouse || closeMa.containsMouse) && !Tokens.controlsCrate ? 2 : 1
                 border.color: (tileMa.containsMouse || closeMa.containsMouse) ? Theme.brand : Theme.hair
                 antialiasing: true
                 clip: true

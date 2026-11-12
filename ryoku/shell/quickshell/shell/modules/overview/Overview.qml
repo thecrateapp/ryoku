@@ -450,7 +450,8 @@ Item {
                 color: Theme.cream
                 font.family: Theme.mono
                 font.pixelSize: 12 * root.s
-                font.letterSpacing: 3 * root.s
+                // crate-mark: the kit caption's 0.14 em tracking
+                font.letterSpacing: (Tokens.controlsCrate ? 12 * 0.14 : 3) * root.s
                 font.weight: Font.DemiBold
             }
             Text {
@@ -458,7 +459,7 @@ Item {
                 color: Theme.faint
                 font.family: Theme.mono
                 font.pixelSize: 9 * root.s
-                font.letterSpacing: 2 * root.s
+                font.letterSpacing: (Tokens.controlsCrate ? 9 * 0.14 : 2) * root.s
             }
         }
     }
@@ -520,7 +521,7 @@ Item {
         color: Theme.faint
         font.family: Theme.mono
         font.pixelSize: 10 * root.s
-        font.letterSpacing: 2 * root.s
+        font.letterSpacing: (Tokens.controlsCrate ? 10 * 0.14 : 2) * root.s
         opacity: 0.85
     }
 
@@ -558,7 +559,7 @@ Item {
             y: root.dragY - height / 2
             radius: Theme.radius
             color: Theme.tileBg
-            border.width: 2
+            border.width: Tokens.controlsCrate ? 1 : 2
             border.color: Theme.brand
             antialiasing: true
             scale: root.dragging ? 1 : 0.9
