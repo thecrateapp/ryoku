@@ -15,7 +15,7 @@ Column {
         color: Tokens.ink
         font.family: Tokens.display
         font.pixelSize: Tokens.fTitle
-        font.weight: Font.DemiBold
+        font.weight: Tokens.styled ? Tokens.displayWeight : Font.DemiBold
         wrapMode: Text.WordWrap
     }
 

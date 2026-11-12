@@ -567,7 +567,7 @@ FocusScope {
                     color: Tokens.ink
                     font.family: Tokens.display
                     font.pixelSize: Tokens.fTitle
-                    font.weight: Font.Medium
+                    font.weight: Tokens.styled ? Tokens.displayWeight : Font.Medium
                     wrapMode: Text.Wrap
                     maximumLineCount: 2
                     elide: Text.ElideRight

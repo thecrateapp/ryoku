@@ -441,7 +441,7 @@ Item {
             opacity: 1 - kinetic.mix
             font.family: Tokens.display
             font.pixelSize: 210
-            font.weight: Font.Medium
+            font.weight: Tokens.styled ? Tokens.displayWeight : Font.Medium
             transform: Scale {
                 origin.x: 0
                 origin.y: epithet.height / 2

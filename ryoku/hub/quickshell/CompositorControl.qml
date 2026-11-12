@@ -82,7 +82,7 @@ Column {
                             color: row.isSelectable || row.isActive ? Tokens.ink : Tokens.inkMuted
                             font.family: Tokens.display
                             font.pixelSize: Tokens.fRow
-                            font.weight: Font.Medium
+                            font.weight: Tokens.styled ? Tokens.displayWeight : Font.Medium
                         }
                         Text {
                             width: parent.width
