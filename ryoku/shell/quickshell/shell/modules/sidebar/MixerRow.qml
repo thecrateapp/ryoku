@@ -13,6 +13,8 @@ Item {
     required property var node
     property bool capture: false
     property bool device: false
+    // crate-mark: the drawer's longest name, so every row's beam starts together
+    property real nameWidth: 0
     readonly property var audio: node ? node.audio : null
     readonly property bool muted: !!(audio && audio.muted)
     readonly property string title: device ? Audio.nodeLabel(node) : Audio.streamName(node)
@@ -23,15 +25,31 @@ Item {
     implicitHeight: 34 * s
     height: implicitHeight
     enabled: audio !== null
-    opacity: enabled ? 1 : 0.48
+    opacity: enabled || Tokens.controlsCrate ? 1 : 0.48
 
     function setLevel(value): void {
         if (root.audio)
             root.audio.volume = Math.max(0, Math.min(1, value));
     }
 
+    // crate-mark: the kit's stream row (name, Beam, mute)
+    Kit.StreamRow {
+        visible: Tokens.controlsCrate
+        anchors.fill: parent
+        s: root.s
+        nameWidth: root.nameWidth
+        name: root.title
+        value: root.audio ? root.audio.volume : 0
+        muted: root.muted
+        capture: root.capture
+        available: root.audio !== null
+        onAdjusted: v => root.setLevel(v)
+        onMuteRequested: if (root.audio) root.audio.muted = !root.audio.muted
+    }
+
     Row {
         id: row
+        visible: !Tokens.controlsCrate
         anchors.fill: parent
         spacing: Tokens.s2 * root.s
         readonly property real fixedWidth: avatar.width + percent.width + muteButton.width + spacing * 4

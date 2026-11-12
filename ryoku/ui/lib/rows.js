@@ -5,7 +5,7 @@
 // rows passes `labelWidth` (never below 72) so every row's beam starts together.
 
 var ROW = { meter: 28, level: 28 };
-var COL = { icon: 18, label: 72, value: 40, chevron: 28, gap: 12 };
+var COL = { icon: 18, label: 72, value: 40, chevron: 28, gap: 12, name: 64, mute: 28 };
 
 function labelWidth(o, s) {
     var asked = o && o.labelWidth > 0 ? o.labelWidth : 0;
@@ -46,5 +46,23 @@ function meterColumns(width, valueWidth, o) {
     };
 }
 
+// a stream (an app in the mixer): its name, the beam, and a mute button. A group
+// passes `nameWidth` (its longest name) so the beams line up; it never drops
+// below 64 px nor takes more than 35 % of the row.
+function streamColumns(width, o) {
+    var s = (o && o.s) || 1;
+    var gap = COL.gap * s;
+    var asked = o && o.nameWidth > 0 ? Math.min(o.nameWidth, width * 0.35) : 0;
+    var nameW = Math.max(COL.name * s, asked);
+    var muteW = COL.mute * s;
+    var beamX = nameW + gap;
+    var muteX = width - muteW;
+    return {
+        name: { x: 0, w: nameW },
+        beam: { x: beamX, w: Math.max(0, muteX - gap - beamX) },
+        mute: { x: muteX, w: muteW }
+    };
+}
+
 if (typeof module !== "undefined" && module.exports)
-    module.exports = { levelColumns, meterColumns, ROW, COL };
+    module.exports = { levelColumns, meterColumns, streamColumns, ROW, COL };

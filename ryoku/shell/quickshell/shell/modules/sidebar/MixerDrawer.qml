@@ -3,6 +3,7 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import QtQuick.Controls as QQC
 import Ryoku.Ui.Singletons
+import Ryoku.Ui as Kit
 import shell.services
 
 Item {
@@ -13,6 +14,25 @@ Item {
     readonly property bool motionAllowed: !Tokens.reduceMotion && !Motion.reduce
 
     implicitHeight: body.implicitHeight
+
+    // crate-mark: the longest stream or microphone name, in the rows' mono 12
+    FontMetrics {
+        id: nameMetrics
+        font.family: Tokens.mono
+        font.pixelSize: 12 * root.s
+    }
+    readonly property real streamNameWidth: {
+        if (!root.active || !Tokens.controlsCrate)
+            return 0;
+        const titles = Audio.streams.filter(Audio.alive).map(n => Audio.streamName(n))
+            .concat(Audio.captureStreams.filter(Audio.alive).map(n => Audio.streamName(n)));
+        if (Audio.source && Audio.source.audio)
+            titles.push(Audio.nodeLabel(Audio.source));
+        let widest = 0;
+        for (const title of titles)
+            widest = Math.max(widest, nameMetrics.advanceWidth(title));
+        return Math.ceil(widest);
+    }
 
     Column {
         id: body
@@ -31,14 +51,38 @@ Item {
 
             Text {
                 text: I18n.tr("OUTPUT")
-                color: Tokens.inkFaint
+                color: Tokens.controlsCrate ? Tokens.inkSubtle : Tokens.inkFaint
                 font.family: Tokens.mono
-                font.pixelSize: Tokens.fTiny * root.s
+                font.pixelSize: (Tokens.controlsCrate ? Tokens.fMicro : Tokens.fTiny) * root.s
                 font.letterSpacing: Tokens.trackLabel * root.s
+            }
+
+            // crate-mark: the devices as the kit's pick rows, the default one picked
+            Column {
+                visible: Tokens.controlsCrate
+                width: parent.width
+                spacing: 6 * root.s
+
+                Repeater {
+                    model: root.active && Tokens.controlsCrate ? Audio.outputs.filter(Audio.alive) : []
+                    delegate: Kit.PickRow {
+                        required property var modelData
+                        width: parent ? parent.width : 0
+                        title: Audio.nodeLabel(modelData)
+                        sub: Audio.isBluez(modelData) ? I18n.tr("Bluetooth") : ""
+                        glyph: Audio.nodeIcon(modelData)
+                        glyphFont: "Material Symbols Rounded"
+                        picked: !!(Audio.sink && modelData && Audio.sink.name === modelData.name)
+                        Accessible.name: picked ? I18n.tr("%1 is the default output").arg(title)
+                            : I18n.tr("Use %1 as the default output").arg(title)
+                        onClicked: if (!picked) Audio.setOutput(modelData)
+                    }
+                }
             }
 
             Flow {
                 id: outputChips
+                visible: !Tokens.controlsCrate
                 width: parent.width
                 height: childrenRect.height
                 spacing: Tokens.s2 * root.s
@@ -111,9 +155,9 @@ Item {
 
             Text {
                 text: I18n.tr("PLAYING")
-                color: Tokens.inkFaint
+                color: Tokens.controlsCrate ? Tokens.inkSubtle : Tokens.inkFaint
                 font.family: Tokens.mono
-                font.pixelSize: Tokens.fTiny * root.s
+                font.pixelSize: (Tokens.controlsCrate ? Tokens.fMicro : Tokens.fTiny) * root.s
                 font.letterSpacing: Tokens.trackLabel * root.s
             }
 
@@ -129,6 +173,7 @@ Item {
                     required property var modelData
                     width: playList.width
                     s: root.s
+                    nameWidth: root.streamNameWidth
                     node: modelData
                 }
                 add: Transition {
@@ -164,9 +209,9 @@ Item {
 
             Text {
                 text: I18n.tr("RECORDING")
-                color: Tokens.inkFaint
+                color: Tokens.controlsCrate ? Tokens.inkSubtle : Tokens.inkFaint
                 font.family: Tokens.mono
-                font.pixelSize: Tokens.fTiny * root.s
+                font.pixelSize: (Tokens.controlsCrate ? Tokens.fMicro : Tokens.fTiny) * root.s
                 font.letterSpacing: Tokens.trackLabel * root.s
             }
 
@@ -182,6 +227,7 @@ Item {
                     required property var modelData
                     width: captureList.width
                     s: root.s
+                    nameWidth: root.streamNameWidth
                     node: modelData
                     capture: true
                 }
@@ -210,14 +256,38 @@ Item {
 
             Text {
                 text: I18n.tr("MICROPHONE")
-                color: Tokens.inkFaint
+                color: Tokens.controlsCrate ? Tokens.inkSubtle : Tokens.inkFaint
                 font.family: Tokens.mono
-                font.pixelSize: Tokens.fTiny * root.s
+                font.pixelSize: (Tokens.controlsCrate ? Tokens.fMicro : Tokens.fTiny) * root.s
                 font.letterSpacing: Tokens.trackLabel * root.s
+            }
+
+            // crate-mark: the devices as the kit's pick rows, the default one picked
+            Column {
+                visible: Tokens.controlsCrate
+                width: parent.width
+                spacing: 6 * root.s
+
+                Repeater {
+                    model: root.active && Tokens.controlsCrate ? Audio.inputs.filter(Audio.alive) : []
+                    delegate: Kit.PickRow {
+                        required property var modelData
+                        width: parent ? parent.width : 0
+                        title: Audio.nodeLabel(modelData)
+                        sub: Audio.isBluez(modelData) ? I18n.tr("Bluetooth") : ""
+                        glyph: Audio.nodeIcon(modelData)
+                        glyphFont: "Material Symbols Rounded"
+                        picked: !!(Audio.source && modelData && Audio.source.name === modelData.name)
+                        Accessible.name: picked ? I18n.tr("%1 is the default microphone").arg(title)
+                            : I18n.tr("Use %1 as the default microphone").arg(title)
+                        onClicked: if (!picked) Audio.setInput(modelData)
+                    }
+                }
             }
 
             Flow {
                 id: inputChips
+                visible: !Tokens.controlsCrate
                 width: parent.width
                 height: childrenRect.height
                 spacing: Tokens.s2 * root.s
@@ -279,6 +349,7 @@ Item {
                 width: parent.width
                 visible: !!(Audio.source && Audio.source.audio)
                 s: root.s
+                nameWidth: root.streamNameWidth
                 node: Audio.source
                 device: true
                 capture: true

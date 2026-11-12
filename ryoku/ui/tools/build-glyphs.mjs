@@ -48,7 +48,7 @@ const alias = {
   star: "star", delete: "trash-bin-minimalistic", push_pin: "pin", content_copy: "copy", search: "magnifier",
   notifications: "bell", music_note: "music-note-2", calendar_today: "calendar", chevron_right: "alt-arrow-right",
   expand_less: "alt-arrow-up", check_circle: "check-circle", add_circle: "add-circle", desktop_windows: "display",
-  open_in_new: "square-arrow-right-up",
+  open_in_new: "square-arrow-right-up", speaker: "speaker", headphones: "headphones-round", monitor: "monitor",
   // freedesktop icon names (the OSD, MPRIS and notification sources use these)
   "audio-volume-high": "volume-loud", "audio-volume-medium": "volume", "audio-volume-low": "volume-small",
   "audio-volume-muted": "volume-cross",

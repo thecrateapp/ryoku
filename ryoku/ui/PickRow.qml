@@ -36,16 +36,17 @@ Rectangle {
     readonly property color titleInk: row.picked ? (row.crate ? Tokens.pickInk : Tokens.inkOnBone) : Tokens.ink
     readonly property color subInk: row.picked ? (row.crate ? Tokens.pickInkDim : Tokens.inkOnBoneDim) : Tokens.inkDim
 
-    Text {
+    // the catalogue's Solar glyph under crate, the font glyph otherwise
+    Glyph {
         id: icon
         visible: row.glyph.length > 0
         anchors.left: parent.left
         anchors.leftMargin: 12
         anchors.verticalCenter: parent.verticalCenter
-        text: row.glyph
+        name: row.glyph
         color: row.picked && row.crate ? Tokens.mark : row.titleInk
-        font.family: row.glyphFont
-        font.pixelSize: 18
+        fallbackFont: row.glyphFont
+        size: 18
     }
     Column {
         id: texts

@@ -57,3 +57,21 @@ test("a group can widen the caption column so every row's beam starts together",
   assert.equal(meter.beam.x, 96);
   assert.equal(levelColumns(656, { labelWidth: 40 }).label.w, 72);
 });
+
+test("a stream row lays out a 64 px name, the beam and a 28 px mute button", () => {
+  const { streamColumns } = require("./rows.js");
+  const c = streamColumns(300);
+  assert.deepEqual(c.name, { x: 0, w: 64 });
+  assert.deepEqual(c.beam, { x: 76, w: 300 - 76 - 12 - 28 });
+  assert.deepEqual(c.mute, { x: 272, w: 28 });
+  assert.equal(streamColumns(600, { s: 2 }).name.w, 128);
+  assert.equal(streamColumns(60).beam.w, 0);
+});
+
+test("a group of streams can widen the name column, up to 35 % of the row", () => {
+  const { streamColumns } = require("./rows.js");
+  assert.equal(streamColumns(600, { nameWidth: 120 }).name.w, 120);
+  assert.equal(streamColumns(600, { nameWidth: 400 }).name.w, 210);
+  assert.equal(streamColumns(600, { nameWidth: 20 }).name.w, 64);
+  assert.equal(streamColumns(600, { nameWidth: 120 }).beam.x, 132);
+});
