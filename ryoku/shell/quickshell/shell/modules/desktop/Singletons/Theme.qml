@@ -72,7 +72,8 @@ Singleton {
     readonly property color tileHover: Qt.rgba(ink.r, ink.g, ink.b, 0.10)
     readonly property color tilePress: Qt.rgba(ink.r, ink.g, ink.b, 0.16)
 
-    readonly property string display: "Fraunces"
+    readonly property string display: Ui.Tokens.display
+    readonly property int displayWeight: Ui.Tokens.displayWeight
     // sans for every clock face and desktop widget. Follows the user's widget
     // font (Hub -> Widgets), bundled faces included, falling back to the default.
     readonly property string font:   Config.widgetFont.length > 0 ? Config.widgetFont : "Space Grotesk"

@@ -5,22 +5,24 @@ import Ryoku.Ui.Singletons as Ui
 import "../lib/contrast.js" as Contrast
 
 Singleton {
-    // Accent follows the wallpaper when matchWallpaper is on (a core feature);
-    // the fixed fallback is the Ryoku brand vermillion (website tokens.css).
-    readonly property color brand:    Config.matchWallpaper ? Scheme.accent : "#e2342a"
+    // Accent follows the wallpaper when matchWallpaper is on (a core feature).
+    // Otherwise a theme that carries a style (Tokens.styled) supplies the accent
+    // and surfaces through Tokens; without one the fixed fallback is the Ryoku
+    // brand vermillion (website tokens.css).
+    readonly property color brand:    Config.matchWallpaper ? Scheme.accent : (Ui.Tokens.styled ? Ui.Tokens.sun : "#e2342a")
     readonly property color verm:     brand
-    readonly property color vermLit:  Config.matchWallpaper ? Qt.lighter(Scheme.accent, 1.22) : "#e83b30"
-    readonly property color vermDeep: Config.matchWallpaper ? Qt.darker(Scheme.accent, 1.3) : "#b81f19"
+    readonly property color vermLit:  Config.matchWallpaper ? Qt.lighter(Scheme.accent, 1.22) : (Ui.Tokens.styled ? Ui.Tokens.sunHi : "#e83b30")
+    readonly property color vermDeep: Config.matchWallpaper ? Qt.darker(Scheme.accent, 1.3) : (Ui.Tokens.styled ? Ui.Tokens.sunDeep : "#b81f19")
     readonly property color gold:     "#d9a441"
     // warm-white text ramp (website --ink).
     readonly property color cream:    Ui.Tokens.ink
     readonly property color bright:   Ui.Tokens.ink
     // near-black canvas (website --paper), or palette surfaces when matching.
-    readonly property color cardTop:  Config.matchWallpaper ? Scheme.base : "#16110b"
-    readonly property color border:   Config.matchWallpaper ? Scheme.line : Qt.rgba(243/255, 237/255, 225/255, 0.14)
-    readonly property color lineStrong: Qt.rgba(236/255, 226/255, 205/255, 0.40)
+    readonly property color cardTop:  Config.matchWallpaper ? Scheme.base : (Ui.Tokens.styled ? Ui.Tokens.paper : "#16110b")
+    readonly property color border:   Config.matchWallpaper ? Scheme.line : (Ui.Tokens.styled ? Ui.Tokens.line : Qt.rgba(243/255, 237/255, 225/255, 0.14))
+    readonly property color lineStrong: Ui.Tokens.styled ? Ui.Tokens.lineStrong : Qt.rgba(236/255, 226/255, 205/255, 0.40)
     readonly property color shadow:   "#000000"
-    readonly property color tileBg:   Config.matchWallpaper ? Scheme.elevated : "#1b150e"
+    readonly property color tileBg:   Config.matchWallpaper ? Scheme.elevated : (Ui.Tokens.styled ? Ui.Tokens.paperLift : "#1b150e")
     readonly property color subtle:   Ui.Tokens.inkDim
     readonly property color faint:    Ui.Tokens.inkMuted
     readonly property color iconDim:  Ui.Tokens.inkMuted
@@ -29,8 +31,8 @@ Singleton {
     readonly property color vermDim:  "#b05a43"
     readonly property color vermDimDeep: "#65342b"
     readonly property color vermBurn: "#8f321d"
-    readonly property color tickRest: "#8f8770"
-    readonly property color threadBg: Qt.rgba(226/255, 52/255, 42/255, 0.13)
+    readonly property color tickRest: Ui.Tokens.styled ? Ui.Tokens.inkFaint : "#8f8770"
+    readonly property color threadBg: Ui.Tokens.styled ? Ui.Tokens.rowWash : Qt.rgba(226/255, 52/255, 42/255, 0.13)
     readonly property color flameCore: "#ffd2bf"
     readonly property color flameGlow: "#ff9e64"
 
@@ -55,7 +57,7 @@ Singleton {
     readonly property color pickEdge: Ui.Tokens.accentMarks ? Ui.Tokens.mark : bright
     readonly property color pickRow: Ui.Tokens.selectFill ? drawerRaised : Ui.Tokens.rowWash
     readonly property color providerApps: Ui.Tokens.sun
-    readonly property color providerFind: Config.matchWallpaper ? Scheme.accent2 : vermDim
+    readonly property color providerFind: Config.matchWallpaper ? Scheme.accent2 : (Ui.Tokens.styled ? Ui.Tokens.sunHi : vermDim)
     readonly property color providerRecent: Ui.Tokens.inkMuted
     readonly property color providerOther: Ui.Tokens.inkDim
 
@@ -79,7 +81,7 @@ Singleton {
     readonly property color creamMenu:   Qt.rgba(230/255, 220/255, 203/255, 0.82)
     readonly property real shadowOpacity: 0.5
     // type stack + brutalist geometry, the website language.
-    readonly property string display: "Fraunces"
+    readonly property string display: Ui.Tokens.display
     readonly property string font: Ui.Tokens.ui
     readonly property string mono: Ui.Tokens.mono
     readonly property int radius: 0

@@ -1,6 +1,7 @@
 pragma Singleton
 import QtQuick
 import Quickshell
+import Ryoku.Ui.Singletons as Ui
 
 // The plugin kit's design tokens. Colour resolves from the daemon palette
 // through the Scheme singleton so a plugin's card, ink and accent follow the active theme (a
@@ -69,7 +70,8 @@ Singleton {
     readonly property color creamMenu:   Qt.rgba(bright.r, bright.g, bright.b, 0.82)
     readonly property real shadowOpacity: 0.5
     // type stack + brutalist geometry, the website language.
-    readonly property string display: "Fraunces"
+    readonly property string display: Ui.Tokens.display
+    readonly property int displayWeight: Ui.Tokens.displayWeight
     readonly property string font: "Space Grotesk"
     readonly property string fontJp: "Noto Sans CJK JP"
     readonly property string mono: "JetBrainsMono Nerd Font"
