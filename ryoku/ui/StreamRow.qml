@@ -17,7 +17,7 @@ Item {
     property bool available: true
     // a limit above 1 extends the beam past 100 % (volume boost), as on Beam
     property real limit: 0
-    readonly property real top: row.limit > 1 ? row.limit : 1
+    readonly property real upperLimit: row.limit > 1 ? row.limit : 1
     // a group of rows sets this to its longest name so the beams line up
     property real nameWidth: 0
 
@@ -51,7 +51,7 @@ Item {
         to: 1
         limit: row.limit
         stepSize: 0.01
-        value: Math.max(0, Math.min(row.top, row.value))
+        value: Math.max(0, Math.min(row.upperLimit, row.value))
         interactive: row.available
         opacity: row.muted ? 0.4 : 1
         Accessible.name: I18n.tr("%1 volume").arg(row.name)
@@ -60,7 +60,7 @@ Item {
         WheelHandler {
             enabled: row.available
             onWheel: event => {
-                row.adjusted(Math.max(0, Math.min(row.top, row.value + (event.angleDelta.y >= 0 ? 0.02 : -0.02))));
+                row.adjusted(Math.max(0, Math.min(row.upperLimit, row.value + (event.angleDelta.y >= 0 ? 0.02 : -0.02))));
                 event.accepted = true;
             }
         }

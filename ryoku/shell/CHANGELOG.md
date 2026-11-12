@@ -1,6 +1,9 @@
 # Changelog: ryoku/shell/
 
 ## Unreleased
+- **The shell starts again with the stream mixer loaded.** Its volume ceiling
+  no longer redeclares Qt Quick's final `top` property, which prevented the
+  bar, dock and other shell surfaces from loading after a reload.
 - **A user theme can ship its own terminal colours.** A scheme block's
   `terminal` object (Noctalia's shape) now reaches kitty and alacritty through
   new `term_*` template keys; without one the terminal renders exactly as
