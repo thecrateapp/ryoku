@@ -29,14 +29,14 @@ test("the Controls panel's glyphs are all covered", () => {
     assert.ok(has(name), `${name} has no glyph`);
 });
 
-test("svg paints the strokes in the asked colour with Solar's 1.5 px line and 50 % secondary layer", () => {
+test("svg paints Solar's Outline glyph, filled, in the asked colour", () => {
   const out = svg("lock", "#67e8f9");
   assert.ok(out.startsWith("<svg "));
-  assert.ok(out.includes('stroke="#67e8f9"'));
-  assert.ok(out.includes('stroke-width="1.5"'));
-  assert.ok(out.includes('opacity="0.5"'));
+  assert.ok(out.includes('fill="#67e8f9"'));
+  assert.ok(!out.includes('opacity="0.5"'), "Outline has no faded secondary layer");
   assert.ok(!out.includes("currentColor"));
   assert.ok(!out.includes("var(--"));
+  assert.ok(!out.includes("class="));
 });
 
 test("svg refuses an unknown glyph or a colour that is not a hex", () => {
@@ -54,20 +54,15 @@ test("dataUri is an encoded SVG data URL an Image can load", () => {
   const uri = dataUri("sun", "#abe2ee");
   assert.ok(uri.startsWith("data:image/svg+xml;utf8,"));
   assert.ok(!uri.includes("#"));
-  assert.ok(decodeURIComponent(uri.slice(24)).includes('stroke="#abe2ee"'));
+  assert.ok(decodeURIComponent(uri.slice(24)).includes('fill="#abe2ee"'));
   assert.equal(dataUri("no_such_glyph", "#abe2ee"), "");
 });
 
 test("a colour with alpha (#aarrggbb, as QML writes it) becomes an opaque stroke and an svg opacity", () => {
   const out = svg("lock", "#80ff8800");
-  assert.ok(out.includes('stroke="#ff8800"'), out.slice(0, 200));
+  assert.ok(out.includes('fill="#ff8800"'), out.slice(0, 200));
   assert.ok(!out.includes("#80ff8800"));
   assert.ok(/^<svg [^>]*opacity="0\.502"/.test(out));
   assert.ok(!/^<svg [^>]*opacity=/.test(svg("lock", "#ff8800")));
 });
 
-test("a zero-length round-capped stroke (Solar's dots) becomes a filled circle Qt can draw", () => {
-  const out = svg("wifi", "#67e8f9");
-  assert.ok(!/d="M[0-9.]+ [0-9.]+H[0-9.]+"/.test(out), "a zero-length path is left");
-  assert.ok(/<circle cx="12\.02" cy="19\.46" r="0\.75" fill="#67e8f9"/.test(out), out);
-});

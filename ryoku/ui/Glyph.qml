@@ -3,7 +3,7 @@ import "Singletons"
 import "lib/glyphs.js" as Glyphs
 
 // An icon by name. Under controls "crate" a name in the kit's catalogue (Solar
-// line-duotone, or a Material Symbols name aliased to it, see lib/glyphs.js)
+// Outline, or a Material Symbols name aliased to it, see lib/glyphs.js)
 // draws as that SVG in `color`; otherwise, or for a name the catalogue lacks,
 // it draws the Material Symbols glyph as before. `size` is the glyph's box.
 Item {
@@ -24,10 +24,11 @@ Item {
         anchors.centerIn: parent
         width: g.size
         height: g.size
-        sourceSize: Qt.size(Math.ceil(g.size * 2), Math.ceil(g.size * 2))
+        // rasterised at its drawn size (Qt applies the screen's pixel ratio), so
+        // Solar's shapes land on the pixel grid instead of being scaled down
+        sourceSize: Qt.size(Math.round(g.size), Math.round(g.size))
         source: g.drawn ? Glyphs.dataUri(g.name, g.color.toString()) : ""
         smooth: true
-        mipmap: true
         asynchronous: false
         cache: true
     }
