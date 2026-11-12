@@ -1,22 +1,21 @@
+pragma ComponentBehavior: Bound
+
 import QtQuick
-import Quickshell
-import Quickshell.Io
-import "../RyokuPower.js" as RyokuPower
 import Ryoku.Ui.Singletons
+import Ryoku.Ui as Kit
 
 Item {
     id: rootMod
     required property var root
+    required property var screen
+    required property BrightnessOutput controller
     readonly property color contentColor: root.widgetContentColor("G13", root.ink)
+    readonly property color levelColor: percent >= 100 && !root.widgetHasFill("G13") ? root.seal : contentColor
 
-    property bool   hasBacklight: false
-    property int    percent:      0
-    property string blDevice:     ""
-    property bool   brightnessErrorNotified: false
-
+    readonly property int percent: controller.percent
     readonly property string tooltipText: I18n.tr("Brightness · %1%").arg(percent)
 
-    readonly property bool shown: hasBacklight && root.modBrightness
+    readonly property bool shown: controller.available && root.modBrightness
     implicitWidth:  shown ? (row.implicitWidth + 18) : 0
     implicitHeight: 28
     visible: implicitWidth > 0.5
@@ -24,50 +23,45 @@ Item {
 
     Behavior on opacity { NumberAnimation { duration: 140; easing.type: Easing.OutCubic } }
 
-    function refreshBrightness() {
-        briProc.running = false
-        briProc.running = true
+    function togglePanel() {
+        tip.hide()
+        if (!screen || !controller.available || screen.name !== controller.outputName) return
+        if (root.brightnessVisible && root.brightnessTarget === controller) {
+            root.brightnessVisible = false
+            return
+        }
+        root.activatePopupScreen(screen)
+        root.brightnessTarget = controller
+        root.brightnessVisible = true
+        controller.refresh()
     }
 
-    function runBrightnessStep(up) {
-        var runner = up ? briUp : briDown
-        if (runner.running) return
-        runner.running = true
+    Component {
+        id: crateIcon
+
+        Kit.Glyph {
+            name: "sun"
+            size: 18
+            color: rootMod.levelColor
+            opacity: 0.72 + 0.28 * rootMod.percent / 100
+        }
     }
 
-    function notifyBrightnessError(action, exitCode) {
-        if (exitCode === 0 || brightnessErrorNotified) return
-        brightnessErrorNotified = true
-        brightnessErrNotify.command = ["bash", "-c",
-            "notify-send -a 'QS-Shell' 'Brightness command failed' '" + action + " failed; brightness backend unavailable.' 2>/dev/null || true"]
-        brightnessErrNotify.running = false
-        brightnessErrNotify.running = true
-    }
+    Component {
+        id: stockIcon
 
-    Row {
-        id: row
-        anchors.centerIn: parent
-        spacing: 4
-
-        // drawn sun - core + rays that grow/brighten with the level
         Item {
             id: sun
             width: 13
             height: 13
-            anchors.verticalCenter: parent.verticalCenter
 
             readonly property real ratio: Math.max(0, Math.min(1, rootMod.percent / 100))
-            // turns theme-red at full brightness, like the battery's full state
-            readonly property color sunColor: rootMod.percent >= 100
-                ? (root.widgetHasFill("G13") ? rootMod.contentColor : root.seal)
-                : rootMod.contentColor
-
             Rectangle {
                 anchors.centerIn: parent
                 width: 6.5
                 height: 6.5
                 radius: 3.25
-                color: sun.sunColor
+                color: rootMod.levelColor
                 Behavior on color { ColorAnimation { duration: 200 } }
             }
 
@@ -84,7 +78,7 @@ Item {
                         width: 1.5
                         height: 2 + 1.4 * sun.ratio
                         radius: 0.75
-                        color: sun.sunColor
+                        color: rootMod.levelColor
                         opacity: 0.35 + 0.65 * sun.ratio
                         Behavior on height  { NumberAnimation { duration: 250; easing.type: Easing.OutCubic } }
                         Behavior on opacity { NumberAnimation { duration: 250 } }
@@ -93,69 +87,27 @@ Item {
                 }
             }
         }
+    }
+
+    Row {
+        id: row
+        anchors.centerIn: parent
+        spacing: Tokens.controlsCrate ? 6 : 4
+
+        Loader {
+            anchors.verticalCenter: parent.verticalCenter
+            sourceComponent: Tokens.controlsCrate ? crateIcon : stockIcon
+        }
 
         UiText {
-            visible: !root.iconOnly("G13")
+            visible: !rootMod.root.iconOnly("G13")
             anchors.verticalCenter: parent.verticalCenter
             text: rootMod.percent + "%"
-            color: rootMod.percent >= 100
-                ? (root.widgetHasFill("G13") ? rootMod.contentColor : root.seal)
-                : rootMod.contentColor
-            font.family: root.mono
+            color: rootMod.levelColor
+            font.family: Tokens.controlsCrate ? Tokens.mono : rootMod.root.mono
             font.pixelSize: 12
+            font.features: Tokens.controlsCrate ? { "tnum": 1 } : {}
             Behavior on color { ColorAnimation { duration: 200 } }
-        }
-    }
-
-    // detect backlight on startup
-    Process {
-        id: detectProc
-        command: ["bash", "-c", RyokuPower.backlightDetectCmd]
-        running: true
-        stdout: StdioCollector {
-            onStreamFinished: {
-                var bl = this.text.trim()
-                if (bl !== "") {
-                    rootMod.blDevice = bl
-                    rootMod.hasBacklight = true
-                    root.hasBacklight = true
-                }
-            }
-        }
-    }
-
-    Process {
-        id: briProc
-        command: ["bash", "-c", RyokuPower.brightnessPercentCmd]
-        running: false
-        stdout: StdioCollector {
-            onStreamFinished: {
-                var v = parseInt(this.text.trim())
-                if (!isNaN(v)) rootMod.percent = Math.max(0, Math.min(100, v))
-            }
-        }
-    }
-
-    Timer {
-        interval: 3000; running: rootMod.shown; repeat: true; triggeredOnStart: true
-        onTriggered: rootMod.refreshBrightness()
-    }
-
-    Process { id: brightnessErrNotify }
-    Process {
-        id: briUp
-        command: ["bash", "-c", RyokuPower.brightnessSetCmd("+5%")]
-        onExited: (code) => {
-            rootMod.notifyBrightnessError("Brightness up", code)
-            rootMod.refreshBrightness()
-        }
-    }
-    Process {
-        id: briDown
-        command: ["bash", "-c", RyokuPower.brightnessSetCmd("5%-")]
-        onExited: (code) => {
-            rootMod.notifyBrightnessError("Brightness down", code)
-            rootMod.refreshBrightness()
         }
     }
 
@@ -164,11 +116,11 @@ Item {
     MouseArea {
         anchors.fill: parent
         hoverEnabled: true; cursorShape: Qt.PointingHandCursor
-        onEntered: { if (rootMod.hasBacklight) tip.show() }
+        onEntered: tip.show()
         onExited:  { tip.hide() }
-        onClicked: { tip.hide(); root.brightnessVisible = !root.brightnessVisible }
-        onWheel: (e) => {
-            rootMod.runBrightnessStep(e.angleDelta.y > 0)
+        onClicked: rootMod.togglePanel()
+        onWheel: e => {
+            if (e.angleDelta.y !== 0) rootMod.controller.step(e.angleDelta.y > 0)
         }
     }
 }

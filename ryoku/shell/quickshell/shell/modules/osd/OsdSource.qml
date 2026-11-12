@@ -18,6 +18,8 @@ QtObject {
 
     property string kind: "volume"
     property bool suppressed: false
+    property string outputName: ""
+    property real brightnessLevel: 0
 
     readonly property bool isVolume: kind === "volume"
     readonly property bool isMic: kind === "mic"
@@ -33,7 +35,7 @@ QtObject {
     readonly property real maxValue: (isVolume && Config.qsbar
         && Config.qsbar.audioBoost === true) ? 1.5 : 1.0
     readonly property real value: isBrightness
-        ? OsdFeed.brightness
+        ? root.brightnessLevel
         : ((isVolume || isMic) && audio
             ? Math.max(0, Math.min(root.maxValue, audio.volume)) : 0)
     readonly property bool over: root.value > 1.005
@@ -114,7 +116,11 @@ QtObject {
 
     property Connections brightnessEvents: Connections {
         target: root.isBrightness ? OsdFeed : null
-        function onBrightnessSeqChanged() { root.flash(false); }
+        function onBrightnessOnOutput(output, level, keypress) {
+            if (output !== root.outputName) return;
+            root.brightnessLevel = level;
+            root.flash(keypress);
+        }
     }
 
     property Connections previewEvents: Connections {

@@ -53,8 +53,7 @@ func audioArgv(sub string) ([]string, bool) {
 }
 
 // brightnessArgv maps a brightness subcommand to a ryoku-cmd-brightness step.
-// The reference stepped brightness by 5 on a 0..100 scale (5%); the helper
-// drives both the laptop backlight and any DDC/CI external monitor at once.
+// The helper applies the same 5% step as the media keys to the focused output.
 func brightnessArgv(sub string) ([]string, bool) {
 	switch sub {
 	case "up":

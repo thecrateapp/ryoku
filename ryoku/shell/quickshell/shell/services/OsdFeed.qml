@@ -4,17 +4,14 @@ import QtQuick
 import Quickshell
 import Quickshell.Io
 
-// QML view of the daemon `osd` topic. The volume and mic OSDs read PipeWire
-// directly (Ryoku owns the audio graph in QML), but brightness has no
-// QML-observable source: the media keys and the brightness verb both drive the
-// backlight directly, so the daemon watches the primary backlight and pushes
-// {brightness:{seq,value}} here. The brightness OSD shows when `brightnessSeq`
-// advances and binds `brightness` (0..1) to its bar. Contract 12 sec 3, sec 9.
+// The daemon observes the native panel backlight. Key commands can also
+// report DDC/CI changes directly, with the output captured at the keypress.
 Singleton {
     id: root
 
     property real brightness: 0
     property int brightnessSeq: 0
+    property bool receivedBrightnessSnapshot: false
     property int previewSeq: 0
     property real expectedMicVolume: -1
     property double expectedMicVolumeAt: 0
@@ -33,6 +30,7 @@ Singleton {
 
     signal volumeRequested()
     signal brightnessRequested()
+    signal brightnessOnOutput(string output, real level, bool keypress)
     signal micRequested()
     signal keyboardRequested()
     signal mediaRequested(string action)
@@ -54,16 +52,28 @@ Singleton {
         }
         function hide(): void { root.hideRequested(); }
     }
+    // Bar styles can register their own "osd" target. Key feedback must reach
+    // this output-aware feed whichever one owns that target.
+    IpcHandler {
+        target: "brightnessOsd"
+        function show(output: string, percent: int): void {
+            if (output.length > 0 && percent >= 0 && percent <= 100)
+                root.brightnessOnOutput(output, percent / 100, true);
+        }
+    }
+
     readonly property string sockPath: (Quickshell.env("XDG_RUNTIME_DIR") || "/tmp") + "/ryoku-shell.sock"
 
     function apply(line) {
         try {
             const b = JSON.parse(line).brightness;
-            if (b) {
-                if (typeof b.value === "number")
-                    root.brightness = Math.max(0, Math.min(1, b.value));
-                if (typeof b.seq === "number")
-                    root.brightnessSeq = b.seq;
+            if (b && typeof b.value === "number" && typeof b.seq === "number") {
+                const advanced = root.receivedBrightnessSnapshot && b.seq > root.brightnessSeq;
+                root.receivedBrightnessSnapshot = true;
+                root.brightness = Math.max(0, Math.min(1, b.value));
+                root.brightnessSeq = b.seq;
+                if (advanced && b.seq > 0 && typeof b.output === "string" && b.output)
+                    root.brightnessOnOutput(b.output, root.brightness, false);
             }
         } catch (e) {
             // A malformed frame must never wedge the OSD; keep the last value.
@@ -79,6 +89,7 @@ Singleton {
         Component.onCompleted: connected = true
         onConnectionStateChanged: {
             if (connected) {
+                root.receivedBrightnessSnapshot = false;
                 write("subscribe osd\n");
                 flush();
             } else {

@@ -71,6 +71,7 @@ PanelWindow {
     OsdSource {
         id: feed
         kind: win.kind
+        outputName: win.modelData?.name ?? ""
     }
 
     Rectangle {

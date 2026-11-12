@@ -4,6 +4,7 @@ AudioData AudioData.qml
 AudioWidget AudioWidget.qml
 BatteryWidget BatteryWidget.qml
 BluetoothWidget BluetoothWidget.qml
+BrightnessOutput BrightnessOutput.qml
 BrightnessWidget BrightnessWidget.qml
 ClaudeWidget ClaudeWidget.qml
 ClockWidget ClockWidget.qml

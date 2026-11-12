@@ -6,6 +6,7 @@ import shell.services
 import Ryoku.Ui
 import Ryoku.Ui.Singletons
 import "core"
+import "modules" as BarModules
 import "Palette.js" as Palette
 
 Item {
@@ -2306,8 +2307,7 @@ Item {
         triggeredOnStart: true
         onTriggered: theme.refreshVoxtypeStatus()
     }
-    // battery presence (laptop) - drives the Battery indicator tile's visibility (shown only
-    // where a battery exists, like Brightness uses hasBacklight). Direct UPower check, event-driven.
+    // Battery presence drives the Battery indicator tile. Direct UPower check, event-driven.
     readonly property bool hasBattery: UPower.displayDevice !== null && UPower.displayDevice.isLaptopBattery
     // NetworkManager active (Ryoku 4.0) → the panel's iwctl scan/connect won't work,
     // so it shows an "open nmtui" button instead of an empty list
@@ -2335,10 +2335,6 @@ Item {
     property int mprisTitleWidth: 88
     property bool modClaude:     false   // default off (toggle in ControlPanel)
     property bool modBattery:    true    // G12 battery pill (laptop batteries only)
-
-    // backlight presence - set by BrightnessWidget once it probes /sys/class/backlight.
-    // ControlPanel uses this to hide the Brightness toggle on desktops without one.
-    property bool hasBacklight:  false
 
     // ── workspace display mode ──
     property string workspaceMode: "active"   // "10", "5", "active"
@@ -3175,6 +3171,10 @@ Item {
     onBatteryVisibleChanged: popupOpened("batteryVisible")
     property bool brightnessVisible: false
     onBrightnessVisibleChanged: popupOpened("brightnessVisible")
+    property BarModules.BrightnessOutput brightnessTarget: null
+    readonly property bool brightnessTargetAvailable: !!brightnessTarget
+        && brightnessTarget.available && brightnessTarget.outputName === activePopupScreenName
+    onBrightnessTargetAvailableChanged: if (!brightnessTargetAvailable) brightnessVisible = false
     property bool mprisVisible:     false
     onMprisVisibleChanged: popupOpened("mprisVisible")
     property bool workspaceVisible: false

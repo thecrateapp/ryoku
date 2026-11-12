@@ -19,6 +19,11 @@ PanelWindow {
     id: barSlot
     required property var root
     readonly property string screenName: barSlot.screen ? barSlot.screen.name : ""
+    BrightnessOutput {
+        id: outputBrightness
+        outputName: barSlot.screenName
+        active: barSlot.root.modBrightness
+    }
     // islands renders as separate per-region pills but uses the full-width
     // spread layout (rows anchored to the edges), so it is NOT a compact shell.
     readonly property bool islandsShell: barSlot.root.barShellStyle === "islands"
@@ -1255,6 +1260,8 @@ PanelWindow {
         id: compBrightness
         BrightnessWidget {
             root: barSlot.root
+            screen: barSlot.screen
+            controller: outputBrightness
             readonly property real barContentLeftInset: 9
             readonly property real barContentRightInset: 9
         }

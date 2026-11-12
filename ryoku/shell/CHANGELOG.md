@@ -1,6 +1,12 @@
 # Changelog: ryoku/shell/
 
 ## Unreleased
+- **Brightness keys follow keyboard focus.** Each press adjusts the focused
+  display and shows its level there, including on external DDC/CI monitors.
+- **The QS Bar brightness widget follows the Crate theme.** Its Solar sun
+  opens a compact panel with a Beam, a numeric level and keyboard-accessible
+  controls. Each bar reads and adjusts its own display, using the panel
+  backlight or DDC/CI on supported external monitors.
 - **The shell starts again with the stream mixer loaded.** Its volume ceiling
   no longer redeclares Qt Quick's final `top` property, which prevented the
   bar, dock and other shell surfaces from loading after a reload.

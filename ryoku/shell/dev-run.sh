@@ -28,6 +28,7 @@ bin="$here/ipc/ryoku-shell"
 "$here/../i18n/tools/install.sh"
 
 export RYOKU_SHELL_DIR="$here"
+export PATH="$here/scripts:$PATH"
 echo "ryoku-shell dev  (RYOKU_SHELL_DIR=$here)"
 echo "  edit anything under $here/quickshell and it reloads live"
 echo "  test actions:  $bin <launcher|lock|wallpaper|status>"

@@ -10,6 +10,9 @@ Item {
   id: root
 
   property bool opened: false
+  property string outputName: ""
+  readonly property var outputScreen: outputName
+    ? Quickshell.screens.find(s => s.name === outputName) ?? null : null
   property string icon: ""
   property string message: ""
   property string iconKey: ""
@@ -73,6 +76,7 @@ Item {
   function open(payloadJson) {
     try {
       var p = JSON.parse(payloadJson || "{}")
+      root.outputName = p.output || ""
       show(p.icon || "", p.message || "", p.value === undefined ? "" : String(p.value), p.max === undefined ? "100" : String(p.max), p.progressText || "", p.duration === undefined ? "1200" : String(p.duration))
     } catch (e) {}
   }
@@ -125,7 +129,8 @@ Item {
 
   OverlayWindow {
     id: panel
-    shown: root.opened
+    screen: root.outputName ? root.outputScreen : panel.targetScreen
+    shown: root.opened && (!root.outputName || root.outputScreen !== null)
     shownKeyboardFocus: WlrKeyboardFocus.None
     WlrLayershell.namespace: "omarchy-osd"
     // Visual-only surface: keep the layer-shell input region empty so the OSD

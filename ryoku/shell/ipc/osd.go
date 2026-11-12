@@ -135,7 +135,7 @@ func readSysInt(path string) (int, bool) {
 // watcher goroutine that republishes on every brightness change.
 func (d *daemon) startOsd() {
 	o := &osdState{topic: d.registerTopic("osd")}
-	o.publish(0)
+	o.publish("", 0)
 	if dev := backlightDevice(); dev != "" {
 		go o.watchBacklight(dev)
 	}
@@ -143,11 +143,21 @@ func (d *daemon) startOsd() {
 
 // publish writes the current osd frame. The topic drops a byte-identical frame,
 // so republishing an unchanged value never wakes a QML binding.
-func (o *osdState) publish(value float64) {
+func (o *osdState) publish(output string, value float64) {
 	frame, _ := json.Marshal(map[string]any{
-		"brightness": map[string]any{"seq": o.seq, "value": value},
+		"brightness": map[string]any{"seq": o.seq, "output": output, "value": value},
 	})
 	o.topic.publish(frame)
+}
+
+// Resolve once for each opened node. A firmware backlight without an unambiguous
+// connector still participates in persistence, without selecting another output.
+func backlightOutput(dev string) string {
+	out, err := exec.Command("ryoku-brightness-output", "output-for-backlight", filepath.Base(dev)).Output()
+	if err != nil {
+		return ""
+	}
+	return strings.TrimSpace(string(out))
 }
 
 // Backoff for reopening a backlight node that went away: a dGPU driver
@@ -212,6 +222,7 @@ func (o *osdState) watchBacklightNode(dev string, maxb int) bool {
 	}
 	defer unix.Close(fd)
 
+	output := backlightOutput(dev)
 	buf := make([]byte, 32)
 	// Polling wakes on actual_brightness, but the value published (and saved)
 	// is the linear `brightness` attribute: on a driver with a custom
@@ -219,7 +230,7 @@ func (o *osdState) watchBacklightNode(dev string, maxb int) bool {
 	// it made the OSD read 7-88% for a 1-100% request (#176).
 	publish := func() {
 		if frac, raw, ok := readBrightnessFraction(dev, maxb); ok {
-			o.publish(frac)
+			o.publish(output, frac)
 			saveObservedBacklight(raw)
 		}
 	}

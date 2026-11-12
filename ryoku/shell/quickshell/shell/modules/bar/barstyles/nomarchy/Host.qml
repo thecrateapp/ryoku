@@ -72,11 +72,11 @@ Item {
   Connections {
     target: Ryoku.OsdFeed
     function onMicRequested() { shell.showAudioOsd(shell.osdSourceAudio, true, false) }
-    function onBrightnessSeqChanged() {
-      if (!shell.osdBridgeReady) return
-      var percent = Math.round(Ryoku.OsdFeed.brightness * 100)
+    function onBrightnessOnOutput(output, level, keypress) {
+      if (!shell.osdBridgeReady && !keypress) return
+      var percent = Math.round(level * 100)
       shell.summon("omarchy.osd", JSON.stringify({
-        icon: "brightness", message: "", value: String(percent), max: "100",
+        output: output, icon: "brightness", message: "", value: String(percent), max: "100",
         progressText: percent + "%", duration: "1200"
       }))
     }

@@ -1,0 +1,226 @@
+#!/usr/bin/env bash
+# Read or change brightness on one Wayland output, resolved by DRM connector.
+set -euo pipefail
+shopt -s nullglob
+export LC_ALL=C
+
+action=${1:-}
+output=${2:-}
+value=${3:-}
+[[ $output =~ ^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$ ]] || exit 1
+case "$action" in
+  get|output-for-backlight) [[ $# == 2 ]] || exit 1 ;;
+  set) [[ $# == 3 && $value =~ ^([1-9][0-9]?|100)$ ]] || exit 1 ;;
+  step) [[ $# == 3 && ( $value == up || $value == down ) ]] || exit 1 ;;
+  adjust)
+    [[ $# == 3 && $value =~ ^([+-])0*([1-9][0-9]*|0)$ ]] || exit 1
+    sign=${BASH_REMATCH[1]}
+    magnitude=${BASH_REMATCH[2]}
+    # Larger percentages saturate, even when the argument exceeds shell arithmetic.
+    if (( ${#magnitude} > 2 )); then magnitude=100; fi
+    ;;
+  *) exit 1 ;;
+esac
+
+drm=${RYOKU_DRM_PATH:-/sys/class/drm}
+backlights=${RYOKU_BACKLIGHT_PATH:-/sys/class/backlight}
+
+connected() {
+  [[ -r $1/status && $(<"$1/status") == connected ]]
+}
+
+connector_for_output() {
+  local output=$1 candidate name found=
+  for candidate in "$drm"/card[0-9]*-"$output"; do
+    name=${candidate##*/}
+    [[ ${name%%-*} =~ ^card[0-9]+$ && ${name#*-} == "$output" ]] || continue
+    connected "$candidate" || continue
+    [[ -z $found ]] || return 1
+    found=$candidate
+  done
+  [[ -n $found ]] && printf '%s\n' "$found"
+}
+
+connector_backlight() {
+  local connector=$1 candidate
+  for candidate in "$backlights"/*; do
+    if [[ $candidate/device -ef $connector || $candidate -ef $connector/${candidate##*/} ]]; then
+      printf '%s\n' "${candidate##*/}"
+      return 0
+    fi
+  done
+  return 1
+}
+
+panel_device() {
+  local connector=$1 device panel matches=0
+  # PCI and platform backlights may not be children of a connector. The
+  # system's laptop selector is valid only if there is a single connected
+  # internal panel. Reject devices that sysfs assigns to a different panel.
+  for panel in "$drm"/card*-eDP-* "$drm"/card*-LVDS-* "$drm"/card*-DSI-*; do
+    if connected "$panel"; then ((matches += 1)); fi
+  done
+  [[ $matches == 1 ]] || return 1
+  device=$(ryoku-hw-backlight) || return 1
+  [[ -n $device && -d $backlights/$device ]] || return 1
+  local owner node
+  owner=$(readlink -e "$backlights/$device/device") || owner=
+  node=$(readlink -e "$backlights/$device") || return 1
+  # The system selector has a last-resort first-device fallback. Exclude a
+  # DDCCI backlight, or one nested anywhere below a different DRM connector.
+  [[ $device != ddcci* && ! $owner/$node =~ /[0-9]+-0037(/|$) ]] || return 1
+  for panel in "$drm"/card*-*; do
+    [[ $panel != "$connector" && -e $panel/status ]] || continue
+    local otherpath
+    otherpath=$(readlink -e "$panel") || continue
+    if [[ $owner == "$otherpath" || $owner == "$otherpath/"* ||
+          $node == "$otherpath/"* ]]; then return 1; fi
+  done
+  if [[ -n $owner && -e $owner/status && ! $owner -ef $connector ]]; then return 1; fi
+  # A GPU-owned device can be matched to its DRM card even without a panel link.
+  local card name=${connector##*/}
+  for card in "$drm"/card[0-9]*; do
+    [[ ${card##*/} =~ ^card[0-9]+$ && $card/device -ef $owner ]] || continue
+    [[ ${name%%-*} == "${card##*/}" ]] || return 1
+  done
+  printf '%s\n' "$device"
+}
+
+ddc_bus() {
+  local connector=$1 adapter number other
+  adapter=$(readlink -e "$connector/ddc") || adapter=
+  if [[ ! ${adapter##*/} =~ ^i2c-[0-9]+$ ]]; then
+    # Some drivers expose the adapter below the connector without a ddc link.
+    local -a adapters=("$connector"/i2c-*)
+    if (( ${#adapters[@]} == 0 )); then
+      adapters=("$connector"/ddc/i2c-dev/i2c-* "$connector"/i2c-dev/i2c-*)
+    fi
+    (( ${#adapters[@]} == 1 )) || return 1
+    adapter=${adapters[0]}
+  fi
+  [[ ${adapter##*/} =~ ^i2c-([0-9]+)$ ]] || return 1
+  number=${BASH_REMATCH[1]}
+  # Two connected outputs sharing a DDC adapter cannot be addressed separately.
+  for other in "$drm"/card*-*; do
+    [[ $other != "$connector" ]] && connected "$other" || continue
+    if [[ $other/ddc -ef $adapter || -e $other/i2c-$number ||
+          -e $other/ddc/i2c-dev/i2c-$number || -e $other/i2c-dev/i2c-$number ]]; then
+      return 1
+    fi
+  done
+  printf '%s\n' "$number"
+}
+
+target_for_output() {
+  local output=$1 connector device bus candidate owner
+  connector=$(connector_for_output "$output") || return 1
+  if device=$(connector_backlight "$connector"); then
+    printf 'backlight %s\n' "$device"
+    return
+  fi
+  case "$output" in
+    eDP-*|LVDS-*|DSI-*)
+      if device=$(panel_device "$connector"); then
+        printf 'backlight %s\n' "$device"
+        return
+      fi ;;
+  esac
+  bus=$(ddc_bus "$connector") || return 1
+  # ddcci-backlight registers a normal backlight for the DDC/CI client at 0x37.
+  for candidate in "$backlights"/*; do
+    owner=$(readlink -e "$candidate/device") || continue
+    if [[ $owner/ == */"$bus"-0037/* ]]; then
+      printf 'backlight %s\n' "${candidate##*/}"
+      return
+    fi
+  done
+  printf 'ddc %s\n' "$bus"
+}
+
+# The OSD observes kernel backlight changes. Use the same routing decision in
+# reverse so a hardware event cannot display its percentage on another screen.
+if [[ $action == output-for-backlight ]]; then
+  requested_device=$2
+  [[ -d $backlights/$requested_device ]] || exit 1
+  found=
+  for connector in "$drm"/card[0-9]*-*; do
+    connected "$connector" || continue
+    name=${connector##*/}
+    name=${name#*-}
+    target=$(target_for_output "$name") || continue
+    if [[ $target == "backlight $requested_device" ]]; then
+      [[ -z $found ]] || exit 1
+      found=$name
+    fi
+  done
+  [[ -n $found ]] || exit 1
+  printf '%s\n' "$found"
+  exit 0
+fi
+
+ddc() { timeout -k 1s 4s ddcutil --bus "$device" "$@"; }
+
+# Serialize changes from media keys and widgets on the same output.
+runtime=${XDG_RUNTIME_DIR:-/run/user/$UID}
+[[ -d $runtime && -O $runtime ]] || exit 1
+exec 9>"$runtime/ryoku-qsbar-brightness-$output.lock"
+flock -w 5 9 || exit 1
+target=$(target_for_output "$output") || exit 1
+read -r backend device <<< "$target"
+case "$backend" in
+  backlight)
+    info=$(brightnessctl -d "$device" -m)
+    IFS=, read -r _ _ current _ maximum <<< "$info"
+    ;;
+  *)
+    info=$(ddc --brief getvcp 10)
+    # A successful ddcutil process can still print an unsupported feature.
+    # Only a continuous brightness value and its maximum describe a usable VCP.
+    values=$(awk '$1 == "VCP" && $2 == "10" && $3 == "C" {print $4, $5; exit}' <<< "$info")
+    read -r current maximum <<< "$values"
+    ;;
+esac
+[[ $current =~ ^[0-9]{1,9}$ && $maximum =~ ^[0-9]{1,9}$ ]] || exit 1
+current=$((10#$current))
+maximum=$((10#$maximum))
+(( maximum > 0 && current <= maximum )) || exit 1
+percent=$(((current * 100 + maximum / 2) / maximum))
+case "$action" in
+  get)
+    printf '%d\n' "$percent"
+    exit 0 ;;
+  adjust)
+    # The keys step by a percentage of the native range. Even a coarse DDC
+    # scale should move one hardware level on a nonzero press.
+    increment=$(((magnitude * maximum + 50) / 100))
+    if (( magnitude > 0 && increment == 0 )); then increment=1; fi
+    if [[ $sign == + ]]; then raw=$((current + increment)); else raw=$((current - increment)); fi
+    minimum=0 ;;
+  set|step)
+    if [[ $action == set ]]; then
+      percent=$value
+    elif [[ $value == up ]]; then
+      if (( percent < 5 )); then ((percent += 1)); else ((percent += 5)); fi
+    else
+      if (( percent <= 5 )); then percent=$((percent - 1)); else percent=$((percent - 5)); fi
+    fi
+    if (( percent < 1 )); then percent=1; fi
+    if (( percent > 100 )); then percent=100; fi
+    raw=$(((percent * maximum + 50) / 100))
+    if [[ $action == step && $raw == "$current" ]]; then
+      if [[ $value == up ]]; then ((raw += 1)); else raw=$((raw - 1)); fi
+    fi
+    minimum=1 ;;
+esac
+if (( raw < minimum )); then raw=$minimum; fi
+if (( raw > maximum )); then raw=$maximum; fi
+if [[ $action == adjust && $raw == "$current" ]]; then
+  printf '%d\n' "$percent"
+  exit 0
+fi
+[[ $(target_for_output "$output") == "$target" ]] || exit 1
+case "$backend" in
+  backlight) brightnessctl -d "$device" set "$raw" >/dev/null ;;
+  *) ddc setvcp 10 "$raw" >/dev/null ;;
+esac
+printf '%d\n' "$(((raw * 100 + maximum / 2) / maximum))"

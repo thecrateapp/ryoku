@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"os"
 	"path/filepath"
 	"strconv"
@@ -201,5 +202,39 @@ func TestWatchBacklightNodeReturnsOnMissingNode(t *testing.T) {
 	}
 	if o.watchBacklightNode("", 100) {
 		t.Fatal("no device must report it was never read")
+	}
+}
+
+func TestBacklightOutputFrame(t *testing.T) {
+	bin := t.TempDir()
+	path := filepath.Join(bin, "ryoku-brightness-output")
+	helper := "#!/bin/sh\n[ \"$1\" = output-for-backlight ] && [ \"$2\" = panel0 ] || exit 1\necho eDP-2\n"
+	if err := os.WriteFile(path, []byte(helper), 0o755); err != nil {
+		t.Fatal(err)
+	}
+	t.Setenv("PATH", bin)
+	for _, tc := range []struct{ dev, want string }{
+		{"/sys/class/backlight/panel0", "eDP-2"},
+		{"/sys/class/backlight/ambiguous", ""},
+	} {
+		output := backlightOutput(tc.dev)
+		if output != tc.want {
+			t.Fatalf("backlightOutput(%q) = %q, want %q", tc.dev, output, tc.want)
+		}
+		o := &osdState{topic: newStateTopic(), seq: 2}
+		o.publish(output, 0.45)
+		var frame struct {
+			Brightness struct {
+				Output string
+				Seq    int
+				Value  float64
+			}
+		}
+		if err := json.Unmarshal(o.topic.last, &frame); err != nil {
+			t.Fatal(err)
+		}
+		if b := frame.Brightness; b.Output != tc.want || b.Seq != 2 || b.Value != 0.45 {
+			t.Errorf("unexpected OSD frame: %+v", b)
+		}
 	}
 }

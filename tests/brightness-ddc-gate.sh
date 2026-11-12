@@ -1,86 +1,90 @@
 #!/usr/bin/env bash
-# Regression test for ryoku-cmd-brightness: the DDC/CI branch must not walk
-# every i2c bus when no external monitor is connected. `ddcutil detect` is the
-# freeze (#176): on a hybrid laptop it touches 28 i2c buses for over 11s, and
-# i2c traffic on the display controller is what locks the whole session on a
-# brightness keypress. Gate it on a connected non-panel DRM connector (a sysfs
-# read), the same protection 755ed028 added to the sidebar but not to this key
-# handler. RYOKU_DRM_PATH lets the connector set be faked.
-#
-# It must also cache the detected buses per connected-external set, so a docked
-# user's repeated presses do not re-walk i2c every time, while a plug/unplug
-# (a changed set) refreshes the walk.
+# Exercise the hardware-key entry point with independent displays and changing focus.
 set -euo pipefail
-
-here="$(cd "$(dirname "$0")/.." && pwd)"
-script="$here/ryoku/shell/scripts/ryoku-cmd-brightness"
-tmp="$(mktemp -d)"
+root=$(cd "$(dirname "$0")/.." && pwd)
+key="$root/ryoku/shell/scripts/ryoku-cmd-brightness"
+tmp=$(mktemp -d)
 trap 'rm -rf "$tmp"' EXIT
+export FIXTURE="$tmp" PATH="$tmp/bin:$PATH"
+mkdir "$tmp/bin"
+touch "$tmp/events"
 
-# A fake ddcutil that counts how many times detect (the i2c walk) ran.
-mkdir -p "$tmp/bin"
-cat >"$tmp/bin/ddcutil" <<'EOF'
+cat > "$tmp/bin/ryoku" <<'SH'
 #!/usr/bin/env bash
-if [[ "$1" == detect ]]; then echo detect >>"$DDC_RAN"; fi
-exit 0
-EOF
-chmod +x "$tmp/bin/ddcutil"
+[[ $* == 'wm state' && ! -e $FIXTURE/wm-offline ]] || exit 1
+echo focus >> "$FIXTURE/events"
+cat "$FIXTURE/state"
+SH
+cat > "$tmp/bin/ryoku-brightness-output" <<'SH'
+#!/usr/bin/env bash
+set -eu
+[[ $# == 3 && $1 == adjust ]] || exit 1
+echo "adjust $2 $3" >> "$FIXTURE/events"
+case "$2" in DP-3|DP-5|eDP-1) ;; *) exit 1 ;; esac
+if [[ -e $FIXTURE/next-focus ]]; then mv "$FIXTURE/next-focus" "$FIXTURE/state"; fi
+level=$(( $(<"$FIXTURE/$2") + $3 ))
+echo "$level" > "$FIXTURE/$2"
+echo "$level"
+SH
+cat > "$tmp/bin/qs" <<'SH'
+#!/usr/bin/env bash
+[[ $# == 9 && ${*:1:7} == '-c shell ipc call -- brightnessOsd show' ]] || exit 1
+echo "osd $8 $9" >> "$FIXTURE/events"
+[[ ! -e $FIXTURE/osd-offline ]]
+SH
+for cmd in ddcutil brightnessctl; do
+  cat > "$tmp/bin/$cmd" <<'SH'
+#!/usr/bin/env bash
+echo 'unexpected direct hardware access' >> "$FIXTURE/events"
+exit 1
+SH
+done
+chmod +x "$tmp/bin/"*
+echo 41 > "$tmp/eDP-1"
+echo 52 > "$tmp/DP-3"
+echo 63 > "$tmp/DP-5"
 
-# Fake the panel side too, so the test never touches a real backlight.
-printf '#!/usr/bin/env bash\nexit 0\n' >"$tmp/bin/brightnessctl"
-printf '#!/usr/bin/env bash\nexit 1\n' >"$tmp/bin/ryoku-hw-backlight"
-chmod +x "$tmp/bin/brightnessctl" "$tmp/bin/ryoku-hw-backlight"
+# The first hardware reply arrives after focus moves. Its OSD stays with that
+# write, while the very next key goes to the newly focused external screen.
+echo '{"focusedOutput":"DP-3"}' > "$tmp/state"
+echo '{"focusedOutput":"DP-5"}' > "$tmp/next-focus"
+"$key" +5
+"$key" -7
+echo '{"focusedOutput":"eDP-1"}' > "$tmp/state"
+touch "$tmp/osd-offline"
+"$key" +2
+[[ $(<"$tmp/DP-3") == 57 && $(<"$tmp/DP-5") == 56 && $(<"$tmp/eDP-1") == 43 ]]
 
-# connectors <set> -- build a fake DRM tree for a named connector set.
-connectors() {
-  rm -rf "$tmp/drm"; mkdir -p "$tmp/drm"
-  case "$1" in
-    panel-only)
-      mkdir -p "$tmp/drm/card0-eDP-1"; echo connected >"$tmp/drm/card0-eDP-1/status" ;;
-    external)
-      mkdir -p "$tmp/drm/card0-eDP-1" "$tmp/drm/card1-HDMI-A-1"
-      echo connected >"$tmp/drm/card0-eDP-1/status"
-      echo connected >"$tmp/drm/card1-HDMI-A-1/status" ;;
-    disconnected-external)
-      mkdir -p "$tmp/drm/card0-eDP-1" "$tmp/drm/card1-HDMI-A-1"
-      echo connected >"$tmp/drm/card0-eDP-1/status"
-      echo disconnected >"$tmp/drm/card1-HDMI-A-1/status" ;;
-  esac
+reject() {
+  if "$key" "$@" >/dev/null 2>&1; then
+    echo "unexpected success for $*" >&2
+    exit 1
+  fi
 }
-
-# press <xdg-runtime-dir> -- one brightness keypress, echoing the detect count.
-press() {
-  local rt="$1"
-  mkdir -p "$rt"
-  : >"$tmp/ddc_ran"
-  PATH="$tmp/bin:$PATH" DDC_RAN="$tmp/ddc_ran" XDG_RUNTIME_DIR="$rt" \
-    RYOKU_DRM_PATH="$tmp/drm" "$script" +5 >/dev/null 2>&1 || true
-  wc -l <"$tmp/ddc_ran" | tr -d ' '
-}
-
-# 1. Panel-only: the walk must be skipped entirely.
-connectors panel-only
-n="$(press "$tmp/rt1")"
-[[ $n == 0 ]] || { echo "FAIL: panel-only walked i2c ($n); want 0" >&2; exit 1; }
-
-# 2. External present but disconnected: still skipped.
-connectors disconnected-external
-n="$(press "$tmp/rt2")"
-[[ $n == 0 ]] || { echo "FAIL: disconnected external walked i2c ($n); want 0" >&2; exit 1; }
-
-# 3. Connected external: the walk runs once.
-connectors external
-n="$(press "$tmp/rt3")"
-[[ $n == 1 ]] || { echo "FAIL: connected external walked $n times; want 1" >&2; exit 1; }
-
-# 4. A second press on the same dock reuses the cache: no new walk.
-n="$(press "$tmp/rt3")"
-[[ $n == 0 ]] || { echo "FAIL: repeat press re-walked i2c ($n); want 0 (cached)" >&2; exit 1; }
-
-# 5. A different connected-external set (hotplug) refreshes the walk.
-connectors external
-mkdir -p "$tmp/drm/card2-DP-1"; echo connected >"$tmp/drm/card2-DP-1/status"
-n="$(press "$tmp/rt3")"
-[[ $n == 1 ]] || { echo "FAIL: changed dock set did not re-walk ($n); want 1" >&2; exit 1; }
-
-echo "PASS: ryoku-cmd-brightness gates the i2c walk and caches it per dock set"
+echo '{"focusedOutput":"HDMI-A-2"}' > "$tmp/state"
+reject +5
+echo '{"focusedOutput":"","outputs":[{"name":"eDP-1"}]}' > "$tmp/state"
+reject -5
+echo '{}' > "$tmp/state"
+reject +5
+touch "$tmp/wm-offline"
+reject +5
+reject nonsense
+reject
+reject +5 extra
+diff -u - "$tmp/events" <<'EXPECTED'
+focus
+adjust DP-3 +5
+osd DP-3 57
+focus
+adjust DP-5 -7
+osd DP-5 56
+focus
+adjust eDP-1 +2
+osd eDP-1 43
+focus
+adjust HDMI-A-2 +5
+focus
+focus
+EXPECTED
+echo 'brightness keys: focused output, delayed feedback, missing focus and offline devices passed'
