@@ -8,6 +8,7 @@ import (
 	"sort"
 	"strconv"
 	"strings"
+	"unicode"
 )
 
 // usertheme.go projects RyoStore-installed colour schemes into the daemon's
@@ -137,6 +138,14 @@ const (
 
 // themeStyleValues sanitises a style block into the shell.json themeStyle map;
 // nil when nothing usable is set, so a theme without a style writes no key.
+// safeFace reports whether a font family from a theme file is fit to hand to
+// the shell: non-empty, at most 64 bytes, and free of quotes, backslashes and
+// control characters.
+func safeFace(face string) bool {
+	return face != "" && len(face) <= 64 && !strings.ContainsAny(face, "\"\\") &&
+		strings.IndexFunc(face, unicode.IsControl) < 0
+}
+
 func themeStyleValues(spec *themeStyleSpec) map[string]any {
 	if spec == nil {
 		return nil
@@ -152,10 +161,10 @@ func themeStyleValues(spec *themeStyleSpec) map[string]any {
 		}
 		out["lineAlpha"] = a
 	}
-	if face := strings.TrimSpace(spec.Display); face != "" && len(face) <= 64 && !strings.ContainsAny(face, "\"\\\n\r\t") {
+	if face := strings.TrimSpace(spec.Display); safeFace(face) {
 		out["display"] = face
 	}
-	if face := strings.TrimSpace(spec.NavFont); face != "" && len(face) <= 64 && !strings.ContainsAny(face, "\"\\\n\r\t") {
+	if face := strings.TrimSpace(spec.NavFont); safeFace(face) {
 		out["navFont"] = face
 	}
 	if spec.DisplayWeight != nil {

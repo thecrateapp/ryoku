@@ -431,3 +431,14 @@ func TestThemeStyleValuesKeepsNavFont(t *testing.T) {
 		t.Errorf("an over-long navFont must be dropped, got %v", v)
 	}
 }
+
+func TestThemeStyleValuesDropsControlCharactersInFaces(t *testing.T) {
+	for _, face := range []string{"Bad\x00Face", "Bad\x1bFace", "Bad\x7fFace", "Bad\u0085Face", `Bad"Face`} {
+		if v := themeStyleValues(&themeStyleSpec{NavFont: face}); v != nil {
+			t.Errorf("navFont %q must be dropped, got %v", face, v)
+		}
+		if v := themeStyleValues(&themeStyleSpec{Display: face}); v != nil {
+			t.Errorf("display %q must be dropped, got %v", face, v)
+		}
+	}
+}
