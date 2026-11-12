@@ -5,6 +5,7 @@ import Quickshell.Wayland
 import shell.services
 import "../modules"
 import Ryoku.Ui.Singletons
+import Ryoku.Ui as Kit
 
 PanelWindow {
     id: volPanel
@@ -96,10 +97,13 @@ PanelWindow {
         onClicked: root.volVisible = false
     }
 
+    // crate-mark: the approved volume panel, composed from the kit (see crateCol)
+    readonly property bool crate: Tokens.controlsCrate
+
     Rectangle {
         id: card
-        width: 280
-        height: col.implicitHeight + 24
+        width: volPanel.crate ? 320 : 280
+        height: (volPanel.crate ? crateCol.implicitHeight + 32 : col.implicitHeight + 24)
         radius: reveal > 0.001 ? root.panelRadius : 0
         color: "transparent"
         border.color: root.panelBorder
@@ -128,8 +132,240 @@ PanelWindow {
 
         MouseArea { anchors.fill: parent; onClicked: {} }
 
+        // ── crate-mark body: the v3 mock-up's volume panel, built only from kit
+        // pieces: a tracked head, the output Beam with the 150 % boost chip, the
+        // devices as pick rows, each app as a stream row, then the microphone ──
+        Column {
+            id: crateCol
+            visible: volPanel.crate
+            anchors.fill: parent
+            anchors.margins: 16
+            spacing: 12
+
+            Item {
+                width: parent.width
+                height: 28
+                Kit.TrackLabel {
+                    anchors.left: parent.left
+                    anchors.verticalCenter: parent.verticalCenter
+                    tone: "accent"
+                    text: I18n.tr("Volume")
+                }
+                Kit.IconButton {
+                    anchors.right: parent.right
+                    anchors.verticalCenter: parent.verticalCenter
+                    width: 28
+                    height: 28
+                    glyph: "close"
+                    Accessible.name: I18n.tr("Close")
+                    onClicked: root.volVisible = false
+                }
+            }
+
+            Item {
+                width: parent.width
+                height: 32
+                Kit.TrackLabel {
+                    anchors.left: parent.left
+                    anchors.verticalCenter: parent.verticalCenter
+                    text: I18n.tr("Output")
+                }
+                Kit.Chip {
+                    anchors.right: parent.right
+                    anchors.verticalCenter: parent.verticalCenter
+                    text: I18n.tr("Boost 150 %")
+                    on: volPanel.boostOn
+                    onClicked: {
+                        root.audioBoost = !volPanel.boostOn
+                        // dropping the cap while boosted pulls the sink back to 0 dB
+                        if (!root.audioBoost && audio.sink && audio.sink.audio
+                                && audio.sink.audio.volume > 1)
+                            audio.sink.audio.volume = 1
+                    }
+                }
+            }
+
+            Row {
+                width: parent.width
+                spacing: 12
+                Kit.Beam {
+                    id: crateOut
+                    width: parent.width - crateOutValue.width - crateOutMute.width - parent.spacing * 2
+                    height: 24
+                    anchors.verticalCenter: parent.verticalCenter
+                    from: 0
+                    to: 1
+                    limit: volPanel.boostOn ? 1.5 : 0
+                    stepSize: 0.01
+                    value: Audio.sink && Audio.sink.audio ? Audio.sink.audio.volume : 0
+                    opacity: volPanel.muted ? 0.4 : 1
+                    Accessible.name: I18n.tr("Output volume")
+                    onMoved: v => {
+                        const s = Audio.sink;
+                        if (!s || !s.audio) return;
+                        if (s.audio.muted && v > 0) s.audio.muted = false;
+                        s.audio.volume = v;
+                    }
+                }
+                Text {
+                    id: crateOutValue
+                    anchors.verticalCenter: parent.verticalCenter
+                    width: 44
+                    horizontalAlignment: Text.AlignRight
+                    text: volPanel.muted ? I18n.tr("Muted") : volPanel.volume + "%"
+                    color: volPanel.muted ? Tokens.inkFaint2 : crateOut.value > 1.005 ? Tokens.alert : Tokens.ink
+                    font.family: Tokens.mono
+                    font.pixelSize: 12
+                    font.features: { "tnum": 1 }
+                }
+                Kit.IconButton {
+                    id: crateOutMute
+                    anchors.verticalCenter: parent.verticalCenter
+                    width: 28
+                    height: 28
+                    glyph: volPanel.muted ? "volume_off" : "volume_up"
+                    alert: volPanel.muted
+                    Accessible.name: volPanel.muted ? I18n.tr("Unmute output") : I18n.tr("Mute output")
+                    onClicked: if (Audio.sink && Audio.sink.audio) Audio.sink.audio.muted = !Audio.sink.audio.muted
+                }
+            }
+
+            Kit.Divider { width: parent.width; quiet: true }
+
+            Kit.TrackLabel { text: I18n.tr("Device") }
+            Column {
+                width: parent.width
+                spacing: 6
+                Repeater {
+                    model: volPanel.crate ? Audio.outputs.filter(Audio.alive) : []
+                    delegate: Kit.PickRow {
+                        required property var modelData
+                        width: parent ? parent.width : 0
+                        title: Audio.nodeLabel(modelData)
+                        sub: Audio.isBluez(modelData) ? I18n.tr("Bluetooth") : ""
+                        glyph: Audio.nodeIcon(modelData)
+                        glyphFont: "Material Symbols Rounded"
+                        picked: !!(Audio.sink && modelData && Audio.sink.name === modelData.name)
+                        onClicked: if (!picked) Audio.setOutput(modelData)
+                    }
+                }
+            }
+
+            Kit.Divider { width: parent.width; quiet: true }
+
+            Kit.TrackLabel { text: I18n.tr("Apps") }
+            Text {
+                visible: volPanel.appGroups.length === 0
+                text: I18n.tr("Nothing is playing")
+                color: Tokens.inkMuted
+                font.family: Tokens.mono
+                font.pixelSize: 12
+            }
+            FontMetrics {
+                id: crateNames
+                font.family: Tokens.mono
+                font.pixelSize: 12
+            }
+            Column {
+                id: crateApps
+                width: parent.width
+                spacing: 6
+                // every app's beam starts after the longest name
+                readonly property real nameWidth: {
+                    let widest = 0;
+                    for (const g of volPanel.appGroups)
+                        widest = Math.max(widest, crateNames.advanceWidth(g.name));
+                    return Math.ceil(widest);
+                }
+                Repeater {
+                    model: volPanel.crate ? volPanel.appGroups : []
+                    delegate: Kit.StreamRow {
+                        id: crateApp
+                        required property var modelData
+                        readonly property var nodes: modelData.nodes || []
+                        width: parent ? parent.width : 0
+                        nameWidth: crateApps.nameWidth
+                        name: modelData.name
+                        limit: volPanel.boostOn ? 1.5 : 0
+                        value: {
+                            let top = 0;
+                            for (const n of crateApp.nodes)
+                                if (n.audio && n.audio.volume > top) top = n.audio.volume;
+                            return top;
+                        }
+                        muted: crateApp.nodes.length > 0 && crateApp.nodes.every(n => n.audio && n.audio.muted)
+                        onAdjusted: v => {
+                            for (const n of crateApp.nodes)
+                                if (n.audio) n.audio.volume = v;
+                        }
+                        onMuteRequested: {
+                            const next = !crateApp.muted;
+                            for (const n of crateApp.nodes)
+                                if (n.audio) n.audio.muted = next;
+                        }
+                    }
+                }
+            }
+
+            Kit.Divider { width: parent.width; quiet: true }
+
+            Kit.TrackLabel { text: I18n.tr("Microphone") }
+            Column {
+                width: parent.width
+                spacing: 6
+                Repeater {
+                    model: volPanel.crate ? Audio.inputs.filter(Audio.alive) : []
+                    delegate: Kit.PickRow {
+                        required property var modelData
+                        width: parent ? parent.width : 0
+                        title: Audio.nodeLabel(modelData)
+                        sub: Audio.isBluez(modelData) ? I18n.tr("Bluetooth") : ""
+                        glyph: "mic"
+                        glyphFont: "Material Symbols Rounded"
+                        picked: !!(Audio.source && modelData && Audio.source.name === modelData.name)
+                        onClicked: if (!picked) Audio.setInput(modelData)
+                    }
+                }
+            }
+            // the live input level, and the microphone's mute
+            Row {
+                width: parent.width
+                spacing: 12
+                Kit.Beam {
+                    width: parent.width - crateMicMute.width - parent.spacing
+                    height: 24
+                    anchors.verticalCenter: parent.verticalCenter
+                    interactive: false
+                    value: volPanel.micLevel
+                    opacity: volPanel.micMuted ? 0.4 : 1
+                }
+                Kit.IconButton {
+                    id: crateMicMute
+                    anchors.verticalCenter: parent.verticalCenter
+                    width: 28
+                    height: 28
+                    glyph: volPanel.micMuted ? "mic_off" : "mic"
+                    alert: volPanel.micMuted
+                    Accessible.name: volPanel.micMuted ? I18n.tr("Unmute mic") : I18n.tr("Mute mic")
+                    onClicked: if (Audio.source && Audio.source.audio) Audio.source.audio.muted = !Audio.source.audio.muted
+                }
+            }
+
+            Kit.Btn {
+                width: parent.width
+                outline: true
+                text: I18n.tr("Open audio")
+                onAct: {
+                    root.volVisible = false
+                    audioRunner.running = false
+                    audioRunner.running = true
+                }
+            }
+        }
+
         Column {
             id: col
+            visible: !volPanel.crate
             anchors.fill: parent
             anchors.margins: 12
             spacing: 8

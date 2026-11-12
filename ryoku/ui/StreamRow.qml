@@ -5,7 +5,7 @@ import "lib/rows.js" as Rows
 // A stream row, crate-mark's mixer line for one app or device: its name, an
 // interactive Beam and a mute button, on the columns in lib/rows.js. The value
 // is controlled: the row emits adjusted() and the owner sets `value`. `capture`
-// shows a microphone instead of a speaker.
+// shows a microphone instead of a speaker; `limit` lets it run past 100 %.
 Item {
     id: row
 
@@ -15,6 +15,9 @@ Item {
     property bool muted: false
     property bool capture: false
     property bool available: true
+    // a limit above 1 extends the beam past 100 % (volume boost), as on Beam
+    property real limit: 0
+    readonly property real top: row.limit > 1 ? row.limit : 1
     // a group of rows sets this to its longest name so the beams line up
     property real nameWidth: 0
 
@@ -46,8 +49,9 @@ Item {
         anchors.verticalCenter: parent.verticalCenter
         from: 0
         to: 1
+        limit: row.limit
         stepSize: 0.01
-        value: Math.max(0, Math.min(1, row.value))
+        value: Math.max(0, Math.min(row.top, row.value))
         interactive: row.available
         opacity: row.muted ? 0.4 : 1
         Accessible.name: I18n.tr("%1 volume").arg(row.name)
@@ -56,7 +60,7 @@ Item {
         WheelHandler {
             enabled: row.available
             onWheel: event => {
-                row.adjusted(Math.max(0, Math.min(1, row.value + (event.angleDelta.y >= 0 ? 0.02 : -0.02))));
+                row.adjusted(Math.max(0, Math.min(row.top, row.value + (event.angleDelta.y >= 0 ? 0.02 : -0.02))));
                 event.accepted = true;
             }
         }
