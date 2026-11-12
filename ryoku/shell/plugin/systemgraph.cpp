@@ -177,7 +177,7 @@ void clearRemainder(ColorNode* node, int offset) {
 }
 
 void appendAntialiasedLine(Vertex* vertices, int& offset, const Point& from, const Point& to, float width,
-                           float feather, const Rgba& transparent, const Rgba& solid) {
+                           bool crisp, const Rgba& transparent, const Rgba& solid) {
     const float dx = to.x - from.x;
     const float dy = to.y - from.y;
     const float length = std::hypot(dx, dy);
@@ -185,7 +185,7 @@ void appendAntialiasedLine(Vertex* vertices, int& offset, const Point& from, con
         return;
     const float nx = -dy / length;
     const float ny = dx / length;
-    const systemgraph::LineBands bands = systemgraph::lineBands(width, feather);
+    const systemgraph::LineBands bands = systemgraph::lineBands(width, crisp);
     const float inner = bands.inner;
     const float outer = bands.outer;
 
@@ -439,12 +439,11 @@ void SystemGraph::setInset(qreal inset) {
     markVisualDirty();
 }
 
-void SystemGraph::setLineFeather(qreal feather) {
-    feather = std::clamp(feather, 0.0, 4.0);
-    if (qFuzzyCompare(m_lineFeather + 1.0, feather + 1.0))
+void SystemGraph::setCrispLines(bool crisp) {
+    if (m_crispLines == crisp)
         return;
-    m_lineFeather = feather;
-    emit lineFeatherChanged();
+    m_crispLines = crisp;
+    emit crispLinesChanged();
     markVisualDirty();
 }
 
@@ -734,7 +733,7 @@ QSGNode* SystemGraph::updatePaintNode(QSGNode* oldNode, UpdatePaintNodeData*) {
                         appendFill(fillVertices, fillOffset, from, current, systemgraph::baseline(area), fillTop,
                                    fillBottom);
                     appendAntialiasedLine(lineVertices, lineOffset, from, current, static_cast<float>(m_lineWidth),
-                                          static_cast<float>(m_lineFeather), lineTransparent, lineSolid);
+                                          m_crispLines, lineTransparent, lineSolid);
                 }
                 previous = current;
             }

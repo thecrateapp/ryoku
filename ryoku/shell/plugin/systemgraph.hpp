@@ -29,8 +29,8 @@ class SystemGraph : public QQuickItem {
     Q_PROPERTY(qreal lineWidth READ lineWidth WRITE setLineWidth NOTIFY lineWidthChanged)
     // crate-mark options; the defaults keep the stock graph
     Q_PROPERTY(qreal inset READ inset WRITE setInset NOTIFY insetChanged)
-    // the antialiased edge each side of a line, in px (stock 1.25)
-    Q_PROPERTY(qreal lineFeather READ lineFeather WRITE setLineFeather NOTIFY lineFeatherChanged)
+    // antialias a line by coverage, so a 1 px line reads as 1 px (stock: a soft edge)
+    Q_PROPERTY(bool crispLines READ crispLines WRITE setCrispLines NOTIFY crispLinesChanged)
     Q_PROPERTY(QStringList fillChannels READ fillChannels WRITE setFillChannels NOTIFY fillChannelsChanged)
     Q_PROPERTY(bool heads READ heads WRITE setHeads NOTIFY headsChanged)
     Q_PROPERTY(QColor haloColor READ haloColor WRITE setHaloColor NOTIFY haloColorChanged)
@@ -65,8 +65,8 @@ public:
     void setLineWidth(qreal width);
     qreal inset() const { return m_inset; }
     void setInset(qreal inset);
-    qreal lineFeather() const { return m_lineFeather; }
-    void setLineFeather(qreal feather);
+    bool crispLines() const { return m_crispLines; }
+    void setCrispLines(bool crisp);
     const QStringList& fillChannels() const { return m_fillChannels; }
     void setFillChannels(const QStringList& channels);
     bool heads() const { return m_heads; }
@@ -91,7 +91,7 @@ signals:
     void gridColorChanged();
     void lineWidthChanged();
     void insetChanged();
-    void lineFeatherChanged();
+    void crispLinesChanged();
     void fillChannelsChanged();
     void headsChanged();
     void haloColorChanged();
@@ -136,7 +136,7 @@ private:
     QColor m_gridColor = Qt::transparent;
     qreal m_lineWidth = 2.0;
     qreal m_inset = -1.0;
-    qreal m_lineFeather = 1.25;
+    bool m_crispLines = false;
     QStringList m_fillChannels;
     bool m_heads = false;
     QColor m_haloColor = Qt::transparent;

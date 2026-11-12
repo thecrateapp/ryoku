@@ -35,7 +35,7 @@ Item {
         detailPoints: root.detailPoints
         gridColor: root.crate ? Qt.rgba(Tokens.ink.r, Tokens.ink.g, Tokens.ink.b, 0.06) : Tokens.lineSoft
         lineWidth: root.crate ? 1 : root.lineWidth
-        lineFeather: root.crate ? 0.5 : 1.25
+        crispLines: root.crate
         inset: root.crate ? 6 * root.s : -1
         gridStyle: root.crate ? "rules" : "cells"
         fillChannels: root.crate && root.channels.length > 0 ? [root.channels[0]] : []

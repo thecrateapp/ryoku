@@ -34,16 +34,22 @@ inline std::array<float, 3> ruleYs(const PlotArea& area) {
     return {area.top, area.top + area.height * 0.5f, baseline(area)};
 }
 
-// a line's solid core half-width and where its antialiased edge fades out: the
-// core is half the width (never under half a pixel), the feather is the fade
+// a line's solid core half-width and where its antialiased edge fades out. The
+// stock line keeps a core of half the width (never under half a pixel) and fades
+// 1.25 px outside it. A crisp line's fade straddles the edge by half a pixel, so
+// sampling at pixel centres approximates coverage: a 1 px line lying between two
+// rows lights both at half strength instead of both at full
 struct LineBands {
     float inner = 0.5f;
     float outer = 0.5f;
 };
 
-inline LineBands lineBands(float width, float feather) {
-    const float inner = std::max(0.5f, width * 0.5f);
-    return {inner, inner + std::max(0.0f, feather)};
+inline LineBands lineBands(float width, bool crisp) {
+    const float half = width * 0.5f;
+    if (crisp)
+        return {std::max(0.0f, half - 0.5f), half + 0.5f};
+    const float inner = std::max(0.5f, half);
+    return {inner, inner + 1.25f};
 }
 
 } // namespace systemgraph
