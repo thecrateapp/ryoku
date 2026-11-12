@@ -11,6 +11,7 @@ function readStyle(st) {
         navFont: "",
         displayWeight: 400,
         displayWeightSet: false,
+        compact: false,
         flags: { navCaps: false, accentMarks: false, focusAccent: false, labelAccent: false, selectFill: true }
     };
     if (!s.styled)
@@ -25,6 +26,7 @@ function readStyle(st) {
         s.displayWeight = Math.max(100, Math.min(900, st.displayWeight));
         s.displayWeightSet = true;
     }
+    s.compact = st.density === "compact";
     for (const k in s.flags)
         if (typeof st[k] === "boolean")
             s.flags[k] = st[k];

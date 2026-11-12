@@ -153,11 +153,13 @@ Singleton {
     // and the ornament question does not exist.
     readonly property int fTitle: px(32)    // page title, Fraunces
     readonly property int fHero: px(34)     // a headline readout
-    readonly property int fValue: px(26)    // a cell's value
-    readonly property int fRow: px(15)      // a row name
-    readonly property int fBody: px(14)
-    readonly property int fSmall: px(13)    // descriptions
-    readonly property int fMicro: px(11)    // tracked labels
+    // a theme style's density "compact" sets the denser scale the Crate panels use
+    property bool compact: false
+    readonly property int fValue: px(compact ? 22 : 26)    // a cell's value
+    readonly property int fRow: px(compact ? 13 : 15)      // a row name
+    readonly property int fBody: px(compact ? 12 : 14)
+    readonly property int fSmall: px(compact ? 11 : 13)    // descriptions
+    readonly property int fMicro: px(compact ? 10 : 11)    // tracked labels
     readonly property int fTiny: px(9)      // corner tags, struck defaults
 
     readonly property real trackLabel: 1.4   // letter-spacing for micro labels
@@ -175,7 +177,7 @@ Singleton {
     // ── geometry ─────────────────────────────────────────────────────────
     readonly property int radius: px(6)
     readonly property real border: 1
-    readonly property int rowH: px(48)
+    readonly property int rowH: px(compact ? 40 : 48)
     readonly property int cellH: px(104)
     readonly property int railW: px(268)
     // The widest a stack of settings rows reads at before a label and its control
@@ -359,6 +361,7 @@ Singleton {
         t.navFont = style.navFont || t.ui;
         t.displayWeight = style.displayWeight;
         t.displayWeightSet = style.displayWeightSet;
+        t.compact = style.compact;
         t.navCaps = style.flags.navCaps;
         t.accentMarks = style.flags.accentMarks;
         t.focusAccent = style.flags.focusAccent;

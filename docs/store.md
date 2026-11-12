@@ -375,7 +375,10 @@ Popular, New, and Updated rankings.
   display face take it, and keep their own fixed weight when it is absent),
   `navFont` (the navigation face for rails, tabs and Kit category captions, the
   UI face by default; used when `navCaps` is on; a face name over 64 bytes or
-  holding a quote, a backslash or a control character is dropped), and switches that keep
+  holding a quote, a backslash or a control character is dropped), `density`
+  (`"compact"` sets the denser type and row scale: rows 13 px, body 12, descriptions
+  11, tracked labels 10, values 22, row height 40; anything else keeps the regular
+  scale), and switches that keep
   the signature look when absent: `navCaps` (uppercase tracked navigation
   labels), `accentMarks` (selection marks and hover text in the palette
   secondary, and a switch that is on fills its track with the primary),

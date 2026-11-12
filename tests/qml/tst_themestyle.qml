@@ -42,6 +42,13 @@ TestCase {
         compare(s.flags.accentMarks, true)
     }
 
+    function test_density_is_compact_only_when_named() {
+        compare(ThemeStyle.readStyle(undefined).compact, false)
+        compare(ThemeStyle.readStyle({ density: "compact" }).compact, true)
+        compare(ThemeStyle.readStyle({ density: "regular" }).compact, false)
+        compare(ThemeStyle.readStyle({ density: 3 }).compact, false)
+    }
+
     function test_out_of_range_line_alpha_is_ignored() {
         compare(ThemeStyle.readStyle({ lineAlpha: 0 }).lineAlpha, 0.26)
         compare(ThemeStyle.readStyle({ lineAlpha: 3 }).lineAlpha, 0.26)

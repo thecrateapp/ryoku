@@ -123,6 +123,7 @@ type themeStyleSpec struct {
 	LineAlpha     *float64 `json:"lineAlpha"`
 	Display       string   `json:"display"`
 	NavFont       string   `json:"navFont"`
+	Density       string   `json:"density"`
 	DisplayWeight *int     `json:"displayWeight"`
 	NavCaps       *bool    `json:"navCaps"`
 	AccentMarks   *bool    `json:"accentMarks"`
@@ -166,6 +167,11 @@ func themeStyleValues(spec *themeStyleSpec) map[string]any {
 	}
 	if face := strings.TrimSpace(spec.NavFont); safeFace(face) {
 		out["navFont"] = face
+	}
+	// "compact" sets Ryoku.Ui to the denser type and row scale; "regular" is the
+	// default, so it and anything unknown set nothing
+	if strings.TrimSpace(spec.Density) == "compact" {
+		out["density"] = "compact"
 	}
 	if spec.DisplayWeight != nil {
 		w := *spec.DisplayWeight

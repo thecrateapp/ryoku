@@ -442,3 +442,14 @@ func TestThemeStyleValuesDropsControlCharactersInFaces(t *testing.T) {
 		}
 	}
 }
+
+func TestThemeStyleValuesKeepsOnlyKnownDensity(t *testing.T) {
+	if got := themeStyleValues(&themeStyleSpec{Density: " compact "}); got["density"] != "compact" {
+		t.Fatalf("density = %v, want compact", got["density"])
+	}
+	for _, d := range []string{"", "huge", "Compact\x00", "regular"} {
+		if v := themeStyleValues(&themeStyleSpec{Density: d}); v != nil {
+			t.Errorf("density %q must set nothing (regular is the default), got %v", d, v)
+		}
+	}
+}
