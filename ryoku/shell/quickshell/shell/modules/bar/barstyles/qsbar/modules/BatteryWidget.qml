@@ -1,15 +1,18 @@
+pragma ComponentBehavior: Bound
+
 import QtQuick
 import Quickshell
 import Quickshell.Services.UPower
 import shell.services
 import Ryoku.Ui.Singletons
+import Ryoku.Ui as Kit
 
 Item {
     id: rootMod
     required property var root
 
     // event-driven UPower data - updates instantly on plug / unplug
-    readonly property var dev: UPower.displayDevice
+    property var dev: UPower.displayDevice
     readonly property bool hasBattery: dev !== null && dev.isLaptopBattery
     readonly property int percent: {
         if (!dev) return 0
@@ -21,6 +24,10 @@ Item {
     readonly property bool charging: devState === UPowerDeviceState.Charging
     readonly property bool full:     devState === UPowerDeviceState.FullyCharged
     readonly property bool low:      hasBattery && !charging && !full && percent <= 20
+
+    readonly property string batteryGlyph: charging ? "battery-charge"
+        : full || percent >= 75 ? "battery-full"
+        : percent <= 20 ? "battery-low" : "battery-half"
 
     // live time estimates from UPower (seconds); 0 when unknown / not applicable
     readonly property real timeToEmpty: dev ? dev.timeToEmpty : 0
@@ -43,7 +50,7 @@ Item {
         : I18n.tr("%1 · %2%").arg(statusText).arg(percent)
     readonly property color contentColor: root.widgetContentColor("G12", root.ink)
 
-    // colour shared by the drawn battery body, fill and nub
+    // A filled widget always uses the foreground selected for its background.
     readonly property color battColor:
         root.widgetHasFill("G12") ? contentColor
         : ((charging || full) ? root.indigo : root.seal)
@@ -54,30 +61,37 @@ Item {
     implicitHeight: 28
     visible: shown
 
+    Accessible.role: Accessible.Button
+    Accessible.name: I18n.tr("Battery")
+    Accessible.description: tooltipText
+    Accessible.onPressAction: rootMod.togglePanel()
 
-    Row {
-        id: row
-        anchors.centerIn: parent
-        spacing: 4
+    function togglePanel() {
+        tip.hide()
+        root.batteryVisible = !root.batteryVisible
+    }
+
+    Component {
+        id: crateIcon
+
+        Kit.Glyph {
+            objectName: "batteryGlyph"
+            name: rootMod.batteryGlyph
+            size: 18
+            color: rootMod.battColor
+        }
+    }
+
+    Component {
+        id: stockIcon
 
         // drawn landscape battery - body + stepless fill + terminal nub
         Item {
             id: batt
             width: 19
             height: 10
-            anchors.verticalCenter: parent.verticalCenter
 
             readonly property real ratio: Math.max(0, Math.min(1, rootMod.percent / 100))
-
-            // low-battery warning: the icon slowly pulses below 20% (not while charging)
-            property real pulse: 1.0
-            opacity: rootMod.low ? pulse : 1.0
-            SequentialAnimation {
-                running: rootMod.visible && rootMod.low   // defensive: never animate while hidden / batteryless
-                loops: Animation.Infinite
-                NumberAnimation { target: batt; property: "pulse"; from: 1.0; to: 0.3; duration: 1100; easing.type: Easing.InOutSine }
-                NumberAnimation { target: batt; property: "pulse"; from: 0.3; to: 1.0; duration: 1100; easing.type: Easing.InOutSine }
-            }
 
             Rectangle {
                 id: body
@@ -144,9 +158,9 @@ Item {
                     anchors.centerIn: parent
                     width: 6
                     height: 8
-                    property color boltColor: root.widgetHasFill("G12")
-                        ? root.widgetAssignedColor("G12")
-                        : root.paper
+                    property color boltColor: rootMod.root.widgetHasFill("G12")
+                        ? rootMod.root.widgetAssignedColor("G12")
+                        : rootMod.root.paper
                     onBoltColorChanged: requestPaint()
                     onPaint: {
                         var ctx = getContext("2d")
@@ -178,14 +192,40 @@ Item {
                 Behavior on color { ColorAnimation { duration: 200 } }
             }
         }
+    }
+
+    Row {
+        id: row
+        anchors.centerIn: parent
+        spacing: Tokens.controlsCrate ? 6 : 4
+
+        Loader {
+            id: icon
+            anchors.verticalCenter: parent.verticalCenter
+            sourceComponent: Tokens.controlsCrate ? crateIcon : stockIcon
+
+            readonly property bool pulseActive: rootMod.visible && rootMod.low
+                && (!Tokens.controlsCrate || !Tokens.reduceMotion)
+            property real pulse: 1.0
+            opacity: pulseActive ? pulse : 1.0
+            SequentialAnimation {
+                running: icon.pulseActive
+                loops: Animation.Infinite
+                NumberAnimation { target: icon; property: "pulse"; from: 1.0; to: 0.3; duration: 1100; easing.type: Easing.InOutSine }
+                NumberAnimation { target: icon; property: "pulse"; from: 0.3; to: 1.0; duration: 1100; easing.type: Easing.InOutSine }
+            }
+        }
 
         UiText {
-            visible: !root.iconOnly("G12")
+            objectName: "batteryPercent"
+            visible: !rootMod.root.iconOnly("G12")
+            Accessible.ignored: true
             anchors.verticalCenter: parent.verticalCenter
             text: rootMod.percent + "%"
             color: rootMod.battColor
-            font.family: root.mono
+            font.family: Tokens.controlsCrate ? Tokens.mono : rootMod.root.mono
             font.pixelSize: 12
+            font.features: Tokens.controlsCrate ? { "tnum": 1 } : {}
             Behavior on color { ColorAnimation { duration: 200 } }
         }
     }
@@ -197,6 +237,6 @@ Item {
         hoverEnabled: true; cursorShape: Qt.PointingHandCursor
         onEntered: { if (rootMod.hasBattery) tip.show() }
         onExited:  { tip.hide() }
-        onClicked: { tip.hide(); root.batteryVisible = !root.batteryVisible }
+        onClicked: rootMod.togglePanel()
     }
 }

@@ -1,6 +1,9 @@
 # Changelog: ryoku/shell/
 
 ## Unreleased
+- **The QS Bar battery widget follows the Crate theme.** Its Solar icon tracks
+  the battery state. The panel shows the percentage, a read-only charge meter
+  and the available runtime, health, power, capacity and cycle readings.
 - **Brightness keys follow keyboard focus.** Each press adjusts the focused
   display and shows its level there, including on external DDC/CI monitors.
 - **The QS Bar brightness widget follows the Crate theme.** Its Solar sun

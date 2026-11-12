@@ -21,6 +21,7 @@ PanelWindow {
     readonly property int barBottom: root.v2BarHeight
     readonly property int gap: 6
 
+    property bool hasReading: false
     property int    percent: 0
     property string status:  "unknown"
     property string batteryId: ""
@@ -34,6 +35,10 @@ PanelWindow {
     readonly property bool charging: status === "charging"
     function refreshBatteryData() {
         if (!batData.running) batData.running = true
+    }
+    function openBtop() {
+        root.batteryVisible = false
+        Spawn.runApp(["bash", "-c", "kitty 'btop'"], { label: "btop" })
     }
     function statusTitle(s) {
         var t = String(s || "unknown")
@@ -62,7 +67,7 @@ PanelWindow {
     Rectangle {
         id: card
         width: 300
-        height: col.implicitHeight + 24
+        height: panelBody.implicitHeight + 2 * panelBody.inset
         radius: reveal > 0.001 ? root.panelRadius : 0
         color: "transparent"
         border.color: root.panelBorder
@@ -88,110 +93,130 @@ PanelWindow {
 
         MouseArea { anchors.fill: parent; onClicked: {} }
 
-        Column {
-            id: col
-            anchors.fill: parent
-            anchors.margins: 12
-            spacing: 8
+        Loader {
+            id: panelBody
+            readonly property int inset: Tokens.controlsCrate ? Tokens.s4 : 12
+            anchors.left: parent.left
+            anchors.right: parent.right
+            anchors.top: parent.top
+            anchors.margins: inset
+            focus: true
+            sourceComponent: Tokens.controlsCrate ? crateBody : stockBody
+        }
 
-            Item {
-                width: parent.width
-                height: 24
-                UiText {
-                    anchors.left: parent.left; anchors.verticalCenter: parent.verticalCenter
-                    text: I18n.tr("Battery")
-                    color: root.ink; font.family: root.mono; font.pixelSize: 13
-                    font.letterSpacing: 2; font.weight: Font.Medium
-                }
-                UiText {
-                    anchors.right: parent.right; anchors.verticalCenter: parent.verticalCenter
-                    text: "✕"; color: closeMa.containsMouse ? root.seal : root.sumi; font.pixelSize: 12
-                    Behavior on color { ColorAnimation { duration: 120 } }
-                    MouseArea { id: closeMa; anchors.fill: parent; hoverEnabled: true; cursorShape: Qt.PointingHandCursor; onClicked: root.batteryVisible = false }
-                }
+        Component {
+            id: crateBody
+            CrateBatteryDetails {
+                battery: batPanel
+                onCloseRequested: batPanel.root.batteryVisible = false
+                onBtopRequested: batPanel.openBtop()
             }
+        }
 
-            Rectangle { width: parent.width; height: 1; color: root.sep }
-
-            Item {
-                width: parent.width
-                height: 30
-                UiText {
-                    anchors.horizontalCenter: parent.horizontalCenter
-                    anchors.top: parent.top
-                    text: batPanel.percent + "%"
-                    color: batPanel.charging ? root.indigo : root.seal
-                    font.family: root.mono; font.pixelSize: 11; font.weight: Font.Medium
-                }
-                Rectangle {
-                    anchors.bottom: parent.bottom
-                    width: parent.width; height: 8; radius: 4
-                    color: root.fillActive
-                    Rectangle {
-                        width: parent.width * batPanel.percent / 100
-                        height: parent.height; radius: 4
-                        color: batPanel.charging ? root.indigo : root.seal
-                        Behavior on width { NumberAnimation { duration: 300 } }
-                    }
-                }
-            }
-
+        Component {
+            id: stockBody
             Column {
-                width: parent.width
-                spacing: 4
-                Row {
+                spacing: 8
+
+                Item {
                     width: parent.width
-                    UiText { text: I18n.tr("Status"); color: root.sumiHi; font.family: root.mono; font.pixelSize: 11; width: parent.width * 0.4 }
+                    height: 24
                     UiText {
-                        text: batPanel.statusTitle(batPanel.status)
-                        color: batPanel.charging ? root.indigo : root.ink
-                        font.family: root.mono; font.pixelSize: 11
+                        anchors.left: parent.left; anchors.verticalCenter: parent.verticalCenter
+                        text: I18n.tr("Battery")
+                        color: root.ink; font.family: root.mono; font.pixelSize: 13
+                        font.letterSpacing: 2; font.weight: Font.Medium
+                    }
+                    UiText {
+                        anchors.right: parent.right; anchors.verticalCenter: parent.verticalCenter
+                        text: "✕"; color: closeMa.containsMouse ? root.seal : root.sumi; font.pixelSize: 12
+                        Behavior on color { ColorAnimation { duration: 120 } }
+                        MouseArea { id: closeMa; anchors.fill: parent; hoverEnabled: true; cursorShape: Qt.PointingHandCursor; onClicked: root.batteryVisible = false }
                     }
                 }
-                Row {
-                    width: parent.width
-                    visible: batPanel.timeText !== ""
-                    UiText { text: batPanel.timeLabel; color: root.sumiHi; font.family: root.mono; font.pixelSize: 11; width: parent.width * 0.4 }
-                    UiText { text: batPanel.timeText; color: root.ink; font.family: root.mono; font.pixelSize: 11 }
-                }
-                Row {
-                    width: parent.width
-                    visible: batPanel.healthText !== ""
-                    UiText { text: batPanel.healthLabel; color: root.sumiHi; font.family: root.mono; font.pixelSize: 11; width: parent.width * 0.4 }
-                    UiText { text: batPanel.healthText; color: root.ink; font.family: root.mono; font.pixelSize: 11 }
-                }
-                Row {
-                    width: parent.width
-                    visible: batPanel.powerRate !== ""
-                    UiText { text: batPanel.charging ? I18n.tr("Charge rate") : I18n.tr("Power draw"); color: root.sumiHi; font.family: root.mono; font.pixelSize: 11; width: parent.width * 0.4 }
-                    UiText { text: batPanel.powerRate + " W"; color: root.ink; font.family: root.mono; font.pixelSize: 11 }
-                }
-                Row {
-                    width: parent.width
-                    visible: batPanel.sizeText !== ""
-                    UiText { text: I18n.tr("Battery size"); color: root.sumiHi; font.family: root.mono; font.pixelSize: 11; width: parent.width * 0.4 }
-                    UiText { text: batPanel.sizeText; color: root.ink; font.family: root.mono; font.pixelSize: 11 }
-                }
-                Row {
-                    width: parent.width
-                    visible: batPanel.cycles > 0
-                    UiText { text: I18n.tr("Charge cycles"); color: root.sumiHi; font.family: root.mono; font.pixelSize: 11; width: parent.width * 0.4 }
-                    UiText { text: String(batPanel.cycles); color: root.ink; font.family: root.mono; font.pixelSize: 11 }
-                }
-            }
 
-            Rectangle { width: parent.width; height: 1; color: root.sep }
+                Rectangle { width: parent.width; height: 1; color: root.sep }
 
-            Rectangle {
-                width: parent.width
-                height: 28; radius: root.panelButtonRadius
-                color: btopMa.containsMouse ? root.fillPrimaryHover : root.seal
-                Behavior on color { ColorAnimation { duration: 120 } }
-                UiText { anchors.centerIn: parent; text: I18n.tr("Open btop"); color: root.paper; font.family: root.mono; font.pixelSize: 11 }
-                MouseArea {
-                    id: btopMa
-                    anchors.fill: parent; hoverEnabled: true; cursorShape: Qt.PointingHandCursor
-                    onClicked: { root.batteryVisible = false; Spawn.runApp(["bash", "-c", "kitty 'btop'"], { label: "btop" }) }
+                Item {
+                    width: parent.width
+                    height: 30
+                    UiText {
+                        anchors.horizontalCenter: parent.horizontalCenter
+                        anchors.top: parent.top
+                        text: batPanel.percent + "%"
+                        color: batPanel.charging ? root.indigo : root.seal
+                        font.family: root.mono; font.pixelSize: 11; font.weight: Font.Medium
+                    }
+                    Rectangle {
+                        anchors.bottom: parent.bottom
+                        width: parent.width; height: 8; radius: 4
+                        color: root.fillActive
+                        Rectangle {
+                            width: parent.width * batPanel.percent / 100
+                            height: parent.height; radius: 4
+                            color: batPanel.charging ? root.indigo : root.seal
+                            Behavior on width { NumberAnimation { duration: 300 } }
+                        }
+                    }
+                }
+
+                Column {
+                    width: parent.width
+                    spacing: 4
+                    Row {
+                        width: parent.width
+                        UiText { text: I18n.tr("Status"); color: root.sumiHi; font.family: root.mono; font.pixelSize: 11; width: parent.width * 0.4 }
+                        UiText {
+                            text: batPanel.statusTitle(batPanel.status)
+                            color: batPanel.charging ? root.indigo : root.ink
+                            font.family: root.mono; font.pixelSize: 11
+                        }
+                    }
+                    Row {
+                        width: parent.width
+                        visible: batPanel.timeText !== ""
+                        UiText { text: batPanel.timeLabel; color: root.sumiHi; font.family: root.mono; font.pixelSize: 11; width: parent.width * 0.4 }
+                        UiText { text: batPanel.timeText; color: root.ink; font.family: root.mono; font.pixelSize: 11 }
+                    }
+                    Row {
+                        width: parent.width
+                        visible: batPanel.healthText !== ""
+                        UiText { text: batPanel.healthLabel; color: root.sumiHi; font.family: root.mono; font.pixelSize: 11; width: parent.width * 0.4 }
+                        UiText { text: batPanel.healthText; color: root.ink; font.family: root.mono; font.pixelSize: 11 }
+                    }
+                    Row {
+                        width: parent.width
+                        visible: batPanel.powerRate !== ""
+                        UiText { text: batPanel.charging ? I18n.tr("Charge rate") : I18n.tr("Power draw"); color: root.sumiHi; font.family: root.mono; font.pixelSize: 11; width: parent.width * 0.4 }
+                        UiText { text: batPanel.powerRate + " W"; color: root.ink; font.family: root.mono; font.pixelSize: 11 }
+                    }
+                    Row {
+                        width: parent.width
+                        visible: batPanel.sizeText !== ""
+                        UiText { text: I18n.tr("Battery size"); color: root.sumiHi; font.family: root.mono; font.pixelSize: 11; width: parent.width * 0.4 }
+                        UiText { text: batPanel.sizeText; color: root.ink; font.family: root.mono; font.pixelSize: 11 }
+                    }
+                    Row {
+                        width: parent.width
+                        visible: batPanel.cycles > 0
+                        UiText { text: I18n.tr("Charge cycles"); color: root.sumiHi; font.family: root.mono; font.pixelSize: 11; width: parent.width * 0.4 }
+                        UiText { text: String(batPanel.cycles); color: root.ink; font.family: root.mono; font.pixelSize: 11 }
+                    }
+                }
+
+                Rectangle { width: parent.width; height: 1; color: root.sep }
+
+                Rectangle {
+                    width: parent.width
+                    height: 28; radius: root.panelButtonRadius
+                    color: btopMa.containsMouse ? root.fillPrimaryHover : root.seal
+                    Behavior on color { ColorAnimation { duration: 120 } }
+                    UiText { anchors.centerIn: parent; text: I18n.tr("Open btop"); color: root.paper; font.family: root.mono; font.pixelSize: 11 }
+                    MouseArea {
+                        id: btopMa
+                        anchors.fill: parent; hoverEnabled: true; cursorShape: Qt.PointingHandCursor
+                        onClicked: batPanel.openBtop()
+                    }
                 }
             }
         }
@@ -204,17 +229,17 @@ PanelWindow {
         stdout: StdioCollector {
             onStreamFinished: {
                 var parts = this.text.trim().split("|")
-                if (parts.length >= 9) {
-                    batPanel.batteryId = parts[0] || ""
-                    batPanel.percent = parseInt(parts[1]) || 0
-                    batPanel.status = parts[2] || "unknown"
-                    batPanel.timeLabel = parts[3] || I18n.tr("Time left")
-                    batPanel.timeText = parts[4] || ""
-                    batPanel.powerRate = parts[5] || ""
-                    batPanel.sizeText = parts[6] || ""
-                    batPanel.healthText = parts[7] || ""
-                    batPanel.cycles = parseInt(parts[8]) || 0
-                }
+                batPanel.hasReading = parts.length >= 9 && /^\d{1,3}$/.test(parts[1]) && Number(parts[1]) <= 100
+                if (parts.length < 9) parts = []
+                batPanel.batteryId = parts[0] || ""
+                batPanel.percent = batPanel.hasReading ? Number(parts[1]) : 0
+                batPanel.status = parts[2] || "unknown"
+                batPanel.timeLabel = parts[3] || I18n.tr("Time left")
+                batPanel.timeText = parts[4] || ""
+                batPanel.powerRate = parts[5] || ""
+                batPanel.sizeText = parts[6] || ""
+                batPanel.healthText = parts[7] || ""
+                batPanel.cycles = parseInt(parts[8]) || 0
             }
         }
     }

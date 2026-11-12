@@ -59,3 +59,7 @@ watch-round
 cpu
 gamepad
 clipboard-text
+battery-charge
+battery-full
+battery-half
+battery-low
