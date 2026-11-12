@@ -31,7 +31,8 @@ Rectangle {
     readonly property bool isImage: card.kind === "image"
     readonly property bool isText: card.kind === "text"
     readonly property bool starred: card.entry ? card.entry.starred === true : false
-    readonly property real pad: Theme.paddingMd * card.s
+    // crate-mark: the mock-up card's 10/12 padding
+    readonly property real pad: (Ui.Tokens.controlsCrate ? 11 : Theme.paddingMd) * card.s
 
     // Ink for the corner controls: light over an image (they float on a scrim),
     // the muted on-surface tone over a text/binary tile.
@@ -139,10 +140,13 @@ Rectangle {
             text: card.isText
                 ? ("#" + (card.entry ? String(card.entry.id) : ""))
                 : (card.entry ? String(card.entry.mime || "") : "")
-            color: Qt.rgba(Theme.onSurfaceVariant.r, Theme.onSurfaceVariant.g, Theme.onSurfaceVariant.b, 0.75)
-            font.family: Theme.fontPrimary
-            font.pixelSize: Math.round((Theme.fontSm - 3) * card.s)
-            font.weight: Font.DemiBold
+            color: card.crate ? Ui.Tokens.inkSubtle
+                : Qt.rgba(Theme.onSurfaceVariant.r, Theme.onSurfaceVariant.g, Theme.onSurfaceVariant.b, 0.75)
+            font.family: card.crate ? Ui.Tokens.mono : Theme.fontPrimary
+            // crate-mark: 11 px meta over a 12 px body, as in the mock-up
+            font.pixelSize: Math.round((card.crate ? 11 : Theme.fontSm - 3) * card.s)
+            font.weight: card.crate ? Font.Normal : Font.DemiBold
+            font.letterSpacing: card.crate ? 11 * 0.08 * card.s : 0
             elide: Text.ElideRight
         }
 
@@ -153,8 +157,8 @@ Rectangle {
             text: card.entry ? String(card.entry.preview || "") : ""
             color: Theme.onSurface
             font.family: Theme.fontPrimary
-            font.pixelSize: Math.round(Theme.fontSm * card.s)
-            lineHeight: 1.2
+            font.pixelSize: Math.round((card.crate ? 12 : Theme.fontSm) * card.s)
+            lineHeight: card.crate ? 1.3 : 1.2
             wrapMode: Text.WrapAtWordBoundaryOrAnywhere
             maximumLineCount: 3
             elide: Text.ElideRight
@@ -167,8 +171,8 @@ Rectangle {
             text: card.humanSize(card.entry ? (card.entry.size || 0) : 0)
             color: Theme.onSurface
             font.family: Theme.fontPrimary
-            font.pixelSize: Math.round(Theme.fontSm * card.s)
-            font.weight: Font.DemiBold
+            font.pixelSize: Math.round((card.crate ? 12 : Theme.fontSm) * card.s)
+            font.weight: card.crate ? Font.Normal : Font.DemiBold
             elide: Text.ElideRight
         }
     }

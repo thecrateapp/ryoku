@@ -127,8 +127,8 @@ Scope {
     }
 
     readonly property var layout: Config.clipboard || ({})
-    readonly property real widthPercent: Math.max(40, Math.min(90, root.layout.widthPercent === undefined ? 65 : Number(root.layout.widthPercent)))
-    readonly property real heightPercent: Math.max(24, Math.min(72, root.layout.heightPercent === undefined ? 42 : Number(root.layout.heightPercent)))
+    readonly property real widthPercent: Math.max(40, Math.min(90, root.layout.widthPercent === undefined ? (Tokens.controlsCrate ? 50 : 65) : Number(root.layout.widthPercent)))
+    readonly property real heightPercent: Math.max(24, Math.min(72, root.layout.heightPercent === undefined ? (Tokens.controlsCrate ? 40 : 42) : Number(root.layout.heightPercent)))
     readonly property real bottomPercent: Math.max(0, Math.min(20, root.layout.bottomPercent === undefined ? 0 : Number(root.layout.bottomPercent)))
     readonly property real panelRadius: Math.max(0, Math.min(32, root.layout.panelRadius === undefined ? (Tokens.controlsCrate ? 10 : 18) : Number(root.layout.panelRadius)))
     readonly property real paneRadius: Math.max(0, Math.min(32, root.layout.paneRadius === undefined ? (Tokens.controlsCrate ? 10 : 12) : Number(root.layout.paneRadius)))
@@ -327,8 +327,9 @@ Scope {
                     text: pane.title
                     color: Theme.onSurface
                     font.family: Theme.fontPrimary
-                    font.pixelSize: Math.round(Theme.fontMd * pane.s)
-                    font.weight: Font.DemiBold
+                    // crate-mark: a 13 px pane title
+                    font.pixelSize: Math.round((Tokens.controlsCrate ? 13 : Theme.fontMd) * pane.s)
+                    font.weight: Tokens.controlsCrate ? Font.Medium : Font.DemiBold
                 }
             }
 
@@ -341,7 +342,7 @@ Scope {
                 anchors.left: titleRow.right
                 anchors.leftMargin: Math.round(14 * pane.s)
                 anchors.verticalCenter: parent.verticalCenter
-                height: Math.round(24 * pane.s)
+                height: Math.round((Tokens.controlsCrate ? 30 : 24) * pane.s)
                 radius: Tokens.controlsCrate ? Math.round(6 * pane.s) : height / 2
                 // Compact: it grows with the pane but never crowds the count chip.
                 // Plain x/width arithmetic -- anchor lines do not subtract.
@@ -401,7 +402,7 @@ Scope {
                     anchors.verticalCenter: parent.verticalCenter
                     color: Theme.onSurface
                     font.family: Theme.fontPrimary
-                    font.pixelSize: Math.round((Theme.fontSm - 3) * pane.s)
+                    font.pixelSize: Math.round((Tokens.controlsCrate ? 12 : Theme.fontSm - 3) * pane.s)
                     selectionColor: Qt.rgba(Theme.primary.r, Theme.primary.g, Theme.primary.b, 0.4)
                     selectedTextColor: Theme.onSurface
                     selectByMouse: true
@@ -533,16 +534,18 @@ Scope {
                 height: Math.round(20 * pane.s)
                 width: Math.max(height, cnt.implicitWidth + Math.round(12 * pane.s))
                 radius: height / 2
-                color: Qt.rgba(Theme.onSurface.r, Theme.onSurface.g, Theme.onSurface.b, 0.10)
+                // crate-mark: the count as plain mono text, no plate
+                color: Tokens.controlsCrate ? "transparent" : Qt.rgba(Theme.onSurface.r, Theme.onSurface.g, Theme.onSurface.b, 0.10)
 
                 Text {
                     id: cnt
                     anchors.centerIn: parent
                     text: pane.items.length
-                    color: Theme.onSurfaceVariant
-                    font.family: Theme.fontPrimary
-                    font.pixelSize: Math.round((Theme.fontSm - 2) * pane.s)
-                    font.weight: Font.DemiBold
+                    color: Tokens.controlsCrate ? Tokens.inkSubtle : Theme.onSurfaceVariant
+                    font.family: Tokens.controlsCrate ? Tokens.mono : Theme.fontPrimary
+                    font.pixelSize: Math.round((Tokens.controlsCrate ? 11 : Theme.fontSm - 2) * pane.s)
+                    font.weight: Tokens.controlsCrate ? Font.Normal : Font.DemiBold
+                    font.features: { "tnum": 1 }
                 }
             }
         }
@@ -627,7 +630,7 @@ Scope {
                     anchors.centerIn: parent
                     name: pane.emptyGlyph
                     color: materialGlyph3.ink
-                    size: Math.round((Math.round(Theme.iconLg * pane.s)) * 0.85)
+                    size: Math.round((Tokens.controlsCrate ? 24 : Theme.iconLg * 0.85) * pane.s)
                 }
             }
             Text {
@@ -635,9 +638,9 @@ Scope {
                 horizontalAlignment: Text.AlignHCenter
                 text: pane.emptyText
                 wrapMode: Text.WordWrap
-                color: Theme.onSurfaceVariant
+                color: Tokens.controlsCrate ? Tokens.inkMuted : Theme.onSurfaceVariant
                 font.family: Theme.fontPrimary
-                font.pixelSize: Math.round(Theme.fontSm * pane.s)
+                font.pixelSize: Math.round((Tokens.controlsCrate ? 12 : Theme.fontSm) * pane.s)
             }
         }
     }
@@ -707,7 +710,7 @@ Scope {
         // The card, centred on the bottom edge of the monitor it draws on.
         Item {
             id: bodyWrap
-            readonly property real bodyW: Math.min(1100 * win.s, (root.screen ? root.screen.width : 1600) * root.widthPercent / 100)
+            readonly property real bodyW: Math.min((Tokens.controlsCrate ? 900 : 1100) * win.s, (root.screen ? root.screen.width : 1600) * root.widthPercent / 100)
             readonly property real bodyH: Math.min((root.screen ? root.screen.height : 900) * root.heightPercent / 100, bodyWrap.bodyW * 0.52)
 
             width: bodyWrap.bodyW
