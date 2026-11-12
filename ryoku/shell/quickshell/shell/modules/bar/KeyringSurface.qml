@@ -5,6 +5,7 @@ import QtQuick.Controls
 import shell.services
 import "../../components"
 import Ryoku.Ui.Singletons
+import Ryoku.Ui as Kit
 
 // keyring password island, grown from the pill centre. renders the GNOME
 // keyring prompt the ryoku-shell daemon receives as the system prompter:
@@ -91,11 +92,21 @@ PillSurface {
                 width: 30 * root.s
                 height: 30 * root.s
                 radius: width / 2
-                color: Qt.alpha(Theme.primary, 0.14)
-                border.width: 1
+                // crate-mark: a plateless Solar lock in the mark
+                color: Tokens.controlsCrate ? "transparent" : Qt.alpha(Theme.primary, 0.14)
+                border.width: Tokens.controlsCrate ? 0 : 1
                 border.color: Qt.alpha(Theme.primary, 0.40)
 
+                Kit.Glyph {
+                    visible: Tokens.controlsCrate
+                    anchors.centerIn: parent
+                    name: "lock"
+                    size: 18 * root.s
+                    color: Tokens.mark
+                }
+
                 GlyphIcon {
+                    visible: !Tokens.controlsCrate
                     anchors.centerIn: parent
                     width: 16 * root.s
                     height: 16 * root.s
@@ -144,10 +155,12 @@ PillSurface {
             visible: root.isPassword
             width: parent.width
             height: 36 * root.s
-            radius: Theme.radiusWidget
-            color: Theme.surfaceContainerHigh
+            // crate-mark: the kit Field's frame: radius 6, a hairline, the mark on focus
+            radius: Tokens.controlsCrate ? 6 * root.s : Theme.radiusWidget
+            color: Tokens.controlsCrate ? "transparent" : Theme.surfaceContainerHigh
             border.width: 1
-            border.color: field1.activeFocus ? Theme.frameBorder : Theme.outline
+            border.color: Tokens.controlsCrate ? (field1.activeFocus ? Tokens.mark : Tokens.line)
+                : field1.activeFocus ? Theme.frameBorder : Theme.outline
             Behavior on border.color { ColorAnimation { duration: Motion.fast } }
 
             TextField {
@@ -178,10 +191,12 @@ PillSurface {
             visible: root.isPasswordNew
             width: parent.width
             height: 36 * root.s
-            radius: Theme.radiusWidget
-            color: Theme.surfaceContainerHigh
+            // crate-mark: the kit Field's frame: radius 6, a hairline, the mark on focus
+            radius: Tokens.controlsCrate ? 6 * root.s : Theme.radiusWidget
+            color: Tokens.controlsCrate ? "transparent" : Theme.surfaceContainerHigh
             border.width: 1
-            border.color: field2.activeFocus ? Theme.frameBorder : (root.mismatch ? Qt.alpha(Theme.primary, 0.6) : Theme.outline)
+            border.color: Tokens.controlsCrate ? (field2.activeFocus ? Tokens.mark : root.mismatch ? Tokens.alert : Tokens.line)
+                : field2.activeFocus ? Theme.frameBorder : (root.mismatch ? Qt.alpha(Theme.primary, 0.6) : Theme.outline)
             Behavior on border.color { ColorAnimation { duration: Motion.fast } }
 
             TextField {
@@ -217,19 +232,27 @@ PillSurface {
                 id: choiceBox
                 property bool checked: false
                 anchors.verticalCenter: parent.verticalCenter
-                width: 17 * root.s
-                height: 17 * root.s
+                // crate-mark: the kit switch; this item keeps the state and the click
+                width: (Tokens.controlsCrate ? 34 : 17) * root.s
+                height: (Tokens.controlsCrate ? 18 : 17) * root.s
                 radius: Theme.radiusWidget
-                color: checked ? Theme.primary : "transparent"
-                border.width: 1
+                color: Tokens.controlsCrate ? "transparent" : checked ? Theme.primary : "transparent"
+                border.width: Tokens.controlsCrate ? 0 : 1
                 border.color: checked ? Theme.primary : Theme.outline
+
+                Kit.Sw {
+                    visible: Tokens.controlsCrate
+                    anchors.fill: parent
+                    on: choiceBox.checked
+                    enabled: false
+                }
                 Behavior on color { ColorAnimation { duration: Motion.fast } }
 
                 Text {
                     anchors.centerIn: parent
                     text: "\u2713"
-                    visible: choiceBox.checked
-                    color: "#fdeee6"
+                    visible: choiceBox.checked && !Tokens.controlsCrate
+                    color: Theme.ink(Theme.primary)
                     font.family: Theme.fontPrimary
                     font.pixelSize: 11 * root.s
                     font.weight: Font.Bold
@@ -272,8 +295,31 @@ PillSurface {
             wrapMode: Text.WordWrap
         }
 
+        // crate-mark: the kit's buttons, Continue filled and Cancel outlined
+        Row {
+            visible: Tokens.controlsCrate
+            width: parent.width
+            spacing: 8 * root.s
+            layoutDirection: Qt.RightToLeft
+
+            Kit.Btn {
+                width: (parent.width - parent.spacing) / 2
+                primary: true
+                text: Keyring.busy ? I18n.tr("Checking\u2026") : root.continueText
+                enabled: !Keyring.busy
+                onAct: root.trySubmit()
+            }
+            Kit.Btn {
+                width: (parent.width - parent.spacing) / 2
+                outline: true
+                text: root.cancelText
+                onAct: root.requestClose()
+            }
+        }
+
         // buttons
         Row {
+            visible: !Tokens.controlsCrate
             width: parent.width
             spacing: 9 * root.s
             layoutDirection: Qt.RightToLeft
@@ -290,7 +336,7 @@ PillSurface {
                 Text {
                     anchors.centerIn: parent
                     text: Keyring.busy ? I18n.tr("Checking\u2026") : root.continueText
-                    color: "#fdeee6"
+                    color: Theme.ink(Theme.primary)
                     font.family: Theme.fontPrimary
                     font.pixelSize: 12 * root.s
                     font.weight: Font.DemiBold

@@ -63,6 +63,8 @@ Rectangle {
         // caller fixes the button narrower than the label wants: the text
         // elides instead. Unconstrained buttons still size to their text.
         width: Math.max(0, parent.width - (btn.compact ? 20 : 30))
+        // a button stretched past its text (half of a dialog's row) keeps it centred
+        horizontalAlignment: Text.AlignHCenter
         elide: Text.ElideRight
     }
     HoverHandler { id: bh; enabled: btn.armed; cursorShape: Qt.PointingHandCursor }

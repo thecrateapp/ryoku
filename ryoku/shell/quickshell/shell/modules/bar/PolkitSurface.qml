@@ -6,6 +6,7 @@ import shell.services
 import "../../components"
 import Ryoku.Ui.Singletons
 import Ryoku.Ui
+import Ryoku.Ui as Kit
 
 // polkit authentication island, grown from the pill centre. Renders the PAM
 // conversation the ryoku-shell daemon runs as the PolicyKit1 agent, in place of
@@ -75,11 +76,21 @@ PillSurface {
                 width: 30 * root.s
                 height: 30 * root.s
                 radius: width / 2
-                color: Qt.alpha(Theme.primary, 0.14)
-                border.width: 1
+                // crate-mark: a plateless Solar lock in the mark
+                color: Tokens.controlsCrate ? "transparent" : Qt.alpha(Theme.primary, 0.14)
+                border.width: Tokens.controlsCrate ? 0 : 1
                 border.color: Qt.alpha(Theme.primary, 0.40)
 
+                Kit.Glyph {
+                    visible: Tokens.controlsCrate
+                    anchors.centerIn: parent
+                    name: "lock"
+                    size: 18 * root.s
+                    color: Tokens.mark
+                }
+
                 GlyphIcon {
+                    visible: !Tokens.controlsCrate
                     anchors.centerIn: parent
                     width: 16 * root.s
                     height: 16 * root.s
@@ -140,10 +151,14 @@ PillSurface {
         Rectangle {
             width: parent.width
             height: 36 * root.s
-            radius: Theme.radiusWidget
-            color: Theme.surfaceContainerHigh
+            // crate-mark: the kit Field's frame: radius 6, a hairline, the mark on
+            // focus and alert after a rejected attempt
+            radius: Tokens.controlsCrate ? 6 * root.s : Theme.radiusWidget
+            color: Tokens.controlsCrate ? "transparent" : Theme.surfaceContainerHigh
             border.width: 1
-            border.color: field.activeFocus ? Theme.frameBorder
+            border.color: Tokens.controlsCrate
+                ? (field.activeFocus ? Tokens.mark : Polkit.error !== "" ? Tokens.alert : Tokens.line)
+                : field.activeFocus ? Theme.frameBorder
                 : (Polkit.error !== "" ? Qt.alpha(Theme.primary, 0.6) : Theme.outline)
             Behavior on border.color { ColorAnimation { duration: Motion.fast } }
 
@@ -183,7 +198,30 @@ PillSurface {
             wrapMode: Text.WordWrap
         }
 
+        // crate-mark: the kit's buttons, Authenticate filled and Cancel outlined
         Row {
+            visible: Tokens.controlsCrate
+            width: parent.width
+            spacing: 8 * root.s
+            layoutDirection: Qt.RightToLeft
+
+            Kit.Btn {
+                width: (parent.width - parent.spacing) / 2
+                primary: true
+                text: Polkit.busy ? I18n.tr("Checking…") : I18n.tr("Authenticate")
+                enabled: !Polkit.busy
+                onAct: root.trySubmit()
+            }
+            Kit.Btn {
+                width: (parent.width - parent.spacing) / 2
+                outline: true
+                text: I18n.tr("Cancel")
+                onAct: root.requestClose()
+            }
+        }
+
+        Row {
+            visible: !Tokens.controlsCrate
             width: parent.width
             spacing: 9 * root.s
             layoutDirection: Qt.RightToLeft
@@ -199,7 +237,7 @@ PillSurface {
                 Text {
                     anchors.centerIn: parent
                     text: Polkit.busy ? I18n.tr("Checking…") : I18n.tr("Authenticate")
-                    color: "#fdeee6"
+                    color: Theme.ink(Theme.primary)
                     font.family: Theme.fontPrimary
                     font.pixelSize: 12 * root.s
                     font.weight: Font.DemiBold
