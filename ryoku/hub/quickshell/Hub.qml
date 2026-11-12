@@ -1356,7 +1356,7 @@ Rectangle {
                                         text: I18n.tr(navItem.modelData.name)
                                         color: navItem.sel ? (Tokens.selectFill ? Tokens.inkOnBone : Tokens.ink)
                                             : (nh.hovered && Tokens.accentMarks ? Tokens.hoverInk : Tokens.inkDim)
-                                        font.family: Tokens.ui
+                                        font.family: Tokens.navCaps ? Tokens.navFont : Tokens.ui
                                         font.pixelSize: Tokens.navCaps ? Tokens.fMicro : 14
                                         font.capitalization: Tokens.navCaps ? Font.AllUppercase : Font.MixedCase
                                         font.letterSpacing: Tokens.trackNav

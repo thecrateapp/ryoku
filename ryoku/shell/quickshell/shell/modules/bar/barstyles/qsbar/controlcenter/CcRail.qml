@@ -79,7 +79,7 @@ Item {
                 text: I18n.tr(item.modelData.label)
                 color: item.on ? (Tokens.selectFill ? Tokens.inkOnBone : Tokens.ink)
                     : (ma.containsMouse && Tokens.accentMarks ? Tokens.hoverInk : Tokens.inkDim)
-                font.family: Tokens.ui
+                font.family: Tokens.navCaps ? Tokens.navFont : Tokens.ui
                 font.pixelSize: Tokens.navCaps ? Tokens.fMicro : Tokens.fBody
                 font.capitalization: Tokens.navCaps ? Font.AllUppercase : Font.MixedCase
                 font.letterSpacing: Tokens.trackNav

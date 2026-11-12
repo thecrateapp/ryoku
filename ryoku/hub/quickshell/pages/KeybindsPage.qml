@@ -1483,7 +1483,7 @@ Item {
                                 text: railItem.modelData.label
                                 color: railItem.active ? Tokens.ink : (railItem.dimmed ? Tokens.inkFaint
                                     : (railHov.hovered && Tokens.accentMarks ? Tokens.hoverInk : Tokens.inkDim))
-                                font.family: Tokens.ui; font.pixelSize: Tokens.navCaps ? Tokens.fMicro : Tokens.fSmall
+                                font.family: Tokens.navCaps ? Tokens.navFont : Tokens.ui; font.pixelSize: Tokens.navCaps ? Tokens.fMicro : Tokens.fSmall
                                 font.capitalization: Tokens.navCaps ? Font.AllUppercase : Font.MixedCase
                                 font.letterSpacing: Tokens.trackNav
                                 elide: Text.ElideRight

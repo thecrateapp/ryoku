@@ -736,7 +736,7 @@ Item {
                                     color: railItem.modelData.count === 0 ? Tokens.inkFaint
                                         : (railItem.selected ? Tokens.ink
                                         : (railHover.hovered && Tokens.accentMarks ? Tokens.hoverInk : Tokens.inkDim))
-                                    font.family: Tokens.ui
+                                    font.family: Tokens.navCaps ? Tokens.navFont : Tokens.ui
                                     font.pixelSize: railItem.indented || Tokens.navCaps ? Tokens.fMicro : Tokens.fSmall
                                     font.capitalization: Tokens.navCaps ? Font.AllUppercase : Font.MixedCase
                                     font.letterSpacing: Tokens.trackNav

@@ -36,7 +36,7 @@ Column {
                 anchors.verticalCenter: parent.verticalCenter
                 text: I18n.tr(block.name)
                 color: Tokens.labelAccent ? Tokens.caption : Tokens.ink
-                font.family: Tokens.ui
+                font.family: Tokens.navCaps ? Tokens.navFont : Tokens.ui
                 font.pixelSize: Tokens.fMicro
                 font.weight: Font.Medium
                 font.letterSpacing: Tokens.trackMark
