@@ -1,0 +1,81 @@
+#!/usr/bin/env bash
+#
+# ryoku-dev-kit-overlay: run the live shell on this checkout's Ryoku.Ui and
+# Ryoku.Blobs, without building or installing a package for each change.
+#
+# The shell's QML import path puts ~/.local/lib/qt6/qml ahead of the system's
+# /usr/lib/qt6/qml. `on` links Ryoku/Ui and Ryoku/Blobs there to the checkout's
+# ryoku/ui and the Ryoku.Blobs build, so a kit change shows after `reload`, and a
+# plugin change after `reload` rebuilds it. Every surface that imports those
+# modules from the same path (the shell, the Hub) follows the checkout while it
+# is on, half-done edits included. `off` removes the links and the packaged
+# modules take over again.
+#
+# The shell's own files (~/.config/quickshell/shell) still come from the package;
+# render a change to them with tests/visual/controls-bench/render.sh, and install
+# a package to see it live.
+#
+# Usage: ryoku-dev-kit-overlay <on|off|status|reload>
+set -euo pipefail
+
+repo=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
+root="${RYOKU_DEV_QML_ROOT:-$HOME/.local/lib/qt6/qml}/Ryoku"
+plugin="$repo/ryoku/shell/plugin"
+build="${RYOKU_BLOBS_BUILD:-$plugin/build}"
+declare -A target=(
+  [Ui]="$repo/ryoku/ui"
+  [Blobs]="$build/qml/Ryoku/Blobs"
+)
+
+build_plugin() {
+  cmake -S "$plugin" -B "$build" -G Ninja -DCMAKE_BUILD_TYPE=Release >/dev/null
+  cmake --build "$build" >/dev/null
+}
+
+ours() { # $1 module: true when its path is our link into this checkout
+  [[ -L $root/$1 && $(readlink "$root/$1") == "${target[$1]}" ]]
+}
+
+reload_shell() {
+  if command -v ryoku-shell >/dev/null 2>&1; then
+    ryoku-shell reload >/dev/null && echo "shell reloaded"
+  fi
+}
+
+case "${1:-status}" in
+  on)
+    for m in "${!target[@]}"; do
+      if [[ -e $root/$m || -L $root/$m ]] && ! ours "$m"; then
+        echo "ryoku-dev-kit-overlay: $root/$m exists and is not this overlay; leaving it" >&2
+        exit 1
+      fi
+    done
+    build_plugin
+    mkdir -p "$root"
+    for m in "${!target[@]}"; do
+      ours "$m" || ln -s "${target[$m]}" "$root/$m"
+      echo "Ryoku.$m -> ${target[$m]}"
+    done
+    reload_shell
+    ;;
+  off)
+    for m in "${!target[@]}"; do
+      if ours "$m"; then rm -- "$root/$m"; echo "Ryoku.$m -> packaged"; fi
+    done
+    rmdir --ignore-fail-on-non-empty "$root" 2>/dev/null || true
+    reload_shell
+    ;;
+  reload)
+    ours Blobs && build_plugin
+    reload_shell
+    ;;
+  status)
+    for m in Ui Blobs; do
+      if ours "$m"; then echo "Ryoku.$m: checkout (${target[$m]})"; else echo "Ryoku.$m: packaged"; fi
+    done
+    ;;
+  *)
+    echo "usage: ryoku-dev-kit-overlay <on|off|status|reload>" >&2
+    exit 2
+    ;;
+esac

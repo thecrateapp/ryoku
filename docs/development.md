@@ -10,6 +10,18 @@ Edit the repo, deploy, test on the running system.
   runs it from the checkout (`qs -p`, hot-reload). `ryoku/hyprland/dev-binds.sh on` binds the
   shell keys for the session; `dev-stop.sh` stops it. Your own `~/.config` is not
   touched.
+- **Kit and plugin on the installed shell:** `bin/ryoku-dev-kit-overlay on` links
+  `~/.local/lib/qt6/qml/Ryoku/{Ui,Blobs}`, which the shell's import path reads
+  before `/usr/lib/qt6/qml`, to this checkout's `ryoku/ui` and the Ryoku.Blobs
+  build. `reload` rebuilds the plugin and restarts the shell processes; `off`
+  removes the links; `status` says which copy is live. The shell's own files
+  still come from the package. Turn it off before `dev-run.sh`, whose installers
+  copy into the same directory.
+- **Controls panel without installing:** `tests/visual/controls-bench/render.sh
+  OUT_DIR` renders the Controls board from the checkout (kit, plugin build and
+  shell tree) to `OUT_DIR/controls.png` in a few seconds. `BENCH_WAIT` (ms) lets
+  the graph fill; `BENCH_CRATE=1|0` forces the crate or stock look.
+  `tests/visual/kit-gallery/render.sh` does the same for the kit's components.
 - **Configs:** `ryoku deploy` builds the binaries and lays the repo into
   `~/.config` from a checkout (it runs `ryoku/shell/deploy.sh`); on an installed
   system `ryoku materialize` copies the base config in. Never edit `~/.config`
