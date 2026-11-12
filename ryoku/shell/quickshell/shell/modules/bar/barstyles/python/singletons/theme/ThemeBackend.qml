@@ -44,16 +44,22 @@ Item {
         return typeof value === "string" && /^#[0-9a-fA-F]{6}$/.test(value)
             ? value : Ui.Tokens.paper.toString();
     }
+    // crate-mark: in the default "bar" mode the dock and launcher sit on the panel's
+    // popover surface with the mark as accent; a chosen accent or custom colour wins
+    readonly property bool crateMarked: Ui.Tokens.controlsCrate && dockLauncherColorMode === "bar"
     readonly property color dockLauncherBase: dockLauncherColorMode === "accent"
         ? Ui.Tokens.sun
-        : (dockLauncherColorMode === "custom" ? dockLauncherCustomColor : Ui.Tokens.paper)
+        : (dockLauncherColorMode === "custom" ? dockLauncherCustomColor
+            : crateMarked ? Ui.Tokens.popover : Ui.Tokens.paper)
     readonly property color dockLauncherText: Theme.inkOn(dockLauncherBase, Ui.Tokens.ink, 4.5)
     readonly property color dockLauncherSubtext0: Theme.inkOn(dockLauncherBase, Ui.Tokens.inkDim, 4.5)
-    readonly property color dockLauncherSurface0: dockLauncherColorMode === "bar"
+    readonly property color dockLauncherSurface0: crateMarked ? mix(dockLauncherBase, dockLauncherText, 0.06)
+        : dockLauncherColorMode === "bar"
         ? Ui.Tokens.paperLift : mix(dockLauncherBase, dockLauncherText, 0.10)
     readonly property color dockLauncherSurface1: mix(dockLauncherBase, dockLauncherText, 0.18)
     readonly property color dockLauncherSurface2: mix(dockLauncherBase, dockLauncherText, 0.28)
-    readonly property color dockLauncherAccent: Theme.inkOn(dockLauncherBase, Ui.Tokens.sun, 3.0)
+    readonly property color dockLauncherAccent: crateMarked ? Ui.Tokens.mark
+        : Theme.inkOn(dockLauncherBase, Ui.Tokens.sun, 3.0)
     readonly property color dockLauncherOnAccent: Theme.inkOn(dockLauncherAccent, dockLauncherText, 4.5)
 
     function mix(a, b, t) {

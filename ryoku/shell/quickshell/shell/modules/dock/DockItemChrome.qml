@@ -77,10 +77,11 @@ Item {
 
             // Active cell inverts; rounded only at the corners it shares with the
             // plate ends, so the fill never pokes past a rounded plate corner.
+            // crate-mark: the pick wash instead of the bone inversion
             Rectangle {
                 visible: chrome.item.isActive
                 anchors.fill: parent
-                color: chrome.band.bone
+                color: Ui.Tokens.controlsCrate ? Ui.Tokens.pickFill : chrome.band.bone
                 topLeftRadius:     chrome.firstCell ? ledger.r : 0
                 bottomRightRadius: chrome.lastCell ? ledger.r : 0
                 topRightRadius:    (chrome.horizontal ? chrome.lastCell : chrome.firstCell) ? ledger.r : 0
@@ -102,7 +103,7 @@ Item {
 
             Text {
                 text: (chrome.item.ordinal + 1 < 10 ? "0" : "") + (chrome.item.ordinal + 1)
-                color: chrome.item.isActive ? chrome.band.inkOnBone
+                color: chrome.item.isActive ? (Ui.Tokens.controlsCrate ? Ui.Tokens.mark : chrome.band.inkOnBone)
                     : Ui.Tokens.controlsCrate ? Ui.Tokens.inkSubtle : chrome.band.inkFaint
                 font.family: Theme.mono
                 // crate-mark: 10 px, the closest to the 11 px caption a ledger cell holds
