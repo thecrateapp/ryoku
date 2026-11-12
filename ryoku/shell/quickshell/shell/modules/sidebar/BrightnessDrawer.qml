@@ -4,6 +4,7 @@ import QtQuick
 import QtQuick.Controls as QQC
 import Quickshell.Io
 import Ryoku.Ui.Singletons
+import Ryoku.Ui as Kit
 import shell.services
 
 Item {
@@ -14,6 +15,16 @@ Item {
     required property bool active
     property bool linked: false
     readonly property bool motionAllowed: !Tokens.reduceMotion && !Motion.reduce
+    // crate-mark: every display's beam starts after the widest caption
+    readonly property real captionWidth: {
+        let widest = internalLevel.labelImplicitWidth;
+        for (let i = 0; i < ddcRepeater.count; ++i) {
+            const row = ddcRepeater.itemAt(i);
+            if (row)
+                widest = Math.max(widest, row.captionWidth);
+        }
+        return widest;
+    }
     readonly property int displayCount: (Devices.backlightAvailable ? 1 : 0) + (Devices.ddcMonitors || []).length
     readonly property string internalOutput: {
         const outputs = Wm.outputs || [];
@@ -104,6 +115,7 @@ Item {
                 id: internalLevel
                 width: parent.width
                 s: root.s
+                labelWidth: root.captionWidth
                 label: root.internalOutput
                 glyph: value < 0.34 ? "brightness_low" : value < 0.67 ? "brightness_medium" : "brightness_high"
                 value: Math.max(0, Devices.backlightPct) / 100
@@ -129,6 +141,7 @@ Item {
                 readonly property string outputName: String(modelData.label)
                 property int percent: -1
                 property int pending: -1
+                readonly property real captionWidth: monitorLevel.labelImplicitWidth
                 width: body.width
                 height: monitorLevel.implicitHeight
 
@@ -174,6 +187,7 @@ Item {
                     id: monitorLevel
                     width: parent.width
                     s: root.s
+                    labelWidth: root.captionWidth
                     label: monitorRow.outputName
                     glyph: value < 0.34 ? "brightness_low" : value < 0.67 ? "brightness_medium" : "brightness_high"
                     value: Math.max(0, monitorRow.percent) / 100
@@ -228,11 +242,21 @@ Item {
                     text: I18n.tr("Link displays")
                     color: Tokens.ink
                     font.family: Tokens.ui
-                    font.pixelSize: Tokens.fSmall * root.s
+                    font.pixelSize: (Tokens.controlsCrate ? 13 : Tokens.fSmall) * root.s
                     font.weight: Font.Medium
+                }
+                // crate-mark: the kit's switch; the button takes the click
+                Kit.Sw {
+                    visible: Tokens.controlsCrate
+                    anchors.right: parent.right
+                    anchors.verticalCenter: parent.verticalCenter
+                    on: root.linked
+                    enabled: false
+                    opacity: 1
                 }
                 Rectangle {
                     id: switchTrack
+                    visible: !Tokens.controlsCrate
                     anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter
                     width: Tokens.ctlH * 2 * root.s

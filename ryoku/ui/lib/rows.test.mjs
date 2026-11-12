@@ -75,3 +75,9 @@ test("a group of streams can widen the name column, up to 35 % of the row", () =
   assert.equal(streamColumns(600, { nameWidth: 20 }).name.w, 64);
   assert.equal(streamColumns(600, { nameWidth: 120 }).beam.x, 132);
 });
+
+test("a widened caption never takes more than 35 % of the row", () => {
+  assert.equal(levelColumns(600, { labelWidth: 400 }).label.w, 210);
+  assert.equal(meterColumns(600, 100, { labelWidth: 400 }).label.w, 210);
+  assert.equal(levelColumns(600, { labelWidth: 100 }).label.w, 100);
+});
