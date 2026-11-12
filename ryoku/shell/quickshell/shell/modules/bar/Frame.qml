@@ -385,7 +385,7 @@ Scope {
                     radius: Math.min(Config.frameCorner, width / 2, height / 2)
                     color: Theme.surface
                     border.width: Theme.borderWidth
-                    border.color: Theme.outline
+                    border.color: Theme.frameLine
                     opacity: Theme.windowOpacity * (frameMenus.chromeSide ? frameMenus.chromeOpacity : 1)
                     visible: !overlay.monFullscreen && Config.frameEnabled
                         && width > 0 && height > 0

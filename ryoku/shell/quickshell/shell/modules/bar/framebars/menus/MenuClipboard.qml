@@ -113,7 +113,7 @@ Item {
                 width: clipboardList.width
                 radius: Theme.radiusWidget
                 border.width: Theme.borderWidth
-                border.color: Theme.outline
+                border.color: Theme.frameLine
                 color: body.containsMouse
                     ? Qt.tint(Theme.surface, Qt.rgba(Theme.onSurface.r, Theme.onSurface.g, Theme.onSurface.b, 0.08))
                     : Theme.surface
@@ -206,7 +206,7 @@ Item {
                         visible: entry.kind === "image"
                         radius: Theme.radiusWidget
                         border.width: Theme.borderWidth
-                        border.color: Theme.outline
+                        border.color: Theme.frameLine
                         color: "transparent"
                         clip: true
 

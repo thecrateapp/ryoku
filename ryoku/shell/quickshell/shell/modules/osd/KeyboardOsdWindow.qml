@@ -76,7 +76,7 @@ PanelWindow {
         radius: Theme.radiusWindow
         color: Theme.surface
         border.width: Theme.borderWidth
-        border.color: Theme.outline
+        border.color: Theme.frameLine
         opacity: Theme.windowOpacity * win.prog
         antialiasing: true
         transformOrigin: Item.Bottom

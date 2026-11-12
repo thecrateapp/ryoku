@@ -186,7 +186,7 @@ Item {
             radius: root.radius
             color: Theme.surface
             border.width: Theme.borderWidth
-            border.color: Theme.outline
+            border.color: Theme.frameLine
             opacity: Theme.windowOpacity
         }
 

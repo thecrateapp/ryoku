@@ -15,7 +15,7 @@ Rectangle {
     radius: 999
     color: on ? Theme.primary : Theme.surfaceContainerHigh
     border.width: on ? 0 : 1
-    border.color: Theme.outline
+    border.color: Theme.frameLine
 
     Rectangle {
         anchors.verticalCenter: parent.verticalCenter

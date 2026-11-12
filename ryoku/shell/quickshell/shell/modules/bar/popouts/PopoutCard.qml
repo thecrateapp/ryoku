@@ -17,7 +17,7 @@ Item {
         radius: Theme.radiusWindow
         color: Theme.surface
         border.width: Theme.borderWidth
-        border.color: Theme.outline
+        border.color: Theme.frameLine
     }
     MouseArea { anchors.fill: parent }
 }

@@ -177,7 +177,7 @@ Item {
                 radius: Theme.radiusWindow
                 color: Theme.surface
                 border.width: Theme.borderWidth
-                border.color: Theme.outline
+                border.color: Theme.frameLine
                 focus: true
                 Keys.onEscapePressed: root.close()
                 Component.onCompleted: {

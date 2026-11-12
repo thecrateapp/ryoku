@@ -294,7 +294,7 @@ Item {
                         radius: Theme.radiusWidget
                         color: "transparent"
                         border.width: Theme.borderWidth
-                        border.color: Theme.outline
+                        border.color: Theme.frameLine
                         TextInput {
                             id: wgPath
                             anchors.left: parent.left
@@ -411,7 +411,7 @@ Item {
                         radius: Theme.radiusWidget
                         color: "transparent"
                         border.width: Theme.borderWidth
-                        border.color: Theme.outline
+                        border.color: Theme.frameLine
                         TextInput {
                             id: hiddenSsid
                             anchors.left: parent.left
@@ -440,7 +440,7 @@ Item {
                         radius: Theme.radiusWidget
                         color: "transparent"
                         border.width: Theme.borderWidth
-                        border.color: Theme.outline
+                        border.color: Theme.frameLine
                         TextInput {
                             id: hiddenPw
                             anchors.left: parent.left
@@ -581,7 +581,7 @@ Item {
                     radius: Theme.radiusWidget
                     color: "transparent"
                     border.width: Theme.borderWidth
-                    border.color: Theme.outline
+                    border.color: Theme.frameLine
 
                     TextInput {
                         id: pwEntry

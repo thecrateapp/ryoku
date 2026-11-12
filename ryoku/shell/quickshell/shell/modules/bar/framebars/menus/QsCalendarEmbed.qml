@@ -67,7 +67,7 @@ Item {
         radius: Theme.radiusWidget
         color: Theme.surface
         border.width: Theme.borderWidth
-        border.color: Theme.outline
+        border.color: Theme.frameLine
         implicitHeight: cal.implicitHeight + 2 * (10 * root.s)
         SumiEdge {}
 

@@ -82,7 +82,7 @@ Item {
         color: "transparent"
         radius: Theme.radiusWidget
         border.width: Theme.borderWidth
-        border.color: Theme.outline
+        border.color: Theme.frameLine
         implicitHeight: cardCol.implicitHeight + Theme.paddingMd * 2
         SumiEdge {}
 

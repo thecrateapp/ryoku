@@ -312,7 +312,7 @@ PillSurface {
                 radius: Theme.radiusWidget
                 color: cancelArea.containsMouse ? Theme.frameBg : Theme.surfaceContainerHigh
                 border.width: 1
-                border.color: Theme.outline
+                border.color: Theme.frameLine
                 Behavior on color { ColorAnimation { duration: Motion.fast } }
 
                 Text {

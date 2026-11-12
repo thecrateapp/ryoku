@@ -117,7 +117,7 @@ Popout {
         radius: Theme.radiusWindow
         color: Theme.surface
         border.width: Theme.borderWidth
-        border.color: Theme.outline
+        border.color: Theme.frameLine
 
         Column {
             id: recCol

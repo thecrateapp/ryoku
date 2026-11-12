@@ -100,7 +100,7 @@ Item {
             radius: Theme.radiusWidget
             color: "transparent"
             border.width: Theme.borderWidth
-            border.color: Theme.outline
+            border.color: Theme.frameLine
             opacity: root.revealed ? 1 : 0
             Behavior on opacity { NumberAnimation { duration: Motion.rowFade; easing.type: Motion.easeType; easing.bezierCurve: Motion.easeCurve } }
 

@@ -111,6 +111,9 @@ Singleton {
     // --- overlay tints (Ryoku selection/hover fills over the surface) ---------
     readonly property color frameBg:     Qt.rgba(primary.r, primary.g, primary.b, 0.10)
     readonly property color frameBorder: Qt.rgba(onSurface.r, onSurface.g, onSurface.b, 0.18)
+    // a frame or field edge: the crate-mark hairline under controls "crate", the
+    // outline role otherwise (outline itself also colours ticks and text, so it stays)
+    readonly property color frameLine: Ui.Tokens.controlsCrate ? Ui.Tokens.line : outline
     // A dim tone for out-of-scope elements, e.g. out-of-month calendar days.
     readonly property color ghost:       Qt.darker(onSurfaceVariant, 1.6)
 
@@ -190,7 +193,7 @@ Singleton {
     // --- sizing (config values with compiled fallbacks) ------------------------
     readonly property int  radiusWidget: Config.themeSizing.radius_widget ?? 8
     readonly property int  radiusWindow: Config.themeSizing.radius_window ?? 8
-    readonly property int  borderWidth: 2
+    readonly property int  borderWidth: Ui.Tokens.controlsCrate ? 1 : 2
     readonly property int  paddingSm: 4
     readonly property int  paddingMd: 8
     readonly property int  paddingLg: 16

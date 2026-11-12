@@ -28,7 +28,7 @@ Item {
         radius: Theme.radiusWidget
         color: "transparent"
         border.width: Theme.borderWidth
-        border.color: Theme.outline
+        border.color: Theme.frameLine
         implicitHeight: stack.implicitHeight + 2 * (Theme.paddingMd * root.s)
 
         SumiEdge { radius: Theme.radiusWidget }

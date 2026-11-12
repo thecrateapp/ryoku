@@ -82,7 +82,7 @@ PanelWindow {
         color: Theme.surface
         opacity: Theme.windowOpacity * win.prog
         border.width: Theme.borderWidth
-        border.color: Theme.outline
+        border.color: Theme.frameLine
         antialiasing: true
         scale: win.osdScale
         transformOrigin: Item.Bottom

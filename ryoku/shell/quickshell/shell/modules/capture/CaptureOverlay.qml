@@ -150,7 +150,7 @@ PanelWindow {
         visible: win.hasRect || (win.sel === "monitor" && win.hovering)
         color: "transparent"
         border.width: (win.sel === "region" ? 2 : 3) * win.us
-        border.color: Theme.outline
+        border.color: Theme.frameLine
         x: win.sel === "monitor" ? 1.5 * win.us : win.hlx
         y: win.sel === "monitor" ? 1.5 * win.us : win.hly
         width: win.sel === "monitor" ? win.scrW - 3 * win.us : win.hlw
