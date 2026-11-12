@@ -371,9 +371,11 @@ Popular, New, and Updated rankings.
   role or a value that is not `#rrggbb` is ignored. `style` sets the Ryoku.Ui
   kit's non-colour look: `lineAlpha` (hairline strength, the ink alpha of
   `Tokens.line`, 0.26 by default, clamped to 0.04-0.6) and `display` (the display
-  face, Fraunces by default), `displayWeight` (100-900), `navFont` (the
-  navigation face for rails, tabs and section captions, the UI face by default;
-  used when `navCaps` is on), and switches that keep
+  face, Fraunces by default), `displayWeight` (100-900; titles set in the
+  display face take it, and keep their own fixed weight when it is absent),
+  `navFont` (the navigation face for rails, tabs and Kit category captions, the
+  UI face by default; used when `navCaps` is on; a face name over 64 bytes or
+  holding a quote, a backslash or a control character is dropped), and switches that keep
   the signature look when absent: `navCaps` (uppercase tracked navigation
   labels), `accentMarks` (selection marks and hover text in the palette
   secondary, and a switch that is on fills its track with the primary),
@@ -386,7 +388,10 @@ Popular, New, and Updated rankings.
   `white`) gives the terminal templates (kitty, alacritty) the scheme's own ANSI
   colours instead of the ones derived from the roles; the UI keeps the derived
   base16 slots, and invalid values are dropped. The daemon publishes the style as `themeStyle` in
-  `shell.json` beside `themePalette` and drops it for built-in themes.
+  `shell.json` beside `themePalette` and drops it for built-in themes. A theme
+  that carries any `style` also moves the surfaces with a palette of their own
+  (the overview and the launcher) onto its roles while Match wallpaper is off; a
+  theme without one leaves them in their signature colours.
 
   ```json
   {"dark": {"mPrimary": "#06b6d4", "mSurface": "#0a0a0f", "mOnSurface": "#f1f5f9",

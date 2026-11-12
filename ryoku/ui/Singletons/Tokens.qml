@@ -3,6 +3,7 @@ pragma Singleton
 import QtQuick
 import Quickshell
 import Quickshell.Io
+import "themestyle.js" as ThemeStyle
 
 // The one place Ryoku's look is defined. Everything that draws imports this;
 // nothing hardcodes a hex, a size or a duration.
@@ -115,6 +116,9 @@ Singleton {
     // a theme without one keeps their look
     property bool styled: false
     property int displayWeight: Font.Normal
+    // true only when the style names a displayWeight: titles keep their own
+    // fixed weight otherwise
+    property bool displayWeightSet: false
     readonly property color mark: accentMarks ? sunHi : ink
     readonly property color hoverInk: accentMarks ? sunHi : ink
     readonly property color focus: focusAccent ? sun : ink
@@ -311,13 +315,8 @@ Singleton {
         var bars = ({});
         var widgets = ({});
         var monoFont = "SpaceMono Nerd Font";
+        var style = ThemeStyle.readStyle(undefined);
         var uiFont = "Space Grotesk";
-        var lineAlpha = 0.26;
-        var displayFont = "Fraunces";
-        var navFontValue = "";
-        var styledValue = false;
-        var displayWeight = Font.Normal;
-        var flags = { navCaps: false, accentMarks: false, focusAccent: false, labelAccent: false, selectFill: true };
         try {
             const txt = shellFile.text();
             if (txt) {
@@ -341,19 +340,7 @@ Singleton {
                 if (w && typeof w === "object" && w !== null)
                     widgets = w;
                 if (typeof o.fontFamily === "string" && o.fontFamily.length) { uiFont = o.fontFamily; monoFont = o.fontFamily; }
-                const st = o && o.themeStyle;
-                styledValue = !!(st && typeof st === "object");
-                if (st && typeof st.lineAlpha === "number" && st.lineAlpha > 0 && st.lineAlpha <= 1)
-                    lineAlpha = st.lineAlpha;
-                if (st && typeof st.display === "string" && st.display.length)
-                    displayFont = st.display;
-                if (st && typeof st.navFont === "string" && st.navFont.length)
-                    navFontValue = st.navFont;
-                if (st && typeof st.displayWeight === "number")
-                    displayWeight = Math.max(100, Math.min(900, st.displayWeight));
-                for (const k in flags)
-                    if (st && typeof st[k] === "boolean")
-                        flags[k] = st[k];
+                style = ThemeStyle.readStyle(o && o.themeStyle);
             }
         } catch (e) {
             pal = null;
@@ -366,16 +353,17 @@ Singleton {
         t.widgetVisibility = widgets;
         t.ui = uiFont;
         t.mono = monoFont;
-        t.lineAlpha = lineAlpha;
-        t.display = displayFont;
-        t.styled = styledValue;
-        t.navFont = navFontValue || t.ui;
-        t.displayWeight = displayWeight;
-        t.navCaps = flags.navCaps;
-        t.accentMarks = flags.accentMarks;
-        t.focusAccent = flags.focusAccent;
-        t.labelAccent = flags.labelAccent;
-        t.selectFill = flags.selectFill;
+        t.lineAlpha = style.lineAlpha;
+        t.display = style.display;
+        t.styled = style.styled;
+        t.navFont = style.navFont || t.ui;
+        t.displayWeight = style.displayWeight;
+        t.displayWeightSet = style.displayWeightSet;
+        t.navCaps = style.flags.navCaps;
+        t.accentMarks = style.flags.accentMarks;
+        t.focusAccent = style.flags.focusAccent;
+        t.labelAccent = style.flags.labelAccent;
+        t.selectFill = style.flags.selectFill;
     }
     function refreshMatch() {
         try {

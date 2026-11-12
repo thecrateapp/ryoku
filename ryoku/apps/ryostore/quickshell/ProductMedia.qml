@@ -69,7 +69,7 @@ Item {
             color: media.fallbackInk
             font.family: Tokens.display
             font.pixelSize: Math.max(Tokens.fHero, Math.min(parent.width, parent.height) * 0.24)
-            font.weight: Tokens.styled ? Tokens.displayWeight : Font.Medium
+            font.weight: Tokens.displayWeightSet ? Tokens.displayWeight : Font.Medium
         }
     }
 

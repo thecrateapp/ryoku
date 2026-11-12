@@ -235,7 +235,7 @@ Item {
                 font.pixelSize: Tokens.fHero * root.s
                 fontSizeMode: Text.HorizontalFit
                 minimumPixelSize: Tokens.fBody * root.s
-                font.weight: Tokens.styled ? Tokens.displayWeight : Font.Light
+                font.weight: Tokens.displayWeightSet ? Tokens.displayWeight : Font.Light
                 elide: Text.ElideRight
                 horizontalAlignment: Text.AlignRight
             }

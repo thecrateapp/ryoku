@@ -78,7 +78,7 @@ Item {
                     color: Tokens.ink
                     font.family: Tokens.display
                     font.pixelSize: Math.max(Tokens.fTitle, 44)
-                    font.weight: Tokens.styled ? Tokens.displayWeight : Font.DemiBold
+                    font.weight: Tokens.displayWeightSet ? Tokens.displayWeight : Font.DemiBold
                     wrapMode: Text.WordWrap
                     lineHeight: 0.95
                 }

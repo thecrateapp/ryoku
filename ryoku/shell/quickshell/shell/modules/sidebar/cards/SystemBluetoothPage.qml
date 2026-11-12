@@ -297,7 +297,7 @@ Item {
                 color: Tokens.ink
                 font.family: Tokens.display
                 font.pixelSize: Tokens.fTitle * root.s
-                font.weight: Tokens.styled ? Tokens.displayWeight : Font.DemiBold
+                font.weight: Tokens.displayWeightSet ? Tokens.displayWeight : Font.DemiBold
                 elide: Text.ElideRight
             }
             SidebarToggle {

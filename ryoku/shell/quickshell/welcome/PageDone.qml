@@ -39,7 +39,7 @@ Item {
                 color: Tokens.ink
                 font.family: Tokens.display
                 font.pixelSize: Math.max(Tokens.fTitle, 40)
-                font.weight: Tokens.styled ? Tokens.displayWeight : Font.DemiBold
+                font.weight: Tokens.displayWeightSet ? Tokens.displayWeight : Font.DemiBold
                 horizontalAlignment: Text.AlignHCenter
                 wrapMode: Text.WordWrap
             }

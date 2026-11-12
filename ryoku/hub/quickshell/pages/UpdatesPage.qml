@@ -714,7 +714,7 @@ Item {
                                   + (Updates.available && Updates.latestName !== "" && Updates.latestName !== Updates.currentName
                                      ? "  \u2192  " + Updates.latestName : "")
                             color: Tokens.ink; font.family: Tokens.display
-                            font.pixelSize: Tokens.fHero; font.weight: Tokens.styled ? Tokens.displayWeight : Font.Medium
+                            font.pixelSize: Tokens.fHero; font.weight: Tokens.displayWeightSet ? Tokens.displayWeight : Font.Medium
                         }
 
                         // installed -> latest bump. a version is file-truth, so mono.

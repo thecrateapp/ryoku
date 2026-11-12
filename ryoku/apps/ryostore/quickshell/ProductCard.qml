@@ -76,7 +76,7 @@ Item {
                     color: Tokens.ink
                     font.family: Tokens.display
                     font.pixelSize: Tokens.fRow
-                    font.weight: Tokens.styled ? Tokens.displayWeight : Font.Medium
+                    font.weight: Tokens.displayWeightSet ? Tokens.displayWeight : Font.Medium
                     elide: Text.ElideRight
                 }
 

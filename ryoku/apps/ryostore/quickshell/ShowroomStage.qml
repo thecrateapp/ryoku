@@ -262,7 +262,7 @@ Item {
             color: Tokens.ink
             font.family: Tokens.display
             font.pixelSize: Tokens.fHero
-            font.weight: Tokens.styled ? Tokens.displayWeight : Font.Medium
+            font.weight: Tokens.displayWeightSet ? Tokens.displayWeight : Font.Medium
             wrapMode: Text.Wrap
             maximumLineCount: 2
             elide: Text.ElideRight
