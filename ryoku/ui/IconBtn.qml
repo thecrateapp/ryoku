@@ -15,9 +15,9 @@ Rectangle {
     implicitWidth: 26
     implicitHeight: 26
     radius: Tokens.radius
-    opacity: armed ? 1 : 0.3
-    color: tap.pressed && armed ? Tokens.tint16 : (hh.hovered && armed ? Tokens.tint10 : "transparent")
-    border.width: Tokens.border
+    opacity: armed ? 1 : (Tokens.controlsCrate ? 0.5 : 0.3)
+    color: Tokens.controlsCrate ? "transparent" : tap.pressed && armed ? Tokens.tint16 : (hh.hovered && armed ? Tokens.tint10 : "transparent")
+    border.width: Tokens.controlsCrate ? 0 : Tokens.border
     border.color: hh.hovered && armed ? Tokens.lineStrong : Tokens.line
     Behavior on color { ColorAnimation { duration: Tokens.snap } }
 
@@ -26,9 +26,9 @@ Rectangle {
     Text {
         anchors.centerIn: parent
         text: btn.glyph
-        color: Tokens.inkDim
+        color: Tokens.controlsCrate ? (hh.hovered && btn.armed ? Tokens.mark : Tokens.inkSecondary) : Tokens.inkDim
         font.family: Tokens.ui
-        font.pixelSize: 12
+        font.pixelSize: Tokens.controlsCrate ? 14 : 12
     }
     HoverHandler { id: hh; enabled: btn.armed; cursorShape: Qt.PointingHandCursor }
     TapHandler { id: tap; enabled: btn.armed

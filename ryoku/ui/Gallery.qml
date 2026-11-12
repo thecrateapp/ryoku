@@ -28,9 +28,9 @@ Flow {
             width: 132
             height: 74
             radius: Tokens.radius
-            color: tap.pressed ? Tokens.tint16 : (on ? Tokens.tint10 : (th.hovered ? Tokens.tint5 : "transparent"))
+            color: tap.pressed ? Tokens.tint16 : (on ? (Tokens.controlsCrate ? Tokens.pickFill : Tokens.tint10) : (th.hovered ? Tokens.tint5 : "transparent"))
             border.width: Tokens.border
-            border.color: on ? Tokens.ink : (th.hovered ? Tokens.lineStrong : Tokens.line)
+            border.color: on ? (Tokens.controlsCrate ? Tokens.pickEdge : Tokens.ink) : (th.hovered ? (Tokens.controlsCrate ? Tokens.markHover : Tokens.lineStrong) : Tokens.line)
             Behavior on color { ColorAnimation { duration: Tokens.snap } }
             Behavior on border.color { ColorAnimation { duration: Tokens.snap } }
 

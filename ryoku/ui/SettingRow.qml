@@ -124,11 +124,11 @@ Item {
         Rectangle {
             visible: row.changed
             width: 18; height: 18; radius: Tokens.radius
-            color: rhb.hovered ? Tokens.tint10 : "transparent"
-            border.width: Tokens.border
+            color: Tokens.controlsCrate ? "transparent" : (rhb.hovered ? Tokens.tint10 : "transparent")
             border.color: rhb.hovered ? Tokens.lineStrong : Tokens.line
+            border.width: Tokens.controlsCrate ? 0 : Tokens.border
             anchors.verticalCenter: parent.verticalCenter
-            Text { anchors.centerIn: parent; text: "\u21ba"; color: Tokens.inkDim; font.family: Tokens.ui; font.pixelSize: 11 }
+            Text { anchors.centerIn: parent; text: "\u21ba"; color: Tokens.controlsCrate ? (rhb.hovered ? Tokens.mark : Tokens.inkSecondary) : Tokens.inkDim; font.family: Tokens.ui; font.pixelSize: 11 }
             HoverHandler { id: rhb; cursorShape: Qt.PointingHandCursor }
             TapHandler { onTapped: row.resetRequested() }
         }
@@ -206,7 +206,7 @@ Item {
             visible: row.value !== "" && !row.editingValue
             text: row.value
             color: Tokens.ink
-            font.family: Tokens.ui; font.pixelSize: Tokens.fBody; font.weight: Font.Light
+            font.family: Tokens.controlsCrate ? Tokens.mono : Tokens.ui; font.pixelSize: Tokens.controlsCrate ? 12 : Tokens.fBody; font.weight: Tokens.controlsCrate ? Font.Normal : Font.Light
             anchors.verticalCenter: parent.verticalCenter
             activeFocusOnTab: row.editableValue
             focus: false
@@ -237,7 +237,7 @@ Item {
             visible: row.editingValue
             width: Math.max(30, implicitWidth)
             color: Tokens.ink
-            font.family: Tokens.ui; font.pixelSize: Tokens.fBody; font.weight: Font.Light
+            font.family: Tokens.controlsCrate ? Tokens.mono : Tokens.ui; font.pixelSize: Tokens.controlsCrate ? 12 : Tokens.fBody; font.weight: Tokens.controlsCrate ? Font.Normal : Font.Light
             selectionColor: Tokens.selectFill ? Tokens.bone : Tokens.sun
             selectedTextColor: Tokens.inkOnBone
             anchors.verticalCenter: parent.verticalCenter
@@ -268,7 +268,7 @@ Item {
             border.width: Tokens.border
             border.color: rhi.hovered ? Tokens.lineStrong : Tokens.line
             anchors.verticalCenter: parent.verticalCenter
-            Text { anchors.centerIn: parent; text: "\u21ba"; color: Tokens.inkDim; font.family: Tokens.ui; font.pixelSize: 11 }
+            Text { anchors.centerIn: parent; text: "\u21ba"; color: Tokens.controlsCrate ? (rhb.hovered ? Tokens.mark : Tokens.inkSecondary) : Tokens.inkDim; font.family: Tokens.ui; font.pixelSize: 11 }
             HoverHandler { id: rhi; cursorShape: Qt.PointingHandCursor }
             TapHandler { onTapped: row.resetRequested() }
         }

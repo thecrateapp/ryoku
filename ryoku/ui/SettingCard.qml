@@ -46,9 +46,9 @@ Item {
             Text {
                 text: card.title
                 color: Tokens.labelAccent ? Tokens.caption : Tokens.inkDim
-                font.family: Tokens.ui
+                font.family: Tokens.controlsCrate ? Tokens.mono : Tokens.ui
                 font.pixelSize: Tokens.labelAccent ? Tokens.fMicro : Tokens.fBody
-                font.weight: Font.Medium
+                font.weight: Tokens.controlsCrate ? Font.Normal : Font.Medium
                 font.letterSpacing: Tokens.labelAccent ? Tokens.fMicro * 0.14 : Tokens.trackLabel
                 font.capitalization: Tokens.labelAccent ? Font.AllUppercase : Font.MixedCase
                 anchors.verticalCenter: parent.verticalCenter

@@ -32,8 +32,8 @@ Item {
     // a segment never drops below minSeg (a one-glyph mode still reads as a
     // button) and pads its label by padSeg either side.
     readonly property int minSeg: 52
-    readonly property int padSeg: 18
-    readonly property int segH: 24
+    readonly property int padSeg: Tokens.controlsCrate ? 28 : 18
+    readonly property int segH: Tokens.controlsCrate ? 32 : 24
 
     implicitWidth: measure.implicitWidth
     implicitHeight: flow.implicitHeight
@@ -45,7 +45,7 @@ Item {
     Row {
         id: measure
         visible: false
-        spacing: Tokens.s1
+        spacing: Tokens.controlsCrate ? 8 : Tokens.s1
         Repeater {
             model: seg.options
             Item {
@@ -56,8 +56,8 @@ Item {
                 Text {
                     id: mlab
                     text: I18n.tr(parent.shown)
-                    font.family: Tokens.ui; font.pixelSize: 9
-                    font.weight: Font.Medium; font.letterSpacing: 0.6
+                    font.family: Tokens.controlsCrate ? Tokens.mono : Tokens.ui; font.pixelSize: Tokens.controlsCrate ? 12 : 9
+                    font.weight: Tokens.controlsCrate ? Font.Normal : Font.Medium; font.letterSpacing: Tokens.controlsCrate ? 12 * 0.04 : 0.6
                 }
             }
         }
@@ -66,7 +66,7 @@ Item {
     Flow {
         id: flow
         width: seg.width
-        spacing: Tokens.s1
+        spacing: Tokens.controlsCrate ? 8 : Tokens.s1
         Repeater {
             model: seg.options
             Rectangle {
@@ -76,20 +76,20 @@ Item {
                 width: Math.max(seg.minSeg, lab.implicitWidth + seg.padSeg)
                 height: seg.segH
                 radius: Tokens.radius
-                color: on ? Tokens.bone : (tap.pressed ? Tokens.tint16 : (sh.hovered ? Tokens.tint10 : "transparent"))
+                color: on ? (Tokens.controlsCrate ? Tokens.mark : Tokens.bone) : Tokens.controlsCrate ? "transparent" : (tap.pressed ? Tokens.tint16 : (sh.hovered ? Tokens.tint10 : "transparent"))
                 border.width: Tokens.border
-                border.color: sh.hovered && !on ? (Tokens.accentMarks ? Qt.rgba(Tokens.mark.r, Tokens.mark.g, Tokens.mark.b, 0.4) : Tokens.lineStrong) : Tokens.line
+                border.color: on && Tokens.controlsCrate ? Tokens.mark : sh.hovered && !on ? (Tokens.controlsCrate || Tokens.accentMarks ? Tokens.markHover : Tokens.lineStrong) : Tokens.line
                 Behavior on color { ColorAnimation { duration: Tokens.snap } }
 
                 Text {
                     id: lab
                     anchors.centerIn: parent
                     text: I18n.tr(parent.shown)
-                    color: parent.on ? Tokens.inkOnBone : (sh.hovered && Tokens.accentMarks ? Tokens.hoverInk : Tokens.inkDim)
-                    font.family: Tokens.ui
-                    font.pixelSize: 9
-                    font.weight: Font.Medium
-                    font.letterSpacing: 0.6
+                    color: parent.on ? (Tokens.controlsCrate ? Tokens.paper : Tokens.inkOnBone) : Tokens.controlsCrate ? (sh.hovered ? Tokens.ink : Tokens.inkSecondary) : (sh.hovered && Tokens.accentMarks ? Tokens.hoverInk : Tokens.inkDim)
+                    font.family: Tokens.controlsCrate ? Tokens.mono : Tokens.ui
+                    font.pixelSize: Tokens.controlsCrate ? 12 : 9
+                    font.weight: Tokens.controlsCrate ? Font.Normal : Font.Medium
+                    font.letterSpacing: Tokens.controlsCrate ? 12 * 0.04 : 0.6
                 }
                 HoverHandler { id: sh; cursorShape: Qt.PointingHandCursor }
                 TapHandler { id: tap; onTapped: seg.chose(parent.modelData) }

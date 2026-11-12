@@ -14,6 +14,7 @@ Item {
     implicitHeight: 24
 
     Rectangle {
+        visible: !Tokens.controlsCrate
         anchors.verticalCenter: parent.verticalCenter
         width: parent.width
         height: 4
@@ -23,6 +24,7 @@ Item {
         antialiasing: false
     }
     Rectangle {
+        visible: !Tokens.controlsCrate
         anchors.verticalCenter: parent.verticalCenter
         width: parent.width * slid.frac
         height: 4
@@ -30,6 +32,7 @@ Item {
         antialiasing: false
     }
     Rectangle {
+        visible: !Tokens.controlsCrate
         x: Math.min(parent.width - 6, Math.max(0, parent.width * slid.frac - 3))
         anchors.verticalCenter: parent.verticalCenter
         width: 6
@@ -37,11 +40,22 @@ Item {
         color: Tokens.mark
         antialiasing: false
     }
-    HoverHandler { id: hh; cursorShape: Qt.PointingHandCursor }
-    TapHandler { onTapped: (p) => slid.seat(p.position.x) }
+    HoverHandler { id: hh; enabled: !Tokens.controlsCrate; cursorShape: Qt.PointingHandCursor }
+    TapHandler { enabled: !Tokens.controlsCrate; onTapped: (p) => slid.seat(p.position.x) }
     DragHandler {
+        enabled: !Tokens.controlsCrate
         target: null
         onCentroidChanged: if (active) slid.seat(centroid.position.x)
+    }
+    // the crate-mark look: the same value and signal, drawn as a Beam
+    Beam {
+        visible: Tokens.controlsCrate
+        enabled: Tokens.controlsCrate
+        anchors.fill: parent
+        value: slid.value
+        from: slid.from
+        to: slid.to
+        onMoved: (v) => slid.modified(Math.round(v * 100) / 100)
     }
     function seat(x) {
         var f = Math.max(0, Math.min(1, x / width));

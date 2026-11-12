@@ -21,32 +21,16 @@ Flow {
         }
     }
 
-    spacing: 5
+    spacing: Tokens.controlsCrate ? 8 : 5
     height: childrenRect.height
 
     Repeater {
         model: chips.options
-        Rectangle {
+        Chip {
             required property string modelData
-            readonly property bool on: chips.current === modelData
-            width: cl.width + 18
-            height: 24
-            radius: Tokens.radius
-            color: on ? Tokens.bone : (tap.pressed ? Tokens.tint16 : (ch.hovered ? Tokens.tint10 : "transparent"))
-            border.width: Tokens.border
-            border.color: ch.hovered && !on ? (Tokens.accentMarks ? Qt.rgba(Tokens.mark.r, Tokens.mark.g, Tokens.mark.b, 0.4) : Tokens.lineStrong) : Tokens.line
-            Behavior on color { ColorAnimation { duration: Tokens.snap } }
-            Text {
-                id: cl
-                anchors.centerIn: parent
-                text: chips.labels[parent.modelData] !== undefined ? chips.labels[parent.modelData] : I18n.tr(parent.modelData)
-                color: parent.on ? Tokens.inkOnBone : (ch.hovered && Tokens.accentMarks ? Tokens.hoverInk : Tokens.inkDim)
-                font.family: Tokens.ui
-                font.pixelSize: 10
-                font.weight: Font.Medium
-            }
-            HoverHandler { id: ch; cursorShape: Qt.PointingHandCursor }
-            TapHandler { id: tap; onTapped: chips.chose(parent.modelData) }
+            text: chips.labels[modelData] !== undefined ? chips.labels[modelData] : I18n.tr(modelData)
+            on: chips.current === modelData
+            onClicked: chips.chose(modelData)
         }
     }
 }

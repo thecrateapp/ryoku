@@ -35,16 +35,16 @@ Row {
             height: 24
             radius: Tokens.radius
             opacity: spent ? 0.3 : 1
-            color: !spent && tap.pressed ? Tokens.tint16 : (bh.hovered && !spent ? Tokens.tint10 : "transparent")
-            border.width: Tokens.border
+            color: Tokens.controlsCrate ? "transparent" : !spent && tap.pressed ? Tokens.tint16 : (bh.hovered && !spent ? Tokens.tint10 : "transparent")
+            border.width: Tokens.controlsCrate ? 0 : Tokens.border
             border.color: bh.hovered && !spent ? Tokens.lineStrong : Tokens.line
             Behavior on color { ColorAnimation { duration: Tokens.snap } }
 
             Text {
                 anchors.centerIn: parent
                 text: parent.modelData
-                color: Tokens.inkDim
-                font.family: Tokens.ui
+                color: Tokens.controlsCrate ? (bh.hovered && !parent.spent ? Tokens.mark : Tokens.inkSecondary) : Tokens.inkDim
+                font.family: Tokens.controlsCrate ? Tokens.mono : Tokens.ui
                 font.pixelSize: 13
             }
             HoverHandler { id: bh; enabled: !parent.spent; cursorShape: Qt.PointingHandCursor }

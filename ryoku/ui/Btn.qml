@@ -30,16 +30,22 @@ Rectangle {
     }
 
     implicitWidth: lab.implicitWidth + (compact ? 20 : 30)
-    implicitHeight: compact ? 24 : 32
+    implicitHeight: compact ? 24 : (Tokens.controlsCrate ? 34 : 32)
     radius: Tokens.radius
     // 0.5, not 0.3: a control that cannot act must still be legible as itself
     // (the reader needs to see what is there and why it is inert), while the
     // dimming keeps it from reading as available.
     opacity: armed ? 1 : 0.5
-    color: outline ? (bh.hovered && armed ? Tokens.rowWash : "transparent")
+    // crate-mark (D4): a confirm action fills with the accent, a navigation
+    // action is an accent outline washing on hover, a plain one keeps a hairline
+    color: Tokens.controlsCrate ? (primary && armed ? (bh.hovered ? Tokens.beamTail : Tokens.sun)
+            : outline ? (bh.hovered && armed ? Qt.rgba(Tokens.sun.r, Tokens.sun.g, Tokens.sun.b, 0.10) : "transparent")
+            : (bh.hovered && armed ? Tokens.tint5 : "transparent"))
+        : outline ? (bh.hovered && armed ? Tokens.rowWash : "transparent")
         : (primary && armed ? Tokens.bone : (tap.pressed && armed ? Tokens.tint16 : (bh.hovered && armed ? Tokens.tint10 : "transparent")))
     border.width: Tokens.border
     border.color: activeFocus ? (Tokens.focusAccent ? Tokens.focus : Tokens.bone)
+        : Tokens.controlsCrate ? (primary || outline ? Tokens.sun : (bh.hovered && armed ? Tokens.markHover : Tokens.line))
         : (outline ? Tokens.mark : (primary && armed ? Tokens.bone : (bh.hovered && armed ? Tokens.lineStrong : Tokens.line)))
     Behavior on color { enabled: btn.motionEnabled; ColorAnimation { duration: Tokens.snap } }
     Behavior on opacity { enabled: btn.motionEnabled; NumberAnimation { duration: Tokens.snap } }
@@ -47,11 +53,12 @@ Rectangle {
     Text {
         id: lab
         anchors.centerIn: parent
-        color: btn.outline ? Tokens.mark : (btn.primary && btn.armed ? Tokens.inkOnBone : Tokens.ink)
-        font.family: Tokens.ui
-        font.pixelSize: btn.compact ? 10 : 11
-        font.weight: Font.Medium
-        font.letterSpacing: Tokens.trackLabel
+        color: Tokens.controlsCrate ? (btn.primary && btn.armed ? Tokens.paper : Tokens.ink)
+            : btn.outline ? Tokens.mark : (btn.primary && btn.armed ? Tokens.inkOnBone : Tokens.ink)
+        font.family: Tokens.controlsCrate ? Tokens.mono : Tokens.ui
+        font.pixelSize: btn.compact ? 10 : (Tokens.controlsCrate ? 12 : 11)
+        font.weight: Tokens.controlsCrate ? Font.Normal : Font.Medium
+        font.letterSpacing: Tokens.controlsCrate ? 12 * 0.04 : Tokens.trackLabel
         // Longer translations (Portuguese, German) must not be clipped when a
         // caller fixes the button narrower than the label wants: the text
         // elides instead. Unconstrained buttons still size to their text.

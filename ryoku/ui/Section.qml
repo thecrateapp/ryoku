@@ -24,6 +24,7 @@ Column {
         // the reference sheet's label vocabulary: a mono // lead, the tracked
         // title, the rule, and an end tick registering where the rule stops.
         Text {
+            visible: !Tokens.controlsCrate
             text: "//"
             color: Tokens.inkFaint
             font.family: Tokens.mono
@@ -31,12 +32,13 @@ Column {
             anchors.verticalCenter: parent.verticalCenter
         }
         Text {
-            text: sect.title + "_"
-            color: sect.titleColor
-            font.family: Tokens.ui
+            text: Tokens.controlsCrate ? sect.title : sect.title + "_"
+            color: Tokens.controlsCrate ? (Tokens.labelAccent ? Tokens.caption : Tokens.inkSubtle) : sect.titleColor
+            font.family: Tokens.controlsCrate ? Tokens.mono : Tokens.ui
             font.pixelSize: Tokens.fMicro
-            font.weight: Font.Medium
-            font.letterSpacing: Tokens.trackMark
+            font.weight: Tokens.controlsCrate ? Font.Normal : Font.Medium
+            font.letterSpacing: Tokens.controlsCrate ? Tokens.trackLabel : Tokens.trackMark
+            font.capitalization: Tokens.controlsCrate ? Font.AllUppercase : Font.MixedCase
             anchors.verticalCenter: parent.verticalCenter
         }
         Rectangle {

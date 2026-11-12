@@ -56,7 +56,7 @@ Row {
                     // tab key still matches for filtering/selection.
                     text: I18n.tr(plate.modelData).toUpperCase()
                     color: plate.on ? (Tokens.selectFill ? Tokens.inkOnBone : Tokens.mark)
-                        : (th.hovered && Tokens.accentMarks ? Tokens.hoverInk : Tokens.inkDim)
+                        : (th.hovered && Tokens.accentMarks ? Tokens.hoverInk : (Tokens.controlsCrate ? Tokens.inkSubtle : Tokens.inkDim))
                     font.family: Tokens.navCaps ? Tokens.navFont : Tokens.ui
                     font.pixelSize: 11
                     font.weight: Font.Medium
