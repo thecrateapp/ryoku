@@ -139,9 +139,10 @@ QQC.AbstractButton {
 
     background: Rectangle {
         radius: Tokens.radius * root.s * 1.5
-        color: root.down ? Tokens.tint16 : root.hovered ? Tokens.tint10 : root.subtle ? "transparent" : Tokens.tint5
-        border.width: Tokens.border
-        border.color: root.visualFocus ? Tokens.sun : Tokens.lineSoft
+        // crate-mark: no plate; the hold progress is a soft accent wash
+        color: Tokens.controlsCrate ? "transparent" : root.down ? Tokens.tint16 : root.hovered ? Tokens.tint10 : root.subtle ? "transparent" : Tokens.tint5
+        border.width: Tokens.controlsCrate ? (root.visualFocus ? Tokens.border : 0) : Tokens.border
+        border.color: Tokens.controlsCrate ? Tokens.focus : root.visualFocus ? Tokens.sun : Tokens.lineSoft
         clip: true
 
         Rectangle {
@@ -149,7 +150,7 @@ QQC.AbstractButton {
             anchors.top: parent.top
             anchors.bottom: parent.bottom
             width: parent.width * holdState.progress
-            color: Tokens.bone
+            color: Tokens.controlsCrate ? Qt.rgba(Tokens.mark.r, Tokens.mark.g, Tokens.mark.b, 0.22) : Tokens.bone
             opacity: holdState.fillOpacity
         }
 
