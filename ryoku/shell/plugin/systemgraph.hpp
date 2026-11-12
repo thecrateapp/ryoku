@@ -27,6 +27,12 @@ class SystemGraph : public QQuickItem {
     Q_PROPERTY(bool detailPoints READ detailPoints WRITE setDetailPoints NOTIFY detailPointsChanged)
     Q_PROPERTY(QColor gridColor READ gridColor WRITE setGridColor NOTIFY gridColorChanged)
     Q_PROPERTY(qreal lineWidth READ lineWidth WRITE setLineWidth NOTIFY lineWidthChanged)
+    // crate-mark options; the defaults keep the stock graph
+    Q_PROPERTY(qreal inset READ inset WRITE setInset NOTIFY insetChanged)
+    Q_PROPERTY(QStringList fillChannels READ fillChannels WRITE setFillChannels NOTIFY fillChannelsChanged)
+    Q_PROPERTY(bool heads READ heads WRITE setHeads NOTIFY headsChanged)
+    Q_PROPERTY(QColor haloColor READ haloColor WRITE setHaloColor NOTIFY haloColorChanged)
+    Q_PROPERTY(QString gridStyle READ gridStyle WRITE setGridStyle NOTIFY gridStyleChanged)
     Q_PROPERTY(int sampleCount READ sampleCount NOTIFY sampleCountChanged)
     Q_PROPERTY(int windowSeconds READ windowSeconds NOTIFY sampleCountChanged)
     Q_PROPERTY(qulonglong frameCount READ frameCount)
@@ -55,6 +61,16 @@ public:
     void setGridColor(const QColor& color);
     qreal lineWidth() const { return m_lineWidth; }
     void setLineWidth(qreal width);
+    qreal inset() const { return m_inset; }
+    void setInset(qreal inset);
+    const QStringList& fillChannels() const { return m_fillChannels; }
+    void setFillChannels(const QStringList& channels);
+    bool heads() const { return m_heads; }
+    void setHeads(bool heads);
+    QColor haloColor() const { return m_haloColor; }
+    void setHaloColor(const QColor& color);
+    const QString& gridStyle() const { return m_gridStyle; }
+    void setGridStyle(const QString& style);
     int sampleCount() const { return m_sampleCount; }
     int windowSeconds() const;
     qulonglong frameCount() const { return m_frameCount.load(std::memory_order_relaxed); }
@@ -70,6 +86,11 @@ signals:
     void detailPointsChanged();
     void gridColorChanged();
     void lineWidthChanged();
+    void insetChanged();
+    void fillChannelsChanged();
+    void headsChanged();
+    void haloColorChanged();
+    void gridStyleChanged();
     void sampleCountChanged();
 
 protected:
@@ -109,6 +130,11 @@ private:
     bool m_detailPoints = true;
     QColor m_gridColor = Qt::transparent;
     qreal m_lineWidth = 2.0;
+    qreal m_inset = -1.0;
+    QStringList m_fillChannels;
+    bool m_heads = false;
+    QColor m_haloColor = Qt::transparent;
+    QString m_gridStyle = QStringLiteral("cells");
     std::atomic<qulonglong> m_frameCount{0};
     float m_rateScale = 0.0f;
     qint64 m_lastFrameMs = 0;

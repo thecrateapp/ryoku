@@ -6,11 +6,11 @@ import Ryoku.Ui.Singletons
 ShellRoot {
     FloatingWindow {
         implicitWidth: 560
-        implicitHeight: 600
+        implicitHeight: 860
         color: Tokens.paper
         Rectangle {
             id: sheet
-            width: 560; height: 600
+            width: 560; height: 860
             color: Tokens.popover
             Column {
                 anchors.fill: parent
@@ -34,6 +34,20 @@ ShellRoot {
                 }
                 Section { width: parent.width; title: "Tabs" }
                 Tabs { options: ["Shortcuts", "Apps", "Custom"]; current: "Shortcuts" }
+                Section { width: parent.width; title: "MeterRow" }
+                Column { width: parent.width
+                    MeterRow { width: parent.width; label: "Memory"; valueText: "13.0 / 30.8 GiB"; fraction: 0.42 }
+                    MeterRow { width: parent.width; label: "GPU"; valueText: "0% · 49 °C"; fraction: 0.02 }
+                    MeterRow { width: parent.width; label: "Network"; valueText: "↓ 5.4 MB/s · ↑ 1.8 MB/s"; showMeter: false }
+                    MeterRow { width: parent.width; label: "Battery"; valueText: "89% · on battery"; fraction: 0.89 }
+                }
+                Section { width: parent.width; title: "LevelRow" }
+                Column { id: levels; width: parent.width; spacing: 6
+                    property real capW: Math.max(lv1.labelImplicitWidth, lv2.labelImplicitWidth, lv3.labelImplicitWidth)
+                    LevelRow { id: lv1; width: parent.width; labelWidth: levels.capW; label: "Volume"; glyph: "volume_up"; value: 0.77; muteEnabled: true }
+                    LevelRow { id: lv2; width: parent.width; labelWidth: levels.capW; label: "Brightness"; glyph: "brightness_high"; value: 1 }
+                    LevelRow { id: lv3; width: parent.width; labelWidth: levels.capW; label: "Mic"; glyph: "mic_off"; value: 0.4; muted: true; muteEnabled: true; expandable: false }
+                }
             }
         }
         Timer { interval: 1500; running: true; onTriggered: sheet.grabToImage(r => { r.saveToFile(Quickshell.env("KIT_OUT") || "/tmp/kit-gallery.png"); Qt.quit(); }) }

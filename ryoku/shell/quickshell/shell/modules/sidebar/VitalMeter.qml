@@ -19,6 +19,9 @@ Item {
     property int settle: Tokens.flap
     property color accent: Tokens.inkDim
     property Component meterContent: null
+    // crate-mark: a list of meters shares one caption width (see Kit.MeterRow)
+    property real labelWidth: 0
+    readonly property real labelImplicitWidth: crateRow.labelImplicitWidth
 
     implicitHeight: (Tokens.s5 + Tokens.s1) * s
     clip: true
@@ -27,84 +30,87 @@ Item {
                                                  ? Math.max(0, Math.min(1, progressValue / progressMaximum))
                                                  : 0
 
-    Text {
-        id: heading
-        anchors.left: parent.left
-        anchors.top: Tokens.controlsCrate ? undefined : parent.top
-        anchors.verticalCenter: Tokens.controlsCrate ? parent.verticalCenter : undefined
-        width: Tokens.controlsCrate ? 72 * root.s : Math.min(implicitWidth, Math.max(0, parent.width - Tokens.s7 * root.s))
-        text: root.label.toUpperCase()
-        textFormat: Text.PlainText
-        color: Tokens.controlsCrate ? Tokens.inkSubtle : Tokens.inkMuted
-        font.family: Tokens.mono
-        font.pixelSize: Tokens.fMicro * root.s
-        font.letterSpacing: Tokens.trackLabel * root.s
-        elide: Text.ElideRight
-    }
-
-    Text {
-        id: value
-        anchors.left: Tokens.controlsCrate ? undefined : heading.right
-        anchors.leftMargin: Tokens.s2 * root.s
-        anchors.right: parent.right
-        anchors.top: Tokens.controlsCrate ? undefined : parent.top
-        anchors.verticalCenter: Tokens.controlsCrate ? parent.verticalCenter : undefined
-        width: Tokens.controlsCrate ? Math.min(implicitWidth, parent.width * 0.5) : undefined
-        text: root.valueText
-        textFormat: Text.PlainText
-        color: Tokens.ink
-        font.family: Tokens.controlsCrate ? Tokens.mono : Tokens.ui
-        font.pixelSize: (Tokens.controlsCrate ? 12 : Tokens.fSmall) * root.s
-        font.weight: Tokens.controlsCrate ? Font.Normal : Font.DemiBold
-        elide: Text.ElideLeft
-        horizontalAlignment: Text.AlignRight
+    // crate-mark: the kit's meter row (caption, read-only Beam, mono value)
+    Kit.MeterRow {
+        id: crateRow
+        visible: Tokens.controlsCrate
+        anchors.fill: parent
+        s: root.s
+        labelWidth: root.labelWidth
+        label: root.label
+        valueText: root.valueText
+        fraction: root.progressRatio
+        showMeter: root.showProgress
+        meter: root.meterContent
     }
 
     Item {
-        id: meterSlot
-        // crate-mark: the meter sits inline between the caption and the value
-        anchors.left: Tokens.controlsCrate ? heading.right : parent.left
-        anchors.leftMargin: Tokens.controlsCrate ? Tokens.s2 * root.s : 0
-        anchors.right: Tokens.controlsCrate ? value.left : parent.right
-        anchors.rightMargin: Tokens.controlsCrate ? Tokens.s3 * root.s : 0
-        anchors.bottom: Tokens.controlsCrate ? undefined : parent.bottom
-        anchors.verticalCenter: Tokens.controlsCrate ? parent.verticalCenter : undefined
-        height: root.meterContent ? Tokens.s3 * root.s : (Tokens.controlsCrate ? 8 * root.s : Tokens.border * 3 * root.s)
-        clip: true
+        id: stock
+        visible: !Tokens.controlsCrate
+        anchors.fill: parent
 
-        Rectangle {
-            visible: root.showProgress && root.meterContent === null && !Tokens.controlsCrate
-            anchors.fill: parent
-            radius: Math.min(height / 2, Tokens.radius * root.s)
-            color: Tokens.inkFaint
+        Text {
+            id: heading
+            anchors.left: parent.left
+            anchors.top: parent.top
+            width: Math.min(implicitWidth, Math.max(0, parent.width - Tokens.s7 * root.s))
+            text: root.label.toUpperCase()
+            textFormat: Text.PlainText
+            color: Tokens.inkMuted
+            font.family: Tokens.mono
+            font.pixelSize: Tokens.fMicro * root.s
+            font.letterSpacing: Tokens.trackLabel * root.s
+            elide: Text.ElideRight
+        }
+
+        Text {
+            anchors.left: heading.right
+            anchors.leftMargin: Tokens.s2 * root.s
+            anchors.right: parent.right
+            anchors.top: parent.top
+            text: root.valueText
+            textFormat: Text.PlainText
+            color: Tokens.ink
+            font.family: Tokens.ui
+            font.pixelSize: Tokens.fSmall * root.s
+            font.weight: Font.DemiBold
+            elide: Text.ElideLeft
+            horizontalAlignment: Text.AlignRight
+        }
+
+        Item {
+            anchors.left: parent.left
+            anchors.right: parent.right
+            anchors.bottom: parent.bottom
+            height: root.meterContent ? Tokens.s3 * root.s : Tokens.border * 3 * root.s
+            clip: true
 
             Rectangle {
-                anchors.left: parent.left
-                anchors.top: parent.top
-                anchors.bottom: parent.bottom
-                width: parent.width * root.progressRatio
-                radius: parent.radius
-                color: root.accent
+                visible: root.showProgress && root.meterContent === null
+                anchors.fill: parent
+                radius: Math.min(height / 2, Tokens.radius * root.s)
+                color: Tokens.inkFaint
 
-                Behavior on width {
-                    enabled: !Tokens.reduceMotion && !Motion.reduce
-                    NumberAnimation { duration: root.settle; easing.type: Easing.Linear }
+                Rectangle {
+                    anchors.left: parent.left
+                    anchors.top: parent.top
+                    anchors.bottom: parent.bottom
+                    width: parent.width * root.progressRatio
+                    radius: parent.radius
+                    color: root.accent
+
+                    Behavior on width {
+                        enabled: !Tokens.reduceMotion && !Motion.reduce
+                        NumberAnimation { duration: root.settle; easing.type: Easing.Linear }
+                    }
                 }
             }
-        }
 
-        // crate-mark: the meter is a non-interactive Beam
-        Kit.Beam {
-            visible: root.showProgress && root.meterContent === null && Tokens.controlsCrate
-            anchors.fill: parent
-            interactive: false
-            value: root.progressRatio
-        }
-
-        Loader {
-            anchors.fill: parent
-            active: root.visible && root.meterContent !== null
-            sourceComponent: root.meterContent
+            Loader {
+                anchors.fill: parent
+                active: root.visible && stock.visible && root.meterContent !== null
+                sourceComponent: root.meterContent
+            }
         }
     }
 

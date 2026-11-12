@@ -276,7 +276,7 @@ Item {
             id: cpuZone
             visible: root.showCpu || root.showTemperature
             width: visible ? (Tokens.controlsCrate ? 120 : Tokens.s7 * 3 + Tokens.s2) * root.s : 0
-            height: Tokens.controlsCrate ? 96 * root.s : body.height
+            height: Tokens.controlsCrate ? 106 * root.s : body.height
             clip: true
 
             Text {
@@ -284,8 +284,10 @@ Item {
                 visible: root.showCpu
                 anchors.left: parent.left
                 anchors.right: parent.right
-                anchors.top: parent.top
-                anchors.topMargin: (Tokens.controlsCrate ? 32 : 0) * root.s
+                // crate-mark: the CPU reading sits on the graph's baseline
+                anchors.top: Tokens.controlsCrate ? undefined : parent.top
+                anchors.bottom: Tokens.controlsCrate ? cpuReading.top : undefined
+                anchors.bottomMargin: 4 * root.s
                 text: I18n.tr("CPU")
                 textFormat: Text.PlainText
                 color: Tokens.controlsCrate ? Tokens.inkSubtle : Tokens.inkMuted
@@ -300,9 +302,10 @@ Item {
                 visible: root.showCpu || root.showTemperature
                 anchors.left: parent.left
                 anchors.right: parent.right
-                anchors.top: cpuHeading.bottom
+                anchors.top: Tokens.controlsCrate ? undefined : cpuHeading.bottom
                 anchors.topMargin: Tokens.s2 * root.s
-                height: cpuPercent.implicitHeight + cpuFrequency.implicitHeight
+                anchors.bottom: Tokens.controlsCrate ? parent.bottom : undefined
+                height: cpuPercent.implicitHeight + cpuFrequency.implicitHeight + cpuFrequency.anchors.topMargin
 
                 Text {
                     id: cpuPercent
@@ -337,6 +340,7 @@ Item {
                     anchors.right: temperaturePill.visible ? temperaturePill.left : parent.right
                     anchors.rightMargin: temperaturePill.visible ? Tokens.s2 * root.s : 0
                     anchors.top: cpuPercent.bottom
+                    anchors.topMargin: (Tokens.controlsCrate ? 4 : 0) * root.s
                     text: (displayed.cpuFrequency > 0
                           ? I18n.tr("%1 GHz").arg(displayed.cpuFrequency.toFixed(2))
                           : I18n.tr("—"))
@@ -408,7 +412,7 @@ Item {
             id: graphZone
             visible: root.showGraph
             width: visible ? (Tokens.controlsCrate ? Math.max(0, body.width - cpuZone.width - (cpuZone.visible ? body.spacing : 0)) : (Tokens.s7 * 4 + Tokens.s5) * root.s) : 0
-            height: Tokens.controlsCrate ? 96 * root.s : body.height
+            height: Tokens.controlsCrate ? 106 * root.s : body.height
             clip: true
 
             readonly property bool inlineLegend: activityLabel.implicitWidth
@@ -467,21 +471,11 @@ Item {
                 }
             }
 
-            Rectangle {
-                visible: Tokens.controlsCrate
-                anchors.left: parent.left
-                anchors.right: parent.right
-                anchors.top: activityLabel.bottom
-                anchors.topMargin: Tokens.s2 * root.s
-                height: 1
-                color: Tokens.line
-            }
-
             Loader {
                 anchors.left: parent.left
                 anchors.right: parent.right
                 anchors.top: activityLabel.bottom
-                anchors.topMargin: Tokens.s2 * root.s
+                anchors.topMargin: (Tokens.controlsCrate ? 6 : Tokens.s2) * root.s
                 anchors.bottom: graphZone.inlineLegend ? parent.bottom : graphLegend.top
                 anchors.bottomMargin: graphZone.inlineLegend ? 0 : Tokens.s2 * root.s
                 active: root.showGraph && root.active
@@ -492,7 +486,7 @@ Item {
                     channels: ["cpu", "memory", "gpu"]
                     colors: [palette.cpu, palette.memory, palette.gpu]
                     fill: true
-                    showGrid: !Tokens.controlsCrate
+                    showGrid: true
                     detailPoints: false
                     lineWidth: Tokens.border * root.s
                 }
@@ -514,10 +508,19 @@ Item {
             clip: true
 
             readonly property real rowHeight: visibleMeterCount > 0 ? height / visibleMeterCount : 0
+            // crate-mark: every meter's beam starts after the widest caption
+            readonly property real captionWidth: {
+                let widest = 0;
+                for (const child of children)
+                    if (child.visible && child.labelImplicitWidth !== undefined)
+                        widest = Math.max(widest, child.labelImplicitWidth);
+                return widest;
+            }
 
             VitalMeter {
                 width: parent.width
                 height: meters.rowHeight
+                labelWidth: meters.captionWidth
                 visible: root.showMemory && root.monitor.memoryAvailable
                 s: root.s
                 settle: root.monitor.samplePeriodMs
@@ -539,6 +542,7 @@ Item {
             VitalMeter {
                 width: parent.width
                 height: meters.rowHeight
+                labelWidth: meters.captionWidth
                 visible: root.showGpu && root.monitor.gpuAvailable
                 s: root.s
                 settle: root.monitor.samplePeriodMs
@@ -562,6 +566,7 @@ Item {
                 id: networkMeter
                 width: parent.width
                 height: meters.rowHeight
+                labelWidth: meters.captionWidth
                 visible: root.showNetwork && root.monitor.networkAvailable
                 s: root.s
                 settle: root.monitor.samplePeriodMs
@@ -591,6 +596,7 @@ Item {
             VitalMeter {
                 width: parent.width
                 height: meters.rowHeight
+                labelWidth: meters.captionWidth
                 visible: root.showDisk && root.monitor.diskAvailable && root.monitor.storageTotalGiB > 0
                 s: root.s
                 settle: root.monitor.samplePeriodMs
@@ -613,6 +619,7 @@ Item {
             VitalMeter {
                 width: parent.width
                 height: meters.rowHeight
+                labelWidth: meters.captionWidth
                 visible: root.showBattery && root.monitor.batteryAvailable
                 s: root.s
                 settle: root.monitor.samplePeriodMs

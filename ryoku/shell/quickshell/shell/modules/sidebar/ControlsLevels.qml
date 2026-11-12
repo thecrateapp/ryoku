@@ -129,12 +129,15 @@ Item {
         id: stack
         width: parent.width
         spacing: (Tokens.controlsCrate ? 6 : Tokens.s1) * root.s
+        // crate-mark: both beams start after the wider caption
+        readonly property real captionWidth: Math.max(volume.labelImplicitWidth, brightness.labelImplicitWidth)
 
         LevelSlider {
             id: volume
             visible: root.showVolume
             width: parent.width
             s: root.s
+            labelWidth: stack.captionWidth
             label: I18n.tr("Volume")
             glyph: root.volumeMuted ? "volume_off" : value <= 0 ? "volume_mute" : value < 0.5 ? "volume_down" : "volume_up"
             value: root.volumeValue
@@ -184,6 +187,7 @@ Item {
             visible: root.showBrightness
             width: parent.width
             s: root.s
+            labelWidth: stack.captionWidth
             label: I18n.tr("Brightness")
             glyph: value < 0.34 ? "brightness_low" : value < 0.67 ? "brightness_medium" : "brightness_high"
             value: root.brightnessValue

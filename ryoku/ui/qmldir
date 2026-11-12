@@ -58,3 +58,6 @@ IconButton 1.0 IconButton.qml
 TrackLabel 1.0 TrackLabel.qml
 Divider 1.0 Divider.qml
 PageHeader 1.0 PageHeader.qml
+MeterRow 1.0 MeterRow.qml
+LevelRow 1.0 LevelRow.qml
+RowsMath 1.0 lib/rows.js

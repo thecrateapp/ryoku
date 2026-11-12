@@ -13,12 +13,15 @@ Item {
     property string glyph: ""
     property string glyphFont: Tokens.ui
     property bool on: false
+    // alert ink, for a state that needs attention (a muted channel)
+    property bool alert: false
     property int iconSize: 18
     signal clicked()
 
     readonly property bool crate: Tokens.controlsCrate
     readonly property bool hot: hover.hovered && ib.enabled
-    readonly property color ink: ib.crate ? (ib.on || ib.hot ? Tokens.mark : Tokens.inkSecondary)
+    readonly property color ink: ib.alert ? Tokens.alert
+        : ib.crate ? (ib.on || ib.hot ? Tokens.mark : Tokens.inkSecondary)
         : (ib.on ? Tokens.inkOnBone : Tokens.inkDim)
 
     implicitWidth: ib.crate ? 44 : 26

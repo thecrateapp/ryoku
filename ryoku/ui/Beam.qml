@@ -1,4 +1,5 @@
 import QtQuick
+import QtQuick.Effects
 import "Singletons"
 import "lib/beam.js" as BeamMath
 
@@ -55,7 +56,8 @@ Item {
     // track
     Rectangle { y: beam.cy; width: beam.width; height: 1; color: Tokens.line }
 
-    // trail: a soft 8 px glow behind the fill
+    // trail: a soft 8 px glow behind the fill, blurred 2 px so it reads as light,
+    // not as a capsule; it ends between the tail and the thumb
     Rectangle {
         visible: !beam.indeterminate && beam.mainFrac > 0
         x: 0
@@ -69,7 +71,16 @@ Item {
             GradientStop { position: 0.0; color: "transparent" }
             GradientStop { position: 0.44; color: Qt.rgba(Tokens.sun.r, Tokens.sun.g, Tokens.sun.b, 0.08) }
             GradientStop { position: 0.82; color: Qt.rgba(Tokens.sun.r, Tokens.sun.g, Tokens.sun.b, 0.28) }
-            GradientStop { position: 1.0; color: Tokens.thumb }
+            GradientStop { position: 1.0; color: Qt.rgba((Tokens.beamTail.r + Tokens.thumb.r) / 2,
+                                                         (Tokens.beamTail.g + Tokens.thumb.g) / 2,
+                                                         (Tokens.beamTail.b + Tokens.thumb.b) / 2, 1) }
+        }
+        layer.enabled: visible
+        layer.effect: MultiEffect {
+            blurEnabled: true
+            blurMax: 8
+            blur: 0.5
+            autoPaddingEnabled: true
         }
     }
 

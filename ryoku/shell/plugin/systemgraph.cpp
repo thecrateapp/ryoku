@@ -1,4 +1,5 @@
 #include "systemgraph.hpp"
+#include "systemgraphlayout.hpp"
 
 #include <QEvent>
 #include <QQuickWindow>
@@ -26,6 +27,9 @@ constexpr int FillVerticesPerStep = 6;
 constexpr int LineVerticesPerStep = 18;
 constexpr int PointSegments = 12;
 constexpr int PointVertices = PointSegments * 3;
+// a head is two antialiased discs (halo and dot): a fan plus a fringe ring each
+constexpr int HeadSegments = 16;
+constexpr int HeadVertices = HeadSegments * 9 * 2;
 constexpr int GridLines = 7;
 constexpr int GridVertices = GridLines * 6;
 // The newest sample eases in over exactly one sample period, so the curve's
@@ -92,7 +96,7 @@ struct GraphNode final : QSGNode {
         while (fills.size() < count) {
             auto* fill = new ColorNode(FillVerticesPerStep);
             auto* line = new ColorNode(LineVerticesPerStep);
-            auto* point = new ColorNode(PointVertices);
+            auto* point = new ColorNode(std::max(PointVertices, HeadVertices));
             fillGroup->appendChildNode(fill);
             lineGroup->appendChildNode(line);
             pointGroup->appendChildNode(point);
@@ -124,6 +128,8 @@ struct GraphNode final : QSGNode {
     float gridHeight = -1.0f;
     QColor gridColor;
     bool gridVisible = false;
+    QString gridStyle;
+    float gridInset = -2.0f;
 };
 
 struct Point {
@@ -234,6 +240,48 @@ void buildGrid(ColorNode* node, float width, float height, const QColor& color) 
         const float y = height * fraction;
         appendQuad(vertices, offset, {0.0f, y - thickness}, {width, y - thickness},
                    {width, y + thickness}, {0.0f, y + thickness}, grid, grid, grid, grid);
+    }
+    clearRemainder(node, offset);
+}
+
+void buildRules(ColorNode* node, float width, const systemgraph::PlotArea& area, const QColor& color) {
+    Vertex* vertices = node->buffer->vertexDataAsColoredPoint2D();
+    int offset = 0;
+    const Rgba rule = premultiplied(color, 1.0f);
+    for (float y : systemgraph::ruleYs(area)) {
+        const float top = std::round(y) - 0.5f;
+        appendQuad(vertices, offset, {0.0f, top}, {width, top}, {width, top + 1.0f}, {0.0f, top + 1.0f},
+                   rule, rule, rule, rule);
+    }
+    clearRemainder(node, offset);
+}
+
+void appendDisc(Vertex* vertices, int& offset, const Point& center, float radius, const Rgba& solid,
+                const Rgba& clear) {
+    constexpr float Tau = 6.2831853071795864769f;
+    const float inner = std::max(0.0f, radius - 0.6f);
+    const float outer = radius + 0.6f;
+    for (int segment = 0; segment < HeadSegments; ++segment) {
+        const float a = Tau * static_cast<float>(segment) / static_cast<float>(HeadSegments);
+        const float b = Tau * static_cast<float>(segment + 1) / static_cast<float>(HeadSegments);
+        const Point ia{center.x + std::cos(a) * inner, center.y + std::sin(a) * inner};
+        const Point ib{center.x + std::cos(b) * inner, center.y + std::sin(b) * inner};
+        const Point oa{center.x + std::cos(a) * outer, center.y + std::sin(a) * outer};
+        const Point ob{center.x + std::cos(b) * outer, center.y + std::sin(b) * outer};
+        setVertex(vertices[offset++], center, solid);
+        setVertex(vertices[offset++], ia, solid);
+        setVertex(vertices[offset++], ib, solid);
+        appendQuad(vertices, offset, ia, ib, ob, oa, solid, solid, clear, clear);
+    }
+}
+
+// crate-mark head: a 2 px dot in the trace colour inside a 4 px halo
+void buildHead(ColorNode* node, const Point& center, const QColor& dot, const QColor& halo, bool visible) {
+    Vertex* vertices = node->buffer->vertexDataAsColoredPoint2D();
+    int offset = 0;
+    if (visible) {
+        appendDisc(vertices, offset, center, 4.0f, premultiplied(halo, 1.0f), premultiplied(halo, 0.0f));
+        appendDisc(vertices, offset, center, 2.0f, premultiplied(dot, 1.0f), premultiplied(dot, 0.0f));
     }
     clearRemainder(node, offset);
 }
@@ -381,6 +429,48 @@ void SystemGraph::setLineWidth(qreal width) {
     markVisualDirty();
 }
 
+void SystemGraph::setInset(qreal inset) {
+    inset = inset < 0.0 ? -1.0 : std::min(inset, 64.0);
+    if (qFuzzyCompare(m_inset + 2.0, inset + 2.0))
+        return;
+    m_inset = inset;
+    emit insetChanged();
+    markVisualDirty();
+}
+
+void SystemGraph::setFillChannels(const QStringList& channels) {
+    if (m_fillChannels == channels)
+        return;
+    m_fillChannels = channels;
+    emit fillChannelsChanged();
+    markVisualDirty();
+}
+
+void SystemGraph::setHeads(bool heads) {
+    if (m_heads == heads)
+        return;
+    m_heads = heads;
+    emit headsChanged();
+    markVisualDirty();
+}
+
+void SystemGraph::setHaloColor(const QColor& color) {
+    if (m_haloColor == color)
+        return;
+    m_haloColor = color;
+    emit haloColorChanged();
+    markVisualDirty();
+}
+
+void SystemGraph::setGridStyle(const QString& style) {
+    const QString next = style == QStringLiteral("rules") ? style : QStringLiteral("cells");
+    if (m_gridStyle == next)
+        return;
+    m_gridStyle = next;
+    emit gridStyleChanged();
+    markVisualDirty();
+}
+
 int SystemGraph::windowSeconds() const {
     return SystemMonitor::WindowSeconds;
 }
@@ -501,16 +591,27 @@ QSGNode* SystemGraph::updatePaintNode(QSGNode* oldNode, UpdatePaintNodeData*) {
 
     const float graphWidth = static_cast<float>(width());
     const float graphHeight = static_cast<float>(height());
+    const float autoMargin = std::max(1.5f, static_cast<float>(m_lineWidth));
+    const bool rules = m_gridStyle == QStringLiteral("rules");
     if (root->gridWidth != graphWidth || root->gridHeight != graphHeight || root->gridColor != m_gridColor
-        || root->gridVisible != m_showGrid) {
-        if (m_showGrid)
+        || root->gridVisible != m_showGrid || root->gridStyle != m_gridStyle
+        || root->gridInset != static_cast<float>(m_inset)) {
+        if (m_showGrid && rules) {
+            root->grid->ensureCapacity(3 * 6);
+            buildRules(root->grid, graphWidth,
+                       systemgraph::plotArea(graphWidth, graphHeight, static_cast<float>(m_inset), autoMargin),
+                       m_gridColor);
+        } else if (m_showGrid) {
             buildGrid(root->grid, graphWidth, graphHeight, m_gridColor);
-        else
+        } else {
             root->grid->clear();
+        }
         root->gridWidth = graphWidth;
         root->gridHeight = graphHeight;
         root->gridColor = m_gridColor;
         root->gridVisible = m_showGrid;
+        root->gridStyle = m_gridStyle;
+        root->gridInset = static_cast<float>(m_inset);
     }
 
     const float plotWindowMilliseconds = static_cast<float>(windowSeconds() * 1000);
@@ -550,9 +651,10 @@ QSGNode* SystemGraph::updatePaintNode(QSGNode* oldNode, UpdatePaintNodeData*) {
         const Rgba fillTop = premultiplied(color, 0.15f);
         const Rgba fillBottom = premultiplied(color, 0.015f);
         const float pointRadius = std::max(3.0f, static_cast<float>(m_lineWidth) * 2.1f);
-        const float margin = m_detailPoints ? pointRadius : std::max(1.5f, static_cast<float>(m_lineWidth));
-        const float plotWidth = std::max(0.0f, graphWidth - margin * 2.0f);
-        const float plotHeight = std::max(0.0f, graphHeight - margin * 2.0f);
+        const float margin = m_detailPoints ? pointRadius : autoMargin;
+        const systemgraph::PlotArea area
+            = systemgraph::plotArea(graphWidth, graphHeight, static_cast<float>(m_inset), margin);
+        const bool fillTrace = m_fill && (m_fillChannels.isEmpty() || m_fillChannels.contains(trace.channel));
         ColorNode* fillNode = root->fills[traceIndex];
         ColorNode* lineNode = root->lines[traceIndex];
         fillNode->ensureCapacity(steps * FillVerticesPerStep);
@@ -583,8 +685,8 @@ QSGNode* SystemGraph::updatePaintNode(QSGNode* oldNode, UpdatePaintNodeData*) {
         };
         const auto pointFor = [&](int index, float value) {
             const qint64 age = std::max<qint64>(0, now - m_sampleTimes[index]);
-            const float x = margin + plotWidth * (1.0f - static_cast<float>(age) / plotWindowMilliseconds);
-            const float y = margin + plotHeight * (1.0f - std::clamp(value, 0.0f, 100.0f) / 100.0f);
+            const float x = area.left + area.width * (1.0f - static_cast<float>(age) / plotWindowMilliseconds);
+            const float y = area.top + area.height * (1.0f - std::clamp(value, 0.0f, 100.0f) / 100.0f);
             return Point{x, y};
         };
 
@@ -611,15 +713,16 @@ QSGNode* SystemGraph::updatePaintNode(QSGNode* oldNode, UpdatePaintNodeData*) {
                 Point current;
                 current.x = p1.x + (p2.x - p1.x) * t;
                 const float value = std::clamp(catmullRom(p0Value, p1Value, p2Value, p3Value, t), 0.0f, 100.0f);
-                current.y = margin + plotHeight * (1.0f - value / 100.0f);
+                current.y = area.top + area.height * (1.0f - value / 100.0f);
                 if (current.x > 0.0f) {
                     Point from = previous;
                     if (from.x < 0.0f) {
                         const float crossing = -previous.x / (current.x - previous.x);
                         from = Point{0.0f, previous.y + (current.y - previous.y) * crossing};
                     }
-                    if (m_fill)
-                        appendFill(fillVertices, fillOffset, from, current, graphHeight - margin, fillTop, fillBottom);
+                    if (fillTrace)
+                        appendFill(fillVertices, fillOffset, from, current, systemgraph::baseline(area), fillTop,
+                                   fillBottom);
                     appendAntialiasedLine(lineVertices, lineOffset, from, current, static_cast<float>(m_lineWidth),
                                           lineTransparent, lineSolid);
                 }
@@ -631,14 +734,17 @@ QSGNode* SystemGraph::updatePaintNode(QSGNode* oldNode, UpdatePaintNodeData*) {
 
         Point newest;
         bool newestVisible = false;
-        if (m_detailPoints && m_sampleCount > 0) {
+        if ((m_detailPoints || m_heads) && m_sampleCount > 0) {
             const float newestValue = valueAt(m_sampleCount - 1);
             if (std::isfinite(newestValue)) {
                 newest = pointFor(m_sampleCount - 1, newestValue);
                 newestVisible = newest.x >= 0.0f && newest.x <= graphWidth;
             }
         }
-        buildPoint(root->points[traceIndex], newest, pointRadius, color, newestVisible);
+        if (m_heads)
+            buildHead(root->points[traceIndex], newest, color, m_haloColor, newestVisible);
+        else
+            buildPoint(root->points[traceIndex], newest, pointRadius, color, newestVisible);
     }
 
     return root;
