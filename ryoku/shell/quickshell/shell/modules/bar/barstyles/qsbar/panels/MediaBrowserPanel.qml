@@ -341,7 +341,7 @@ PanelWindow {
         anchors.bottomMargin: 22
         opacity: panel.reveal
         text: panel.isVideos ? I18n.tr("VIDEOS") : I18n.tr("SCREENSHOTS")
-        color: root.sumiHi
+        color: root.sectionInk
         font.family: root.mono; font.pixelSize: 12; font.letterSpacing: 3; font.weight: Font.Medium
         horizontalAlignment: Text.AlignHCenter
     }

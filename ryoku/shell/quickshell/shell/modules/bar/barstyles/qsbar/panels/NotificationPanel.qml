@@ -302,7 +302,7 @@ PanelWindow {
 
                                 UiText {
                                     text: modelData.appName || "App"
-                                    color: root.sumiHi
+                                    color: root.sectionInk
                                     font.family: root.mono
                                     font.pixelSize: 10
                                     font.letterSpacing: 0.5

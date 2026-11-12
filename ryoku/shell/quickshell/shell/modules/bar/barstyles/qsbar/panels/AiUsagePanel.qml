@@ -203,7 +203,7 @@ PanelWindow {
             spacing: 5
             UiText {
                 text: I18n.tr("LAST 7 DAYS · %1 TOKENS").arg(aiPanel.root.aiTokenCount(aiPanel.root.aiRecentTotal(pcard.recent)))
-                color: aiPanel.root.sumiHi
+                color: aiPanel.root.sectionInk
                 font.family: aiPanel.root.mono; font.pixelSize: 10; font.letterSpacing: 1; font.weight: Font.Medium
             }
             Row {
@@ -485,7 +485,7 @@ PanelWindow {
                     UiText {
                         anchors.left: parent.left; anchors.verticalCenter: parent.verticalCenter
                         text: I18n.tr("MODELS")
-                        color: root.sumiHi
+                        color: root.sectionInk
                         font.family: root.mono; font.pixelSize: 10; font.letterSpacing: 1
                     }
                     UiText {

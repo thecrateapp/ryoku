@@ -205,7 +205,7 @@ PanelWindow {
                     anchors.left: parent.left
                     anchors.verticalCenter: parent.verticalCenter
                     text: I18n.tr("BAR SENSOR")
-                    color: root.sumiHi
+                    color: root.sectionInk
                     font.family: root.mono
                     font.pixelSize: 9
                     font.letterSpacing: 1

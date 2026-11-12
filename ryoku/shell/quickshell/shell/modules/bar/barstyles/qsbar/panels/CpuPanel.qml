@@ -138,7 +138,7 @@ PanelWindow {
                     anchors.rightMargin: 16
                     anchors.verticalCenter: parent.verticalCenter
                     text: I18n.tr("KERNEL %1").arg(root.kernelRelease)
-                    color: root.sumiHi
+                    color: root.sectionInk
                     font.family: root.mono
                     font.pixelSize: 9
                 }
@@ -195,7 +195,7 @@ PanelWindow {
                     anchors.left: parent.left
                     anchors.verticalCenter: parent.verticalCenter
                     text: I18n.tr("USAGE")
-                    color: root.sumiHi
+                    color: root.sectionInk
                     font.family: root.mono
                     font.pixelSize: 11
                     font.letterSpacing: 1
@@ -259,7 +259,7 @@ PanelWindow {
                     anchors.left: parent.left
                     anchors.verticalCenter: parent.verticalCenter
                     text: I18n.tr("TOP PROCESSES")
-                    color: root.sumiHi
+                    color: root.sectionInk
                     font.family: root.mono
                     font.pixelSize: 9
                     font.letterSpacing: 1

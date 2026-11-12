@@ -62,6 +62,8 @@ Item {
     readonly property color indigo:  color04
     readonly property color sealRaw: color01
     readonly property color sumiHi:  Qt.rgba(sumi.r*0.45 + ink.r*0.55, sumi.g*0.45 + ink.g*0.55, sumi.b*0.45 + ink.b*0.55, 1.0)  // lifted section-header text
+    // section captions (USAGE, MODELS): the theme style's caption ink, else sumiHi
+    readonly property color sectionInk: Tokens.labelAccent ? Tokens.caption : sumiHi
     property color green:   "#8a9a73"   // gate "OK" verdict
     property color accentHint: sealRaw    // filled by palette; default = same as red
     readonly property color foregroundSoft: Qt.rgba(

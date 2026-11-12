@@ -565,7 +565,7 @@ PanelWindow {
                 Row {
                     width: parent.width
                     visible: netPanel.mode === "wifi"
-                    UiText { text: I18n.tr("SSID"); color: root.sumiHi; font.family: root.mono; font.pixelSize: 11; width: parent.width * 0.4 }
+                    UiText { text: I18n.tr("SSID"); color: root.sectionInk; font.family: root.mono; font.pixelSize: 11; width: parent.width * 0.4 }
                     UiText { text: netPanel.ssid; color: root.ink; font.family: root.mono; font.pixelSize: 11; width: parent.width * 0.6; elide: Text.ElideRight }
                 }
                 Row {
@@ -616,7 +616,7 @@ PanelWindow {
                         anchors.left: parent.left
                         anchors.verticalCenter: parent.verticalCenter
                         text: I18n.tr("SPEED TEST")
-                        color: root.sumiHi
+                        color: root.sectionInk
                         font.family: root.mono
                         font.pixelSize: 10
                         font.letterSpacing: 1
@@ -853,7 +853,7 @@ PanelWindow {
                 UiText {
                     anchors.left: parent.left; anchors.verticalCenter: parent.verticalCenter
                     text: netPanel.savedOnly ? I18n.tr("SAVED NETWORKS") : I18n.tr("AVAILABLE NETWORKS")
-                    color: root.sumiHi; font.family: root.mono; font.pixelSize: 10; font.letterSpacing: 1
+                    color: root.sectionInk; font.family: root.mono; font.pixelSize: 10; font.letterSpacing: 1
                 }
                 UiText {
                     anchors.right: parent.right; anchors.verticalCenter: parent.verticalCenter

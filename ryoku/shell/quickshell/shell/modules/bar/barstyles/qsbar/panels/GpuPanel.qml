@@ -159,7 +159,7 @@ PanelWindow {
                     anchors.left: parent.left
                     anchors.verticalCenter: parent.verticalCenter
                     text: I18n.tr("USAGE")
-                    color: root.sumiHi
+                    color: root.sectionInk
                     font.family: root.mono
                     font.pixelSize: 11
                     font.letterSpacing: 1

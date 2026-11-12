@@ -466,7 +466,7 @@ PanelWindow {
         anchors.bottomMargin: 22
         opacity: panel.reveal
         text: panel.isThemeMode ? I18n.tr("THEME") : I18n.tr("WALLPAPER")
-        color: root.sumiHi
+        color: root.sectionInk
         font.family: root.mono; font.pixelSize: 12; font.letterSpacing: 3; font.weight: Font.Medium
         horizontalAlignment: Text.AlignHCenter
     }

@@ -112,7 +112,7 @@ PanelWindow {
                     anchors.verticalCenter: parent.verticalCenter
                     text: (trayPanel.hiddenCount === 1 ? I18n.tr("%1 APP").arg(trayPanel.hiddenCount) : I18n.tr("%1 APPS").arg(trayPanel.hiddenCount))
                         + (trayPanel.attentionCount > 0 ? "  ·  " + I18n.tr("%1 ATTENTION").arg(trayPanel.attentionCount) : "")
-                    color: trayPanel.attentionCount > 0 ? root.seal : root.sumiHi
+                    color: trayPanel.attentionCount > 0 ? root.seal : root.sectionInk
                     font.family: root.mono
                     font.pixelSize: 10
                 }

@@ -170,7 +170,7 @@ PanelWindow {
             // ── volume bar ──
             UiText {
                 text: I18n.tr("OUTPUT")
-                color: root.sumiHi
+                color: root.sectionInk
                 font.family: root.mono; font.pixelSize: 10; font.letterSpacing: 1
             }
 
@@ -302,7 +302,7 @@ PanelWindow {
             // ── output device switcher ──
             UiText {
                 text: I18n.tr("OUTPUT DEVICE")
-                color: root.sumiHi
+                color: root.sectionInk
                 font.family: root.mono; font.pixelSize: 10; font.letterSpacing: 1
             }
             Column {
@@ -388,7 +388,7 @@ PanelWindow {
             UiText {
                 visible: Audio.streams.length > 0
                 text: I18n.tr("APPS")
-                color: root.sumiHi
+                color: root.sectionInk
                 font.family: root.mono; font.pixelSize: 10; font.letterSpacing: 1
             }
             Column {
@@ -525,7 +525,7 @@ PanelWindow {
             // ── mic section ──
             UiText {
                 text: I18n.tr("INPUT")
-                color: root.sumiHi
+                color: root.sectionInk
                 font.family: root.mono; font.pixelSize: 10; font.letterSpacing: 1
             }
 
