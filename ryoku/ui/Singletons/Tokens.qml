@@ -110,6 +110,10 @@ Singleton {
     property bool focusAccent: false    // focused fields edge in sun instead of ink
     property bool labelAccent: false    // section captions in sunHi instead of faint ink
     property bool selectFill: true      // a selected row also fills
+    // true while the active theme carries a style: surfaces with a palette of
+    // their own (overview, launcher, desktop menu) bridge to Tokens only then, so
+    // a theme without one keeps their look
+    property bool styled: false
     property int displayWeight: Font.Normal
     readonly property color mark: accentMarks ? sunHi : ink
     readonly property color hoverInk: accentMarks ? sunHi : ink
@@ -311,6 +315,7 @@ Singleton {
         var lineAlpha = 0.26;
         var displayFont = "Fraunces";
         var navFontValue = "";
+        var styledValue = false;
         var displayWeight = Font.Normal;
         var flags = { navCaps: false, accentMarks: false, focusAccent: false, labelAccent: false, selectFill: true };
         try {
@@ -337,6 +342,7 @@ Singleton {
                     widgets = w;
                 if (typeof o.fontFamily === "string" && o.fontFamily.length) { uiFont = o.fontFamily; monoFont = o.fontFamily; }
                 const st = o && o.themeStyle;
+                styledValue = !!(st && typeof st === "object");
                 if (st && typeof st.lineAlpha === "number" && st.lineAlpha > 0 && st.lineAlpha <= 1)
                     lineAlpha = st.lineAlpha;
                 if (st && typeof st.display === "string" && st.display.length)
@@ -362,6 +368,7 @@ Singleton {
         t.mono = monoFont;
         t.lineAlpha = lineAlpha;
         t.display = displayFont;
+        t.styled = styledValue;
         t.navFont = navFontValue || t.ui;
         t.displayWeight = displayWeight;
         t.navCaps = flags.navCaps;

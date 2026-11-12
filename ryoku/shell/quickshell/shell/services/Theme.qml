@@ -212,8 +212,11 @@ Singleton {
     readonly property int fontXl: 26
     readonly property int fontXxl: 32
     readonly property int fontXxxl: 48
-    // Ryoku-specific faces: a serif display, a monospace, and a CJK face.
-    readonly property string display: "Fraunces"
+    // Ryoku-specific faces: a serif display, a monospace, and a CJK face. The
+    // display face and weight follow the theme style (Tokens: Fraunces, regular,
+    // without one); the monospace stays JetBrains, which Tokens' default is not.
+    readonly property string display: Ui.Tokens.display
+    readonly property int displayWeight: Ui.Tokens.displayWeight
     readonly property string mono:    "JetBrainsMono Nerd Font"
     readonly property string fontJp:  "Noto Sans CJK JP"
 
