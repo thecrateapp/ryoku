@@ -4,6 +4,7 @@ import QtQuick
 import QtQuick.Controls as QQC
 import shell.services
 import Ryoku.Ui.Singletons
+import Ryoku.Ui as Kit
 import ".."
 
 Item {
@@ -324,11 +325,23 @@ Item {
                     radius: width / 2
                     color: Network.activeSsid !== "" && Tokens.selectFill ? Tokens.inkOnBone : Tokens.tint10
                     Text {
+                        id: materialGlyph0
                         anchors.centerIn: parent
                         text: !Network.wifiPresent || !Network.wifiRadio ? "wifi_off" : root.signalGlyph(Network.wifi.strength)
-                        color: Network.activeSsid !== "" ? (Tokens.selectFill ? Tokens.bone : Tokens.mark) : Tokens.inkDim
+                        readonly property color ink: Network.activeSsid !== "" ? (Tokens.selectFill ? Tokens.bone : Tokens.mark) : Tokens.inkDim
+                        color: materialGlyph0Solar.drawn ? "transparent" : materialGlyph0.ink
                         font.family: "Material Symbols Rounded"
                         font.pixelSize: 25 * root.s
+
+                        // crate-mark: the kit catalogue's Solar glyph over the font glyph
+                        Kit.Glyph {
+                            id: materialGlyph0Solar
+                            visible: materialGlyph0Solar.drawn
+                            anchors.centerIn: parent
+                            name: !Network.wifiPresent || !Network.wifiRadio ? "wifi_off" : root.signalGlyph(Network.wifi.strength)
+                            color: materialGlyph0.ink
+                            size: Math.round((25 * root.s) * 0.85)
+                        }
                     }
                 }
                 Column {
@@ -451,9 +464,20 @@ Item {
                         width: 30 * root.s
                         horizontalAlignment: Text.AlignHCenter
                         text: root.signalGlyph(apRow.modelData.strength)
-                        color: apRow.selected ? (Tokens.selectFill ? Tokens.inkOnBone : Tokens.pickInk) : Tokens.inkDim
+                        readonly property color ink: apRow.selected ? (Tokens.selectFill ? Tokens.inkOnBone : Tokens.pickInk) : Tokens.inkDim
+                        color: apIconSolar.drawn ? "transparent" : apIcon.ink
                         font.family: "Material Symbols Rounded"
                         font.pixelSize: 23 * root.s
+
+                        // crate-mark: the kit catalogue's Solar glyph over the font glyph
+                        Kit.Glyph {
+                            id: apIconSolar
+                            visible: apIconSolar.drawn
+                            anchors.centerIn: parent
+                            name: root.signalGlyph(apRow.modelData.strength)
+                            color: apIcon.ink
+                            size: Math.round((23 * root.s) * 0.85)
+                        }
                     }
                     Column {
                         id: apCopy

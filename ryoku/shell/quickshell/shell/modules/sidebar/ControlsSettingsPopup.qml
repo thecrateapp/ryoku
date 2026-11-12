@@ -256,10 +256,21 @@ QQC.Popup {
                     anchors.leftMargin: Tokens.s2 * root.s
                     anchors.verticalCenter: parent.verticalCenter
                     text: "extension"
-                    color: Tokens.inkDim
+                    readonly property color ink: Tokens.inkDim
+                    color: extensionIconSolar.drawn ? "transparent" : extensionIcon.ink
                     font.family: "Material Symbols Rounded"
                     font.pixelSize: (Tokens.fBody + Tokens.s1) * root.s
                     Accessible.ignored: true
+
+                    // crate-mark: the kit catalogue's Solar glyph over the font glyph
+                    Kit.Glyph {
+                        id: extensionIconSolar
+                        visible: extensionIconSolar.drawn
+                        anchors.centerIn: parent
+                        name: "extension"
+                        color: extensionIcon.ink
+                        size: Math.round(((Tokens.fBody + Tokens.s1) * root.s) * 0.85)
+                    }
                 }
                 Text {
                     id: extensionArrow
@@ -267,10 +278,21 @@ QQC.Popup {
                     anchors.rightMargin: Tokens.s2 * root.s
                     anchors.verticalCenter: parent.verticalCenter
                     text: "arrow_forward"
-                    color: Tokens.inkMuted
+                    readonly property color ink: Tokens.inkMuted
+                    color: extensionArrowSolar.drawn ? "transparent" : extensionArrow.ink
                     font.family: "Material Symbols Rounded"
                     font.pixelSize: (Tokens.fBody + Tokens.s1) * root.s
                     Accessible.ignored: true
+
+                    // crate-mark: the kit catalogue's Solar glyph over the font glyph
+                    Kit.Glyph {
+                        id: extensionArrowSolar
+                        visible: extensionArrowSolar.drawn
+                        anchors.centerIn: parent
+                        name: "arrow_forward"
+                        color: extensionArrow.ink
+                        size: Math.round(((Tokens.fBody + Tokens.s1) * root.s) * 0.85)
+                    }
                 }
                 Text {
                     anchors.left: extensionIcon.right
@@ -335,10 +357,21 @@ QQC.Popup {
                         anchors.leftMargin: Tokens.s2 * root.s
                         anchors.verticalCenter: parent.verticalCenter
                         text: hubRow.modelData.glyph
-                        color: Tokens.inkDim
+                        readonly property color ink: Tokens.inkDim
+                        color: hubIconSolar.drawn ? "transparent" : hubIcon.ink
                         font.family: "Material Symbols Rounded"
                         font.pixelSize: (Tokens.fBody + Tokens.s1) * root.s
                         Accessible.ignored: true
+
+                        // crate-mark: the kit catalogue's Solar glyph over the font glyph
+                        Kit.Glyph {
+                            id: hubIconSolar
+                            visible: hubIconSolar.drawn
+                            anchors.centerIn: parent
+                            name: hubRow.modelData.glyph
+                            color: hubIcon.ink
+                            size: Math.round(((Tokens.fBody + Tokens.s1) * root.s) * 0.85)
+                        }
                     }
                     Text {
                         id: hubArrow
@@ -346,10 +379,21 @@ QQC.Popup {
                         anchors.rightMargin: Tokens.s2 * root.s
                         anchors.verticalCenter: parent.verticalCenter
                         text: "north_east"
-                        color: Tokens.inkFaint
+                        readonly property color ink: Tokens.inkFaint
+                        color: hubArrowSolar.drawn ? "transparent" : hubArrow.ink
                         font.family: "Material Symbols Rounded"
                         font.pixelSize: (Tokens.fSmall + Tokens.s1) * root.s
                         Accessible.ignored: true
+
+                        // crate-mark: the kit catalogue's Solar glyph over the font glyph
+                        Kit.Glyph {
+                            id: hubArrowSolar
+                            visible: hubArrowSolar.drawn
+                            anchors.centerIn: parent
+                            name: "north_east"
+                            color: hubArrow.ink
+                            size: Math.round(((Tokens.fSmall + Tokens.s1) * root.s) * 0.85)
+                        }
                     }
                     Text {
                         anchors.left: hubIcon.right

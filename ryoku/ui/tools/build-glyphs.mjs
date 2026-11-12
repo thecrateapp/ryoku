@@ -49,6 +49,10 @@ const alias = {
   notifications: "bell", music_note: "music-note-2", calendar_today: "calendar", chevron_right: "alt-arrow-right",
   expand_less: "alt-arrow-up", check_circle: "check-circle", add_circle: "add-circle", desktop_windows: "display",
   open_in_new: "square-arrow-right-up", speaker: "speaker", headphones: "headphones-round", monitor: "monitor",
+  signal_wifi_4_bar: "wi-fi", network_wifi_3_bar: "wi-fi-high", network_wifi_2_bar: "wi-fi-low",
+  network_wifi_1_bar: "wi-fi-low", signal_wifi_0_bar: "wi-fi-none", arrow_forward: "alt-arrow-right",
+  north_east: "arrow-right-up", display_settings: "display", memory: "cpu", gamepad: "gamepad",
+  mouse: "mouse-minimalistic", phone: "smartphone", watch: "watch-round",
   // freedesktop icon names (the OSD, MPRIS and notification sources use these)
   "audio-volume-high": "volume-loud", "audio-volume-medium": "volume", "audio-volume-low": "volume-small",
   "audio-volume-muted": "volume-cross",

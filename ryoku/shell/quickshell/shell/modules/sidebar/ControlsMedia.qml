@@ -3,6 +3,7 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import Quickshell.Widgets
 import Ryoku.Ui.Singletons
+import Ryoku.Ui as Kit
 import shell.services
 
 Item {
@@ -49,12 +50,24 @@ Item {
                 cache: true
             }
             Text {
+                id: materialGlyph0
                 anchors.centerIn: parent
                 visible: cover.status !== Image.Ready
                 text: "music_note"
-                color: Tokens.inkMuted
+                readonly property color ink: Tokens.inkMuted
+                color: materialGlyph0Solar.drawn ? "transparent" : materialGlyph0.ink
                 font.family: "Material Symbols Rounded"
                 font.pixelSize: Tokens.fValue * root.s
+
+                // crate-mark: the kit catalogue's Solar glyph over the font glyph
+                Kit.Glyph {
+                    id: materialGlyph0Solar
+                    visible: materialGlyph0Solar.drawn
+                    anchors.centerIn: parent
+                    name: "music_note"
+                    color: materialGlyph0.ink
+                    size: Math.round((Tokens.fValue * root.s) * 0.85)
+                }
             }
         }
 

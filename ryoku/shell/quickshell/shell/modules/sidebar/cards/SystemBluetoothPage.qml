@@ -4,6 +4,7 @@ import QtQuick
 import Quickshell.Io
 import shell.services
 import Ryoku.Ui.Singletons
+import Ryoku.Ui as Kit
 import ".."
 
 Item {
@@ -189,11 +190,23 @@ Item {
             radius: width / 2
             color: deviceRow.device && deviceRow.device.connected ? Tokens.bone : Tokens.tint10
             Text {
+                id: materialGlyph0
                 anchors.centerIn: parent
                 text: BtLink.glyphFor(deviceRow.device)
-                color: deviceRow.device && deviceRow.device.connected ? Tokens.inkOnBone : Tokens.inkDim
+                readonly property color ink: deviceRow.device && deviceRow.device.connected ? Tokens.inkOnBone : Tokens.inkDim
+                color: materialGlyph0Solar.drawn ? "transparent" : materialGlyph0.ink
                 font.family: "Material Symbols Rounded"
                 font.pixelSize: 21 * root.s
+
+                // crate-mark: the kit catalogue's Solar glyph over the font glyph
+                Kit.Glyph {
+                    id: materialGlyph0Solar
+                    visible: materialGlyph0Solar.drawn
+                    anchors.centerIn: parent
+                    name: BtLink.glyphFor(deviceRow.device)
+                    color: materialGlyph0.ink
+                    size: Math.round((21 * root.s) * 0.85)
+                }
             }
         }
 
@@ -354,11 +367,23 @@ Item {
                     radius: width / 2
                     color: root.connectedDevices.length > 0 ? Tokens.bone : Tokens.tint10
                     Text {
+                        id: materialGlyph1
                         anchors.centerIn: parent
                         text: root.adapterEnabled ? "bluetooth" : "bluetooth_disabled"
-                        color: root.connectedDevices.length > 0 ? Tokens.inkOnBone : Tokens.inkDim
+                        readonly property color ink: root.connectedDevices.length > 0 ? Tokens.inkOnBone : Tokens.inkDim
+                        color: materialGlyph1Solar.drawn ? "transparent" : materialGlyph1.ink
                         font.family: "Material Symbols Rounded"
                         font.pixelSize: 25 * root.s
+
+                        // crate-mark: the kit catalogue's Solar glyph over the font glyph
+                        Kit.Glyph {
+                            id: materialGlyph1Solar
+                            visible: materialGlyph1Solar.drawn
+                            anchors.centerIn: parent
+                            name: root.adapterEnabled ? "bluetooth" : "bluetooth_disabled"
+                            color: materialGlyph1.ink
+                            size: Math.round((25 * root.s) * 0.85)
+                        }
                     }
                 }
                 Column {
