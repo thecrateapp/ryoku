@@ -78,14 +78,14 @@ Item {
                 radius: Tokens.radius
                 color: on ? Tokens.bone : (tap.pressed ? Tokens.tint16 : (sh.hovered ? Tokens.tint10 : "transparent"))
                 border.width: Tokens.border
-                border.color: sh.hovered && !on ? Tokens.lineStrong : Tokens.line
+                border.color: sh.hovered && !on ? (Tokens.accentMarks ? Qt.rgba(Tokens.mark.r, Tokens.mark.g, Tokens.mark.b, 0.4) : Tokens.lineStrong) : Tokens.line
                 Behavior on color { ColorAnimation { duration: Tokens.snap } }
 
                 Text {
                     id: lab
                     anchors.centerIn: parent
                     text: I18n.tr(parent.shown)
-                    color: parent.on ? Tokens.inkOnBone : Tokens.inkDim
+                    color: parent.on ? Tokens.inkOnBone : (sh.hovered && Tokens.accentMarks ? Tokens.hoverInk : Tokens.inkDim)
                     font.family: Tokens.ui
                     font.pixelSize: 9
                     font.weight: Font.Medium

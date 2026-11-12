@@ -34,13 +34,13 @@ Flow {
             radius: Tokens.radius
             color: on ? Tokens.bone : (tap.pressed ? Tokens.tint16 : (ch.hovered ? Tokens.tint10 : "transparent"))
             border.width: Tokens.border
-            border.color: ch.hovered && !on ? Tokens.lineStrong : Tokens.line
+            border.color: ch.hovered && !on ? (Tokens.accentMarks ? Qt.rgba(Tokens.mark.r, Tokens.mark.g, Tokens.mark.b, 0.4) : Tokens.lineStrong) : Tokens.line
             Behavior on color { ColorAnimation { duration: Tokens.snap } }
             Text {
                 id: cl
                 anchors.centerIn: parent
                 text: chips.labels[parent.modelData] !== undefined ? chips.labels[parent.modelData] : I18n.tr(parent.modelData)
-                color: parent.on ? Tokens.inkOnBone : Tokens.inkDim
+                color: parent.on ? Tokens.inkOnBone : (ch.hovered && Tokens.accentMarks ? Tokens.hoverInk : Tokens.inkDim)
                 font.family: Tokens.ui
                 font.pixelSize: 10
                 font.weight: Font.Medium

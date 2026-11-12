@@ -21,7 +21,7 @@ Flow {
             radius: Tokens.radius
             color: on ? Tokens.bone : (tap.pressed ? Tokens.tint16 : (mh.hovered ? Tokens.tint10 : "transparent"))
             border.width: Tokens.border
-            border.color: mh.hovered && !on ? Tokens.lineStrong : Tokens.line
+            border.color: mh.hovered && !on ? (Tokens.accentMarks ? Qt.rgba(Tokens.mark.r, Tokens.mark.g, Tokens.mark.b, 0.4) : Tokens.lineStrong) : Tokens.line
             Behavior on color { ColorAnimation { duration: Tokens.snap } }
             Row {
                 id: row
@@ -36,7 +36,7 @@ Flow {
                 }
                 Text {
                     text: I18n.tr(parent.parent.modelData)
-                    color: parent.parent.on ? Tokens.inkOnBone : Tokens.inkDim
+                    color: parent.parent.on ? Tokens.inkOnBone : (mh.hovered && Tokens.accentMarks ? Tokens.hoverInk : Tokens.inkDim)
                     font.family: Tokens.ui
                     font.pixelSize: 10
                     font.weight: Font.Medium
