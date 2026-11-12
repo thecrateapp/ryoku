@@ -3,6 +3,7 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import QtQuick.Controls as QQC
 import Ryoku.Ui.Singletons
+import Ryoku.Ui as Kit
 import shell.services
 
 QQC.Popup {
@@ -169,17 +170,30 @@ QQC.Popup {
                 width: edgeGapSlider.availableWidth
                 height: Math.max(Tokens.border * 2, Tokens.s1 * root.s)
                 radius: height / 2
-                color: Tokens.tint10
+                color: Tokens.controlsCrate ? "transparent" : Tokens.tint10
 
                 Rectangle {
+                    visible: !Tokens.controlsCrate
                     width: edgeGapSlider.visualPosition * parent.width
                     height: parent.height
                     radius: parent.radius
                     color: Tokens.sun
                 }
-            }
+                // crate-mark: the slider draws as a Beam; the QQC.Slider keeps input
+                Kit.Beam {
+                    visible: Tokens.controlsCrate
+                    anchors.verticalCenter: parent.verticalCenter
+                    width: parent.width
+                    height: 24
+                    interactive: false
+                    value: edgeGapSlider.visualPosition
+                    hotHint: edgeGapSlider.hovered || edgeGapSlider.pressed || edgeGapSlider.visualFocus
+                    opacity: false ? 0.4 : 1
+                }
+}
 
             handle: Rectangle {
+                opacity: Tokens.controlsCrate ? 0 : 1
                 x: edgeGapSlider.leftPadding
                     + edgeGapSlider.visualPosition * (edgeGapSlider.availableWidth - width)
                 y: edgeGapSlider.topPadding + edgeGapSlider.availableHeight / 2 - height / 2

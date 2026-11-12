@@ -19,6 +19,9 @@ Item {
     property real stepSize: 0
     property bool interactive: true
     property bool indeterminate: false
+    // show the thumb while an owner that handles input itself (a QQC.Slider
+    // drawing through a Beam) is hovered, pressed or focused
+    property bool hotHint: false
 
     signal moved(real v)
     signal committed(real v)
@@ -31,7 +34,7 @@ Item {
     readonly property bool extended: beam.limit > beam.to
     readonly property real cy: Math.round(height / 2)
     readonly property real headX: Math.round(width * beam.frac)
-    readonly property bool hot: beam.interactive && (area.containsMouse || area.pressed || beam.activeFocus)
+    readonly property bool hot: beam.hotHint || (beam.interactive && (area.containsMouse || area.pressed || beam.activeFocus))
 
     implicitHeight: 24
     implicitWidth: 160

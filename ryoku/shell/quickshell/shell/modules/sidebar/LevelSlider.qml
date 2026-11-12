@@ -3,6 +3,7 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import QtQuick.Controls as QQC
 import Ryoku.Ui.Singletons
+import Ryoku.Ui as Kit
 import shell.services
 
 Item {
@@ -232,8 +233,9 @@ Item {
             width: slider.availableWidth
             height: Tokens.s1 * root.s
             radius: height / 2
-            color: Tokens.tint10
+            color: Tokens.controlsCrate ? "transparent" : Tokens.tint10
             Rectangle {
+                visible: !Tokens.controlsCrate
                 width: slider.visualPosition * parent.width
                 height: parent.height
                 radius: parent.radius
@@ -243,8 +245,20 @@ Item {
                     NumberAnimation { duration: Tokens.snap; easing.type: Tokens.easeSnap }
                 }
             }
+            // crate-mark: the slider draws as a Beam; the QQC.Slider keeps input
+            Kit.Beam {
+                visible: Tokens.controlsCrate
+                anchors.verticalCenter: parent.verticalCenter
+                width: parent.width
+                height: 24
+                interactive: false
+                value: slider.visualPosition
+                hotHint: slider.hovered || slider.pressed || slider.visualFocus
+                opacity: (root.muted || !root.available) ? 0.4 : 1
+            }
         }
         handle: Rectangle {
+            opacity: Tokens.controlsCrate ? 0 : 1
             x: slider.leftPadding + slider.visualPosition * (slider.availableWidth - width)
             y: slider.topPadding + slider.availableHeight / 2 - height / 2
             width: 14 * root.s

@@ -3,6 +3,7 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import QtQuick.Controls as QQC
 import Ryoku.Ui.Singletons
+import Ryoku.Ui as Kit
 import shell.services
 
 Item {
@@ -61,11 +62,11 @@ Item {
         anchors.left: parent.left
         anchors.right: parent.right
         anchors.bottom: parent.bottom
-        height: root.meterContent ? Tokens.s3 * root.s : Tokens.border * 3 * root.s
+        height: root.meterContent ? Tokens.s3 * root.s : (Tokens.controlsCrate ? 8 * root.s : Tokens.border * 3 * root.s)
         clip: true
 
         Rectangle {
-            visible: root.showProgress && root.meterContent === null
+            visible: root.showProgress && root.meterContent === null && !Tokens.controlsCrate
             anchors.fill: parent
             radius: Math.min(height / 2, Tokens.radius * root.s)
             color: Tokens.inkFaint
@@ -83,6 +84,14 @@ Item {
                     NumberAnimation { duration: root.settle; easing.type: Easing.Linear }
                 }
             }
+        }
+
+        // crate-mark: the meter is a non-interactive Beam
+        Kit.Beam {
+            visible: root.showProgress && root.meterContent === null && Tokens.controlsCrate
+            anchors.fill: parent
+            interactive: false
+            value: root.progressRatio
         }
 
         Loader {
