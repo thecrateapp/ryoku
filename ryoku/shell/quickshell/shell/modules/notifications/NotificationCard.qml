@@ -5,6 +5,7 @@ import QtQuick.Shapes
 import Quickshell
 import shell.services
 import Ryoku.Ui.Singletons as Ui
+import Ryoku.Ui as Kit
 import "../../components"
 
 // One notification card, shared by the history panel and the popup surface
@@ -46,7 +47,8 @@ Rectangle {
     // Only explicit expand/collapse clicks ease the frame height. Image loads
     // and every other layout change snap to their measured height so the popup
     // surface never trails content that has already moved.
-    readonly property real targetImplicitHeight: body.implicitHeight + Theme.paddingMd * 2 * card.us
+    readonly property real targetImplicitHeight: body.implicitHeight
+        + (Ui.Tokens.controlsCrate ? 28 : Theme.paddingMd * 2) * card.us
     property real animatedImplicitHeight: 0
     property bool userHeightChange: false
     Component.onCompleted: card.animatedImplicitHeight = card.targetImplicitHeight
@@ -149,13 +151,14 @@ Rectangle {
         easing.type: Easing.Linear
     }
 
-    radius: card.unifiedFrame ? 0 : Theme.radiusWidget * card.us
+    readonly property bool crate: Ui.Tokens.controlsCrate
+    radius: card.unifiedFrame ? 0 : (card.crate ? 10 : Theme.radiusWidget) * card.us
     // a theme style keeps the frame a hairline; the countdown carries the accent
     // a critical card (no countdown) keeps the full accent frame
     readonly property bool critical: card.n().urgency === 2
     border.width: card.unifiedFrame ? 0 : (Ui.Tokens.styled && !card.critical ? 1 : Theme.borderWidth) * card.us
     border.color: Ui.Tokens.styled ? (card.critical ? Ui.Tokens.mark : Ui.Tokens.line) : Theme.outline
-    color: card.unifiedFrame ? "transparent" : Theme.surface
+    color: card.unifiedFrame ? "transparent" : card.crate ? Ui.Tokens.popover : Theme.surface
     implicitHeight: card.animatedImplicitHeight
 
     // A hidden, unclamped copy of the body, used only to learn whether the real
@@ -164,10 +167,10 @@ Rectangle {
     Text {
         id: bodyMeasure
         visible: false
-        width: card.width - Theme.paddingMd * 2 * card.us
+        width: card.width - (card.crate ? 32 : Theme.paddingMd * 2) * card.us
         text: card.n().body || ""
         font.family: Theme.fontPrimary
-        font.pixelSize: Theme.fontSm * card.us
+        font.pixelSize: (card.crate ? 12 : Theme.fontSm) * card.us
         wrapMode: Text.WrapAtWordBoundaryOrAnywhere
     }
 
@@ -180,14 +183,26 @@ Rectangle {
         property real iconRotation: 0
         signal clicked()
 
-        width: (Theme.iconSm + Theme.paddingSm * 2) * card.us
+        // crate-mark: a plateless 24 px button with a 14 px Solar glyph
+        width: (card.crate ? 24 : Theme.iconSm + Theme.paddingSm * 2) * card.us
         height: width
         radius: Theme.radiusWidget * card.us
-        color: hbHov.hovered
+        color: hbHov.hovered && !card.crate
             ? Qt.tint(Theme.surface, Qt.rgba(Theme.onSurface.r, Theme.onSurface.g, Theme.onSurface.b, 0.08))
             : "transparent"
 
+        Kit.Glyph {
+            visible: card.crate
+            anchors.centerIn: parent
+            name: hb.glyph
+            size: 14 * card.us
+            color: hbHov.hovered ? Ui.Tokens.mark : Ui.Tokens.inkSecondary
+            rotation: hb.iconRotation
+            Behavior on rotation { NumberAnimation { duration: Motion.chevronRotate; easing.type: Motion.easeType; easing.bezierCurve: Motion.easeCurve } }
+        }
+
         MaterialIcon {
+            visible: !card.crate
             anchors.centerIn: parent
             text: hb.glyph
             font.pixelSize: Theme.iconSm * card.us
@@ -211,6 +226,10 @@ Rectangle {
         anchors.right: parent.right
         anchors.top: parent.top
         anchors.margins: Theme.paddingMd * card.us
+        // crate-mark: 14 px top, 16 px at the sides, 8 px between blocks
+        anchors.leftMargin: (card.crate ? 16 : Theme.paddingMd) * card.us
+        anchors.rightMargin: (card.crate ? 16 : Theme.paddingMd) * card.us
+        anchors.topMargin: (card.crate ? 14 : Theme.paddingMd) * card.us
         spacing: Theme.paddingMd * card.us
 
         // Header: app name (fills), arrival time, and the open/expand/close cluster.
@@ -241,9 +260,10 @@ Rectangle {
                 anchors.rightMargin: Theme.paddingSm * card.us
                 anchors.verticalCenter: parent.verticalCenter
                 text: Notifs.timeLabel(card.notif)
-                color: Theme.onSurfaceVariant
-                font.family: Theme.fontPrimary
-                font.pixelSize: Theme.fontSm * card.us
+                color: card.crate ? Ui.Tokens.inkMuted : Theme.onSurfaceVariant
+                font.family: card.crate ? Ui.Tokens.mono : Theme.fontPrimary
+                font.pixelSize: (card.crate ? 12 : Theme.fontSm) * card.us
+                font.features: { "tnum": 1 }
             }
 
             Row {
@@ -336,8 +356,9 @@ Rectangle {
             text: card.n().summary || ""
             color: Theme.onSurface
             font.family: Theme.fontPrimary
-            font.pixelSize: Theme.fontMd * card.us
-            font.weight: Font.Bold
+            // crate-mark: a 13 px title over a 12 px muted body
+            font.pixelSize: (card.crate ? 13 : Theme.fontMd) * card.us
+            font.weight: card.crate ? Font.Medium : Font.Bold
             wrapMode: Text.WrapAtWordBoundaryOrAnywhere
         }
 
@@ -347,9 +368,9 @@ Rectangle {
             width: parent.width
             visible: (card.n().body || "").length > 0
             text: card.n().body || ""
-            color: Theme.onSurfaceVariant
+            color: card.crate ? Ui.Tokens.inkMuted : Theme.onSurfaceVariant
             font.family: Theme.fontPrimary
-            font.pixelSize: Theme.fontSm * card.us
+            font.pixelSize: (card.crate ? 12 : Theme.fontSm) * card.us
             wrapMode: Text.WrapAtWordBoundaryOrAnywhere
             maximumLineCount: card.showFull ? 9999 : card.compactLines
             elide: card.showFull ? Text.ElideNone : Text.ElideRight
@@ -358,11 +379,38 @@ Rectangle {
         // Actions: one primary button per action, full width (contract 07 sec
         // 2.3). Hidden while a popup is compact and collapsed; the expand
         // chevron brings them in with a short fade.
+        // crate-mark: the kit's buttons at their natural width, 8 px apart; the
+        // first action confirms (filled), the rest navigate (outlined)
+        Flow {
+            id: crateActions
+            width: parent.width
+            spacing: 8 * card.us
+            visible: card.crate && card.visibleActions.length > 0 && card.showFull
+            opacity: card.showFull ? 1 : 0
+            Behavior on opacity { NumberAnimation { duration: Motion.rowFade; easing.type: Motion.easeType; easing.bezierCurve: Motion.easeCurve } }
+
+            Repeater {
+                model: card.crate ? card.visibleActions : []
+
+                delegate: Kit.Btn {
+                    required property var modelData
+                    required property int index
+                    text: modelData.text
+                    primary: index === 0
+                    outline: index !== 0
+                    onAct: {
+                        modelData.invoke();
+                        card.actionInvoked();
+                    }
+                }
+            }
+        }
+
         Column {
             id: actionCol
             width: parent.width
             spacing: Theme.paddingSm * card.us
-            visible: card.visibleActions.length > 0 && card.showFull
+            visible: !card.crate && card.visibleActions.length > 0 && card.showFull
             opacity: card.showFull ? 1 : 0
             Behavior on opacity { NumberAnimation { duration: Motion.rowFade; easing.type: Motion.easeType; easing.bezierCurve: Motion.easeCurve } }
 

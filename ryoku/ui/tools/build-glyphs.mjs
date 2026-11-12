@@ -5,7 +5,8 @@
 // solar-kit.json holds Solar's Outline icons (480 Design, CC BY 4.0,
 // https://creativecommons.org/licenses/by/4.0/), the weight Crate's own UI uses,
 // exported from @solar-icons/react 2.3 with crate-for-ryoku's icons/solar_export.mjs:
-//   node icons/solar_export.mjs <node_modules> <this dir>/solar-kit.json outline <name>...
+//   node icons/solar_export.mjs <node_modules> <this dir>/solar-kit.json outline $(cat solar-kit.names)
+// solar-kit.names lists the exported glyphs; add a name there, re-export, re-run.
 // Outline glyphs are filled shapes, drawn as Solar ships them. Solar has no
 // struck-through microphone or Bluetooth, so those two are its glyph with a
 // 1.5 px round-capped diagonal.
@@ -47,6 +48,7 @@ const alias = {
   star: "star", delete: "trash-bin-minimalistic", push_pin: "pin", content_copy: "copy", search: "magnifier",
   notifications: "bell", music_note: "music-note-2", calendar_today: "calendar", chevron_right: "alt-arrow-right",
   expand_less: "alt-arrow-up", check_circle: "check-circle", add_circle: "add-circle", desktop_windows: "display",
+  open_in_new: "square-arrow-right-up",
   // freedesktop icon names (the OSD, MPRIS and notification sources use these)
   "audio-volume-high": "volume-loud", "audio-volume-medium": "volume", "audio-volume-low": "volume-small",
   "audio-volume-muted": "volume-cross",
