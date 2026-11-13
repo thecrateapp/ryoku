@@ -63,8 +63,10 @@ installed_dirs() {
 # live session (display, compositor, session bus) reaches a build or its tests.
 isolated_makepkg() {
   local dir=$1 runtime=$2 pkgver=$3; shift 3
-  # lowest CPU and idle IO priority: a build must never make the desktop stutter
-  (cd "$repo_root/release/packages/$dir" && nice -n 19 ionice -c3 env -i HOME="$HOME" PATH="$PATH" USER="$USER" \
+  # SCHED_IDLE and idle IO: a build only gets CPU and disk nothing else wants.
+  # (nice alone is not enough: ananicy sets bash, makepkg included, to -4 and
+  # every compiler inherits it.)
+  (cd "$repo_root/release/packages/$dir" && chrt --idle 0 ionice -c3 env -i HOME="$HOME" PATH="$PATH" USER="$USER" \
     LOGNAME="${LOGNAME:-$USER}" LANG="${LANG:-C.UTF-8}" TERM="${TERM:-dumb}" \
     XDG_RUNTIME_DIR="$runtime" RYOKU_PKGVER="$pkgver" PKGDEST="$repo_dir" BUILDDIR="$build_dir" SRCDEST="$build_dir/sources" \
     makepkg "$@")
