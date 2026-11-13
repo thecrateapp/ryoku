@@ -1,5 +1,6 @@
 import QtQuick
 import Quickshell.Services.Pipewire
+import shell.services
 
 // Default-sink volume / mute, read natively from PipeWire - event-driven, no
 // subprocess. Replaces the old 3s `pactl` bash poll (the bar's most frequent
@@ -19,7 +20,7 @@ Item {
     readonly property var sink: Pipewire.defaultAudioSink
 
     readonly property int  volume: (sink && sink.ready && sink.audio)
-                                   ? Math.round(sink.audio.volume * 100) : 0
+                                   ? Math.round(Audio.volumeOf(sink) * 100) : 0
     readonly property bool muted:  (sink && sink.ready && sink.audio)
                                    ? sink.audio.muted : false
 

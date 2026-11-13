@@ -166,9 +166,19 @@ Singleton {
     Component.onCompleted: root.syncAudioLists()
 
     // A device's volume goes through WirePlumber (see lib/sinkvolume.js): a write
-    // to the node itself is reverted from the saved route a moment later. Only
-    // the newest value of a drag is written once the running call ends.
+    // to the node itself is reverted from the saved route a moment later, and a
+    // route stops at 100 %, so a boost rides the node's master volume. Only the
+    // newest value of a drag is written once the running call ends.
     property var _volumePending: null
+    property var _volumeRunning: null
+    // node id -> the boost factor last written (1 under 100 %)
+    property var _boosts: ({})
+    function boostOf(node) { return (node && root._boosts[node.id]) || 1; }
+    // a device's real level: its route volume times the boost riding the master
+    function volumeOf(node) {
+        return (node && node.audio) ? node.audio.volume * root.boostOf(node) : 0;
+    }
+    readonly property real sinkVolume: root.volumeOf(root.sink)
     function setNodeVolume(node, v, limit) {
         if (!node || node.id === undefined) return;
         root._volumePending = { id: node.id, v: v, limit: limit };
@@ -179,14 +189,25 @@ Singleton {
         const next = SinkVolume.nextWrite({ busy: volumeWriter.running, pending: root._volumePending });
         if (!next) return;
         root._volumePending = null;
-        const args = SinkVolume.volumeArgs(next.id, next.v, next.limit);
-        if (!args) return;
-        volumeWriter.command = ["wpctl"].concat(args);
+        const command = SinkVolume.volumeCommand(next.id, next.v, next.limit, root._boosts[next.id] || 1);
+        if (!command) return;
+        root._volumeRunning = next;
+        volumeWriter.command = command;
         volumeWriter.running = true;
     }
     Process {
         id: volumeWriter
-        onExited: root._flushVolume()
+        onExited: code => {
+            const done = root._volumeRunning;
+            root._volumeRunning = null;
+            if (code === 0 && done) {
+                const plan = SinkVolume.volumePlan(done.v, done.limit);
+                const boosts = Object.assign({}, root._boosts);
+                boosts[done.id] = plan && Number(plan.route) >= 1 ? Math.cbrt(Number(plan.master)) : 1;
+                root._boosts = boosts;
+            }
+            root._flushVolume();
+        }
     }
 
     function setOutput(n) { if (n) Pipewire.preferredDefaultAudioSink = n; }

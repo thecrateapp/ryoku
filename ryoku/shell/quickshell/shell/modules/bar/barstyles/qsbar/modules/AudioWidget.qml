@@ -64,7 +64,7 @@ Item {
         var s = audio.sink
         if (!s || !s.audio) return
         var max = root.audioBoost ? 1.5 : 1.0
-        var cur = Math.round(s.audio.volume * 100)
+        var cur = Math.round(Audio.sinkVolume * 100)
         var next = up
             ? (cur === 65 ? 67 : cur === 67 ? 70 : Math.floor(cur / 5) * 5 + 5)
             : (cur === 70 ? 67 : cur === 67 ? 65 : Math.ceil(cur / 5) * 5 - 5)

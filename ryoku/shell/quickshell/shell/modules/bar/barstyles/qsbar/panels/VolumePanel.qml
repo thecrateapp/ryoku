@@ -166,7 +166,7 @@ PanelWindow {
                         root.audioBoost = !volPanel.boostOn
                         // dropping the cap while boosted pulls the sink back to 0 dB
                         if (!root.audioBoost && audio.sink && audio.sink.audio
-                                && audio.sink.audio.volume > 1)
+                                && Audio.sinkVolume > 1)
                             Audio.setSinkVolume(1, 1)
                     }
                 }
@@ -184,7 +184,7 @@ PanelWindow {
                     to: 1
                     limit: volPanel.boostOn ? 1.5 : 0
                     stepSize: 0.01
-                    value: Audio.sink && Audio.sink.audio ? Audio.sink.audio.volume : 0
+                    value: Audio.sinkVolume
                     opacity: volPanel.muted ? 0.4 : 1
                     Accessible.name: I18n.tr("Output volume")
                     onMoved: v => {
@@ -478,7 +478,7 @@ PanelWindow {
                         var s = audio.sink
                         if (!s || !s.audio) return
                         var step = w.angleDelta.y > 0 ? 0.05 : -0.05
-                        Audio.setSinkVolume(s.audio.volume + step, volSlider.maxPct / 100)
+                        Audio.setSinkVolume(Audio.sinkVolume + step, volSlider.maxPct / 100)
                     }
                 }
             }
@@ -516,7 +516,7 @@ PanelWindow {
                         root.audioBoost = !volPanel.boostOn
                         // dropping the cap while boosted pulls the sink back to 0 dB
                         if (!root.audioBoost && audio.sink && audio.sink.audio
-                                && audio.sink.audio.volume > 1)
+                                && Audio.sinkVolume > 1)
                             Audio.setSinkVolume(1, 1)
                     }
                 }

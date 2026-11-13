@@ -37,7 +37,7 @@ QtObject {
     readonly property real value: isBrightness
         ? root.brightnessLevel
         : ((isVolume || isMic) && audio
-            ? Math.max(0, Math.min(root.maxValue, audio.volume)) : 0)
+            ? Math.max(0, Math.min(root.maxValue, root.isVolume ? Audio.volumeOf(root.device) : audio.volume)) : 0)
     readonly property bool over: root.value > 1.005
     readonly property string layout: KeyboardLayout.variant || I18n.tr("Unknown")
     readonly property string label: isKeyboard

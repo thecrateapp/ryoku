@@ -7,6 +7,11 @@
   route. The QS Bar volume panel, the bar's wheel and Controls now set device
   levels through `wpctl`, which updates the route; app streams keep the direct
   write. A drag writes only its newest value once each call ends.
+- **Boost past 100 % rides the node's master volume.** A device route stops at
+  100 % (the laptop speaker clamps anything above back within ~200 ms), so a
+  boosted level keeps the route at 100 % and sets the rest as the node's master
+  gain; leaving the boost puts the master back to unity. The bar, its panel
+  and the OSD read route times boost.
 - **Crate sliders and meters have a slimmer Beam.** The glow is 6 px tall
   at rest and the handle reaches 8 px on hover or keyboard focus.
 - **A leftover default-rice marker no longer resets the desktop.** The
