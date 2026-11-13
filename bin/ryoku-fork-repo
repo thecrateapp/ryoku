@@ -27,6 +27,8 @@ repo_dir=${RYOKU_FORK_REPO:-/srv/ryoku-fork}
 repo_name=ryoku-fork
 build_dir=${RYOKU_FORK_BUILD:-$HOME/.cache/ryoku/fork-build}
 log_dir=$build_dir/logs
+cores=$(nproc)
+jobs=${RYOKU_FORK_JOBS:-$(( cores > 8 ? cores - 6 : cores ))}
 
 die() { echo "ryoku-fork-repo: $*" >&2; exit 1; }
 
@@ -69,7 +71,8 @@ isolated_makepkg() {
   (cd "$repo_root/release/packages/$dir" && chrt --idle 0 ionice -c3 env -i HOME="$HOME" PATH="$PATH" USER="$USER" \
     LOGNAME="${LOGNAME:-$USER}" LANG="${LANG:-C.UTF-8}" TERM="${TERM:-dumb}" \
     XDG_RUNTIME_DIR="$runtime" RYOKU_PKGVER="$pkgver" PKGDEST="$repo_dir" BUILDDIR="$build_dir" SRCDEST="$build_dir/sources" \
-    makepkg "$@")
+    CMAKE_BUILD_PARALLEL_LEVEL="$jobs" GOFLAGS="-p=$jobs" CARGO_BUILD_JOBS="$jobs" \
+    makepkg --config "$build_dir/makepkg.conf" "$@")
 }
 
 cmd_build() {
@@ -94,6 +97,12 @@ cmd_build() {
   echo "building $(echo "$dirs" | wc -w) packages at $pkgver into $repo_dir"
 
   mkdir -p "$build_dir" "$log_dir"
+  # Leave the desktop some cores: a laptop's CPU and iGPU share one power budget,
+  # and 22 compilers starved the GPU that draws the shell. makepkg.conf would
+  # override MAKEFLAGS from the environment, so the build gets its own config
+  # that loads the system's and changes only that; ninja, Go and Cargo read
+  # their own variables (set in isolated_makepkg).
+  printf 'source /etc/makepkg.conf\nMAKEFLAGS="-j%s"\n' "$jobs" > "$build_dir/makepkg.conf"
   local runtime
   runtime=$(mktemp -d)
   chmod 700 "$runtime"
