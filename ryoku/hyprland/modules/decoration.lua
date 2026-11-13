@@ -138,6 +138,29 @@ hl.layer_rule({
 })
 
 
+-- Crate for Ryoku's glass: under a theme style with controls "crate", every
+-- floating shell surface (the bar and the panels it grows, Controls, the OSD,
+-- notifications, the clipboard, the frame's prompts and menus, the docks and the
+-- desktop menu) is the panel grey at 68 % (Tokens.glass); blur what is behind
+-- each, and only where it draws (ignore_alpha), so the glass reads as frosted.
+-- The shell turns the glass opaque when blur is off, so no_blur stays coherent.
+local function crate_glass()
+  local f = io.open(home .. "/.config/ryoku/shell.json", "r")
+  if not f then return false end
+  local s = f:read("*a")
+  f:close()
+  return s:match('"controls"%s*:%s*"crate"') ~= nil
+end
+if crate_glass() then
+  hl.layer_rule({
+    name         = "crate-glass-blur",
+    match        = { namespace = "^(quickshell|ryoku-sidebar-left|ryoku-osd|ryoku-notifications|ryoku-frame|clipboard|qs-dock|dockappmenu|ryoku-dock-menu|ryoku-desktop-menu|ryoku-dialog)$" },
+    blur         = not no_blur,
+    ignore_alpha = 0.05,
+  })
+end
+
+
 -- the workspace overview (qs -c overview, Super+Tab) is a full-screen layer-shell
 -- expo: blur the desktop behind it so only the workspace cells and their live
 -- window previews read on top. QML drives its open/close, so suppress Hyprland's

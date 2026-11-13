@@ -82,7 +82,7 @@ PanelWindow {
         width: osd.implicitWidth + win.pad * 2
         height: osd.implicitHeight + win.padY * 2
         radius: (Tokens.controlsCrate ? 10 : Theme.radiusWindow) * win.us
-        color: Tokens.controlsCrate ? Tokens.popover : Theme.surface
+        color: Tokens.controlsCrate ? Tokens.glass : Theme.surface
         opacity: Theme.windowOpacity * win.prog
         border.width: Theme.borderWidth
         border.color: Theme.frameLine

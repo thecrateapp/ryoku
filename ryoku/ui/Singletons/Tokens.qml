@@ -58,6 +58,13 @@ Singleton {
     readonly property color paperLift: role("surfaceContainerLow", defaultPaperLift)
     // a popover or panel surface, one step above paperLift
     readonly property color popover: role("surfaceContainer", paperLift)
+    // crate-mark glass, the one recipe every floating surface uses under controls
+    // "crate": the panel grey at the frosted bar's 68 %, with the compositor's blur
+    // behind it. The shell clears glassBlur when blur is off (power saver, gaming),
+    // and the glass turns opaque rather than show an unfrosted desktop through it.
+    property bool glassBlur: true
+    readonly property real glassAlpha: controlsCrate && glassBlur ? 0.68 : 1
+    readonly property color glass: Qt.rgba(popover.r, popover.g, popover.b, glassAlpha)
 
     // ── mode flag ────────────────────────────────────────────────────────
     // True when the resolved surface is light. Decoration authored for a dark

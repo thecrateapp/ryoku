@@ -3,6 +3,7 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import "framebars/menus"
 import shell.services
+import Ryoku.Ui.Singletons as Ui
 
 // One reference frame menu (contract 05 sec 7). It is NOT a window, overlay
 // card or blob: the shell paints its background as a scene-graph extension of
@@ -184,7 +185,8 @@ Item {
             width: root.restW
             height: root.restH
             radius: root.radius
-            color: Theme.surface
+            // crate-mark: the frame's popouts (password prompts, menus) are glass too
+            color: Ui.Tokens.controlsCrate ? Ui.Tokens.glass : Theme.surface
             border.width: Theme.borderWidth
             border.color: Theme.frameLine
             opacity: Theme.windowOpacity

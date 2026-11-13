@@ -59,6 +59,12 @@ import stage as Stage
  * Widgets), replacing the six per-surface copies the old multi-process shell paid.
  */
 ShellRoot {
+    // crate-mark glass turns opaque when the compositor's blur is off
+    Binding {
+        target: Tokens
+        property: "glassBlur"
+        value: !Perf.blurDisabled
+    }
     id: root
     // Keep native surfaces until Gokko's root has completed, not merely while
     // its outer Store Scene exists; a nested load error must still fall back.

@@ -74,10 +74,11 @@ Item {
         // clamped to the screen); `cardWidth` is only the floor.
         width: Math.max(menu.cardWidth, Math.min(menu.width - Theme.s2 * 2, col.implicitWidth + panel.pad * 2))
         height: Math.min(panel.fullHeight, menu.height - Theme.s2 * 2)
-        radius: Theme.menuRadius
-        color: Theme.surface
+        radius: Ui.Tokens.controlsCrate ? 10 : Theme.menuRadius
+        // crate-mark: the desktop menu is the same glass as every other surface
+        color: Ui.Tokens.controlsCrate ? Ui.Tokens.glass : Theme.surface
         border.width: 1
-        border.color: Theme.line
+        border.color: Ui.Tokens.controlsCrate ? Ui.Tokens.line : Theme.line
 
         // Grow out of the click point: the scale origin tracks where the cursor
         // opened the card (clamped inside it), so the menu unfolds from under the

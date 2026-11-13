@@ -2136,7 +2136,8 @@ PanelWindow {
                 radius: barSlot.root.barCornerRadius
                 color: barSlot.root.barBg
                 border.color: barSlot.root.v2BarBorder
-                border.width: barSlot.root.barBorderEnabled ? 1 : 0
+                // crate-mark: an island always carries its hairline, so it reads as a piece
+                border.width: barSlot.root.barBorderEnabled || Tokens.controlsCrate ? 1 : 0
                 z: 0
                 RectangularShadow {
                     anchors.fill: parent

@@ -282,7 +282,8 @@ Scope {
         }
 
         radius: Math.round(root.paneRadius * pane.s)
-        color: Qt.rgba(Theme.surface.r, Theme.surface.g, Theme.surface.b, 0.35)
+        // crate-mark: the panes sit on the surface's glass, edged only
+        color: Tokens.controlsCrate ? "transparent" : Qt.rgba(Theme.surface.r, Theme.surface.g, Theme.surface.b, 0.35)
         border.width: Theme.borderWidth
         border.color: Tokens.controlsCrate ? (pane.active ? Tokens.pickEdge : Tokens.line)
             : pane.active ? Qt.rgba(Theme.primary.r, Theme.primary.g, Theme.primary.b, 0.5) : Theme.outlineVariant
@@ -788,9 +789,9 @@ Scope {
                 id: cardBg
                 anchors.fill: parent
                 radius: Math.round(root.panelRadius * win.s)
-                color: Qt.rgba(Theme.surface.r, Theme.surface.g, Theme.surface.b, 0.9)
+                color: Tokens.controlsCrate ? Tokens.glass : Qt.rgba(Theme.surface.r, Theme.surface.g, Theme.surface.b, 0.9)
                 border.width: Theme.borderWidth
-                border.color: Qt.rgba(Theme.onSurface.r, Theme.onSurface.g, Theme.onSurface.b, 0.12)
+                border.color: Tokens.controlsCrate ? Tokens.line : Qt.rgba(Theme.onSurface.r, Theme.onSurface.g, Theme.onSurface.b, 0.12)
 
                 Row {
                     anchors.fill: parent

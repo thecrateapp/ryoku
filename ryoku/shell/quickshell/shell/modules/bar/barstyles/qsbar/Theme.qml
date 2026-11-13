@@ -132,8 +132,11 @@ Item {
 
     // Frost overrides the user's barOpacity with the reference's island alpha.
     readonly property real surfaceOpacity: barFrostEnabled ? 0.68 : barOpacity
-    readonly property color bg:     Qt.rgba(paper.r, paper.g, paper.b, surfaceOpacity)
-    readonly property color barBg:  Qt.rgba(paper.r, paper.g, paper.b, surfaceOpacity)
+    // crate-mark: the bar, its islands and the panels it grows are the shared glass,
+    // the panel grey at this frost alpha, like every other floating surface
+    readonly property color surfaceTone: Tokens.controlsCrate ? Tokens.popover : paper
+    readonly property color bg:     Qt.rgba(surfaceTone.r, surfaceTone.g, surfaceTone.b, surfaceOpacity)
+    readonly property color barBg:  Qt.rgba(surfaceTone.r, surfaceTone.g, surfaceTone.b, surfaceOpacity)
     readonly property color pill:   Qt.rgba(paper.r, paper.g, paper.b, pillOpacity)
     readonly property color fg:     ink
     readonly property color muted:  sumi
@@ -873,7 +876,7 @@ Item {
     readonly property int v2ActionIconCellWidth: 22
     readonly property int v2IconGroupPadding: 5
     property real v2BarBorderMix: 0.22
-    readonly property color v2BarBorder: Qt.rgba(
+    readonly property color v2BarBorder: Tokens.controlsCrate ? Tokens.line : Qt.rgba(
         paper.r * (1 - v2BarBorderMix) + ink.r * v2BarBorderMix,
         paper.g * (1 - v2BarBorderMix) + ink.g * v2BarBorderMix,
         paper.b * (1 - v2BarBorderMix) + ink.b * v2BarBorderMix, 1.0)

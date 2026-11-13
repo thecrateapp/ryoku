@@ -7,7 +7,7 @@ Rectangle {
     id: root
     property real s: 1
     radius: Tokens.radius * s * (Tokens.controlsCrate ? 10 / 6 : 2.5)
-    color: Tokens.controlsCrate ? Tokens.popover : Tokens.paper
+    color: Tokens.controlsCrate ? Tokens.glass : Tokens.paper
     border.width: Tokens.border
     border.color: Tokens.line
     Rectangle {

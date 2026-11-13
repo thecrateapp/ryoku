@@ -50,7 +50,7 @@ Item {
     readonly property color dockLauncherBase: dockLauncherColorMode === "accent"
         ? Ui.Tokens.sun
         : (dockLauncherColorMode === "custom" ? dockLauncherCustomColor
-            : crateMarked ? Ui.Tokens.popover : Ui.Tokens.paper)
+            : crateMarked ? Ui.Tokens.glass : Ui.Tokens.paper)
     readonly property color dockLauncherText: Theme.inkOn(dockLauncherBase, Ui.Tokens.ink, 4.5)
     readonly property color dockLauncherSubtext0: Theme.inkOn(dockLauncherBase, Ui.Tokens.inkDim, 4.5)
     readonly property color dockLauncherSurface0: crateMarked ? mix(dockLauncherBase, dockLauncherText, 0.06)

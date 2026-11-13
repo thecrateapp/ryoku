@@ -158,7 +158,7 @@ Rectangle {
     readonly property bool critical: card.n().urgency === 2
     border.width: card.unifiedFrame ? 0 : (Ui.Tokens.styled && !card.critical ? 1 : Theme.borderWidth) * card.us
     border.color: Ui.Tokens.styled ? (card.critical ? Ui.Tokens.mark : Ui.Tokens.line) : Theme.outline
-    color: card.unifiedFrame ? "transparent" : card.crate ? Ui.Tokens.popover : Theme.surface
+    color: card.unifiedFrame ? "transparent" : card.crate ? Ui.Tokens.glass : Theme.surface
     implicitHeight: card.animatedImplicitHeight
 
     // A hidden, unclamped copy of the body, used only to learn whether the real
