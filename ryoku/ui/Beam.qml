@@ -56,15 +56,14 @@ Item {
     // track
     Rectangle { y: beam.cy; width: beam.width; height: 1; color: Tokens.line }
 
-    // trail: a soft 8 px glow behind the fill, blurred 2 px so it reads as light,
-    // not as a capsule; it ends between the tail and the thumb
+    // Soft trail behind the one-pixel fill.
     Rectangle {
         visible: !beam.indeterminate && beam.mainFrac > 0
         x: 0
-        y: beam.cy - 4 + 0.5
+        y: beam.cy + 0.5 - height / 2
         width: Math.round(beam.width * beam.mainFrac)
-        height: 8
-        radius: 4
+        height: 6
+        radius: height / 2
         opacity: 0.65
         gradient: Gradient {
             orientation: Gradient.Horizontal
@@ -114,29 +113,29 @@ Item {
     Rectangle {
         visible: beam.extended
         x: Math.round(beam.width * beam.markFrac)
-        y: beam.cy - 4
+        y: beam.cy + 0.5 - height / 2
         width: 1
-        height: 9
+        height: 7
         color: Tokens.inkFaint2
     }
 
-    // head: a 4 px dot in an 8 px halo
+    // Head and halo share the center of the fill.
     Rectangle {
         visible: !beam.indeterminate && beam.frac > 0
-        x: beam.headX - 4
-        y: beam.cy - 3.5
-        width: 8
-        height: 8
-        radius: 4
+        x: beam.headX - width / 2
+        y: beam.cy + 0.5 - height / 2
+        width: 6
+        height: width
+        radius: width / 2
         color: Qt.rgba(Tokens.sun.r, Tokens.sun.g, Tokens.sun.b, 0.22)
     }
     Rectangle {
         visible: !beam.indeterminate && beam.frac > 0
-        x: beam.headX - 2
-        y: beam.cy - 1.5
-        width: 4
-        height: 4
-        radius: 2
+        x: beam.headX - width / 2
+        y: beam.cy + 0.5 - height / 2
+        width: 2
+        height: width
+        radius: width / 2
         color: Tokens.thumb
         opacity: 0.62
     }
@@ -144,11 +143,11 @@ Item {
     // thumb: only while the pointer is over the track, dragging, or focused
     Rectangle {
         visible: !beam.indeterminate
-        x: beam.headX - 5
-        y: beam.cy - 4.5
-        width: 10
-        height: 10
-        radius: 5
+        x: beam.headX - width / 2
+        y: beam.cy + 0.5 - height / 2
+        width: 8
+        height: width
+        radius: width / 2
         color: Qt.rgba(Tokens.sun.r, Tokens.sun.g, Tokens.sun.b, 0.14)
         opacity: beam.hot ? 1 : 0
         Behavior on opacity {
@@ -157,9 +156,9 @@ Item {
         }
         Rectangle {
             anchors.centerIn: parent
-            width: 6
-            height: 6
-            radius: 3
+            width: 4
+            height: width
+            radius: width / 2
             color: Tokens.thumb
             border.width: 1
             border.color: Qt.rgba(Tokens.sun.r, Tokens.sun.g, Tokens.sun.b, 0.8)

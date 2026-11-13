@@ -1,6 +1,8 @@
 # Changelog: ryoku/shell/
 
 ## Unreleased
+- **Crate sliders and meters have a slimmer Beam.** The glow is 6 px tall
+  at rest and the handle reaches 8 px on hover or keyboard focus.
 - **A leftover default-rice marker no longer resets the desktop.** The
   installer's first-login marker could outlive that login and apply the default
   rice days later, over every setting, widget and plugin the user had changed.
