@@ -8,7 +8,8 @@ import (
 )
 
 // TestMain points HOME and the XDG dirs at a throwaway tree, so no test can
-// write into the developer's or CI runner's real config, cache, data, or trash.
+// write into the developer's or CI runner's real config, cache, data, or trash,
+// and detaches from the live session so none can repaint or notify it.
 func TestMain(m *testing.M) {
 	root, err := os.MkdirTemp("", "ryogami-test-home-")
 	if err != nil {
@@ -25,7 +26,9 @@ func TestMain(m *testing.M) {
 	for k, v := range env {
 		os.Setenv(k, v)
 	}
+	cleanup := detachFromLiveSession()
 	code := m.Run()
+	cleanup()
 	os.RemoveAll(root)
 	os.Exit(code)
 }

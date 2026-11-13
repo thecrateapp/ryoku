@@ -21,7 +21,12 @@ func TestMain(m *testing.M) {
 		holdLockForever(path)
 		return
 	}
-	os.Exit(m.Run())
+	// `qs ipc call` and the Hub helpers the daemon runs would act on the live
+	// shell; detach from the session first.
+	cleanup := detachFromLiveSession()
+	code := m.Run()
+	cleanup()
+	os.Exit(code)
 }
 
 func holdLockForever(path string) {
