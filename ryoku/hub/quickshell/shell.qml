@@ -33,7 +33,10 @@ ShellRoot {
         readonly property int fitH: (win.screen && win.screen.height > 0) ? Math.round((win.screen.height - 56) * 0.99) : 880
         minimumSize: Qt.size(Math.min(1120, win.fitW), Math.min(820, win.fitH))
         maximumSize: Qt.size(win.fitW, win.fitH)
-        color: Tokens.controlsCrate ? "transparent" : Tokens.paper
+        // opaque under crate too: a transparent toplevel kept Hyprland blurring
+        // the busy desktop behind it on every hover repaint (the flicker); the
+        // compositor rounds a tiled window's corners itself
+        color: Tokens.controlsCrate ? Tokens.popover : Tokens.paper
 
         Loader {
             id: glass
