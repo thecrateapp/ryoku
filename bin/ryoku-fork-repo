@@ -1,0 +1,116 @@
+#!/usr/bin/env bash
+# ryoku-fork-repo: build this fork's monorepo packages and publish them to a
+# local pacman repository, so the machine installs and updates them with
+# `pacman -Syu` instead of `pacman -U` by hand.
+#
+#   bin/ryoku-fork-repo build            build every monorepo package installed here
+#   bin/ryoku-fork-repo build --all      build every monorepo package
+#   bin/ryoku-fork-repo status           show the repository's packages
+#
+# The packages pin each other by exact epoch:pkgver, so they are always built
+# together, at the version bin/ryoku-release-version gives for HEAD (the same
+# scheme upstream's publish workflow uses). The tree must be clean: a package is
+# built from the checkout, so a dirty tree would publish uncommitted work.
+#
+# The repository lives outside $HOME (RYOKU_FORK_REPO, default /srv/ryoku-fork):
+# pacman downloads as the unprivileged `alpm` user, which cannot read a 0700
+# home. pacman.conf lists it before [ryoku], so these packages shadow upstream's
+# of the same name until the fork merges a newer upstream:
+#
+#   [ryoku-fork]
+#   SigLevel = Optional TrustAll
+#   Server = file:///srv/ryoku-fork
+set -euo pipefail
+
+repo_root=$(cd "$(dirname "$0")/.." && pwd)
+repo_dir=${RYOKU_FORK_REPO:-/srv/ryoku-fork}
+repo_name=ryoku-fork
+build_dir=${RYOKU_FORK_BUILD:-$HOME/.cache/ryoku/fork-build}
+log_dir=$build_dir/logs
+
+die() { echo "ryoku-fork-repo: $*" >&2; exit 1; }
+
+# Monorepo packages are the ones whose PKGBUILD takes its version from
+# RYOKU_PKGVER; third-party packages vendored under release/packages keep theirs.
+monorepo_dirs() {
+  local d
+  for d in "$repo_root"/release/packages/*/; do
+    [ -f "$d/PKGBUILD" ] && grep -q 'pkgver=\${RYOKU_PKGVER' "$d/PKGBUILD" && basename "$d"
+  done
+  return 0
+}
+
+pkgnames_of() {
+  # shellcheck disable=SC1090
+  (source "$repo_root/release/packages/$1/PKGBUILD" >/dev/null 2>&1; echo "${pkgname[@]}")
+}
+
+installed_dirs() {
+  local d n
+  for d in $(monorepo_dirs); do
+    for n in $(pkgnames_of "$d"); do
+      if pacman -Q "$n" >/dev/null 2>&1; then echo "$d"; break; fi
+    done
+  done
+}
+
+# makepkg from an empty environment plus what a build needs, so nothing of the
+# live session (display, compositor, session bus) reaches a build or its tests.
+isolated_makepkg() {
+  local dir=$1 runtime=$2 pkgver=$3; shift 3
+  (cd "$repo_root/release/packages/$dir" && env -i HOME="$HOME" PATH="$PATH" USER="$USER" \
+    LOGNAME="${LOGNAME:-$USER}" LANG="${LANG:-C.UTF-8}" TERM="${TERM:-dumb}" \
+    XDG_RUNTIME_DIR="$runtime" RYOKU_PKGVER="$pkgver" PKGDEST="$repo_dir" BUILDDIR="$build_dir" \
+    makepkg "$@")
+}
+
+cmd_build() {
+  local all=0
+  [ "${1:-}" = "--all" ] && all=1
+  [ -d "$repo_dir" ] && [ -w "$repo_dir" ] \
+    || die "$repo_dir is missing or not writable; create it once: sudo install -d -o $USER -m 0755 $repo_dir"
+  git -C "$repo_root" diff --quiet && git -C "$repo_root" diff --cached --quiet \
+    || die "the tree has uncommitted changes; commit them first"
+
+  local pkgver dirs
+  pkgver=$("$repo_root/bin/ryoku-release-version" --pkgver)
+  if [ "$all" = 1 ]; then dirs=$(monorepo_dirs); else dirs=$(installed_dirs); fi
+  [ -n "$dirs" ] || die "no monorepo package to build"
+  echo "building $(echo "$dirs" | wc -w) packages at $pkgver into $repo_dir"
+
+  mkdir -p "$build_dir" "$log_dir"
+  local runtime
+  runtime=$(mktemp -d)
+  chmod 700 "$runtime"
+  trap 'rm -rf -- "$runtime"' RETURN
+
+  local d files=()
+  for d in $dirs; do
+    printf '  %-28s' "$d"
+    if isolated_makepkg "$d" "$runtime" "$pkgver" --nodeps --force --noconfirm >"$log_dir/$d.log" 2>&1; then
+      echo "ok"
+      # the exact files this build wrote (a split PKGBUILD writes several)
+      mapfile -t -O "${#files[@]}" files < <(isolated_makepkg "$d" "$runtime" "$pkgver" --packagelist)
+    else
+      echo "FAILED (see $log_dir/$d.log)"
+      die "stopping before publishing: a partial set would break the exact version pins"
+    fi
+  done
+
+  local f
+  for f in "${files[@]}"; do [ -f "$f" ] || die "expected package missing: $f"; done
+  # --remove drops the files of the versions these replace
+  repo-add --quiet --remove "$repo_dir/$repo_name.db.tar.zst" "${files[@]}"
+  echo "published $pkgver; install it with: sudo pacman -Syu"
+}
+
+cmd_status() {
+  [ -f "$repo_dir/$repo_name.db.tar.zst" ] || die "no repository at $repo_dir yet"
+  tar -tf "$repo_dir/$repo_name.db.tar.zst" | sed -n 's#/$##p' | sort
+}
+
+case "${1:-}" in
+  build) shift; cmd_build "$@" ;;
+  status) cmd_status ;;
+  *) sed -n '2,8p' "$0" | sed 's/^# \{0,1\}//'; exit 2 ;;
+esac
