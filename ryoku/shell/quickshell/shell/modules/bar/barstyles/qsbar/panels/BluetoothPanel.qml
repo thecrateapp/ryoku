@@ -6,6 +6,7 @@ import Quickshell.Wayland
 import Quickshell.Bluetooth
 import "../IconMap.js" as IconMap
 import Ryoku.Ui.Singletons
+import Ryoku.Ui as Kit
 import shell.services
 
 PanelWindow {
@@ -54,6 +55,18 @@ PanelWindow {
     }
 
     property string pairingAddr: ""
+    readonly property bool blocked: BluetoothPower.blocked
+    // the crate body (CrateBluetoothDetails) reads a device's label and status here
+    function deviceLabel(dev) { return BtLink.label(dev) }
+    function deviceStatus(dev) {
+        if (!dev) return ""
+        if (btPanel.pairingAddr === String(dev.address || "")) return I18n.tr("Pairing…")
+        if (dev.state === BluetoothDeviceState.Connecting) return I18n.tr("Connecting…")
+        var battery = btPanel.batteryText(dev)
+        if (dev.connected)
+            return battery !== "" ? I18n.tr("Connected · %1").arg(battery) : I18n.tr("Connected")
+        return (dev.paired || dev.bonded) ? I18n.tr("Paired") : btPanel.typeLabel(dev)
+    }
     property string pairError: ""
     readonly property bool busy: pairProc.running
 
@@ -135,10 +148,13 @@ PanelWindow {
 
     MouseArea { anchors.fill: parent; onClicked: root.bluetoothVisible = false }
 
+    // crate-mark: the Controls sheet's language at panel size (CrateBluetoothDetails)
+    readonly property bool crate: Tokens.controlsCrate
+
     Rectangle {
         id: card
-        width: 300
-        height: col.implicitHeight + 24
+        width: btPanel.crate ? 320 : 300
+        height: btPanel.crate ? crateDetails.implicitHeight + 2 * Tokens.s4 : col.implicitHeight + 24
         radius: reveal > 0.001 ? root.panelRadius : 0
         color: "transparent"
         border.color: root.panelBorder
@@ -164,8 +180,26 @@ PanelWindow {
 
         MouseArea { anchors.fill: parent; onClicked: {} }
 
+        CrateBluetoothDetails {
+            id: crateDetails
+            visible: btPanel.crate
+            anchors.left: parent.left
+            anchors.right: parent.right
+            anchors.top: parent.top
+            anchors.margins: Tokens.s4
+            panel: btPanel
+            onCloseRequested: root.bluetoothVisible = false
+            onPowerRequested: BluetoothPower.toggle()
+            onSettingsRequested: {
+                root.bluetoothVisible = false
+                btRunner.running = false
+                btRunner.running = true
+            }
+        }
+
         Column {
             id: col
+            visible: !btPanel.crate
             anchors.fill: parent
             anchors.margins: 12
             spacing: 8

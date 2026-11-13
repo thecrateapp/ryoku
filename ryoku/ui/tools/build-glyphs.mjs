@@ -59,7 +59,9 @@ const alias = {
   signal_wifi_4_bar: "wi-fi", network_wifi_3_bar: "wi-fi-high", network_wifi_2_bar: "wi-fi-low",
   network_wifi_1_bar: "wi-fi-low", signal_wifi_0_bar: "wi-fi-none", arrow_forward: "alt-arrow-right",
   north_east: "arrow-right-up", display_settings: "display", memory: "cpu", gamepad: "gamepad",
-  mouse: "mouse-minimalistic", phone: "smartphone", watch: "watch-round", content_paste: "clipboard-text", refresh: "refresh", add: "add-circle", verified: "shield-check", verified_off: "shield", next: "skip-next", previous: "skip-previous", prev: "skip-previous",
+  mouse: "mouse-minimalistic", phone: "smartphone", watch: "watch-round", content_paste: "clipboard-text", refresh: "refresh", add: "add-circle", verified: "shield-check", verified_off: "shield",
+  "audio-headphones": "headphones-round", "audio-headset": "headphones-round", "audio-card": "speaker",
+  "input-mouse": "mouse-minimalistic", "input-gaming": "gamepad", bluetooth_connected: "bluetooth-wave", next: "skip-next", previous: "skip-previous", prev: "skip-previous",
   // freedesktop icon names (the OSD, MPRIS and notification sources use these)
   "audio-volume-high": "volume-loud", "audio-volume-medium": "volume", "audio-volume-low": "volume-small",
   "audio-volume-muted": "volume-cross",

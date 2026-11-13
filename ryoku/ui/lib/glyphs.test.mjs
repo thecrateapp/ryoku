@@ -88,3 +88,13 @@ test("the memory module and drives render distinct glyphs in the widget foregrou
   assert.equal(new Set(glyphs).size, names.length);
   assert.notEqual(glyphs[0], svg("memory", "#19aacc"));
 });
+
+test("the freedesktop device icons Bluetooth reports resolve", () => {
+  assert.equal(resolve("audio-headphones"), "headphones-round");
+  assert.equal(resolve("audio-headset"), "headphones-round");
+  assert.equal(resolve("audio-card"), "speaker");
+  assert.equal(resolve("input-mouse"), "mouse-minimalistic");
+  assert.equal(resolve("input-gaming"), "gamepad");
+  assert.equal(resolve("phone"), "smartphone");
+  assert.equal(resolve("bluetooth_connected"), "bluetooth-wave");
+});

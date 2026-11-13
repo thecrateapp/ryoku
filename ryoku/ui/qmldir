@@ -66,3 +66,4 @@ StreamRow 1.0 StreamRow.qml
 SignalBars 1.0 SignalBars.qml
 ListRow 1.0 ListRow.qml
 SheetHeader 1.0 SheetHeader.qml
+GlyphCatalog 1.0 lib/glyphs.js

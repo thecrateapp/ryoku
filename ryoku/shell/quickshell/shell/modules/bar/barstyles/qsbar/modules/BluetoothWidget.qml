@@ -4,6 +4,7 @@ import Quickshell.Bluetooth
 import Quickshell.Io
 import "../IconMap.js" as IconMap
 import Ryoku.Ui.Singletons
+import Ryoku.Ui as Kit
 
 Item {
     id: rootMod
@@ -49,7 +50,19 @@ Item {
         anchors.centerIn: parent
         spacing: 4
 
+        // crate-mark: the kit catalogue's Solar glyph at 18 px, in the widget's colour
+        Kit.Glyph {
+            objectName: "bluetoothGlyph"
+            visible: Tokens.controlsCrate
+            anchors.verticalCenter: parent.verticalCenter
+            name: rootMod.iconN
+            size: 18
+            color: rootMod.connected
+                ? (root.widgetHasFill("G15") ? rootMod.contentColor : root.seal)
+                : Qt.rgba(rootMod.contentColor.r, rootMod.contentColor.g, rootMod.contentColor.b, rootMod.btOn ? 0.7 : 0.3)
+        }
         IconText {
+            visible: !Tokens.controlsCrate
             anchors.verticalCenter: parent.verticalCenter
             text: IconMap.icon(rootMod.iconN)
             color: rootMod.connected
