@@ -20,17 +20,31 @@ Item {
 
     default property alias content: body.data
 
-    readonly property int headerH: 46
+    // Under controls "crate" the group is flat, as the crate panels' sections are:
+    // no sheet around it, a hairline above it to part it from the one before,
+    // and its caption without the running number ("01 POSITION" reads POSITION).
+    readonly property bool crate: Tokens.controlsCrate
+    readonly property string shownTitle: card.crate ? card.title.replace(/^\d+\s+/, "") : card.title
+
+    readonly property int headerH: card.crate ? 40 : 46
     implicitHeight: headerH + bodyWrap.height
     height: implicitHeight
 
     // the sheet frame: flat, a hairline, no shadow -- the Hub is print.
     Rectangle {
+        visible: !card.crate
         anchors.fill: parent
         radius: Tokens.radius
         color: "transparent"
         border.width: Tokens.border
         border.color: Tokens.line
+    }
+    Rectangle {
+        objectName: "sectionRule"
+        visible: card.crate
+        anchors { left: parent.left; right: parent.right; top: parent.top }
+        height: 1
+        color: Tokens.lineSoft
     }
 
     // header: the reference sheet's label vocabulary (a // lead, the tracked
@@ -44,7 +58,8 @@ Item {
             anchors { left: parent.left; leftMargin: Tokens.s4; verticalCenter: parent.verticalCenter }
             spacing: Tokens.s2
             Text {
-                text: card.title
+                objectName: "sectionTitle"
+                text: card.shownTitle
                 color: Tokens.labelAccent ? Tokens.caption : Tokens.inkDim
                 font.family: Tokens.controlsCrate ? Tokens.mono : Tokens.ui
                 font.pixelSize: Tokens.labelAccent ? Tokens.fMicro : Tokens.fBody
@@ -72,9 +87,19 @@ Item {
             font.letterSpacing: Tokens.trackMark
         }
 
+        // the crate caret is the catalogue's Solar arrow, down while open
+        Glyph {
+            visible: card.collapsible && card.crate
+            anchors { right: parent.right; rightMargin: Tokens.s4; verticalCenter: parent.verticalCenter }
+            name: "alt-arrow-down"
+            size: 14
+            color: hh.hovered ? Tokens.mark : Tokens.inkSecondary
+            rotation: card.expanded ? 0 : -90
+            Behavior on rotation { NumberAnimation { duration: Tokens.snap; easing.type: Tokens.easeSnap } }
+        }
         Text {
             id: caret
-            visible: card.collapsible
+            visible: card.collapsible && !card.crate
             anchors { right: parent.right; rightMargin: Tokens.s4; verticalCenter: parent.verticalCenter }
             text: "\u25b8"
             color: hh.hovered ? (tap.pressed ? Tokens.ink : Tokens.inkDim)
@@ -85,8 +110,10 @@ Item {
             Behavior on color { ColorAnimation { duration: Tokens.snap } }
         }
 
-        // the rule that closes the header, seen only while the group is open.
+        // the rule that closes the header, seen only while the group is open
+        // (a flat crate group has its rule above, not under its caption).
         Rectangle {
+            visible: !card.crate
             anchors { left: parent.left; right: parent.right; bottom: parent.bottom }
             anchors.leftMargin: Tokens.s4; anchors.rightMargin: Tokens.s4
             height: 1

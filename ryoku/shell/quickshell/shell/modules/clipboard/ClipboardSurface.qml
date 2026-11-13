@@ -131,8 +131,8 @@ Scope {
     readonly property real heightPercent: Math.max(24, Math.min(72, root.layout.heightPercent === undefined ? (Tokens.controlsCrate ? 40 : 42) : Number(root.layout.heightPercent)))
     readonly property real bottomPercent: Math.max(0, Math.min(20, root.layout.bottomPercent === undefined ? 0 : Number(root.layout.bottomPercent)))
     readonly property real panelRadius: Math.max(0, Math.min(32, root.layout.panelRadius === undefined ? (Tokens.controlsCrate ? 10 : 18) : Number(root.layout.panelRadius)))
-    readonly property real paneRadius: Math.max(0, Math.min(32, root.layout.paneRadius === undefined ? (Tokens.controlsCrate ? 10 : 12) : Number(root.layout.paneRadius)))
-    readonly property real cardRadius: Math.max(0, Math.min(32, root.layout.cardRadius === undefined ? 9 : Number(root.layout.cardRadius)))
+    readonly property real paneRadius: Math.max(0, Math.min(32, root.layout.paneRadius === undefined ? (Tokens.controlsCrate ? Tokens.radius : 12) : Number(root.layout.paneRadius)))
+    readonly property real cardRadius: Math.max(0, Math.min(32, root.layout.cardRadius === undefined ? (Tokens.controlsCrate ? Tokens.radius : 9) : Number(root.layout.cardRadius)))
 
     // A single pane: header (icon, title, count), a hairline, the card list, and
     // a compact actionable empty state. `s` scales it; ids inside stay local, so

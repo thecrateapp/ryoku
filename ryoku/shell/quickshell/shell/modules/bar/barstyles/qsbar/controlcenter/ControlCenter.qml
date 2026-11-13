@@ -148,7 +148,7 @@ PanelWindow {
     // paper, and a long one scrolls inside the cap.
     readonly property int plateCap: Math.min(tk.plateH, cc.height - cc.barH - 2 * tk.screenMargin - tk.gap)
     readonly property int plateH: Math.max(Math.min(rail.implicitHeight, cc.plateCap),
-        Math.min(cc.plateCap, tk.headH + tk.pad * 2 + tk.sectionGap + stage.pageHeight))
+        Math.min(cc.plateCap, head.implicitHeight + tk.pad * 2 + tk.sectionGap + stage.pageHeight))
 
     // A click anywhere off the plate dismisses, the way every other popout on this
     // bar behaves. It sits below the plate, so the plate's own eater still wins.
@@ -238,6 +238,7 @@ PanelWindow {
                 desc: cc.routeDef ? I18n.tr(cc.routeDef.desc) : ""
                 index: Routes.indexOf(cc.route)
                 onClosed: cc.close()
+                onSearchRequested: searchOverlay.shown = true
             }
 
             PageMotionStage {
@@ -310,6 +311,8 @@ PanelWindow {
         // past its corner radius, so the frame reframes as the plate resizes on a
         // route change rather than sitting outside the motion.
         Item {
+            // the crate look has no frame chrome: depth is the hairline and the glass
+            visible: !tk.crate
             anchors.fill: parent
             anchors.margins: tk.corner
             z: 10

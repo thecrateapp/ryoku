@@ -20,13 +20,15 @@ QtObject {
     readonly property int plateW: t.railW + t.contentW + t.pad * 2
     readonly property int plateH: Tokens.px(940)   // the cap; the page decides
     readonly property int screenMargin: Tokens.s5
-    // a 900px plate needs more curve than a control to read as rounded at all
-    readonly property int corner: Tokens.radius * 4
+    // a 900px plate needs more curve than a control to read as rounded at all;
+    // under controls "crate" it takes the 6 px corner every surface shares
+    readonly property bool crate: Tokens.controlsCrate
+    readonly property int corner: t.crate ? Tokens.radius : Tokens.radius * 4
 
     // ── rhythm ───────────────────────────────────────────────────────────────
-    readonly property int pad: Tokens.s5          // body inset
+    readonly property int pad: t.crate ? Tokens.s4 : Tokens.s5          // body inset (crate: the panels' 16)
     readonly property int gap: Tokens.s3          // between rows of a group
-    readonly property int sectionGap: Tokens.s5   // between titled sections
+    readonly property int sectionGap: t.crate ? Tokens.s4 : Tokens.s5   // between titled sections
     readonly property int colGap: Tokens.s4       // between grid columns
     readonly property int headH: Tokens.px(96)
     readonly property int rowH: Tokens.px(40)

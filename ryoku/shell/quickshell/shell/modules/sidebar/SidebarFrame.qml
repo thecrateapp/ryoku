@@ -6,7 +6,7 @@ import Ryoku.Ui.Singletons
 Rectangle {
     id: root
     property real s: 1
-    radius: Tokens.radius * s * (Tokens.controlsCrate ? 10 / 6 : 2.5)
+    radius: Tokens.radius * s * (Tokens.controlsCrate ? 1 : 2.5)   // crate: the 6 px every surface shares
     color: Tokens.controlsCrate ? Tokens.glass : Tokens.paper
     border.width: Tokens.border
     border.color: Tokens.line

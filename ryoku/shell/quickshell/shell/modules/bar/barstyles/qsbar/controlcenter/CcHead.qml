@@ -1,7 +1,9 @@
 import QtQuick
 import "../modules"
 import Ryoku.Ui
+import Ryoku.Ui as Kit
 import Ryoku.Ui.Singletons
+import "../panels"
 
 // The body's head: the panel's fixed eyebrow (QS BAR // SETTINGS) in tracked
 // mono, then the route's name in the display face with its kanji seal, and the
@@ -20,12 +22,68 @@ Item {
     property string desc: ""
     property int index: 0
     signal closed()
+    signal searchRequested()
 
-    implicitHeight: head.tk ? head.tk.headH : 80
+    // Under controls "crate" the head opens with the crate panels' own first line
+    // (the accent caption, Solar actions and the close), so every surface starts
+    // the same way; the route's name and summary follow as the page's title. The
+    // eyebrow, the marginalia strip and the text close mark are the stock head.
+    readonly property bool crate: Tokens.controlsCrate
+    implicitHeight: head.crate ? crateHead.implicitHeight + Tokens.s3 : (head.tk ? head.tk.headH : 80)
+
+    Column {
+        id: crateHead
+        visible: head.crate
+        anchors { left: parent.left; right: parent.right; top: parent.top }
+        spacing: Tokens.s2
+
+        CrateResourceHeader {
+            width: parent.width
+            title: I18n.tr("QS Bar") + " · " + I18n.tr(head.title)
+            closeObjectName: "closeControlCenter"
+            onCloseRequested: head.closed()
+            Kit.IconButton {
+                objectName: "searchControlCenter"
+                width: 32; height: 32
+                glyph: "magnifier"
+                Accessible.name: I18n.tr("Search settings")
+                onClicked: head.searchRequested()
+            }
+        }
+        Row {
+            spacing: Tokens.s3
+            Text {
+                id: crateName
+                objectName: "controlCenterTitle"
+                text: I18n.tr(head.title)
+                color: Tokens.ink
+                font.family: Tokens.display
+                font.weight: Tokens.displayWeightSet ? Tokens.displayWeight : Font.Light
+                font.pixelSize: Tokens.fHero
+            }
+            Text {
+                anchors.baseline: crateName.baseline
+                visible: text !== ""
+                text: UiPreferences.text(head.gloss, "")
+                color: Tokens.inkSubtle
+                font.family: Tokens.jp
+                font.pixelSize: Tokens.fBody
+            }
+        }
+        Text {
+            width: parent.width
+            text: I18n.tr(head.desc)
+            color: Tokens.inkSecondary
+            font.family: Tokens.ui
+            font.pixelSize: Tokens.fSmall
+            elide: Text.ElideRight
+        }
+    }
 
     // ── the eyebrow, name and summary ──
     UiText {
         id: eyebrow
+        visible: !head.crate
         anchors.left: parent.left
         anchors.top: parent.top
         anchors.topMargin: head.tk ? head.tk.gap / 2 : 6
@@ -41,6 +99,7 @@ Item {
     // (not the other way round, which lifted the name up into the eyebrow).
     Item {
         id: name
+        visible: !head.crate
         anchors.left: parent.left
         anchors.right: parent.right
         anchors.top: eyebrow.bottom
@@ -69,6 +128,7 @@ Item {
     }
 
     UiText {
+        visible: !head.crate
         anchors.left: parent.left
         anchors.right: parent.right
         anchors.top: name.bottom
@@ -83,6 +143,7 @@ Item {
     // ── the running head: a printed marginalia strip beside the close mark ──
     Marginalia {
         id: marg
+        visible: !head.crate
         anchors.right: shut.left
         anchors.rightMargin: head.tk ? head.tk.gap : 12
         anchors.verticalCenter: shut.verticalCenter
@@ -95,6 +156,7 @@ Item {
     // ── close ──
     Rectangle {
         id: shut
+        visible: !head.crate
         anchors.right: parent.right
         anchors.top: parent.top
         width: Tokens.ctlH

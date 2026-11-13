@@ -74,7 +74,7 @@ Item {
         // clamped to the screen); `cardWidth` is only the floor.
         width: Math.max(menu.cardWidth, Math.min(menu.width - Theme.s2 * 2, col.implicitWidth + panel.pad * 2))
         height: Math.min(panel.fullHeight, menu.height - Theme.s2 * 2)
-        radius: Ui.Tokens.controlsCrate ? 10 : Theme.menuRadius
+        radius: Ui.Tokens.controlsCrate ? Ui.Tokens.radius : Theme.menuRadius
         // crate-mark: the desktop menu is the same glass as every other surface
         color: Ui.Tokens.controlsCrate ? Ui.Tokens.glass : Theme.surface
         border.width: 1

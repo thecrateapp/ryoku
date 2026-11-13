@@ -81,7 +81,7 @@ PanelWindow {
         anchors.bottom: parent.bottom
         width: osd.implicitWidth + win.pad * 2
         height: osd.implicitHeight + win.padY * 2
-        radius: (Tokens.controlsCrate ? 10 : Theme.radiusWindow) * win.us
+        radius: (Tokens.controlsCrate ? Tokens.radius : Theme.radiusWindow) * win.us
         color: Tokens.controlsCrate ? Tokens.glass : Theme.surface
         opacity: Theme.windowOpacity * win.prog
         border.width: Theme.borderWidth

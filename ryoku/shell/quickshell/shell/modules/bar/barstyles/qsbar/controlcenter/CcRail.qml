@@ -2,6 +2,7 @@ import QtQuick
 import "../modules"
 import "kit/Routes.js" as Routes
 import Ryoku.Ui
+import Ryoku.Ui as Kit
 import Ryoku.Ui.Singletons
 import shell.services
 
@@ -19,6 +20,11 @@ Item {
     property string current: ""
     signal chose(string id)
 
+    // Under controls "crate" the rail speaks the crate panels' selection: the live
+    // route in the mark with a 1 px pick edge (as a connected network row), no bar,
+    // no register texture and no seal; the masthead is a plain tracked caption.
+    readonly property bool crate: Tokens.controlsCrate
+
     // Installed bar plugins that are not Ryoku's own: the Community route's count.
     readonly property int communityCount: {
         var c = (rail.root && rail.root.barCatalog) ? rail.root.barCatalog : []
@@ -31,7 +37,7 @@ Item {
     // The plate takes its height from whichever is taller, the rail or the page:
     // the masthead and the routes, each with the gap it actually sits in.
     implicitHeight: rail.tk
-        ? rail.tk.headH + nav.implicitHeight + rail.tk.gap * 2 + rail.tk.pad * 2
+        ? masthead.height + nav.implicitHeight + rail.tk.gap * 2 + rail.tk.pad * 2
         : 560
 
     // one route in the rail; a count on the right when the route carries one.
@@ -45,13 +51,16 @@ Item {
         x: rail.tk.gap
         height: rail.tk.navH
         radius: Tokens.radius
-        color: item.on ? (Tokens.selectFill ? Tokens.bone : "transparent")
+        color: rail.crate ? "transparent"
+            : item.on ? (Tokens.selectFill ? Tokens.bone : "transparent")
             : (ma.containsMouse && !Tokens.accentMarks ? Tokens.tint5 : "transparent")
         Behavior on color { ColorAnimation { duration: Tokens.snap } }
+        border.width: rail.crate && (item.on || ma.containsMouse) ? 1 : 0
+        border.color: item.on ? Tokens.pickEdge : Tokens.markHover
 
         // a theme that drops the selection fill marks the live route with a bar
         Rectangle {
-            visible: item.on && !Tokens.selectFill
+            visible: item.on && !Tokens.selectFill && !rail.crate
             anchors.left: parent.left
             anchors.verticalCenter: parent.verticalCenter
             width: 2; height: parent.height - Tokens.s4; radius: 1
@@ -77,13 +86,14 @@ Item {
             UiText {
                 anchors.verticalCenter: parent.verticalCenter
                 text: I18n.tr(item.modelData.label)
-                color: item.on ? (Tokens.selectFill ? Tokens.inkOnBone : Tokens.ink)
+                color: rail.crate ? (item.on ? Tokens.mark : ma.containsMouse ? Tokens.ink : Tokens.inkSecondary)
+                    : item.on ? (Tokens.selectFill ? Tokens.inkOnBone : Tokens.ink)
                     : (ma.containsMouse && Tokens.accentMarks ? Tokens.hoverInk : Tokens.inkDim)
                 font.family: Tokens.navCaps ? Tokens.navFont : Tokens.ui
                 font.pixelSize: Tokens.navCaps ? Tokens.fMicro : Tokens.fBody
                 font.capitalization: Tokens.navCaps ? Font.AllUppercase : Font.MixedCase
                 font.letterSpacing: Tokens.trackNav
-                font.weight: item.on ? Font.DemiBold : Font.Normal
+                font.weight: item.on && !rail.crate ? Font.DemiBold : Font.Normal
             }
         }
         Row {
@@ -118,15 +128,24 @@ Item {
 
     // the register sheet rides behind the rail only, exactly as the Hub's does:
     // the chrome carries the print texture, the content plate stays clean paper.
-    Reg { anchors.fill: parent }
+    Reg { anchors.fill: parent; visible: !rail.crate }
 
     // ── masthead ─────────────────────────────────────────────────────────────
     Item {
         id: masthead
         anchors { top: parent.top; left: parent.left; right: parent.right }
-        height: rail.tk.headH
+        // crate: one header line high, centred on the body's crate head line
+        height: rail.crate ? rail.tk.pad * 2 + 32 : rail.tk.headH
 
+        Kit.TrackLabel {
+            visible: rail.crate
+            anchors.left: parent.left
+            anchors.leftMargin: rail.tk.pad
+            anchors.verticalCenter: parent.verticalCenter
+            text: I18n.tr("Settings")
+        }
         Row {
+            visible: !rail.crate
             anchors.left: parent.left
             anchors.leftMargin: rail.tk.pad
             anchors.verticalCenter: parent.verticalCenter
@@ -198,8 +217,8 @@ Item {
                 color: Tokens.labelAccent ? Tokens.caption : Tokens.inkFaint
                 font.family: Tokens.mono
                 font.pixelSize: Tokens.fMicro
-                font.letterSpacing: Tokens.trackMark
-                font.weight: Font.DemiBold
+                font.letterSpacing: rail.crate ? Tokens.trackLabel : Tokens.trackMark
+                font.weight: rail.crate ? Font.Normal : Font.DemiBold
             }
         }
         Repeater {

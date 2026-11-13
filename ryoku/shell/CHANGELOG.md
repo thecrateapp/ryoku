@@ -1,6 +1,15 @@
 # Changelog: ryoku/shell/
 
 ## Unreleased
+- **QS Bar Settings and the crate panels speak one language.** Under controls
+  "crate" the settings head opens with the panels' own first line (the accent
+  caption, a Solar search and close), then the route's title in the display
+  face; the eyebrow, marginalia, register tag and corner ticks are gone. Setting
+  groups are flat (a hairline above, the caption without its running number, a
+  Solar caret) in QS Bar Settings and the Hub alike, and the rail marks the live
+  route with the mark and a 1 px pick edge. Every crate surface now shares the
+  6 px corner: Controls, the OSD, notifications, the clipboard, the desktop menu
+  and the QS Bar Settings plate.
 - **QS Bar Settings no longer stacks the Edge and Workspaces buttons.** Their
   row slot was a fixed width sized for the stock chips, and the larger crate
   chips wrapped onto a second line; the slot is now the buttons' own one-row

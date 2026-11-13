@@ -152,7 +152,7 @@ Rectangle {
     }
 
     readonly property bool crate: Ui.Tokens.controlsCrate
-    radius: card.unifiedFrame ? 0 : (card.crate ? 10 : Theme.radiusWidget) * card.us
+    radius: card.unifiedFrame ? 0 : (card.crate ? Ui.Tokens.radius : Theme.radiusWidget) * card.us
     // a theme style keeps the frame a hairline; the countdown carries the accent
     // a critical card (no countdown) keeps the full accent frame
     readonly property bool critical: card.n().urgency === 2
