@@ -3,6 +3,7 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import QtQuick.Controls as QQC
 import Ryoku.Ui
+import Ryoku.Ui as Kit
 import Ryoku.Ui.Singletons
 import ".."
 import "../Singletons"
@@ -122,29 +123,45 @@ Item {
         page.patch(ControlsSchema.defaults());
     }
 
-    component VisibilityChip: Rectangle {
+    component VisibilityChip: Loader {
         id: chip
         required property string label
         required property bool checked
         signal changed(bool checked)
-        implicitWidth: chipLabel.implicitWidth + Tokens.s3 * 2
-        implicitHeight: Tokens.ctlH + Tokens.s1
-        radius: Tokens.radius
-        color: checked ? Tokens.bone : (chipHover.hovered ? Tokens.tint10 : Tokens.paperLift)
-        border.width: Tokens.border
-        border.color: checked ? Tokens.bone : Tokens.line
-
-        Text {
-            id: chipLabel
-            anchors.centerIn: parent
-            text: I18n.tr(chip.label)
-            color: chip.checked ? Tokens.inkOnBone : Tokens.inkDim
-            font.family: Tokens.ui
-            font.pixelSize: Tokens.fSmall
-            font.weight: Font.Medium
+        sourceComponent: Tokens.controlsCrate ? crateChip : stockChip
+        Component {
+            id: crateChip
+            Kit.Chip {
+                objectName: "controlVisibility"
+                text: I18n.tr(chip.label)
+                outlinedSelection: true
+                on: chip.checked
+                onClicked: chip.changed(!chip.checked)
+            }
         }
-        HoverHandler { id: chipHover; cursorShape: Qt.PointingHandCursor }
-        TapHandler { onTapped: chip.changed(!chip.checked) }
+        Component {
+            id: stockChip
+            Rectangle {
+                implicitWidth: chipLabel.implicitWidth + Tokens.s3 * 2
+                implicitHeight: Tokens.ctlH + Tokens.s1
+                radius: Tokens.radius
+                color: chip.checked ? Tokens.bone : (chipHover.hovered ? Tokens.tint10 : Tokens.paperLift)
+                border.width: Tokens.border
+                border.color: chip.checked ? Tokens.bone : Tokens.line
+
+                Text {
+                    id: chipLabel
+                    anchors.centerIn: parent
+                    text: I18n.tr(chip.label)
+                    color: chip.checked ? Tokens.inkOnBone : Tokens.inkDim
+                    font.family: Tokens.ui
+                    font.pixelSize: Tokens.fSmall
+                    font.weight: Font.Medium
+                }
+                HoverHandler { id: chipHover; cursorShape: Qt.PointingHandCursor }
+                TapHandler { onTapped: chip.changed(!chip.checked) }
+            }
+        }
     }
 
     Column {
@@ -153,59 +170,15 @@ Item {
         width: page.width - 14
         spacing: Tokens.s3
 
-        Item {
+        PageHeader {
             width: parent.width
-            height: 14
-            Row {
-                id: eyebrow
-                anchors.verticalCenter: parent.verticalCenter
-                spacing: Tokens.s2
-                Rectangle { width: 16; height: Tokens.border; color: Tokens.ink; anchors.verticalCenter: parent.verticalCenter }
-                Text { text: UiPreferences.brandMark("力"); color: Tokens.ink; font.family: Tokens.jp; font.pixelSize: Tokens.fMicro; anchors.verticalCenter: parent.verticalCenter }
-                Text {
-                    text: I18n.tr("DESKTOP")
-                    color: Tokens.inkMuted
-                    font.family: Tokens.ui
-                    font.pixelSize: Tokens.fTiny
-                    font.weight: Font.Medium
-                    font.letterSpacing: Tokens.trackMark
-                    anchors.verticalCenter: parent.verticalCenter
-                }
-            }
-            Rectangle {
-                anchors.left: eyebrow.right
-                anchors.right: register.left
-                anchors.verticalCenter: parent.verticalCenter
-                anchors.leftMargin: Tokens.s3
-                anchors.rightMargin: Tokens.s3
-                height: Tokens.border
-                color: Tokens.lineSoft
-            }
-            Text {
-                id: register
-                anchors.right: parent.right
-                anchors.verticalCenter: parent.verticalCenter
-                text: I18n.tr("CONTROL / LAYOUT")
-                color: Tokens.inkFaint
-                font.family: Tokens.mono
-                font.pixelSize: Tokens.fTiny
-                font.letterSpacing: Tokens.trackLabel
-            }
-        }
-        Text {
-            text: I18n.tr("Controls")
-            color: Tokens.ink
-            font.family: Tokens.display
-            font.weight: Tokens.displayWeight
-            font.pixelSize: Tokens.fTitle
-        }
-        Text {
-            width: Math.min(parent.width, 720)
-            text: I18n.tr("Choose what Super+Escape shows. Drag the miniature blocks into order, then refine the selected block.")
-            color: Tokens.inkMuted
-            font.family: Tokens.ui
-            font.pixelSize: Tokens.fBody
-            wrapMode: Text.WordWrap
+            hubStyle: true
+            eyebrow: I18n.tr("DESKTOP")
+            register: I18n.tr("CONTROL / LAYOUT")
+            eyebrowHeight: 14
+            scaleEyebrow: true
+            title: I18n.tr("Controls")
+            blurb: I18n.tr("Choose what Super+Escape shows. Drag the miniature blocks into order, then refine the selected block.")
         }
     }
     Rectangle {
@@ -325,6 +298,7 @@ Item {
 
                                 Rectangle {
                                     id: block
+                                    objectName: "controlsPreviewBlock"
                                     x: 0
                                     y: 0
                                     width: slot.width
@@ -332,13 +306,14 @@ Item {
                                     radius: Tokens.radius
                                     color: slot.shown ? Tokens.paperLift : "transparent"
                                     border.width: Tokens.border
-                                    border.color: page.selectedSection === slot.modelData.id ? Tokens.lineStrong : Tokens.line
+                                    border.color: page.selectedSection === slot.modelData.id ? (Tokens.controlsCrate ? Tokens.pickEdge : Tokens.lineStrong) : Tokens.line
                                     opacity: slot.shown ? 1 : 0.58
 
                                     Rectangle {
                                         anchors.left: parent.left
                                         anchors.top: parent.top
                                         anchors.bottom: parent.bottom
+                                        visible: !Tokens.controlsCrate
                                         width: Tokens.s1
                                         color: slot.shown ? Tokens.bone : Tokens.line
                                     }

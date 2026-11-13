@@ -5,6 +5,7 @@ import QtQuick.Controls
 import Quickshell
 import Quickshell.Io
 import Ryoku.Ui
+import Ryoku.Ui as Kit
 import Ryoku.Ui.Singletons
 
 // Rashin (DESIGN.md section 11, ADVANCED). The optional, fully local agent OS
@@ -260,23 +261,38 @@ Item {
     // ── reusable poster parts ────────────────────────────────────────────────
 
     // a stamped-ink status chip: hairline box, tracked mono caps, tinted.
-    component Stamp: Rectangle {
+    component Stamp: Loader {
         id: stamp
         property string label: ""
         property color tint: Tokens.inkDim
-        implicitWidth: stampT.implicitWidth + 18
-        implicitHeight: 22
-        color: "transparent"
-        border.width: 1
-        border.color: Qt.rgba(stamp.tint.r, stamp.tint.g, stamp.tint.b, 0.55)
-        Text {
-            id: stampT
-            anchors.centerIn: parent
-            text: I18n.tr(stamp.label)
-            color: stamp.tint
-            font.family: Tokens.mono
-            font.pixelSize: 9
-            font.letterSpacing: 2
+        sourceComponent: Tokens.controlsCrate ? crateStamp : stockStamp
+        Component {
+            id: crateStamp
+            Kit.Chip {
+                objectName: "rashinStatus"
+                text: I18n.tr(stamp.label)
+                interactive: false
+                labelInk: stamp.tint
+            }
+        }
+        Component {
+            id: stockStamp
+            Rectangle {
+                implicitWidth: stampT.implicitWidth + 18
+                implicitHeight: 22
+                color: "transparent"
+                border.width: 1
+                border.color: Qt.rgba(stamp.tint.r, stamp.tint.g, stamp.tint.b, 0.55)
+                Text {
+                    id: stampT
+                    anchors.centerIn: parent
+                    text: I18n.tr(stamp.label)
+                    color: stamp.tint
+                    font.family: Tokens.mono
+                    font.pixelSize: 9
+                    font.letterSpacing: 2
+                }
+            }
         }
     }
 
@@ -293,16 +309,27 @@ Item {
             anchors.verticalCenter: parent.verticalCenter
             spacing: Tokens.s2
             Text {
+                objectName: "rashinSectionGloss"
+                visible: !Tokens.controlsCrate || UiPreferences.showJapaneseGloss
                 text: UiPreferences.text(hd.kanji, ""); color: Tokens.alert; font.family: Tokens.jp
                 font.pixelSize: 13; anchors.verticalCenter: parent.verticalCenter
             }
+            TrackLabel {
+                objectName: "rashinSectionLabel"
+                visible: Tokens.controlsCrate
+                text: hd.title
+                tone: "accent"
+                anchors.verticalCenter: parent.verticalCenter
+            }
             Text {
+                visible: !Tokens.controlsCrate
                 text: hd.title; color: Tokens.ink; font.family: Tokens.mono
                 font.pixelSize: 11; font.letterSpacing: 3; font.weight: Font.Medium
                 anchors.verticalCenter: parent.verticalCenter
             }
         }
         Rectangle {
+            visible: !Tokens.controlsCrate
             anchors.left: hdRow.right; anchors.leftMargin: Tokens.s3
             anchors.right: parent.right; anchors.verticalCenter: parent.verticalCenter
             height: 1; color: Tokens.line
@@ -313,24 +340,28 @@ Item {
     // optional live stat.
     component FnCard: Rectangle {
         id: fc
+        objectName: "rashinFunctionCard"
         property string index: ""
         property string kanji: ""
         property string name: ""
         property string desc: ""
         property string stat: ""
         height: 128
+        radius: Tokens.controlsCrate ? Tokens.radius : 0
         color: Tokens.paperLift
         border.width: 1
         border.color: Tokens.line
 
-        Rectangle { x: 0; y: 0; width: 34; height: 3; color: Tokens.ink }
+        Rectangle { visible: !Tokens.controlsCrate; x: 0; y: 0; width: 34; height: 3; color: Tokens.ink }
 
         Column {
             anchors { left: parent.left; right: parent.right; top: parent.top; margins: 16 }
             spacing: 7
             Row {
+                visible: !Tokens.controlsCrate || UiPreferences.showJapaneseGloss
                 spacing: Tokens.s2
                 Text {
+                    visible: !Tokens.controlsCrate
                     text: fc.index; color: Tokens.ink; font.family: Tokens.display; font.weight: Tokens.displayWeight
                     font.pixelSize: 12; anchors.verticalCenter: parent.verticalCenter
                 }
@@ -411,6 +442,7 @@ Item {
         property bool canChat: false
         width: parent ? parent.width : 0
         height: 56
+        radius: Tokens.controlsCrate ? Tokens.radius : 0
         color: Tokens.paperLift
         border.width: 1
         border.color: (ar.agent.present && ar.agent.wired) ? Qt.rgba(Tokens.ink.r, Tokens.ink.g, Tokens.ink.b, 0.3) : Tokens.line
@@ -490,7 +522,7 @@ Item {
     }
 
     // ── the page: paper and ink, one scrolling column ────────────────────
-    Rectangle { anchors.fill: parent; color: Tokens.paper }
+    Rectangle { visible: !Tokens.controlsCrate; anchors.fill: parent; color: Tokens.paper }
 
     Flickable {
         id: flick
@@ -543,7 +575,15 @@ Item {
                 }
 
                 // title cap, bottom-left.
+                PageHeader {
+                    visible: Tokens.controlsCrate
+                    anchors { left: parent.left; right: parent.right; bottom: parent.bottom; margins: Tokens.s4; leftMargin: Tokens.s5 }
+                    title: I18n.tr("RYOKU RASHIN")
+                    gloss: "羅針"
+                    blurb: I18n.tr("THE SYSTEM NEEDLE")
+                }
                 Column {
+                    visible: !Tokens.controlsCrate
                     anchors { left: parent.left; bottom: parent.bottom; leftMargin: Tokens.s5; bottomMargin: Tokens.s4 }
                     spacing: 3
                     Text {
@@ -593,6 +633,7 @@ Item {
                 Rectangle {
                     width: parent.colW
                     height: 96
+                    radius: Tokens.controlsCrate ? Tokens.radius : 0
                     color: Tokens.paperLift
                     border.width: 1
                     border.color: pg.daemonEnabled ? Qt.rgba(Tokens.ink.r, Tokens.ink.g, Tokens.ink.b, 0.35) : Tokens.line
@@ -634,10 +675,11 @@ Item {
                 Rectangle {
                     width: parent.colW
                     height: 96
+                    radius: Tokens.controlsCrate ? Tokens.radius : 0
                     color: Tokens.paperLift
                     border.width: 1
                     border.color: pg.prowlRunning ? Qt.rgba(Tokens.ink.r, Tokens.ink.g, Tokens.ink.b, 0.35) : Tokens.line
-                    Rectangle { x: 0; y: 0; width: 34; height: 3; color: pg.prowlRunning ? Tokens.ink : Tokens.alert }
+                    Rectangle { visible: !Tokens.controlsCrate; x: 0; y: 0; width: 34; height: 3; color: pg.prowlRunning ? Tokens.ink : Tokens.alert }
 
                     Column {
                         anchors { left: parent.left; right: parent.right; verticalCenter: parent.verticalCenter; leftMargin: 18; rightMargin: 18 }

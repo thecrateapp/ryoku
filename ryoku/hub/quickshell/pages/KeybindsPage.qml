@@ -7,6 +7,7 @@ import Quickshell.Io
 import Quickshell
 import Quickshell.Wayland
 import Ryoku.Ui
+import Ryoku.Ui as Kit
 import Ryoku.Ui.Singletons
 import "../Singletons"
 import "../Combos.js" as Combos
@@ -830,38 +831,14 @@ Item {
         // card column instead of floating in the middle of a page-wide window
         x: Tokens.s6
         width: Math.max(320, pg.width - Tokens.s6 * 2 - Tokens.s3)
-        // the register row sits off the title: a rule over a 32px
-        // title needs more than the gap between two lines of body text
         spacing: Tokens.s3
 
-        Row {
-            // the register row holds a fixed box, so the rule and the seal keep
-            // their distance from the title on every page
-            height: Tokens.s5
-            spacing: Tokens.s2
-            Rectangle {
-                width: 16; height: 1; color: Tokens.ink
-                anchors.verticalCenter: parent.verticalCenter
-            }
-            Text {
-                text: UiPreferences.brandMark("力"); color: Tokens.ink; font.family: Tokens.jp
-                font.pixelSize: 11; anchors.verticalCenter: parent.verticalCenter
-            }
-            Text {
-                text: I18n.tr("APPS & KEYS"); color: Tokens.inkMuted; font.family: Tokens.ui
-                font.pixelSize: 9; font.weight: Font.Medium; font.letterSpacing: Tokens.trackMark
-                anchors.verticalCenter: parent.verticalCenter
-            }
-        }
-        Text {
-            text: I18n.tr("Keybinds"); color: Tokens.ink
-            font.family: Tokens.display; font.pixelSize: Tokens.fTitle; font.weight: Tokens.displayWeight
-        }
-        Text {
-            width: Math.min(parent.width, 720)
-            text: I18n.tr("Every desktop shortcut in one place. Search, rebind, or add your own.")
-            color: Tokens.inkMuted; font.family: Tokens.ui
-            font.pixelSize: Tokens.fBody; wrapMode: Text.WordWrap
+        PageHeader {
+            width: parent.width
+            hubStyle: true
+            eyebrow: I18n.tr("APPS & KEYS")
+            title: I18n.tr("Keybinds")
+            blurb: I18n.tr("Every desktop shortcut in one place. Search, rebind, or add your own.")
         }
     }
 
@@ -1111,27 +1088,43 @@ Item {
 
                             Repeater {
                                 model: roleCard.modelData.candidates || []
-                                delegate: Rectangle {
+                                delegate: Loader {
                                     id: chip
                                     required property var modelData
-                                    visible: chip.modelData.installed === true
                                     readonly property bool sel: roleCard.eff === chip.modelData.cmd
-                                    implicitWidth: chLbl.implicitWidth + Tokens.s4
-                                    implicitHeight: 28
-                                    radius: Tokens.radius
-                                    color: chip.sel ? Tokens.mark : (chHov.hovered ? Tokens.tint10 : "transparent")
-                                    border.width: Tokens.border
-                                    border.color: chip.sel ? Tokens.mark : (chHov.hovered ? Tokens.lineStrong : Tokens.line)
-                                    Behavior on color { ColorAnimation { duration: Tokens.snap } }
-                                    Text {
-                                        id: chLbl
-                                        anchors.centerIn: parent
-                                        text: I18n.tr(chip.modelData.label)
-                                        color: chip.sel ? Tokens.paper : Tokens.inkDim
-                                        font.family: Tokens.ui; font.pixelSize: Tokens.fSmall
+                                    visible: chip.modelData.installed === true
+                                    sourceComponent: Tokens.controlsCrate ? crateChip : stockChip
+                                    Component {
+                                        id: crateChip
+                                        Kit.Chip {
+                                            objectName: "appCandidate"
+                                            text: I18n.tr(chip.modelData.label)
+                                            outlinedSelection: true
+                                            on: chip.sel
+                                            onClicked: pg.setApp(roleCard.role, chip.modelData.cmd)
+                                        }
                                     }
-                                    HoverHandler { id: chHov; cursorShape: Qt.PointingHandCursor }
-                                    TapHandler { onTapped: pg.setApp(roleCard.role, chip.modelData.cmd) }
+                                    Component {
+                                        id: stockChip
+                                        Rectangle {
+                                            implicitWidth: chLbl.implicitWidth + Tokens.s4
+                                            implicitHeight: 28
+                                            radius: Tokens.radius
+                                            color: chip.sel ? Tokens.mark : (chHov.hovered ? Tokens.tint10 : "transparent")
+                                            border.width: Tokens.border
+                                            border.color: chip.sel ? Tokens.mark : (chHov.hovered ? Tokens.lineStrong : Tokens.line)
+                                            Behavior on color { ColorAnimation { duration: Tokens.snap } }
+                                            Text {
+                                                id: chLbl
+                                                anchors.centerIn: parent
+                                                text: I18n.tr(chip.modelData.label)
+                                                color: chip.sel ? Tokens.paper : Tokens.inkDim
+                                                font.family: Tokens.ui; font.pixelSize: Tokens.fSmall
+                                            }
+                                            HoverHandler { id: chHov; cursorShape: Qt.PointingHandCursor }
+                                            TapHandler { onTapped: pg.setApp(roleCard.role, chip.modelData.cmd) }
+                                        }
+                                    }
                                 }
                             }
 
@@ -1183,33 +1176,50 @@ Item {
                                 spacing: Tokens.s2
                                 Repeater {
                                     model: pg.shellState.choices || []
-                                    Rectangle {
+                                    Loader {
                                         id: shellChip
                                         required property var modelData
                                         readonly property bool selected: pg.shellState.current === shellChip.modelData.key
-                                        implicitWidth: shellLabel.implicitWidth + Tokens.s4
-                                        implicitHeight: 28
-                                        radius: Tokens.radius
-                                        opacity: shellChip.modelData.installed && !pg.shellBusy ? 1 : 0.35
-                                        color: shellChip.selected ? Tokens.mark : (shellHover.hovered ? Tokens.tint10 : "transparent")
-                                        border.width: Tokens.border
-                                        border.color: shellChip.selected ? Tokens.mark : Tokens.line
-                                        Text {
-                                            id: shellLabel
-                                            anchors.centerIn: parent
-                                            text: I18n.tr(shellChip.modelData.label)
-                                            color: shellChip.selected ? Tokens.paper : Tokens.inkDim
-                                            font.family: Tokens.ui
-                                            font.pixelSize: Tokens.fSmall
+                                        sourceComponent: Tokens.controlsCrate ? crateShellChip : stockShellChip
+                                        Component {
+                                            id: crateShellChip
+                                            Kit.Chip {
+                                                objectName: "shellChip"
+                                                text: I18n.tr(shellChip.modelData.label)
+                                                outlinedSelection: true
+                                                on: shellChip.selected
+                                                enabled: shellChip.modelData.installed && !pg.shellBusy
+                                                onClicked: pg.setShell(shellChip.modelData.key)
+                                            }
                                         }
-                                        HoverHandler {
-                                            id: shellHover
-                                            enabled: shellChip.modelData.installed && !pg.shellBusy
-                                            cursorShape: enabled ? Qt.PointingHandCursor : Qt.ArrowCursor
-                                        }
-                                        TapHandler {
-                                            enabled: shellChip.modelData.installed && !pg.shellBusy
-                                            onTapped: pg.setShell(shellChip.modelData.key)
+                                        Component {
+                                            id: stockShellChip
+                                            Rectangle {
+                                                implicitWidth: shellLabel.implicitWidth + Tokens.s4
+                                                implicitHeight: 28
+                                                radius: Tokens.radius
+                                                opacity: shellChip.modelData.installed && !pg.shellBusy ? 1 : 0.35
+                                                color: shellChip.selected ? Tokens.mark : (shellHover.hovered ? Tokens.tint10 : "transparent")
+                                                border.width: Tokens.border
+                                                border.color: shellChip.selected ? Tokens.mark : Tokens.line
+                                                Text {
+                                                    id: shellLabel
+                                                    anchors.centerIn: parent
+                                                    text: I18n.tr(shellChip.modelData.label)
+                                                    color: shellChip.selected ? Tokens.paper : Tokens.inkDim
+                                                    font.family: Tokens.ui
+                                                    font.pixelSize: Tokens.fSmall
+                                                }
+                                                HoverHandler {
+                                                    id: shellHover
+                                                    enabled: shellChip.modelData.installed && !pg.shellBusy
+                                                    cursorShape: enabled ? Qt.PointingHandCursor : Qt.ArrowCursor
+                                                }
+                                                TapHandler {
+                                                    enabled: shellChip.modelData.installed && !pg.shellBusy
+                                                    onTapped: pg.setShell(shellChip.modelData.key)
+                                                }
+                                            }
                                         }
                                     }
                                 }
@@ -1243,33 +1253,50 @@ Item {
                                         { "mode": "starship", "label": I18n.tr("Starship") },
                                         { "mode": "oh-my-zsh", "label": I18n.tr("Oh My Zsh") }
                                     ]
-                                    delegate: Rectangle {
+                                    delegate: Loader {
                                         id: promptChip
                                         required property var modelData
                                         readonly property bool selected: pg.shellState.zshPrompt === promptChip.modelData.mode
-                                        implicitWidth: promptLabel.implicitWidth + Tokens.s4
-                                        implicitHeight: 28
-                                        radius: Tokens.radius
-                                        opacity: pg.shellBusy ? 0.35 : 1
-                                        color: promptChip.selected ? Tokens.mark : (promptHover.hovered ? Tokens.tint10 : "transparent")
-                                        border.width: Tokens.border
-                                        border.color: promptChip.selected ? Tokens.mark : Tokens.line
-                                        Text {
-                                            id: promptLabel
-                                            anchors.centerIn: parent
-                                            text: I18n.tr(promptChip.modelData.label)
-                                            color: promptChip.selected ? Tokens.paper : Tokens.inkDim
-                                            font.family: Tokens.ui
-                                            font.pixelSize: Tokens.fSmall
+                                        sourceComponent: Tokens.controlsCrate ? cratePromptChip : stockPromptChip
+                                        Component {
+                                            id: cratePromptChip
+                                            Kit.Chip {
+                                                objectName: "promptChip"
+                                                text: I18n.tr(promptChip.modelData.label)
+                                                outlinedSelection: true
+                                                on: promptChip.selected
+                                                enabled: !pg.shellBusy
+                                                onClicked: pg.setZshPrompt(promptChip.modelData.mode)
+                                            }
                                         }
-                                        HoverHandler {
-                                            id: promptHover
-                                            enabled: !pg.shellBusy
-                                            cursorShape: enabled ? Qt.PointingHandCursor : Qt.ArrowCursor
-                                        }
-                                        TapHandler {
-                                            enabled: !pg.shellBusy
-                                            onTapped: pg.setZshPrompt(promptChip.modelData.mode)
+                                        Component {
+                                            id: stockPromptChip
+                                            Rectangle {
+                                                implicitWidth: promptLabel.implicitWidth + Tokens.s4
+                                                implicitHeight: 28
+                                                radius: Tokens.radius
+                                                opacity: pg.shellBusy ? 0.35 : 1
+                                                color: promptChip.selected ? Tokens.mark : (promptHover.hovered ? Tokens.tint10 : "transparent")
+                                                border.width: Tokens.border
+                                                border.color: promptChip.selected ? Tokens.mark : Tokens.line
+                                                Text {
+                                                    id: promptLabel
+                                                    anchors.centerIn: parent
+                                                    text: I18n.tr(promptChip.modelData.label)
+                                                    color: promptChip.selected ? Tokens.paper : Tokens.inkDim
+                                                    font.family: Tokens.ui
+                                                    font.pixelSize: Tokens.fSmall
+                                                }
+                                                HoverHandler {
+                                                    id: promptHover
+                                                    enabled: !pg.shellBusy
+                                                    cursorShape: enabled ? Qt.PointingHandCursor : Qt.ArrowCursor
+                                                }
+                                                TapHandler {
+                                                    enabled: !pg.shellBusy
+                                                    onTapped: pg.setZshPrompt(promptChip.modelData.mode)
+                                                }
+                                            }
                                         }
                                     }
                                 }
@@ -1308,16 +1335,16 @@ Item {
                                         height: 82
                                         radius: Tokens.radius
                                         opacity: pg.starshipBusy ? 0.45 : 1
-                                        color: layoutCard.selected ? Tokens.mark : (layoutHover.hovered ? Tokens.tint10 : "transparent")
+                                        color: layoutCard.selected && !Tokens.controlsCrate ? Tokens.mark : (layoutHover.hovered ? Tokens.tint10 : "transparent")
                                         border.width: Tokens.border
-                                        border.color: layoutCard.selected ? Tokens.mark : (layoutHover.hovered ? Tokens.lineStrong : Tokens.line)
+                                        border.color: layoutCard.selected ? (Tokens.controlsCrate ? Tokens.pickEdge : Tokens.mark) : (layoutHover.hovered ? Tokens.lineStrong : Tokens.line)
                                         Behavior on color { ColorAnimation { duration: Tokens.snap } }
                                         Text {
                                             anchors.left: parent.left
                                             anchors.top: parent.top
                                             anchors.margins: Tokens.s2
                                             text: pg.starshipName(layoutCard.modelData.id)
-                                            color: layoutCard.selected ? Tokens.paper : Tokens.inkDim
+                                            color: layoutCard.selected ? (Tokens.controlsCrate ? Tokens.ink : Tokens.paper) : Tokens.inkDim
                                             font.family: Tokens.ui
                                             font.pixelSize: Tokens.fSmall
                                             font.weight: Font.Medium
@@ -1329,7 +1356,7 @@ Item {
                                             anchors.margins: Tokens.s2
                                             height: 42
                                             text: pg.starshipPreview(layoutCard.modelData.id)
-                                            color: layoutCard.selected ? Tokens.paper : Tokens.inkFaint
+                                            color: layoutCard.selected ? (Tokens.controlsCrate ? Tokens.inkSecondary : Tokens.paper) : Tokens.inkFaint
                                             font.family: Tokens.mono
                                             font.pixelSize: Tokens.fTiny
                                             wrapMode: Text.Wrap
@@ -1364,33 +1391,50 @@ Item {
                                         { "mode": "fixed", "label": I18n.tr("Fixed") },
                                         { "mode": "wallpaper", "label": I18n.tr("Follow wallpaper") }
                                     ]
-                                    delegate: Rectangle {
+                                    delegate: Loader {
                                         id: starshipPaletteChip
                                         required property var modelData
                                         readonly property bool selected: pg.starshipState.palette === starshipPaletteChip.modelData.mode
-                                        implicitWidth: paletteLabel.implicitWidth + Tokens.s4
-                                        implicitHeight: 28
-                                        radius: Tokens.radius
-                                        opacity: pg.starshipBusy ? 0.45 : 1
-                                        color: starshipPaletteChip.selected ? Tokens.mark : (paletteHover.hovered ? Tokens.tint10 : "transparent")
-                                        border.width: Tokens.border
-                                        border.color: starshipPaletteChip.selected ? Tokens.mark : Tokens.line
-                                        Text {
-                                            id: paletteLabel
-                                            anchors.centerIn: parent
-                                            text: starshipPaletteChip.modelData.label
-                                            color: starshipPaletteChip.selected ? Tokens.paper : Tokens.inkDim
-                                            font.family: Tokens.ui
-                                            font.pixelSize: Tokens.fSmall
+                                        sourceComponent: Tokens.controlsCrate ? crateStarshipPaletteChip : stockStarshipPaletteChip
+                                        Component {
+                                            id: crateStarshipPaletteChip
+                                            Kit.Chip {
+                                                objectName: "starshipPaletteChip"
+                                                text: starshipPaletteChip.modelData.label
+                                                outlinedSelection: true
+                                                on: starshipPaletteChip.selected
+                                                enabled: !pg.starshipBusy
+                                                onClicked: pg.setStarshipPalette(starshipPaletteChip.modelData.mode)
+                                            }
                                         }
-                                        HoverHandler {
-                                            id: paletteHover
-                                            enabled: !pg.starshipBusy
-                                            cursorShape: enabled ? Qt.PointingHandCursor : Qt.ArrowCursor
-                                        }
-                                        TapHandler {
-                                            enabled: !pg.starshipBusy
-                                            onTapped: pg.setStarshipPalette(starshipPaletteChip.modelData.mode)
+                                        Component {
+                                            id: stockStarshipPaletteChip
+                                            Rectangle {
+                                                implicitWidth: paletteLabel.implicitWidth + Tokens.s4
+                                                implicitHeight: 28
+                                                radius: Tokens.radius
+                                                opacity: pg.starshipBusy ? 0.45 : 1
+                                                color: starshipPaletteChip.selected ? Tokens.mark : (paletteHover.hovered ? Tokens.tint10 : "transparent")
+                                                border.width: Tokens.border
+                                                border.color: starshipPaletteChip.selected ? Tokens.mark : Tokens.line
+                                                Text {
+                                                    id: paletteLabel
+                                                    anchors.centerIn: parent
+                                                    text: starshipPaletteChip.modelData.label
+                                                    color: starshipPaletteChip.selected ? Tokens.paper : Tokens.inkDim
+                                                    font.family: Tokens.ui
+                                                    font.pixelSize: Tokens.fSmall
+                                                }
+                                                HoverHandler {
+                                                    id: paletteHover
+                                                    enabled: !pg.starshipBusy
+                                                    cursorShape: enabled ? Qt.PointingHandCursor : Qt.ArrowCursor
+                                                }
+                                                TapHandler {
+                                                    enabled: !pg.starshipBusy
+                                                    onTapped: pg.setStarshipPalette(starshipPaletteChip.modelData.mode)
+                                                }
+                                            }
                                         }
                                     }
                                 }
@@ -1456,6 +1500,7 @@ Item {
                         model: pg.railModel
                         delegate: Rectangle {
                             id: railItem
+                            objectName: "keybindCategory"
                             required property var modelData
                             required property int index
                             width: railCol.width
@@ -1463,7 +1508,9 @@ Item {
                             radius: Tokens.radius
                             readonly property bool active: !pg.searching && pg.selectedCat === railItem.modelData.name
                             readonly property bool dimmed: pg.searching && railItem.modelData.count === 0
-                            color: railItem.active ? (Tokens.selectFill ? Tokens.tint10 : "transparent")
+                            border.width: Tokens.controlsCrate && railItem.active ? 1 : 0
+                            border.color: Tokens.pickEdge
+                            color: railItem.active && !Tokens.controlsCrate ? (Tokens.selectFill ? Tokens.tint10 : "transparent")
                                 : (railHov.hovered && !Tokens.accentMarks ? Tokens.tint5 : "transparent")
                             Behavior on color { ColorAnimation { duration: Tokens.snap } }
 
@@ -1472,7 +1519,7 @@ Item {
                                 anchors.verticalCenter: parent.verticalCenter
                                 width: 2; height: parent.height - Tokens.s4
                                 radius: 1; color: Tokens.mark
-                                visible: railItem.active
+                                visible: !Tokens.controlsCrate && railItem.active
                             }
                             Text {
                                 anchors.left: parent.left

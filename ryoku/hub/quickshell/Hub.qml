@@ -54,8 +54,15 @@ Rectangle {
 
     implicitWidth: 1400
     implicitHeight: 880
-    color: Tokens.paper
+    color: Tokens.controlsCrate ? Tokens.glass : Tokens.paper
+    radius: Tokens.controlsCrate ? Tokens.radius : 0
     focus: true
+
+    Binding {
+        target: Tokens
+        property: "outlineSelections"
+        value: Tokens.controlsCrate
+    }
 
     // ── which page ───────────────────────────────────────────────────────
     property string section: "windowmanager"
@@ -1272,12 +1279,19 @@ Rectangle {
                                 // the poster's plate numerals: each group carries
                                 // its index, 01..05, in tabular mono.
                                 Text {
+                                    visible: !Tokens.controlsCrate
                                     text: (grp.index + 1 < 10 ? "0" : "") + (grp.index + 1)
                                     color: grp.activeGroup ? Tokens.inkDim : Tokens.inkFaint
                                     font.family: Tokens.mono; font.pixelSize: 9
                                     anchors.verticalCenter: parent.verticalCenter
                                 }
+                                TrackLabel {
+                                    visible: Tokens.controlsCrate
+                                    text: I18n.tr(grp.modelData.name)
+                                    anchors.verticalCenter: parent.verticalCenter
+                                }
                                 Text {
+                                    visible: !Tokens.controlsCrate
                                     text: I18n.tr(grp.modelData.name)
                                     color: Tokens.labelAccent ? Tokens.caption
                                         : (grp.activeGroup ? Tokens.inkDim : Tokens.inkFaint)
@@ -1287,10 +1301,12 @@ Rectangle {
                                     anchors.verticalCenter: parent.verticalCenter
                                 }
                                 Rectangle {
+                                    visible: !Tokens.controlsCrate
                                     width: Math.max(0, nav.width - 130); height: 1; color: Tokens.lineSoft
                                     anchors.verticalCenter: parent.verticalCenter
                                 }
                                 Rectangle {
+                                    visible: !Tokens.controlsCrate
                                     width: 1; height: 5; color: grp.activeGroup ? Tokens.lineStrong : Tokens.line
                                     anchors.verticalCenter: parent.verticalCenter
                                     anchors.verticalCenterOffset: -2
@@ -1322,14 +1338,17 @@ Rectangle {
                                     anchors.fill: parent
                                     anchors.topMargin: 1; anchors.bottomMargin: 1
                                     radius: Tokens.radius
-                                    color: navItem.sel ? (Tokens.selectFill ? Tokens.bone : "transparent")
+                                    objectName: "routeEdge-" + navItem.modelData.key
+                                    border.width: Tokens.controlsCrate && navItem.sel ? 1 : 0
+                                    border.color: Tokens.pickEdge
+                                    color: navItem.sel ? (!Tokens.controlsCrate && Tokens.selectFill ? Tokens.bone : "transparent")
                                         : (nh.hovered && !Tokens.accentMarks ? Tokens.tint10 : "transparent")
                                     Behavior on color { ColorAnimation { duration: Tokens.snap } }
                                 }
                                 // a theme that drops the selection fill marks the
                                 // live section with a bar instead
                                 Rectangle {
-                                    visible: navItem.sel && !Tokens.selectFill
+                                    visible: !Tokens.controlsCrate && navItem.sel && !Tokens.selectFill
                                     anchors.left: parent.left
                                     anchors.verticalCenter: parent.verticalCenter
                                     width: 2; height: parent.height - Tokens.s4; radius: 1
@@ -1345,7 +1364,7 @@ Rectangle {
                                     spacing: Tokens.s2
                                     Text {
                                         id: navLead
-                                        visible: navItem.sel && Tokens.selectFill
+                                        visible: !Tokens.controlsCrate && navItem.sel && Tokens.selectFill
                                         text: "//"
                                         color: Tokens.inkOnBoneDim
                                         font.family: Tokens.mono; font.pixelSize: 11
@@ -1354,7 +1373,7 @@ Rectangle {
                                     Text {
                                         id: navLatin
                                         text: I18n.tr(navItem.modelData.name)
-                                        color: navItem.sel ? (Tokens.selectFill ? Tokens.inkOnBone : Tokens.ink)
+                                        color: navItem.sel ? (!Tokens.controlsCrate && Tokens.selectFill ? Tokens.inkOnBone : Tokens.ink)
                                             : (nh.hovered && Tokens.accentMarks ? Tokens.hoverInk : Tokens.inkDim)
                                         font.family: Tokens.navCaps ? Tokens.navFont : Tokens.ui
                                         font.pixelSize: Tokens.navCaps ? Tokens.fMicro : 14
@@ -1371,7 +1390,7 @@ Rectangle {
                                     id: navKana
                                     anchors { right: parent.right; rightMargin: Tokens.s3; verticalCenter: parent.verticalCenter }
                                     text: hub.showJapaneseGloss ? (hub.jpName[navItem.modelData.key] || "") : ""
-                                    color: navItem.sel && Tokens.selectFill ? Tokens.inkOnBoneDim : Tokens.inkFaint
+                                    color: !Tokens.controlsCrate && navItem.sel && Tokens.selectFill ? Tokens.inkOnBoneDim : Tokens.inkFaint
                                     font.family: Tokens.jp; font.pixelSize: 12
                                     Behavior on color { ColorAnimation { duration: Tokens.snap } }
                                 }
@@ -1548,7 +1567,13 @@ Rectangle {
             visible: hub.pageFile(hub.section) === ""
             anchors.top: parent.top; anchors.left: parent.left
             spacing: Tokens.s2
+            PageHeader {
+                visible: Tokens.controlsCrate
+                width: pageArea.width
+                title: I18n.tr(hub.nameFor(hub.section))
+            }
             Row {
+                visible: !Tokens.controlsCrate
                 spacing: Tokens.s2
                 Rectangle { width: 16; height: 1; color: Tokens.ink; anchors.verticalCenter: parent.verticalCenter }
                 Text { text: hub.brandMark; color: Tokens.ink; font.family: Tokens.jp; font.pixelSize: 11; anchors.verticalCenter: parent.verticalCenter }
@@ -1558,7 +1583,7 @@ Rectangle {
                     font.letterSpacing: Tokens.trackMark; anchors.verticalCenter: parent.verticalCenter
                 }
             }
-            Text { text: I18n.tr(hub.nameFor(hub.section)); color: Tokens.ink; font.family: Tokens.display; font.pixelSize: Tokens.fTitle; font.weight: Tokens.displayWeight }
+            Text { visible: !Tokens.controlsCrate; text: I18n.tr(hub.nameFor(hub.section)); color: Tokens.ink; font.family: Tokens.display; font.pixelSize: Tokens.fTitle; font.weight: Tokens.displayWeight }
             Item { width: 1; height: Tokens.s4 }
             Text {
                 text: I18n.tr("PORTING IN PROGRESS"); color: Tokens.inkDim; font.family: Tokens.ui
@@ -1587,10 +1612,21 @@ Rectangle {
         anchors { top: parent.top; right: parent.right }
         anchors.topMargin: Tokens.s4; anchors.rightMargin: Tokens.s6
         z: 60
-        width: ubLabel.implicitWidth + Tokens.s4 * 2
-        height: 30
+        width: Tokens.controlsCrate ? updatesShortcut.implicitWidth : ubLabel.implicitWidth + Tokens.s4 * 2
+        height: Tokens.controlsCrate ? updatesShortcut.implicitHeight : 30
         readonly property bool here: hub.section === "updates"
+        Chip {
+            id: updatesShortcut
+            objectName: "updatesShortcut"
+            visible: Tokens.controlsCrate
+            anchors.fill: parent
+            text: ubLabel.text
+            outlinedSelection: true
+            on: updatesBtn.here
+            onClicked: hub.section = "updates"
+        }
         Rectangle {
+            visible: !Tokens.controlsCrate
             anchors.fill: parent
             radius: Tokens.radius
             color: updatesBtn.here ? Tokens.bone : (ubh.hovered ? Tokens.paperLift : Tokens.paper)
@@ -1602,6 +1638,7 @@ Rectangle {
         }
         Text {
             id: ubLabel
+            visible: !Tokens.controlsCrate
             anchors.centerIn: parent
             text: I18n.tr("UPDATES")
             color: updatesBtn.here ? Tokens.inkOnBone : Tokens.inkDim
@@ -1618,8 +1655,8 @@ Rectangle {
             antialiasing: true
             anchors { right: parent.right; top: parent.top; rightMargin: -2; topMargin: -2 }
         }
-        HoverHandler { id: ubh; cursorShape: Qt.PointingHandCursor }
-        TapHandler { onTapped: hub.section = "updates" }
+        HoverHandler { id: ubh; enabled: !Tokens.controlsCrate; cursorShape: Qt.PointingHandCursor }
+        TapHandler { enabled: !Tokens.controlsCrate; onTapped: hub.section = "updates" }
     }
 
     // ── settings files: a masthead chip beside UPDATES ───────────────────────
@@ -1631,9 +1668,20 @@ Rectangle {
         anchors.topMargin: Tokens.s4; anchors.rightMargin: Tokens.s3
         z: 60
         visible: hub.settingsFiles().length > 0
-        width: fbLabel.implicitWidth + Tokens.s4 * 2
-        height: 30
+        width: Tokens.controlsCrate ? settingsFilesShortcut.implicitWidth : fbLabel.implicitWidth + Tokens.s4 * 2
+        height: Tokens.controlsCrate ? settingsFilesShortcut.implicitHeight : 30
+        Chip {
+            id: settingsFilesShortcut
+            objectName: "settingsFilesShortcut"
+            visible: Tokens.controlsCrate
+            anchors.fill: parent
+            text: fbLabel.text
+            outlinedSelection: true
+            on: filesPop.open
+            onClicked: filesPop.open = !filesPop.open
+        }
         Rectangle {
+            visible: !Tokens.controlsCrate
             anchors.fill: parent
             radius: Tokens.radius
             color: filesPop.open ? Tokens.bone : (fbh.hovered ? Tokens.paperLift : Tokens.paper)
@@ -1645,6 +1693,7 @@ Rectangle {
         }
         Text {
             id: fbLabel
+            visible: !Tokens.controlsCrate
             anchors.centerIn: parent
             text: I18n.tr("FILES")
             color: filesPop.open ? Tokens.inkOnBone : Tokens.inkDim
@@ -1652,8 +1701,8 @@ Rectangle {
             font.weight: Font.Medium; font.letterSpacing: Tokens.trackLabel
             Behavior on color { ColorAnimation { duration: Tokens.snap } }
         }
-        HoverHandler { id: fbh; cursorShape: Qt.PointingHandCursor }
-        TapHandler { onTapped: filesPop.open = !filesPop.open }
+        HoverHandler { id: fbh; enabled: !Tokens.controlsCrate; cursorShape: Qt.PointingHandCursor }
+        TapHandler { enabled: !Tokens.controlsCrate; onTapped: filesPop.open = !filesPop.open }
     }
 
     // ── action bar ─────────────────────────────────────────────────────────
@@ -1828,6 +1877,8 @@ Rectangle {
                 // a result is active when either of them is on it, and the
                 // behavior eases between the two so a click after a key press
                 // looks like a continuation, not a jump.
+                border.width: Tokens.controlsCrate && rr.index === hub.searchCursor ? 1 : 0
+                border.color: Tokens.pickEdge
                 color: (rrh.containsMouse || rr.index === hub.searchCursor) ? Tokens.tint10 : "transparent"
                 Behavior on color { ColorAnimation { duration: Tokens.snap } }
                 Column {

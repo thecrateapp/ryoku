@@ -1,0 +1,17 @@
+#!/tools/bash
+# Deterministic replies for the Hub's read-side processes. No real program runs.
+case "${0##*/} $*" in
+    'ryoku-hub desktop schema') printf '%s\n' "$(< /provider.json)" ;;
+    'ryoku-hub desktop get'|'ryoku-hub desktop defaults') echo '{}' ;;
+    'ryoku-hub desktop plugins list') echo '{"compositor":{"version":"fixture"},"toolchain":{"ok":true,"missing":[]},"plugins":[]}' ;;
+    'ryoku-hub fastfetch get') printf '%s\n' "$(< /fixture/fastfetch.json)" ;;
+    'ryoku-hub fastfetch preview '*) printf '%s\n' 'OS      Ryoku Linux' 'KERNEL  6.18' 'CPU     Desktop CPU' 'MEMORY  5.0 / 16 GiB' 'UPTIME  1h 20m' ;;
+    'ryoku-hub outputs') echo '[{"name":"DP-1","x":0,"y":0,"width":1920,"height":1080,"refresh":60,"mode":"1920x1080@60","scale":1,"modes":["1920x1080@60","1280x720@60"],"physicalWidth":530}]' ;;
+    'ryoku-hub config get advanced') echo 0 ;;
+    'ryoku-hub config '*|'ryoku-hub desktop restore') ;;
+    'ryoku-host capabilities') echo '{"packageManager":"pacman","init":"systemd","snapshots":{"supported":true},"users":{"supported":true},"aur":{"supported":true}}' ;;
+    'bash -c '*'/proc/stat'*) echo '18 31 46 0.42 15360 3072 12 44 256 2048' ;;
+    'bash ryoku-sysinfo') printf '%s\n' operator studio 'Ryoku Linux' x86_64 '6.18' bash 'Desktop CPU' 8 'Integrated graphics' '' '5.0 / 16 GiB' 31 '24 / 256 GiB' 9 '1h 20m' 850 '1920 x 1080' '60 Hz' OPERATOR pacman ;;
+    'bash ryoku-profile-stats') printf '%s\n' '0.42' '46 °C' 142 '0 / 4 GiB' 'Discharging' '1.0' '1 display' 420 0 Adwaita Dark ;;
+    'ryoku-hub '*|'ryostore '*|'omarchy '*) echo '[]' ;;
+esac

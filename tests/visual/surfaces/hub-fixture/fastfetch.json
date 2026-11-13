@@ -1,0 +1,50 @@
+{
+  "accent": "226;52;42",
+  "palette": "fixed",
+  "logo": {
+    "kind": "builtin",
+    "source": "",
+    "width": 28,
+    "height": 14,
+    "padding": 3,
+    "paddingRight": 0,
+    "paddingTop": 0
+  },
+  "rows": [
+    {
+      "kind": "module",
+      "enabled": true,
+      "module": "os",
+      "key": "OS",
+      "label": "OS"
+    },
+    {
+      "kind": "module",
+      "enabled": true,
+      "module": "kernel",
+      "key": "KERNEL",
+      "label": "KERNEL"
+    },
+    {
+      "kind": "module",
+      "enabled": true,
+      "module": "cpu",
+      "key": "CPU",
+      "label": "CPU"
+    },
+    {
+      "kind": "module",
+      "enabled": true,
+      "module": "memory",
+      "key": "MEMORY",
+      "label": "MEMORY"
+    },
+    {
+      "kind": "module",
+      "enabled": true,
+      "module": "uptime",
+      "key": "UPTIME",
+      "label": "UPTIME"
+    }
+  ]
+}

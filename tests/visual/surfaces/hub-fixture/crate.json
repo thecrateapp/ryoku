@@ -1,0 +1,42 @@
+{
+  "language": "en",
+  "themePalette": {
+    "primary": "#06b6d4",
+    "onPrimary": "#0a0a0f",
+    "secondary": "#67e8f9",
+    "onSecondary": "#0a0a0f",
+    "tertiary": "#fbbf24",
+    "onTertiary": "#0a0a0f",
+    "error": "#ef4444",
+    "onError": "#0a0a0f",
+    "surface": "#0a0a0f",
+    "onSurface": "#f1f5f9",
+    "surfaceVariant": "#15161d",
+    "onSurfaceVariant": "#999ca0",
+    "outline": "#4a4c52",
+    "shadow": "#000000",
+    "inverseSurface": "#67e8f9",
+    "inverseOnSurface": "#0a0a0f",
+    "surfaceContainerLow": "#0f1016",
+    "surfaceContainer": "#111218"
+  },
+  "themeStyle": {
+    "lineAlpha": 0.1,
+    "display": "Bricolage Grotesque 96pt ExtraBold",
+    "displayWeight": 800,
+    "navCaps": true,
+    "accentMarks": true,
+    "focusAccent": true,
+    "labelAccent": true,
+    "selectFill": false,
+    "navFont": "JetBrainsMono Nerd Font",
+    "density": "compact",
+    "controls": "crate",
+    "mono": "JetBrainsMono Nerd Font"
+  },
+  "theme": {
+    "motion": {
+      "reduce": true
+    }
+  }
+}

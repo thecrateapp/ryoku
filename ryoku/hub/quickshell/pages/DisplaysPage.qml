@@ -881,59 +881,20 @@ Item {
         id: head
         anchors { left: parent.left; right: parent.right; top: parent.top }
         anchors.topMargin: Tokens.s6
-        // the register row sits off the title: a rule over a 32px
-        // title needs more than the gap between two lines of body text
         spacing: Tokens.s3
 
-        Row {
-            // the register row holds a fixed box, so the rule and the seal keep
-            // their distance from the title on every page
-            height: Tokens.s5
-            spacing: Tokens.s2
-            Rectangle {
-                width: 16; height: 1; color: Tokens.ink
-                anchors.verticalCenter: parent.verticalCenter
-            }
-            Text {
-                text: UiPreferences.brandMark("\u529b"); color: Tokens.ink; font.family: Tokens.jp
-                font.pixelSize: Tokens.fMicro; anchors.verticalCenter: parent.verticalCenter
-            }
-            Text {
-                text: I18n.tr("DEVICES"); color: Tokens.inkMuted; font.family: Tokens.ui
-                font.pixelSize: Tokens.fTiny; font.weight: Font.Medium; font.letterSpacing: Tokens.trackMark
-                anchors.verticalCenter: parent.verticalCenter
-            }
-        }
-
-        Item {
-            id: titleRow
+        PageHeader {
             width: parent.width
-            height: title.implicitHeight
-
-            Text {
-                id: title
-                anchors.left: parent.left; anchors.verticalCenter: parent.verticalCenter
-                text: I18n.tr("Displays"); color: Tokens.ink
-                font.family: Tokens.display; font.pixelSize: Tokens.fTitle; font.weight: Tokens.displayWeight
-            }
-            // the page's utility actions sit beside the title, per DESIGN section
-            // 8. Each computes a layout and applies it through the seam. MIRROR is
-            // gated on the output-mirroring capability, so it is absent where the
-            // compositor cannot clone one output onto another.
-            Row {
-                anchors.right: parent.right; anchors.verticalCenter: parent.verticalCenter
-                spacing: Tokens.s2
-                Btn { visible: Settings.supports("outputMirror"); text: I18n.tr("MIRROR"); armed: pg.monCount > 1; onAct: pg.mirrorAll() }
-                Btn { text: I18n.tr("EXTEND"); armed: pg.monCount > 1; onAct: pg.extend() }
+            hubStyle: true
+            eyebrow: I18n.tr("DEVICES")
+            scaleEyebrow: true
+            title: I18n.tr("Displays")
+            blurb: I18n.tr("Arrange your displays and set each one's mode. Save a layout to reuse it.")
+            actions: [
+                Btn { visible: Settings.supports("outputMirror"); text: I18n.tr("MIRROR"); armed: pg.monCount > 1; onAct: pg.mirrorAll() },
+                Btn { text: I18n.tr("EXTEND"); armed: pg.monCount > 1; onAct: pg.extend() },
                 Btn { text: I18n.tr("DPI AUTO-SCALE"); armed: pg.monCount > 0; onAct: pg.dpiAutoscale() }
-            }
-        }
-
-        Text {
-            width: Math.min(parent.width, 720)
-            text: I18n.tr("Arrange your displays and set each one's mode. Save a layout to reuse it.")
-            color: Tokens.inkMuted; font.family: Tokens.ui
-            font.pixelSize: Tokens.fBody; wrapMode: Text.WordWrap
+            ]
         }
     }
 
@@ -976,6 +937,7 @@ Item {
                 // 2px ink ring, disabled greys to 0.5.
                 delegate: Rectangle {
                     id: tile
+                    objectName: "displayCanvasTile"
                     required property int index
                     readonly property var m: pg.draft[index]
                     readonly property var v: pg.view()
@@ -990,9 +952,9 @@ Item {
                     height: { void pg.tick; return tile.m ? Math.max(28, pg.footH(tile.m) * tile.v.k) : 28; }
                     radius: Tokens.radius
                     antialiasing: false
-                    color: tile.on ? (Tokens.selectFill ? Tokens.tint10 : Tokens.rowWash) : (th.hovered ? Tokens.tint5 : "transparent")
-                    border.width: tile.on ? 2 : Tokens.border
-                    border.color: tile.on ? Tokens.mark : Tokens.line
+                    color: tile.on && !Tokens.controlsCrate ? (Tokens.selectFill ? Tokens.tint10 : Tokens.rowWash) : (th.hovered ? Tokens.tint5 : "transparent")
+                    border.width: tile.on && !Tokens.controlsCrate ? 2 : Tokens.border
+                    border.color: tile.on ? (Tokens.controlsCrate ? Tokens.pickEdge : Tokens.mark) : Tokens.line
                     opacity: tile.live ? 1 : 0.5
                     Behavior on color { ColorAnimation { duration: Tokens.snap } }
                     Behavior on border.color { ColorAnimation { duration: Tokens.snap } }
@@ -1460,7 +1422,10 @@ Item {
                                     anchors.fill: parent
                                     anchors.topMargin: 1; anchors.bottomMargin: 1
                                     radius: Tokens.radius
+                                    objectName: "displayProfileEdge"
                                     color: phov.hovered ? Tokens.tint5 : "transparent"
+                                    border.width: Tokens.controlsCrate && prof.modelData.matches ? 1 : 0
+                                    border.color: Tokens.pickEdge
                                     Behavior on color { ColorAnimation { duration: Tokens.snap } }
                                 }
                                 Rectangle {
@@ -1473,7 +1438,7 @@ Item {
                                 // an ink edge marks the profile whose displays are
                                 // connected now; emphasis without colour.
                                 Rectangle {
-                                    visible: prof.modelData.matches
+                                    visible: !Tokens.controlsCrate && prof.modelData.matches
                                     anchors { left: parent.left; verticalCenter: parent.verticalCenter }
                                     width: 2
                                     height: parent.height - Tokens.s3

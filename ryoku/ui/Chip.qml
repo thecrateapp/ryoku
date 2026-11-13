@@ -10,20 +10,27 @@ Rectangle {
 
     property string text: ""
     property bool on: false
+    property bool outlinedSelection: Tokens.outlineSelections
+    property bool interactive: true
+    property color labelInk: chip.outlined ? Tokens.ink : chip.tone
     signal clicked()
 
     readonly property bool crate: Tokens.controlsCrate
     readonly property bool hot: hover.hovered && chip.enabled
+    readonly property bool outlined: chip.crate && chip.outlinedSelection && chip.on
+    readonly property color tone: chip.on ? (chip.crate ? Tokens.paper : Tokens.inkOnBone)
+        : chip.crate ? (chip.hot ? Tokens.ink : Tokens.inkSecondary)
+        : (chip.hot && Tokens.accentMarks ? Tokens.hoverInk : Tokens.inkDim)
 
     implicitWidth: label.implicitWidth + (chip.crate ? 28 : 18)
     implicitHeight: chip.crate ? 32 : 24
     radius: Tokens.radius
     opacity: chip.enabled ? 1 : 0.5
-    color: chip.on ? (chip.crate ? Tokens.mark : Tokens.bone)
+    color: chip.outlined ? "transparent" : chip.on ? (chip.crate ? Tokens.mark : Tokens.bone)
         : chip.crate ? "transparent"
         : tap.pressed ? Tokens.tint16 : chip.hot ? Tokens.tint10 : "transparent"
-    border.width: Tokens.border
-    border.color: chip.on ? (chip.crate ? Tokens.mark : Tokens.line)
+    border.width: chip.outlined ? 1 : Tokens.border
+    border.color: chip.outlined ? Tokens.pickEdge : chip.on ? (chip.crate ? Tokens.mark : Tokens.line)
         : chip.hot ? (chip.crate || Tokens.accentMarks ? Tokens.markHover : Tokens.lineStrong)
         : Tokens.line
     Behavior on color { ColorAnimation { duration: chip.crate ? 150 : Tokens.snap } }
@@ -33,15 +40,13 @@ Rectangle {
         id: label
         anchors.centerIn: parent
         text: chip.text
-        color: chip.on ? (chip.crate ? Tokens.paper : Tokens.inkOnBone)
-            : chip.crate ? (chip.hot ? Tokens.ink : Tokens.inkSecondary)
-            : (chip.hot && Tokens.accentMarks ? Tokens.hoverInk : Tokens.inkDim)
+        color: chip.labelInk
         font.family: chip.crate ? Tokens.mono : Tokens.ui
         font.pixelSize: chip.crate ? 12 : 10
         font.weight: chip.crate ? Font.Normal : Font.Medium
         font.letterSpacing: chip.crate ? 12 * 0.04 : 0
     }
 
-    HoverHandler { id: hover; enabled: chip.enabled; cursorShape: Qt.PointingHandCursor }
-    TapHandler { id: tap; enabled: chip.enabled; onTapped: chip.clicked() }
+    HoverHandler { id: hover; enabled: chip.enabled && chip.interactive; cursorShape: Qt.PointingHandCursor }
+    TapHandler { id: tap; enabled: chip.enabled && chip.interactive; onTapped: chip.clicked() }
 }

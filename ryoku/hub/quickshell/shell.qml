@@ -1,6 +1,7 @@
 import QtQuick
 import Quickshell
 import Quickshell.Io
+import Quickshell.Wayland
 import Ryoku.Ui.Singletons
 
 // Ryoku Settings entry point. A normal floating window (not a layer-shell
@@ -32,7 +33,15 @@ ShellRoot {
         readonly property int fitH: (win.screen && win.screen.height > 0) ? Math.round((win.screen.height - 56) * 0.99) : 880
         minimumSize: Qt.size(Math.min(1120, win.fitW), Math.min(820, win.fitH))
         maximumSize: Qt.size(win.fitW, win.fitH)
-        color: Tokens.paper
+        color: Tokens.controlsCrate ? "transparent" : Tokens.paper
+        BackgroundEffect.blurRegion: glass.item ? glass.item.blurRegion : null
+
+        Loader {
+            id: glass
+            anchors.fill: parent
+            active: Tokens.controlsCrate
+            sourceComponent: HubGlass {}
+        }
 
         // Honour this monitor's Interface scale (Displays page): scale the whole
         // settings UI via Tokens. The window fills its screen, so a smaller scale

@@ -594,10 +594,20 @@ Item {
 
     // a named group head: 4px ink dot + tracked caps + a lineSoft leader.
     component SectionHead: Item {
+        id: sectionHead
         property string label: ""
         width: parent ? parent.width : 0
         height: 20
+        TrackLabel {
+            objectName: "fastfetchSectionLabel"
+            visible: Tokens.controlsCrate
+            width: parent.width
+            anchors.verticalCenter: parent.verticalCenter
+            text: I18n.tr(sectionHead.label)
+            tone: "accent"
+        }
         Row {
+            visible: !Tokens.controlsCrate
             id: shl
             anchors.left: parent.left
             anchors.verticalCenter: parent.verticalCenter
@@ -612,6 +622,7 @@ Item {
             }
         }
         Rectangle {
+            visible: !Tokens.controlsCrate
             anchors.left: shl.right; anchors.leftMargin: Tokens.s3
             anchors.right: parent.right; anchors.verticalCenter: parent.verticalCenter
             height: 1; color: Tokens.lineSoft
@@ -665,29 +676,47 @@ Item {
     // the row's move / enable / remove tool: a 26px hairline glyph button, the
     // square-utility idiom in monochrome. Recreated here (it was inline in the
     // old page) because the enable tool needs its glyph colour to track state.
-    component RowTool: Rectangle {
+    component RowTool: Loader {
         id: rt
         property string glyph: ""
+        property string solar: ""
+        property bool picked: false
         property color tint: Tokens.inkDim
         property bool armed: true
         signal tapped()
-        width: 26
-        height: 26
-        radius: Tokens.radius
-        opacity: armed ? 1 : 0.3
-        color: rh.hovered ? Tokens.tint10 : "transparent"
-        border.width: Tokens.border
-        border.color: rh.hovered ? Tokens.lineStrong : Tokens.line
-        Behavior on color { ColorAnimation { duration: Tokens.snap } }
-        Text {
-            anchors.centerIn: parent
-            text: rt.glyph
-            color: rh.hovered ? Tokens.ink : rt.tint
-            font.family: Tokens.ui
-            font.pixelSize: 12 // glyph, sized to the button, no matching token
+        sourceComponent: Tokens.controlsCrate ? crateRt : stockRt
+        Component {
+            id: crateRt
+            IconButton {
+                objectName: "compositionTool"
+                glyph: rt.solar
+                on: rt.picked
+                enabled: rt.armed
+                onClicked: rt.tapped()
+            }
         }
-        HoverHandler { id: rh; enabled: rt.armed; cursorShape: Qt.PointingHandCursor }
-        TapHandler { enabled: rt.armed; onTapped: rt.tapped() }
+        Component {
+            id: stockRt
+            Rectangle {
+                width: 26
+                height: 26
+                radius: Tokens.radius
+                opacity: rt.armed ? 1 : 0.3
+                color: rh.hovered ? Tokens.tint10 : "transparent"
+                border.width: Tokens.border
+                border.color: rh.hovered ? Tokens.lineStrong : Tokens.line
+                Behavior on color { ColorAnimation { duration: Tokens.snap } }
+                Text {
+                    anchors.centerIn: parent
+                    text: rt.glyph
+                    color: rh.hovered ? Tokens.ink : rt.tint
+                    font.family: Tokens.ui
+                    font.pixelSize: 12 // glyph, sized to the button, no matching token
+                }
+                HoverHandler { id: rh; enabled: rt.armed; cursorShape: Qt.PointingHandCursor }
+                TapHandler { enabled: rt.armed; onTapped: rt.tapped() }
+            }
+        }
     }
 
     // ── head: eyebrow, Fraunces title with EDIT CONFIG, subtitle ─────────────
@@ -697,49 +726,20 @@ Item {
         anchors.leftMargin: Tokens.s6
         anchors.rightMargin: Tokens.s6
         anchors.topMargin: Tokens.s6
-        // the register row sits off the title: a rule over a 32px
-        // title needs more than the gap between two lines of body text
         spacing: Tokens.s3
 
-        Row {
-            // the register row holds a fixed box, so the rule and the seal keep
-            // their distance from the title on every page
-            height: Tokens.s5
-            spacing: Tokens.s2
-            Rectangle {
-                width: 16; height: 1; color: Tokens.ink
-                anchors.verticalCenter: parent.verticalCenter
-            }
-            Text {
-                text: UiPreferences.brandMark("力"); color: Tokens.ink; font.family: Tokens.jp
-                font.pixelSize: Tokens.fMicro; anchors.verticalCenter: parent.verticalCenter
-            }
-            Text {
-                text: I18n.tr("TOOLS"); color: Tokens.inkMuted; font.family: Tokens.ui
-                font.pixelSize: Tokens.fTiny; font.weight: Font.Medium; font.letterSpacing: Tokens.trackMark
-                anchors.verticalCenter: parent.verticalCenter
-            }
-        }
-
-        Item {
-            id: titleRow
+        PageHeader {
             width: parent.width
-            height: title.implicitHeight
-
-            Text {
-                id: title
-                anchors.left: parent.left; anchors.verticalCenter: parent.verticalCenter
-                text: I18n.tr("Fastfetch"); color: Tokens.ink
-                font.family: Tokens.display; font.pixelSize: Tokens.fTitle; font.weight: Tokens.displayWeight
-            }
-            Row {
-                anchors.right: parent.right
-                anchors.verticalCenter: parent.verticalCenter
-                spacing: Tokens.s2
+            hubStyle: true
+            eyebrow: I18n.tr("TOOLS")
+            scaleEyebrow: true
+            title: I18n.tr("Fastfetch")
+            blurb: I18n.tr("The terminal readout: emblem, rows and tagline, previewed live.")
+            actions: [
                 Btn {
                     text: I18n.tr("BROWSE RYOSTORE")
                     onAct: pg.browseFastfetch()
-                }
+                },
                 Btn {
                     id: editBtn
                     text: I18n.tr("EDIT CONFIG")
@@ -763,14 +763,7 @@ Item {
                         }
                     }
                 }
-            }
-        }
-
-        Text {
-            width: Math.min(parent.width, 720)
-            text: I18n.tr("The terminal readout: emblem, rows and tagline, previewed live.")
-            color: Tokens.inkMuted; font.family: Tokens.ui
-            font.pixelSize: Tokens.fBody; wrapMode: Text.WordWrap
+            ]
         }
         // a Flow, not a Row: three verbs plus the count overflow the page at this
         // width and the last button was cut off the right edge instead of wrapping
@@ -1061,9 +1054,9 @@ Item {
                                     readonly property bool on: pg.model.logo.kind === "image" && pg.model.logo.source === artTile.modelData.path
                                     width: 80; height: 80
                                     radius: Tokens.radius
-                                    color: artTile.on ? (Tokens.selectFill ? Tokens.tint10 : Tokens.rowWash) : (artHov.hovered ? Tokens.tint5 : "transparent")
+                                    color: artTile.on && !Tokens.controlsCrate ? (Tokens.selectFill ? Tokens.tint10 : Tokens.rowWash) : (artHov.hovered ? Tokens.tint5 : "transparent")
                                     border.width: Tokens.border
-                                    border.color: artTile.on ? Tokens.mark : (artHov.hovered ? Tokens.lineStrong : Tokens.line)
+                                    border.color: artTile.on ? (Tokens.controlsCrate ? Tokens.pickEdge : Tokens.mark) : (artHov.hovered ? Tokens.lineStrong : Tokens.line)
                                     Behavior on color { ColorAnimation { duration: Tokens.snap } }
                                     Behavior on border.color { ColorAnimation { duration: Tokens.snap } }
                                     Image {
@@ -1330,7 +1323,7 @@ Item {
                             required property var modelData
                             required property int index
                             width: parent.width
-                            height: Tokens.rowH
+                            height: Tokens.controlsCrate ? Math.max(44, Tokens.rowH) : Tokens.rowH
                             radius: Tokens.radius
                             color: rowHov.hovered ? Tokens.tint5 : "transparent"
                             opacity: rowItem.modelData.enabled ? 1 : 0.5
@@ -1342,8 +1335,8 @@ Item {
                                 anchors.left: parent.left; anchors.leftMargin: Tokens.s2
                                 anchors.verticalCenter: parent.verticalCenter
                                 spacing: Tokens.s1
-                                RowTool { glyph: "\u2191"; armed: !pg.compositionLocked; onTapped: pg.moveRow(rowItem.index, -1) }
-                                RowTool { glyph: "\u2193"; armed: !pg.compositionLocked; onTapped: pg.moveRow(rowItem.index, 1) }
+                                RowTool { glyph: "\u2191"; solar: "alt-arrow-up"; armed: !pg.compositionLocked; onTapped: pg.moveRow(rowItem.index, -1) }
+                                RowTool { glyph: "\u2193"; solar: "alt-arrow-down"; armed: !pg.compositionLocked; onTapped: pg.moveRow(rowItem.index, 1) }
                             }
 
                             Text {
@@ -1379,12 +1372,14 @@ Item {
                                 anchors.verticalCenter: parent.verticalCenter
                                 spacing: Tokens.s1
                                 RowTool {
+                                    solar: rowItem.modelData.enabled ? "eye" : "eye-closed"
+                                    picked: rowItem.modelData.enabled
                                     glyph: rowItem.modelData.enabled ? "\u25cf" : "\u25cb"
                                     tint: rowItem.modelData.enabled ? Tokens.ink : Tokens.inkFaint
                                     armed: !pg.compositionLocked
                                     onTapped: pg.setRow(rowItem.index, "enabled", !rowItem.modelData.enabled)
                                 }
-                                RowTool { glyph: "\u2715"; armed: !pg.compositionLocked; onTapped: pg.removeRow(rowItem.index) }
+                                RowTool { glyph: "\u2715"; solar: "trash-bin-minimalistic"; armed: !pg.compositionLocked; onTapped: pg.removeRow(rowItem.index) }
                             }
                         }
                     }
