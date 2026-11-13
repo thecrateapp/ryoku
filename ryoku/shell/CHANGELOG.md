@@ -18,7 +18,8 @@
   equalizer bands a curve with a draggable node per band over the presets.
 - **CPU, GPU and temperatures in QS Bar follow the Crate theme.** The CPU and
   GPU panels show usage history and hardware readings. The temperatures panel
-  shows sensor limits and lets you choose which sensor appears on the bar.
+  shows each sensor’s full name, temperature meter and limit, and lets you
+  choose which sensor appears on the bar.
 - **Memory and storage in QS Bar follow the Crate theme.** Memory shows its
   usage history and module speed. Storage shows root filesystem usage and
   the inventory of physical drives.

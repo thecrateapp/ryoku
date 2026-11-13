@@ -175,6 +175,8 @@ PanelWindow {
             id: crateBody
             CrateThermalsDetails {
                 thermals: thermalPanel
+                availableHeight: Math.max(0, (thermalPanel.screen?.height ?? thermalPanel.height) - thermalPanel.barBottom
+                    - 2 * thermalPanel.gap - 2 * panelBody.inset)
                 onCloseRequested: thermalPanel.root.thermalVisible = false
                 onSourceRequested: source => thermalPanel.root.barTemperatureSource = source
             }
