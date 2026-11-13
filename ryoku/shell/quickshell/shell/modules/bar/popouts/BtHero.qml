@@ -240,7 +240,7 @@ Item {
             width: parent.width
             height: 14 * root.s
             visible: root.connected && root.isCurrentSink && Audio.sink && Audio.sink.audio
-            readonly property real frac: (Audio.sink && Audio.sink.audio) ? Math.max(0, Math.min(1, Audio.sink.audio.volume)) : 0
+            readonly property real level: Audio.volumeOf(Audio.sink)
             GlyphIcon {
                 id: volIcon
                 anchors.left: parent.left
@@ -255,7 +255,7 @@ Item {
                 id: volPct
                 anchors.right: parent.right
                 anchors.verticalCenter: parent.verticalCenter
-                text: Math.round(vol.frac * 100) + "%"
+                text: Math.round(vol.level * 100) + "%"
                 color: root.inkDim
                 font.family: Theme.mono
                 font.pixelSize: 9 * root.s
@@ -274,7 +274,7 @@ Item {
                 Rectangle {
                     anchors.left: parent.left
                     anchors.verticalCenter: parent.verticalCenter
-                    width: parent.width * vol.frac
+                    width: parent.width * Math.max(0, Math.min(1, vol.level))
                     height: parent.height
                     radius: 1 * root.s
                     color: root.ink
@@ -284,9 +284,9 @@ Item {
                     anchors.margins: -7 * root.s
                     cursorShape: Qt.PointingHandCursor
                     function setAt(mx) {
-                        if (!Audio.sink || !Audio.sink.audio)
+                        if (!vol.visible || volTrack.width <= 0)
                             return;
-                        Audio.sink.audio.volume = Math.max(0, Math.min(1, (mx - 7 * root.s) / volTrack.width));
+                        Audio.setSinkVolume((mx - 7 * root.s) / volTrack.width, 1);
                     }
                     onPressed: mouse => setAt(mouse.x)
                     onPositionChanged: mouse => { if (pressed) setAt(mouse.x); }

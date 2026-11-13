@@ -41,7 +41,7 @@ Item {
         return bluetoothDevice ? BtLink.label(bluetoothDevice) : "Not connected";
     }
     readonly property var sinkAudio: Audio.sink && Audio.sink.audio ? Audio.sink.audio : null
-    readonly property real volume: sinkAudio ? sinkAudio.volume : 0
+    readonly property real volume: Audio.volumeOf(Audio.sink)
     readonly property bool volumeMuted: sinkAudio ? sinkAudio.muted : false
     readonly property string focusedDdcBus: {
         const monitors = Devices.ddcMonitors || [];
@@ -65,7 +65,7 @@ Item {
     function setVolume(value) {
         if (!sinkAudio)
             return;
-        sinkAudio.volume = Math.max(0, Math.min(1, value));
+        Audio.setSinkVolume(value, 1);
         if (sinkAudio.muted && value > 0)
             sinkAudio.muted = false;
     }

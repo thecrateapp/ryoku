@@ -16,8 +16,7 @@ Item {
 
     readonly property var sinkAudio: Audio.sink && Audio.sink.audio
         ? Audio.sink.audio : null
-    readonly property real volume: sinkAudio
-        ? Math.max(0, Math.min(1, Number(sinkAudio.volume) || 0)) : 0
+    readonly property real volume: Audio.volumeOf(Audio.sink)
     readonly property var adapter: Bluetooth.defaultAdapter
     readonly property int connectedDevices: {
         if (!adapter || !adapter.enabled || !Bluetooth.devices)
@@ -74,7 +73,7 @@ Item {
     function stepVolume(steps) {
         if (!sinkAudio || steps === 0)
             return;
-        sinkAudio.volume = Math.max(0, Math.min(1, volume + steps * 0.05));
+        Audio.setSinkVolume(Math.min(1, volume) + steps * 0.05, 1);
     }
 
     function hit(item, pointX) {

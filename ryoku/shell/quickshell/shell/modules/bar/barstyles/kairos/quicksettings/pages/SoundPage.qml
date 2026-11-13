@@ -20,7 +20,7 @@ Column {
 
     readonly property var sink: Audio.sink
     readonly property var source: Audio.source
-    readonly property real outVol: (page.sink && page.sink.audio) ? page.sink.audio.volume : 0
+    readonly property real outVol: Audio.volumeOf(page.sink)
     readonly property bool outMuted: (page.sink && page.sink.audio) ? page.sink.audio.muted : false
     readonly property real inVol: (page.source && page.source.audio) ? page.source.audio.volume : 0
     readonly property bool inMuted: (page.source && page.source.audio) ? page.source.audio.muted : false
@@ -29,7 +29,7 @@ Column {
         if (!page.sink || !page.sink.audio) return;
         var a = page.sink.audio;
         if (a.muted && v > 0) a.muted = false;
-        a.volume = Math.max(0, Math.min(1, v));
+        Audio.setSinkVolume(v, 1);
     }
     function setIn(v) {
         if (!page.source || !page.source.audio) return;

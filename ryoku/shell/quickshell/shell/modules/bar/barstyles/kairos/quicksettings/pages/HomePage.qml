@@ -57,12 +57,12 @@ Column {
         else if (page.ddcBus !== "") Devices.setBrightness(page.ddcBus, pct);
     }
 
-    readonly property real volume: (Audio.sink && Audio.sink.audio) ? Audio.sink.audio.volume : 0
+    readonly property real volume: Audio.volumeOf(Audio.sink)
     function setVolume(v) {
         var s = Audio.sink;
         if (!s || !s.audio) return;
         if (s.audio.muted && v > 0) s.audio.muted = false;
-        s.audio.volume = Math.max(0, Math.min(1, v));
+        Audio.setSinkVolume(v, 1);
     }
 
     // Weather: the full WMO set, day/night split, plus a mood tint (night cool

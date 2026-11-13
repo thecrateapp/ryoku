@@ -11,11 +11,11 @@ HFader {
 
     icon: "speaker"
     lit: root.open
-    value: Audio.sink ? Audio.sink.audio.volume : 0
+    value: Audio.volumeOf(Audio.sink)
     muted: Audio.sink ? Audio.sink.audio.muted : false
-    valueLabel: !Audio.sink ? "" : (Audio.sink.audio.muted ? I18n.tr("off") : Math.round(Audio.sink.audio.volume * 100) + "%")
+    valueLabel: !Audio.sink ? "" : (Audio.sink.audio.muted ? I18n.tr("off") : Math.round(root.value * 100) + "%")
     peakNode: Audio.sink
     peakEnabled: root.open && !!Audio.sink
-    onMoved: v => { if (Audio.sink) Audio.sink.audio.volume = v; }
+    onMoved: v => Audio.setSinkVolume(v, 1)
     onIconTapped: { if (Audio.sink) Audio.sink.audio.muted = !Audio.sink.audio.muted; }
 }

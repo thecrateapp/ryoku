@@ -16,19 +16,9 @@ Item {
 
     readonly property var sink: Audio.sink
     readonly property var source: Audio.source
-    readonly property var sinkAudio: sink && sink.audio ? sink.audio : null
-    readonly property var sourceAudio: source && source.audio ? source.audio : null
     readonly property var outputs: (Audio.outputs || []).filter(Audio.alive)
     readonly property var inputs: (Audio.inputs || []).filter(Audio.alive)
     readonly property var streams: (Audio.streams || []).filter(Audio.alive)
-
-    function setVolume(audio, value) {
-        if (!audio)
-            return;
-        audio.volume = Math.max(0, Math.min(1, value));
-        if (audio.muted && value > 0)
-            audio.muted = false;
-    }
 
     function toggleMute(audio) {
         if (audio)
@@ -66,23 +56,37 @@ Item {
     component VolumeControl: Row {
         id: control
 
-        required property var audio
+        required property var node
+        readonly property var audio: node && node.audio ? node.audio : null
+        property bool output: false
+        readonly property real level: output ? Audio.volumeOf(node) : audio ? audio.volume : 0
         required property string iconOn
         required property string iconOff
 
         spacing: K.Style.s2
 
+        function setVolume(value) {
+            if (!audio)
+                return;
+            if (output)
+                Audio.setNodeVolume(node, value, 1);
+            else
+                audio.volume = Math.max(0, Math.min(1, value));
+            if (audio.muted && value > 0)
+                audio.muted = false;
+        }
+
         K.Slider {
             id: volumeSlider
             anchors.verticalCenter: parent.verticalCenter
             width: Math.max(0, control.width - muteButton.width - control.spacing)
-            value: control.audio ? control.audio.volume : 0
-            icon: !control.audio || control.audio.muted || control.audio.volume <= 0
+            value: control.level
+            icon: !control.audio || control.audio.muted || control.level <= 0
                 ? control.iconOff : control.iconOn
             valueText: Math.round(value * 100) + "%"
             enabled: control.audio !== null
-            onMoved: value => page.setVolume(control.audio, value)
-            onCommitted: value => page.setVolume(control.audio, value)
+            onMoved: value => control.setVolume(value)
+            onCommitted: value => control.setVolume(value)
         }
 
         K.IconButton {
@@ -118,7 +122,7 @@ Item {
             anchors.top: streamLabel.bottom
             anchors.topMargin: K.Style.s1
             width: parent.width
-            audio: streamRow.audio
+            node: streamRow.stream
             iconOn: "volume_up"
             iconOff: "volume_off"
         }
@@ -142,7 +146,8 @@ Item {
 
             VolumeControl {
                 width: parent.width
-                audio: page.sinkAudio
+                node: page.sink
+                output: true
                 iconOn: "volume_up"
                 iconOff: "volume_off"
             }
@@ -180,7 +185,7 @@ Item {
 
             VolumeControl {
                 width: parent.width
-                audio: page.sourceAudio
+                node: page.source
                 iconOn: "mic"
                 iconOff: "mic_off"
             }

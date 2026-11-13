@@ -34,14 +34,14 @@ GameBarCard {
             s: card.s
             icon: Audio.sink ? Audio.nodeIcon(Audio.sink) : "speaker"
             lit: true
-            value: card.sinkAudio ? card.sinkAudio.volume : 0
+            value: Audio.volumeOf(Audio.sink)
             muted: card.sinkAudio ? card.sinkAudio.muted : false
             valueLabel: card.sinkAudio
-                ? (card.sinkAudio.muted ? I18n.tr("off") : Math.round(card.sinkAudio.volume * 100) + "%")
+                ? (card.sinkAudio.muted ? I18n.tr("off") : Math.round(value * 100) + "%")
                 : "n/a"
             peakNode: Audio.sink
             peakEnabled: card.polling && !!Audio.sink
-            onMoved: v => { if (card.sinkAudio) card.sinkAudio.volume = v; }
+            onMoved: v => { if (card.sinkAudio) Audio.setSinkVolume(v, 1); }
             onIconTapped: { if (card.sinkAudio) card.sinkAudio.muted = !card.sinkAudio.muted; }
         }
 

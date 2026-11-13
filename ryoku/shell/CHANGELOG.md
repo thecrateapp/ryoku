@@ -1,6 +1,9 @@
 # Changelog: ryoku/shell/
 
 ## Unreleased
+- Kairos, Orpheus, FrameBars, the audio popouts and Game Bar now use the
+  device route when adjusting speaker volume. Their readouts include any
+  master gain already applied, and their controls retain their 100 % limit.
 - **The AI usage panel no longer turns a provider red.** Pace shows on the
   weekly beam instead: a hairline tick where use should be today, and the share
   past it in the palette's caution tone. The last seven days draw as a 1 px

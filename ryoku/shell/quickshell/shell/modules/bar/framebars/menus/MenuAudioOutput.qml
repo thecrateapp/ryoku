@@ -36,12 +36,12 @@ Item {
             s: root.s
             icon: root.sink ? Audio.nodeIcon(root.sink) : "speaker"
             lit: root.open
-            value: root.haveSink ? root.sink.audio.volume : 0
+            value: Audio.volumeOf(root.sink)
             muted: root.haveSink ? root.sink.audio.muted : false
-            valueLabel: !root.haveSink ? "" : (root.sink.audio.muted ? I18n.tr("off") : Math.round(root.sink.audio.volume * 100) + "%")
+            valueLabel: !root.haveSink ? "" : (root.sink.audio.muted ? I18n.tr("off") : Math.round(value * 100) + "%")
             peakNode: root.sink
             peakEnabled: root.open && !!root.sink
-            onMoved: v => { if (root.haveSink) root.sink.audio.volume = v; }
+            onMoved: v => { if (root.haveSink) Audio.setSinkVolume(v, 1); }
             onIconTapped: { if (root.haveSink) root.sink.audio.muted = !root.sink.audio.muted; }
         }
 
