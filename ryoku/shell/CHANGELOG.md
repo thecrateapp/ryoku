@@ -20,6 +20,10 @@
   its weekly share as a figure and a beam, the pace line, the last seven days
   as a hairline bar chart and its other limit windows as readout rows; a
   provider behind pace turns to the alert, and OpenCode's models follow.
+- **The QS Bar tray follows the Crate theme.** Each hidden app is a list row
+  with open, pin and menu buttons, one that needs attention takes the pick, and
+  an app's menu is drawn like the desktop menu: 32 px rows, hairline
+  separators, a pick mark on checked entries and a turning submenu chevron.
 - **CPU, GPU and temperatures in QS Bar follow the Crate theme.** The CPU and
   GPU panels show usage history and hardware readings. The temperatures panel
   shows each sensor’s full name, temperature meter and limit, and lets you

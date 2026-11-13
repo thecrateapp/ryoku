@@ -47,6 +47,34 @@ PanelWindow {
             if (root.trayPinned.indexOf(its[i].service) < 0 && its[i].status === "NeedsAttention") n++
         return n
     }
+    // what the crate body reads and drives: the hidden apps, flattened
+    readonly property var hiddenItems: {
+        var out = [], its = Tray.items
+        for (var i = 0; i < its.length; i++) {
+            var it = its[i]
+            if (!it || root.trayPinned.indexOf(it.service) >= 0) continue
+            var name = root.trayDisplayName(it)
+            out.push({ service: it.service, name: name, description: root.trayDescription(it, name),
+                attention: it.status === "NeedsAttention", hasMenu: it.menu != null, itemIsMenu: !!it.itemIsMenu,
+                icon: it.iconPath ? "file://" + it.iconPath : (it.iconName ? Icons.path(it.iconName, true) : ""),
+                raw: it })
+        }
+        return out
+    }
+    function openMenu(entry, anchor) {
+        if (!entry.hasMenu) return
+        var gp = anchor.mapToItem(null, 0, 0)
+        root.openTrayMenu(entry.service, gp.x + anchor.width / 2 - 120, entry.name, entry.icon)
+    }
+    function activateItem(entry, anchor) {
+        if (entry.itemIsMenu && entry.hasMenu) { openMenu(entry, anchor); return }
+        var svc = entry.service
+        root.trayVisible = false
+        Qt.callLater(function() { if (svc) Tray.activate(svc) })
+    }
+    function pinItem(entry) { root.trayToggleHide(entry.raw) }
+    function close() { root.trayVisible = false }
+
     onHiddenCountChanged: if (root.trayVisible && hiddenCount === 0) root.trayVisible = false
 
     // click-outside-to-close: full-overlay dismiss area behind the card
@@ -54,8 +82,8 @@ PanelWindow {
 
     Rectangle {
         id: card
-        width: popupW
-        height: col.implicitHeight + 24
+        width: Tokens.controlsCrate ? 320 : popupW
+        height: panelBody.implicitHeight + panelBody.inset * 2
         radius: reveal > 0.001 ? root.panelRadius : 0
         color: "transparent"
         border.color: root.panelBorder
@@ -84,10 +112,25 @@ PanelWindow {
 
         MouseArea { anchors.fill: parent; onClicked: {} }
 
+        Loader {
+            id: panelBody
+            readonly property int inset: Tokens.controlsCrate ? Tokens.s4 : 12
+            anchors.left: parent.left
+            anchors.right: parent.right
+            anchors.top: parent.top
+            anchors.margins: inset
+            sourceComponent: Tokens.controlsCrate ? crateBody : stockBody
+        }
+
+        Component {
+            id: crateBody
+            CrateTrayAppsBody { panel: trayPanel; listCap: trayPanel.maxListH }
+        }
+
+        Component {
+            id: stockBody
         Column {
             id: col
-            anchors.fill: parent
-            anchors.margins: 12
             spacing: 8
 
             // Match the updater's restrained title/count/close hierarchy.
@@ -334,6 +377,7 @@ PanelWindow {
                     }
                 }
             }
+        }
         }
     }
 }

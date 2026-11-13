@@ -85,6 +85,12 @@ PanelWindow {
     }
     readonly property var rows: (root.trayMenuVisible && menu) ? rowsFor(menu, 0, []) : []
 
+    // what the crate body reads and drives
+    readonly property string title: root.trayMenuTitle !== "" ? root.trayMenuTitle : I18n.tr("App Menu")
+    readonly property string icon: root.trayMenuIcon
+    function iconPath(name) { return name ? Icons.path(name, "") : "" }
+    function close() { root.trayMenuVisible = false }
+
     property real reveal: root.trayMenuVisible ? 1 : 0
     Behavior on reveal {
         NumberAnimation { duration: root.trayMenuVisible ? 140 : 100; easing.type: Easing.OutCubic }
@@ -96,8 +102,8 @@ PanelWindow {
 
     Rectangle {
         id: card
-        width: 220
-        height: col.implicitHeight + 16
+        width: Tokens.controlsCrate ? 240 : 220
+        height: panelBody.implicitHeight + panelBody.inset * 2
         radius: reveal > 0.001 ? root.panelRadius : 0
         color: root.bg
         border.color: root.panelOuterBorderColor
@@ -115,10 +121,25 @@ PanelWindow {
 
         MouseArea { anchors.fill: parent; onClicked: {} }
 
+        Loader {
+            id: panelBody
+            readonly property int inset: 8
+            anchors.left: parent.left
+            anchors.right: parent.right
+            anchors.top: parent.top
+            anchors.margins: inset
+            sourceComponent: Tokens.controlsCrate ? crateBody : stockBody
+        }
+
+        Component {
+            id: crateBody
+            CrateTrayMenuBody { panel: trayMenu }
+        }
+
+        Component {
+            id: stockBody
         Column {
             id: col
-            anchors.fill: parent
-            anchors.margins: 8
             spacing: 1
 
             // App identity stays visible while its menu is open.
@@ -281,6 +302,7 @@ PanelWindow {
                     }
                 }
             }
+        }
         }
     }
 }
