@@ -99,7 +99,7 @@ cmd_build() {
   local d files=()
   for d in $dirs; do
     printf '  %-28s' "$d"
-    if isolated_makepkg "$d" "$runtime" "$pkgver" --nodeps --force --noconfirm >"$log_dir/$d.log" 2>&1; then
+    if isolated_makepkg "$d" "$runtime" "$pkgver" --nodeps --force --cleanbuild --noconfirm >"$log_dir/$d.log" 2>&1; then
       echo "ok"
       # the exact files this build wrote (a split PKGBUILD writes several)
       mapfile -t -O "${#files[@]}" files < <(isolated_makepkg "$d" "$runtime" "$pkgver" --packagelist)
