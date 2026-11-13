@@ -170,6 +170,16 @@ if crate_glass() then
   })
 end
 
+-- Controls, the QS Bar panels, its control center, the OSD and the dialog reveal
+-- themselves in QML (a short fade and slide). The compositor's layer animation
+-- (a 400 ms move plus a 700 ms fade-in) played on top of that, so a panel took
+-- most of a second to settle instead of answering at once.
+hl.layer_rule({
+  name    = "shell-panels-noanim",
+  match   = { namespace = "^ryoku-(sidebar-left|volume|network|bluetooth|battery|brightness|cpu|gpu|memory|thermals|storage|ai-usage|power-profile|workspace|tray|traymenu|tray-menu|mpris|dashboard|plugin-panel|control|osd|dialog)$" },
+  no_anim = true,
+})
+
 
 -- the workspace overview (qs -c overview, Super+Tab) is a full-screen layer-shell
 -- expo: blur the desktop behind it so only the workspace cells and their live

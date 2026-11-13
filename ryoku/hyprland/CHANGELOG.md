@@ -12,6 +12,10 @@
   they resize the tile; niri and Wayfire get the same pair (#797).
 
 ### Changed
+- **Shell panels answer at once.** Controls, the QS Bar panels and control
+  center, the OSD and the confirmation dialog reveal themselves in QML, but the
+  compositor also played its layer animation (a 400 ms move and a 700 ms fade)
+  on top; `shell-panels-noanim` turns that off for them (`modules/decoration.lua`).
 - **The QS Bar panels are frosted under the crate glass.** Each panel and the
   bar's control center map their own layer, which the bar's blur rule never
   matched, so they drew the glass over an unfrosted desktop. A second

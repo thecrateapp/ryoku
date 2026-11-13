@@ -294,7 +294,11 @@ ShellRoot {
                 id: controlsLoader
                 property bool open: SidebarState.isOpen(perScreen.modelData)
                 property bool showNow: false
-                activeAsync: open || controlsHold.running
+                // warm: built once in the background shortly after the shell starts
+                // and kept, so Super+Esc only reveals it; building it on demand took
+                // ~3 s whenever the 15 s hold had lapsed.
+                property bool warm: false
+                activeAsync: open || warm || controlsHold.running
                 onItemChanged: if (item) Qt.callLater(() => controlsLoader.showNow = controlsLoader.open)
                 onOpenChanged: {
                     showNow = open && item !== null;
@@ -308,6 +312,14 @@ ShellRoot {
             // The controls tree is expensive to construct; keep it across ordinary
             // toggles while its active-gated probes and surfaces remain stopped.
             Timer { id: controlsHold; interval: 15000 }
+            // The controls tree is idle while closed (its probes are active-gated),
+            // so keeping it costs memory, not CPU. Prewarm it after the session has
+            // settled rather than during login.
+            Timer {
+                interval: 4000
+                running: true
+                onTriggered: controlsLoader.warm = true
+            }
 
 
             LazyLoader {

@@ -101,4 +101,23 @@ for _, rule in ipairs(load_rules('{ "controls": "classic" }', "{}")) do
         rule.name .. " registered without controls crate")
 end
 
+-- The panels reveal themselves in QML, so the compositor must not animate their
+-- layers too (its 400 ms move and 700 ms fade made panels slow to answer).
+local function no_anim(rules, namespace)
+    for _, rule in ipairs(rules) do
+        -- other rules use patterns this reader does not parse (^launcher); skip them
+        if rule.no_anim and rule.match and rule.match.namespace then
+            local ok, hit = pcall(matches, rule.match.namespace, namespace)
+            if ok and hit then return true end
+        end
+    end
+    return false
+end
+for _, rules in ipairs({ crate, load_rules('{ "controls": "classic" }', "{}") }) do
+    for _, namespace in ipairs({ "ryoku-sidebar-left", "ryoku-volume", "ryoku-network", "ryoku-dashboard",
+                                 "ryoku-plugin-panel", "ryoku-control", "ryoku-osd", "ryoku-dialog" }) do
+        assert(no_anim(rules, namespace), namespace .. " still gets the compositor's layer animation")
+    end
+end
+
 print("hyprland-crate-glass: OK")

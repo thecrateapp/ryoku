@@ -1,6 +1,11 @@
 # Changelog: ryoku/shell/
 
 ## Unreleased
+- **Super+Esc opens at once.** Controls was built on demand and dropped 15 s
+  after closing, so opening it after a pause rebuilt the whole tree, about 3 s
+  under load. Each screen now builds it in the background 4 s after the shell
+  starts and keeps it; closed, its probes stay stopped. Opening now takes about
+  0.2 s.
 - **QS Bar Settings and the crate panels speak one language.** Under controls
   "crate" the settings head opens with the panels' own first line (the accent
   caption, a Solar search and close), then the route's title in the display
