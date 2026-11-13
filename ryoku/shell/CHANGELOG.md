@@ -1,6 +1,13 @@
 # Changelog: ryoku/shell/
 
 ## Unreleased
+- **The QS Bar dashboard speaks crate.** Under controls "crate" the clock,
+  weather and calendar panel drops its frosted islands for the kit: the month
+  with today in the mark and a picked day edged, the time in the display face,
+  the weather's wind, humidity, rain and feels-like as readout rows, and the
+  coming hours as the AI usage panel's 1 px curve with its head on now. The
+  kit's glyph catalogue gains Solar's weather icons, so every condition draws
+  in Solar. Bar tooltips take the kit's mono and ink.
 - **Every crate panel and dialog wears the Controls glass.** The QS Bar panels
   (the plugin panel among them) lost their filled drop shadow, which showed
   through the translucent glass and turned it near-black; under controls

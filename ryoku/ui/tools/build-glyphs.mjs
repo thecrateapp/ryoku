@@ -62,6 +62,10 @@ const alias = {
   mouse: "mouse-minimalistic", phone: "smartphone", watch: "watch-round", content_paste: "clipboard-text", refresh: "refresh", add: "add-circle", verified: "shield-check", verified_off: "shield",
   "audio-headphones": "headphones-round", "audio-headset": "headphones-round", "audio-card": "speaker",
   "input-mouse": "mouse-minimalistic", "input-gaming": "gamepad", bluetooth_connected: "bluetooth-wave", next: "skip-next", previous: "skip-previous", prev: "skip-previous",
+  // weather (services/lib/weather.js symbolFor, and the dashboard's readouts)
+  clear_day: "sun", clear_night: "moon", partly_cloudy_day: "cloud-sun", partly_cloudy_night: "cloudy-moon",
+  cloud: "cloud", foggy: "fog", rainy: "cloud-rain", weather_snowy: "cloud-snowfall", thunderstorm: "cloud-storm",
+  humidity_percentage: "waterdrops", thermostat: "temperature", air: "wind",
   // freedesktop icon names (the OSD, MPRIS and notification sources use these)
   "audio-volume-high": "volume-loud", "audio-volume-medium": "volume", "audio-volume-low": "volume-small",
   "audio-volume-muted": "volume-cross",

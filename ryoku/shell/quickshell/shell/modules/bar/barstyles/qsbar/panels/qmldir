@@ -6,6 +6,7 @@ CrateAiUsageDetails CrateAiUsageDetails.qml
 CrateBatteryDetails CrateBatteryDetails.qml
 CrateBrightnessControls CrateBrightnessControls.qml
 CrateCpuDetails CrateCpuDetails.qml
+CrateDashboardDetails CrateDashboardDetails.qml
 CrateGpuDetails CrateGpuDetails.qml
 CrateMediaDetails CrateMediaDetails.qml
 CrateMemoryDetails CrateMemoryDetails.qml

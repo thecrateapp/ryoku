@@ -98,3 +98,16 @@ test("the freedesktop device icons Bluetooth reports resolve", () => {
   assert.equal(resolve("phone"), "smartphone");
   assert.equal(resolve("bluetooth_connected"), "bluetooth-wave");
 });
+
+test("every weather symbol the shell draws has a Solar glyph", () => {
+  const wx = require("../../shell/quickshell/shell/services/lib/weather.js");
+  // every WMO code Open-Meteo reports, by day and by night
+  const codes = [0, 1, 2, 3, 45, 48, 51, 53, 55, 56, 57, 61, 63, 65, 66, 67, 71, 73, 75, 77, 80, 81, 82, 85, 86, 95, 96, 99];
+  for (const code of codes)
+    for (const day of [true, false]) {
+      const name = wx.symbolFor(code, day);
+      assert.ok(has(name), `code ${code} (${day ? "day" : "night"}) draws ${name}, which has no glyph`);
+    }
+  for (const name of ["humidity_percentage", "thermostat", "air"])
+    assert.ok(has(name), `${name} has no glyph`);
+});

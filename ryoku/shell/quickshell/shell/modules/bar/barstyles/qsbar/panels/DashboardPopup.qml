@@ -79,12 +79,41 @@ PanelWindow {
         return m[k] !== undefined ? m[k] : 0;
     }
 
+    // ── what the crate body reads and drives ──
+    readonly property string monthTitle: root.calendarMonthName + " " + root.calendarYear
+    readonly property int monthOffset: root.calendarMonthOffset
+    readonly property var cells: root.calendarCells
+    readonly property int selectedDay: root.selectedDay
+    // the week starts on Monday, as calendarCells does
+    readonly property var weekdays: [1, 2, 3, 4, 5, 6, 0].map(function(d) {
+        return Qt.locale(Config.formatLoc).dayName(d, Locale.ShortFormat).slice(0, 2)
+    })
+    function selectDay(day) { root.selectedDay = day }
+    function shiftMonth(delta) { root.calendarMonthOffset += delta }
+    function resetMonth() { root.calendarMonthOffset = 0 }
+    readonly property bool wxLoading: Weather.status === "loading"
+    function noUnit(t) { return String(t || "").replace("°C", "°").replace("°F", "°") }
+    readonly property string temperature: dash.wxReady ? dash.noUnit(dash.cur.temperature) : ""
+    readonly property string condition: Weather.condition
+    readonly property string area: dash.generalArea(Weather.location)
+    readonly property string symbol: dash.wxReady ? Wx.symbolFor(dash.cur.code, dash.cur.isDay) : "cloud"
+    readonly property var readouts: dash.wxReady ? [
+        { label: I18n.tr("Wind"), value: (dash.cur.wind + " " + (dash.cur.windUnits || "") + " " + (dash.cur.windDir || "")).trim() },
+        { label: I18n.tr("Humidity"), value: dash.cur.humidity + "%" },
+        { label: I18n.tr("Rain"), value: dash.cur.precipProb + "%" },
+        { label: I18n.tr("Feels"), value: dash.noUnit(dash.cur.feelsLike) || dash.cur.feels + "°" }
+    ] : []
+    readonly property var hourly: Weather.hourly.slice(0, 8).map(function(h) {
+        return { time: h.time, temp: h.temp, symbol: Wx.symbolFor(h.code, h.isDay) }
+    })
+
     MouseArea { anchors.fill: parent; onClicked: root.dashboardVisible = false }
 
     Rectangle {
         id: card
-        width: 916
-        height: 404
+        readonly property bool crate: Tokens.controlsCrate
+        width: crate ? 720 : 916
+        height: crate ? crateLoader.implicitHeight + Tokens.s4 * 2 : 404
         radius: dash.reveal > 0.001 ? root.panelRadius : 0
         color: "transparent"
 
@@ -115,6 +144,28 @@ PanelWindow {
         }
         MouseArea { anchors.fill: parent; onClicked: {} }
 
+        Loader {
+            id: crateLoader
+            anchors.left: parent.left
+            anchors.right: parent.right
+            anchors.top: parent.top
+            anchors.margins: Tokens.s4
+            active: card.crate
+            focus: card.crate
+            sourceComponent: CrateDashboardDetails {
+                panel: dash
+                onCloseRequested: dash.root.dashboardVisible = false
+            }
+        }
+
+        Loader {
+            anchors.fill: parent
+            active: !card.crate
+            sourceComponent: stockBody
+        }
+
+        Component {
+            id: stockBody
         // ═══════════════════════════ bento grid ═══════════════════════════
         Item {
             anchors.fill: parent
@@ -535,6 +586,7 @@ PanelWindow {
                     }
                 }
             }
+        }
         }
     }
 }

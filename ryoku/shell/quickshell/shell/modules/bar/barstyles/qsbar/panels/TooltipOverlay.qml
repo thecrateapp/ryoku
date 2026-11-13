@@ -2,6 +2,7 @@ import QtQuick
 import Quickshell
 import Quickshell.Wayland
 import "../modules"
+import Ryoku.Ui.Singletons
 
 PanelWindow {
     id: overlay
@@ -71,10 +72,11 @@ PanelWindow {
             id: tipLabel
             anchors.centerIn: parent
             text: root.tooltipText
-            color: root.ink
-            font.family: root.mono
+            // under crate the tooltip speaks the kit's mono in the theme's ink
+            color: Tokens.controlsCrate ? Tokens.ink : root.ink
+            font.family: Tokens.controlsCrate ? Tokens.mono : root.mono
             font.pixelSize: 12
-            font.letterSpacing: 1
+            font.letterSpacing: Tokens.controlsCrate ? 12 * 0.04 : 1
         }
     }
 }
