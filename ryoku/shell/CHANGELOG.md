@@ -5,6 +5,9 @@
   installer's first-login marker could outlive that login and apply the default
   rice days later, over every setting, widget and plugin the user had changed.
   `ryoku-session-intro` now drops it when the account already applied a rice.
+- **The QS Bar power profile panel follows the Crate theme.** The profiles
+  the daemon offers sit in one row of equal chips, the current one filled; the
+  thermal reading follows as a readout row when a sensor exists.
 - **Memory and storage in QS Bar follow the Crate theme.** Memory shows its
   usage history and module speed. Storage shows root filesystem usage and
   the inventory of physical drives.

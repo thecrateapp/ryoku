@@ -37,6 +37,15 @@ PanelWindow {
         return allProfiles.filter(function(p) { return avail.indexOf(p.key) !== -1 })
     }
 
+    // what the crate body reads and drives
+    readonly property string current: root.powerProfileCurrent
+    readonly property bool thermalAvailable: root.barTemperatureAvailable
+    readonly property int thermalC: root.barTemperatureC
+    function choose(key) {
+        PowerProfiles.setProfile(key)
+        root.powerProfileVisible = false
+    }
+
     property real reveal: root.powerProfileVisible ? 1 : 0
     Behavior on reveal {
         NumberAnimation {
@@ -54,8 +63,8 @@ PanelWindow {
 
     Rectangle {
         id: card
-        width: 220
-        height: col.implicitHeight + 24
+        width: Tokens.controlsCrate ? 320 : 220
+        height: panelBody.implicitHeight + panelBody.inset * 2
         radius: reveal > 0.001 ? root.panelRadius : 0
         color: "transparent"
         border.color: root.panelBorder
@@ -84,10 +93,29 @@ PanelWindow {
 
         MouseArea { anchors.fill: parent; onClicked: {} }
 
+        Loader {
+            id: panelBody
+            readonly property int inset: Tokens.controlsCrate ? Tokens.s4 : 12
+            anchors.left: parent.left
+            anchors.right: parent.right
+            anchors.top: parent.top
+            anchors.margins: inset
+            focus: true
+            sourceComponent: Tokens.controlsCrate ? crateBody : stockBody
+        }
+
+        Component {
+            id: crateBody
+            CratePowerProfileDetails {
+                panel: profilePanel
+                onCloseRequested: profilePanel.root.powerProfileVisible = false
+            }
+        }
+
+        Component {
+            id: stockBody
         Column {
             id: col
-            anchors.fill: parent
-            anchors.margins: 12
             spacing: 4
 
             // ── header ──
@@ -203,6 +231,7 @@ PanelWindow {
                     font.family: root.mono; font.pixelSize: 12; font.weight: Font.Medium
                 }
             }
+        }
         }
     }
 }
