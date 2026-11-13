@@ -74,8 +74,20 @@ Item {
         return out;
     }
 
-    implicitHeight: content.implicitHeight
+    // crate-mark: the mock-up's sheet (CrateWifiBody); the stock body otherwise
+    readonly property bool crate: Tokens.controlsCrate
+    implicitHeight: root.crate ? crateBody.implicitHeight : content.implicitHeight
     height: implicitHeight
+
+    // the password fields live in the stock popup or in the crate sheet
+    function focusPassword(): void {
+        if (root.crate) crateBody.focusPassword();
+        else passwordField.forceActiveFocus();
+    }
+    function focusHiddenPassword(): void {
+        if (root.crate) crateBody.focusHidden();
+        else hiddenPasswordField.forceActiveFocus();
+    }
 
     function isOpen(ap): bool {
         const security = String(ap && ap.security ? ap.security : "").toLowerCase();
@@ -117,7 +129,7 @@ Item {
             return;
         }
         root.pendingAp = ap;
-        Qt.callLater(() => passwordField.forceActiveFocus());
+        Qt.callLater(() => root.focusPassword());
     }
 
     function submitPassword(): void {
@@ -186,9 +198,9 @@ Item {
                     root.pendingAp = root.retryAp;
                 Qt.callLater(() => {
                     if (root.pendingAp)
-                        passwordField.forceActiveFocus();
+                        root.focusPassword();
                     else if (root.hiddenForm)
-                        hiddenPasswordField.forceActiveFocus();
+                        root.focusHiddenPassword();
                 });
             }
         }
@@ -221,8 +233,17 @@ Item {
         }
     }
 
+    CrateWifiBody {
+        id: crateBody
+        visible: root.crate
+        width: root.width
+        page: root
+        s: root.s
+    }
+
     Column {
         id: content
+        visible: !root.crate
         width: root.width
         spacing: Tokens.s4 * root.s
 
@@ -542,7 +563,7 @@ Item {
         QQC.Popup {
             id: joinPopup
             parent: root.card ?? QQC.Overlay.overlay
-            visible: root.active && (root.pendingAp !== null || root.hiddenForm)
+            visible: root.active && !root.crate && (root.pendingAp !== null || root.hiddenForm)
             width: Math.min(520 * root.s, parent ? parent.width - Tokens.s5 * root.s * 2 : root.width)
             implicitHeight: joinForm.implicitHeight + padding * 2
             x: parent ? (parent.width - width) / 2 : 0
