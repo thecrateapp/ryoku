@@ -19,6 +19,11 @@
   headless one exits at once.
 
 ### Fixed
+- `power/ryoku-idle`: **a fingerprint unlock no longer goes dark a second
+  later.** A finger on the reader is no input, so the screen-off timer that was
+  due right after the lock still fired. The idle daemon's unlock hook now
+  records the unlock: output-off stands down for a minute after it, and
+  outputs idle already turned off come back on.
 - `gpu/ryoku-gpu`: **Performance works again with a monitor on the discrete GPU.**
   When the laptop panel is on the built-in GPU but the dGPU has its own ports,
   Performance pins the dGPU at login only while a monitor is plugged into one.

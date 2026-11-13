@@ -19,6 +19,9 @@ BRIGHTNESS_LOCK="$BRIGHTNESS_STATE_DIR/lock"
 WM_CALL_TIMEOUT="${RYOKU_WM_CALL_TIMEOUT:-2s}"
 OUTPUT_ON_RETRIES="${RYOKU_OUTPUT_ON_RETRIES:-20}"
 OUTPUT_ON_RETRY_DELAY="${RYOKU_OUTPUT_ON_RETRY_DELAY:-0.1}"
+# A fingerprint unlock is no input, so a screen-off timer due right after it
+# would still fire; output-off stands down this long after an unlock.
+UNLOCK_GRACE="${RYOKU_IDLE_UNLOCK_GRACE:-60}"
 
 hw_laptop() {
   if command -v ryoku-hw-laptop >/dev/null 2>&1; then
@@ -71,6 +74,9 @@ wm_output_action() {
 # action even when an older resume races it.
 output_off() {
   local token tmp
+  if recently_unlocked; then
+    return 0
+  fi
   mkdir -p "$OUTPUT_STATE_DIR"
   chmod 700 "$OUTPUT_STATE_DIR"
   exec 8>"$OUTPUT_STATE_DIR/lock"
@@ -80,6 +86,25 @@ output_off() {
   (umask 077; printf '%s\n' "$token" >"$tmp")
   mv -f "$tmp" "$OUTPUT_STATE_DIR/generation"
   wm_output_action off
+}
+
+# The session was unlocked within UNLOCK_GRACE seconds.
+recently_unlocked() {
+  local stamp now
+  stamp="$(cat "$OUTPUT_STATE_DIR/unlocked" 2>/dev/null || true)"
+  [[ $stamp =~ ^[0-9]+$ ]] || return 1
+  now="$(date +%s)"
+  (( now - stamp < UNLOCK_GRACE ))
+}
+
+# The idle daemon's unlock hook. A fingerprint unlock sends no input, so record
+# it for output-off and wake outputs that idle already turned off.
+unlocked() {
+  mkdir -p "$OUTPUT_STATE_DIR"
+  chmod 700 "$OUTPUT_STATE_DIR"
+  (umask 077; date +%s >"$OUTPUT_STATE_DIR/unlocked")
+  [[ -e $OUTPUT_STATE_DIR/generation ]] || return 0
+  output_on
 }
 
 # Retry an ordinary idle-DPMS wake with a bounded provider call. The generation
@@ -275,6 +300,7 @@ render() {
   {
     printf 'general {\n'
     printf '    lock_cmd = ryoku-shell lock\n'
+    printf '    unlock_cmd = ryoku-idle unlocked\n'
     printf '    inhibit_sleep = 0\n'
     printf '    ignore_dbus_inhibit = false\n'
     printf '    ignore_systemd_inhibit = false\n'
@@ -309,6 +335,9 @@ render_swayidle_args() {
     case "$line" in
       '    lock_cmd = '*)
         SWAYIDLE_ARGS+=(lock "${line#    lock_cmd = }")
+        ;;
+      '    unlock_cmd = '*)
+        SWAYIDLE_ARGS+=(unlock "${line#    unlock_cmd = }")
         ;;
       '    before_sleep_cmd = '*)
         SWAYIDLE_ARGS+=(before-sleep "${line#    before_sleep_cmd = }")
@@ -436,6 +465,8 @@ brightness-dim lower the panel to 20% only when its current level is higher
 brightness-restore restore the exact raw panel level saved by brightness-dim
 output-off mark a new idle-display generation and turn outputs off
 output-on  retry output wake for the current generation; a newer off cancels it
+unlocked   the idle daemon's unlock hook: holds off output-off for the grace
+           and wakes outputs idle turned off (a fingerprint unlock is no input)
 
 The idle policy (enabled, onDesktops, and the per-stage dim/lock/screen-off/
 suspend timeouts for battery and AC) lives in ~/.config/ryoku/power.json under
@@ -536,6 +567,9 @@ case "$cmd" in
     ;;
   output-on)
     output_on
+    ;;
+  unlocked)
+    unlocked
     ;;
   -h|--help|help)
     usage

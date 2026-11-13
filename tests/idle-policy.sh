@@ -128,6 +128,9 @@ export RYOKU_IDLE_TEST_POLICY='{"enabled":false,"onDesktops":false}'
 "$helper" render
 
 grep -Fxq '    lock_cmd = ryoku-shell lock' "$conf"
+# A fingerprint unlock sends no input, so the idle timers keep running past it:
+# the unlock itself has to reach the idle helper.
+grep -Fxq '    unlock_cmd = ryoku-idle unlocked' "$conf"
 grep -Fxq '    inhibit_sleep = 0' "$conf"
 if grep -Eq 'before_sleep_cmd|after_sleep_cmd' "$conf"; then
   printf 'hypridle still owns suspend or wake hooks\n' >&2
@@ -173,6 +176,8 @@ cat >"$tmp/swayidle-default.expected" <<'EOF'
 -w
 lock
 ryoku-shell lock
+unlock
+ryoku-idle unlocked
 timeout
 120
 ryoku-idle on-battery && ryoku-idle brightness-dim
@@ -245,6 +250,8 @@ cat >"$tmp/swayidle-off.expected" <<'EOF'
 -w
 lock
 ryoku-shell lock
+unlock
+ryoku-idle unlocked
 EOF
 cmp "$tmp/swayidle-off.expected" "$sway_log"
 
@@ -322,6 +329,33 @@ unset RYOKU_IDLE_WM_FAIL_ALWAYS
 last_action="$(tail -n 1 "$RYOKU_IDLE_WM_LOG")"
 [[ $last_action == 'wm act output.power off' ]]
 [[ -s $RYOKU_IDLE_OUTPUT_STATE_DIR/generation ]]
+
+# A fingerprint unlock is no input: the screen-off timer that was due a moment
+# later still fires, and the desktop goes dark right after the user unlocked.
+# Within the grace after an unlock, output-off leaves the outputs alone.
+: >"$RYOKU_IDLE_WM_LOG"
+rm -f "$RYOKU_IDLE_WM_COUNT" "$RYOKU_IDLE_OUTPUT_STATE_DIR/generation"
+"$helper" unlocked
+"$helper" output-off
+if grep -Fxq 'wm act output.power off' "$RYOKU_IDLE_WM_LOG"; then
+  printf 'output-off darkened the screen right after an unlock\n' >&2
+  exit 1
+fi
+[[ ! -e $RYOKU_IDLE_OUTPUT_STATE_DIR/generation ]]
+
+# Past the grace, idle turns the screen off as before.
+printf '%s\n' "$(( $(date +%s) - 61 ))" >"$RYOKU_IDLE_OUTPUT_STATE_DIR/unlocked"
+"$helper" output-off
+[[ $(tail -n 1 "$RYOKU_IDLE_WM_LOG") == 'wm act output.power off' ]]
+
+# Unlocking while the screen is already off (a finger on the reader of a dark
+# laptop) turns it back on.
+: >"$RYOKU_IDLE_WM_LOG"
+rm -f "$RYOKU_IDLE_WM_COUNT"
+"$helper" unlocked
+[[ $(tail -n 1 "$RYOKU_IDLE_WM_LOG") == 'wm act output.power on' ]]
+[[ ! -e $RYOKU_IDLE_OUTPUT_STATE_DIR/generation ]]
+rm -f "$RYOKU_IDLE_OUTPUT_STATE_DIR/unlocked"
 
 # An update can begin with the old generated hooks still on disk. `apply`
 # replaces them immediately and sends every idle suspend through the shell's
