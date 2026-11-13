@@ -5,15 +5,15 @@ import Quickshell.Services.UPower as Power
 import Ryoku.Ui.Singletons
 
 // The Hub runs in its own process. Read the same preferences as the shell
-// without starting its samplers or writing the settings it owns.
+// without starting its samplers or writing the settings it owns. The Hub window
+// itself is opaque; this only keeps Tokens.glass opaque inside it when blur is
+// off (power saver, game mode), as the shell does.
 Item {
     id: glass
 
     readonly property bool allowBlur: !effects.lowPowerMode && !effects.disableBlur && !flags.gameMode
         && (!effects.powerProfileEffects || Power.PowerProfiles.profile !== Power.PowerProfile.PowerSaver)
-    readonly property Region blurRegion: Tokens.controlsCrate && allowBlur ? roundedWindow : null
 
-    Region { id: roundedWindow; width: glass.width; height: glass.height; radius: Tokens.radius }
     Binding { target: Tokens; property: "glassBlur"; value: glass.allowBlur; when: Tokens.controlsCrate }
 
     FileView {

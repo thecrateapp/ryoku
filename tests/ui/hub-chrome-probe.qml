@@ -74,7 +74,7 @@ ShellRoot {
                 const files = probe.named(hub, "settingsFilesShortcut");
                 probe.check(hub.section === key && edge.visible, "selected route missing");
                 probe.check(hub.radius === (probe.crate ? Tokens.radius : 0)
-                    && Qt.colorEqual(hub.color, probe.crate ? Tokens.glass : Tokens.paper), "window surface");
+                    && Qt.colorEqual(hub.color, probe.crate ? Tokens.popover : Tokens.paper) && hub.color.a === 1, "opaque window surface");
                 probe.check(edge.border.width === (probe.crate ? 1 : 0) && other.border.width === 0, "route selection");
                 probe.check(!probe.crate || Qt.colorEqual(edge.border.color, Tokens.pickEdge), "route outline color");
                 probe.check(updates.visible === probe.crate, "Updates shortcut style");
@@ -106,15 +106,8 @@ ShellRoot {
                     return;
                 }
                 probe.check(updates.on, "Updates did not follow navigation");
-                if (probe.step === 2) {
-                    probe.check(probe.crate ? glass.blurRegion && glass.blurRegion.radius === Tokens.radius
-                        && glass.blurRegion.width === hub.width : glass.blurRegion === null, "rounded blur region");
-                    perfFile.setText('{"disableBlur":true}');
-                    ++probe.step;
-                    return;
-                }
-                if (glass.allowBlur) return;
-                probe.check(glass.blurRegion === null && hub.color.a === 1, "opaque fallback with blur disabled");
+                // the Hub is a large working window: an opaque surface, no compositor blur
+                probe.check(hub.color.a === 1, "the Hub surface is opaque");
                 console.log("HUB-CHROME-PASS", Quickshell.env("BENCH_LOOK"));
             } catch (error) {
                 console.error(error);

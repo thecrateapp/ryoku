@@ -328,6 +328,11 @@
   below warning (`quickshell/pages/BatteryAlertsSettings.qml`).
 
 ### Changed
+- **Crate Settings is opaque again, and its full pages keep their inset.** The
+  glass made the large Settings window hard to read over a terminal; under
+  crate it is now the panel grey, fully opaque, with no compositor blur.
+  Displays, Connections, Import and Updates start their head at the same 32 px
+  inset as the other full pages instead of on the rail's edge.
 - **Crate Settings uses the shared page headers and controls.** The current
   section takes the pick edge, and selected chips, segments and tabs look as
   they do on every other surface (filled with the mark under crate). Updates,

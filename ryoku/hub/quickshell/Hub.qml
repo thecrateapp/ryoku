@@ -54,7 +54,9 @@ Rectangle {
 
     implicitWidth: 1400
     implicitHeight: 880
-    color: Tokens.controlsCrate ? Tokens.glass : Tokens.paper
+    // a large working window stays opaque: glass made it hard to read over a
+    // busy terminal. Under crate it is the panel grey, fully opaque.
+    color: Tokens.controlsCrate ? Tokens.popover : Tokens.paper
     radius: Tokens.controlsCrate ? Tokens.radius : 0
     focus: true
 

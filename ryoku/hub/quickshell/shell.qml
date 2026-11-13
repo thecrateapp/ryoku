@@ -34,7 +34,6 @@ ShellRoot {
         minimumSize: Qt.size(Math.min(1120, win.fitW), Math.min(820, win.fitH))
         maximumSize: Qt.size(win.fitW, win.fitH)
         color: Tokens.controlsCrate ? "transparent" : Tokens.paper
-        BackgroundEffect.blurRegion: glass.item ? glass.item.blurRegion : null
 
         Loader {
             id: glass

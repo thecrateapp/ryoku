@@ -2493,6 +2493,9 @@ Item {
         Column {
             id: head
             anchors { left: parent.left; right: parent.right; top: parent.top }
+            // a full page owns its inset: the head keeps the s6 the other full pages use,
+            // instead of starting on the rail's edge
+            anchors.leftMargin: Tokens.s6; anchors.rightMargin: Tokens.s6
             spacing: Tokens.s3
 
             PageHeader {
