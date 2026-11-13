@@ -604,38 +604,14 @@ Item {
         id: head
         anchors { left: parent.left; right: parent.right; top: parent.top }
         anchors.topMargin: Tokens.s6
-        // the register row sits off the title: a rule over a 32px
-        // title needs more than the gap between two lines of body text
         spacing: Tokens.s3
 
-        Row {
-            // the register row holds a fixed box, so the rule and the seal keep
-            // their distance from the title on every page
-            height: Tokens.s5
-            spacing: Tokens.s2
-            Rectangle {
-                width: 16; height: 1; color: Tokens.ink
-                anchors.verticalCenter: parent.verticalCenter
-            }
-            Text {
-                text: UiPreferences.brandMark("力"); color: Tokens.ink; font.family: Tokens.jp
-                font.pixelSize: 11; anchors.verticalCenter: parent.verticalCenter
-            }
-            Text {
-                text: I18n.tr("SYSTEM"); color: Tokens.inkMuted; font.family: Tokens.ui
-                font.pixelSize: 9; font.weight: Font.Medium; font.letterSpacing: Tokens.trackMark
-                anchors.verticalCenter: parent.verticalCenter
-            }
-        }
-        Text {
-            text: I18n.tr("Updates"); color: Tokens.ink
-            font.family: Tokens.display; font.pixelSize: Tokens.fTitle; font.weight: Tokens.displayWeight
-        }
-        Text {
-            width: Math.min(parent.width, 720)
-            text: I18n.tr("What sits behind origin, and a one-click update.")
-            color: Tokens.inkMuted; font.family: Tokens.ui
-            font.pixelSize: Tokens.fBody; wrapMode: Text.WordWrap
+        PageHeader {
+            width: parent.width
+            hubStyle: true
+            eyebrow: I18n.tr("SYSTEM")
+            title: I18n.tr("Updates")
+            blurb: I18n.tr("What sits behind origin, and a one-click update.")
         }
         Text {
             visible: pg.snapshotReason !== ""
@@ -686,6 +662,7 @@ Item {
 
                     Rectangle {
                         id: stateBar
+                        visible: !Tokens.controlsCrate
                         anchors.left: parent.left; anchors.top: parent.top
                         width: 2; height: statusCol.implicitHeight
                         color: Tokens.ink
@@ -695,7 +672,8 @@ Item {
 
                     Column {
                         id: statusCol
-                        anchors.left: stateBar.right; anchors.leftMargin: Tokens.s4
+                        anchors.left: Tokens.controlsCrate ? parent.left : stateBar.right
+                        anchors.leftMargin: Tokens.controlsCrate ? 0 : Tokens.s4
                         anchors.top: parent.top
                         spacing: Tokens.s2
 
@@ -1149,13 +1127,14 @@ Item {
             spacing: Tokens.s4
 
             Rectangle {
+                visible: !Tokens.controlsCrate
                 width: 2; height: promptCol.implicitHeight
                 color: Tokens.ink; antialiasing: false
             }
 
             Column {
                 id: promptCol
-                width: parent.width - 2 - Tokens.s4
+                width: Tokens.controlsCrate ? parent.width : parent.width - 2 - Tokens.s4
                 spacing: Tokens.s4
 
                 Text {

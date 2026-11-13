@@ -135,12 +135,8 @@ palette of their own:
 |`ryoshot/`, `ryopin/`, `welcome/`|`Tokens`|
 |`wallpaper/`, `wallpaper/switcher/`|the default paper only, for letterbox margins|
 
-Two files are genuinely their own thing and should stay that way:
-`barstyles/qsbar/Theme.qml` (a bar style's entire configuration surface, which
-owns its own look by contract, see `docs/barstyles.md`) and
-`hub/quickshell/Singletons/Theme.qml`, a leftover of the old website palette that
-survives in exactly one preview file and should go the next time that preview is
-touched.
+The Hub takes its palette from the shared kit. The QS Bar owns its style
+configuration in `barstyles/qsbar/Theme.qml` (see `docs/barstyles.md`).
 
 The rule this replaced is worth remembering. There used to be eleven
 `Singletons/Theme.qml` copies kept in step by hand. They were not in step. They

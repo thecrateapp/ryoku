@@ -42,10 +42,10 @@ Item {
 
     // crate-mark: the height follows the flowed vitals (CPU and graph, then meters)
     implicitHeight: Tokens.controlsCrate
-        ? (root.showIdentity ? 40 * s : 0) + (root.showIdentity && root.hasReadings ? Tokens.s4 * s : 0) + (root.hasReadings ? body.height : 0)
+        ? (root.showIdentity ? 40 * s : 0) + (root.showIdentity && root.hasReadings ? Tokens.s4 * s : 0) + (root.hasReadings ? body.implicitHeight : 0)
         : (root.showIdentity ? (Tokens.s7 + Tokens.s3) * s : 0)
         + (root.showIdentity && root.hasReadings ? Tokens.s3 * s : 0)
-        + (root.hasReadings ? Tokens.s7 * 3 * s : 0)
+        + (root.hasReadings ? body.stockRowHeight : 0)
     clip: true
 
     function blendColor(from, to, amount): color {
@@ -269,14 +269,14 @@ Item {
         anchors.right: parent.right
         anchors.top: root.showIdentity ? identity.bottom : parent.top
         anchors.topMargin: root.showIdentity && visible ? (Tokens.controlsCrate ? Tokens.s4 : Tokens.s3) * root.s : 0
-        height: visible ? (Tokens.controlsCrate ? childrenRect.height : Tokens.s7 * 3 * root.s) : 0
+        readonly property real stockRowHeight: Tokens.s7 * 3 * root.s
         spacing: Tokens.s4 * root.s
 
         Item {
             id: cpuZone
             visible: root.showCpu || root.showTemperature
             width: visible ? (Tokens.controlsCrate ? 120 : Tokens.s7 * 3 + Tokens.s2) * root.s : 0
-            height: Tokens.controlsCrate ? 106 * root.s : body.height
+            height: Tokens.controlsCrate ? 106 * root.s : body.stockRowHeight
             clip: true
 
             Text {
@@ -412,7 +412,7 @@ Item {
             id: graphZone
             visible: root.showGraph
             width: visible ? (Tokens.controlsCrate ? Math.max(0, body.width - cpuZone.width - (cpuZone.visible ? body.spacing : 0)) : (Tokens.s7 * 4 + Tokens.s5) * root.s) : 0
-            height: Tokens.controlsCrate ? 106 * root.s : body.height
+            height: Tokens.controlsCrate ? 106 * root.s : body.stockRowHeight
             clip: true
 
             readonly property bool inlineLegend: activityLabel.implicitWidth
@@ -503,7 +503,7 @@ Item {
                 + (root.showBattery && root.monitor.batteryAvailable ? 1 : 0)
             width: Tokens.controlsCrate ? body.width : Math.max(0, Math.floor(body.width - cpuZone.width - graphZone.width
                 - body.spacing * ((cpuZone.visible ? 1 : 0) + (graphZone.visible ? 1 : 0))))
-            height: Tokens.controlsCrate ? visibleMeterCount * 28 * root.s : body.height
+            height: Tokens.controlsCrate ? visibleMeterCount * 28 * root.s : body.stockRowHeight
             spacing: 0
             clip: true
 

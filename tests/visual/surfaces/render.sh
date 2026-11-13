@@ -8,6 +8,7 @@
 # runs from a scratch config root that links every entry of the shell's root but
 # its shell.qml, since Quickshell refuses relative imports outside the config
 # root: a scene imports "modules/<name>" as the shell does.
+# The Hub renders every routed page into hub-LOOK-SECTION.png.
 set -euo pipefail
 here=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 repo=$(cd "$here/../../.." && pwd)
@@ -15,6 +16,26 @@ scene=${1:?usage: render.sh SCENE OUT_DIR}
 out=${2:?usage: render.sh SCENE OUT_DIR}
 [ -f "$here/scenes/$scene.qml" ] || { echo "render.sh: no scene $scene" >&2; exit 2; }
 mkdir -p "$out"
+case $scene in
+  shell-states) exec "$here/shell-states.sh" "$out" ;;
+  hub|hub-states|hub-dialogs)
+    case $scene in
+      hub) marker=HUB-CAPTURE-DONE ;;
+      hub-states) marker=HUB-STATES-DONE ;;
+      hub-dialogs) marker=HUB-DIALOGS-DONE ;;
+    esac
+    for look in crate stock; do
+      log="$out/$scene-$look.log"
+      if ! "$here/hub-session.sh" "$here/scenes/$scene.qml" "$look" "$out" >"$log" 2>&1 \
+          || ! grep -q "$marker" "$log" || grep -Eq 'TypeError|ReferenceError|Binding loop detected' "$log"; then
+        tail -30 "$log" >&2
+        exit 1
+      fi
+      grep "$marker" "$log"
+    done
+    exit 0
+    ;;
+esac
 plugin="$repo/ryoku/shell/plugin"
 build="${RYOKU_BLOBS_BUILD:-$plugin/build}"
 cmake -S "$plugin" -B "$build" -G Ninja -DCMAKE_BUILD_TYPE=Release >/dev/null

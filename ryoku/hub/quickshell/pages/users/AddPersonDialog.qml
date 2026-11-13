@@ -3,6 +3,7 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import QtQuick.Controls
 import Ryoku.Ui
+import Ryoku.Ui as Kit
 import Ryoku.Ui.Singletons
 
 Popup {
@@ -26,12 +27,12 @@ Popup {
     closePolicy: busy ? Popup.NoAutoClose : Popup.CloseOnEscape | Popup.CloseOnPressOutside
 
     background: Rectangle {
-        color: Tokens.paper
+        color: Tokens.controlsCrate ? Tokens.popover : Tokens.paper
         border.width: Tokens.border
-        border.color: Tokens.lineStrong
+        border.color: Tokens.controlsCrate ? Tokens.line : Tokens.lineStrong
         radius: Tokens.radius
     }
-    Overlay.modal: Rectangle { color: Qt.rgba(0, 0, 0, 0.55) }
+    Overlay.modal: Rectangle { color: Qt.rgba(0, 0, 0, Tokens.controlsCrate ? 0.16 : 0.55) }
 
     function reset() {
         nameField.text = "";
@@ -120,6 +121,8 @@ Popup {
                 width: parent.width
                 spacing: Tokens.s1
                 Text {
+                    objectName: "dialogEyebrow"
+                    visible: !Tokens.controlsCrate
                     text: I18n.tr("ADD PERSON")
                     color: Tokens.inkMuted
                     font.family: Tokens.ui
@@ -244,27 +247,43 @@ Popup {
                         model: dialog.permissionDefs.filter(function(def) {
                             return String(def.id || "") !== "admin";
                         })
-                        delegate: Rectangle {
+                        delegate: Loader {
                             id: permissionChip
                             required property var modelData
                             readonly property string permissionId: String(modelData.id || "")
                             readonly property bool selected: dialog.selectedPermissions.indexOf(permissionId) >= 0
-                            width: permissionText.implicitWidth + Tokens.s5
-                            height: 26
-                            radius: Tokens.radius
-                            color: selected ? Tokens.bone : "transparent"
-                            border.width: Tokens.border
-                            border.color: selected ? Tokens.bone : Tokens.line
-                            Text {
-                                id: permissionText
-                                anchors.centerIn: parent
-                                text: (permissionChip.selected ? "✓  " : "+  ") + dialog.permissionLabel(permissionChip.modelData)
-                                color: permissionChip.selected ? Tokens.inkOnBone : Tokens.inkMuted
-                                font.family: Tokens.ui
-                                font.pixelSize: Tokens.fMicro
+                            sourceComponent: Tokens.controlsCrate ? cratePermissionChip : stockPermissionChip
+                            Component {
+                                id: cratePermissionChip
+                                Kit.Chip {
+                                    objectName: "permission"
+                                    text: dialog.permissionLabel(permissionChip.modelData)
+                                    outlinedSelection: true
+                                    on: permissionChip.selected
+                                    onClicked: dialog.togglePermission(permissionChip.permissionId)
+                                }
                             }
-                            HoverHandler { cursorShape: Qt.PointingHandCursor }
-                            TapHandler { onTapped: dialog.togglePermission(permissionChip.permissionId) }
+                            Component {
+                                id: stockPermissionChip
+                                Rectangle {
+                                    width: permissionText.implicitWidth + Tokens.s5
+                                    height: 26
+                                    radius: Tokens.radius
+                                    color: permissionChip.selected ? Tokens.bone : "transparent"
+                                    border.width: Tokens.border
+                                    border.color: permissionChip.selected ? Tokens.bone : Tokens.line
+                                    Text {
+                                        id: permissionText
+                                        anchors.centerIn: parent
+                                        text: (permissionChip.selected ? "✓  " : "+  ") + dialog.permissionLabel(permissionChip.modelData)
+                                        color: permissionChip.selected ? Tokens.inkOnBone : Tokens.inkMuted
+                                        font.family: Tokens.ui
+                                        font.pixelSize: Tokens.fMicro
+                                    }
+                                    HoverHandler { cursorShape: Qt.PointingHandCursor }
+                                    TapHandler { onTapped: dialog.togglePermission(permissionChip.permissionId) }
+                                }
+                            }
                         }
                     }
                 }

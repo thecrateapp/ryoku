@@ -22,12 +22,12 @@ Popup {
     closePolicy: busy ? Popup.NoAutoClose : Popup.CloseOnEscape | Popup.CloseOnPressOutside
 
     background: Rectangle {
-        color: Tokens.paper
+        color: Tokens.controlsCrate ? Tokens.popover : Tokens.paper
         border.width: Tokens.border
-        border.color: Tokens.lineStrong
+        border.color: Tokens.controlsCrate ? Tokens.line : Tokens.lineStrong
         radius: Tokens.radius
     }
-    Overlay.modal: Rectangle { color: Qt.rgba(0, 0, 0, 0.6) }
+    Overlay.modal: Rectangle { color: Qt.rgba(0, 0, 0, Tokens.controlsCrate ? 0.16 : 0.6) }
 
     function openFor(name) {
         dialog.userName = name;
@@ -54,6 +54,8 @@ Popup {
             width: parent.width
             spacing: Tokens.s1
             Text {
+                objectName: "dialogEyebrow"
+                visible: !Tokens.controlsCrate
                 text: I18n.tr("REMOVE PERSON")
                 color: Tokens.alert
                 font.family: Tokens.ui

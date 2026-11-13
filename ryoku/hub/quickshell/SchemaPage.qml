@@ -87,53 +87,16 @@ Item {
         anchors { left: parent.left; top: parent.top }
         anchors.leftMargin: sheet.sheetX
         width: sheet.sheetWidth
-        // the register row sits off the title: a rule over a 32px
-        // title needs more than the gap between two lines of body text
         spacing: Tokens.s3
 
-        Item {
+        PageHeader {
             width: parent.width
-            // an eyebrow that only repeats the title is noise, not a register
-            visible: I18n.tr(page.eyebrow).toLowerCase() !== page.title.toLowerCase()
-            height: 18
-            Row {
-                id: ebrow
-                spacing: Tokens.s2
-                anchors.verticalCenter: parent.verticalCenter
-                Rectangle { width: 16; height: 1; color: Tokens.ink; anchors.verticalCenter: parent.verticalCenter }
-                Text {
-                    text: UiPreferences.brandMark("力"); color: Tokens.ink; font.family: Tokens.jp
-                    font.pixelSize: 11; anchors.verticalCenter: parent.verticalCenter
-                }
-                Text {
-                    text: I18n.tr(page.eyebrow); color: Tokens.inkMuted; font.family: Tokens.ui
-                    font.pixelSize: 9; font.weight: Font.Medium; font.letterSpacing: Tokens.trackMark
-                    anchors.verticalCenter: parent.verticalCenter
-                }
-            }
-            // the band runs to the page edge and closes with the sheet's marks:
-            // a register cross and the /// cluster, per the reference poster.
-            Rectangle {
-                anchors { left: ebrow.right; right: parent.right; verticalCenter: parent.verticalCenter }
-                anchors.leftMargin: Tokens.s3
-                height: 1; color: Tokens.lineSoft
-            }
-        }
-        Text {
-            text: page.title
-            color: Tokens.ink
-            font.family: Tokens.display
-            font.weight: Tokens.displayWeight
-            font.pixelSize: Tokens.fTitle
-        }
-        Text {
-            visible: page.blurb !== ""
-            width: Math.min(parent.width, 720)
-            text: I18n.tr(page.blurb)
-            color: Tokens.inkMuted
-            font.family: Tokens.ui
-            font.pixelSize: Tokens.fBody
-            wrapMode: Text.WordWrap
+            hubStyle: true
+            eyebrow: page.title.toLowerCase() === I18n.tr(page.eyebrow).toLowerCase() ? "" : I18n.tr(page.eyebrow)
+            ruled: true
+            eyebrowHeight: 18
+            title: page.title
+            blurb: I18n.tr(page.blurb)
         }
         Item { width: 1; height: Tokens.s1 }
 

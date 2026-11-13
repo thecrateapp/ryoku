@@ -823,55 +823,18 @@ Item {
         // title starts over the first card column instead of floating centred
         x: Tokens.s6
         width: Math.max(320, pg.width - Tokens.s6 * 2)
-        // the register row sits off the title: a rule over a 32px
-        // title needs more than the gap between two lines of body text
         spacing: Tokens.s3
 
-        Row {
-            // the register row holds a fixed box, so the rule and the seal keep
-            // their distance from the title on every page
-            height: Tokens.s5
-            spacing: Tokens.s2
-            Rectangle {
-                width: 16; height: 1; color: Tokens.ink
-                anchors.verticalCenter: parent.verticalCenter
-            }
-            Text {
-                text: UiPreferences.brandMark("力"); color: Tokens.ink; font.family: Tokens.jp
-                font.pixelSize: 11; anchors.verticalCenter: parent.verticalCenter
-            }
-            Text {
-                text: I18n.tr("ADD-ONS"); color: Tokens.inkMuted; font.family: Tokens.ui
-                font.pixelSize: 9; font.weight: Font.Medium; font.letterSpacing: Tokens.trackMark
-                anchors.verticalCenter: parent.verticalCenter
-            }
-        }
-        Item {
+        PageHeader {
             width: parent.width
-            height: title.implicitHeight
-            Text {
-                id: title
-                anchors.left: parent.left
-                text: I18n.tr("Add-ons")
-                color: Tokens.ink
-                font.family: Tokens.display
-                font.weight: Tokens.displayWeight
-                font.pixelSize: Tokens.fTitle
-            }
-            Btn {
-                anchors.right: parent.right
-                anchors.verticalCenter: parent.verticalCenter
+            hubStyle: true
+            eyebrow: I18n.tr("ADD-ONS")
+            title: I18n.tr("Add-ons")
+            blurb: I18n.tr("Shell add-ons and bundles with parts already on this computer.")
+            actions: Btn {
                 text: I18n.tr("BROWSE RYOSTORE")
                 onAct: pg.browseStore()
             }
-        }
-        Text {
-            width: Math.min(parent.width, 720)
-            text: I18n.tr("Shell add-ons and bundles with parts already on this computer.")
-            color: Tokens.inkMuted
-            font.family: Tokens.ui
-            font.pixelSize: Tokens.fBody
-            wrapMode: Text.WordWrap
         }
         Row {
             spacing: Tokens.s2
@@ -2099,10 +2062,7 @@ Item {
         onRemoveRequested: pg.removeBundle(pg.bundleSheetId, "")
     }
 
-    // ── destructive confirm: a bone plate, 2px border, an unambiguous verb ──
-    // No red anywhere: inversion and the word carry the weight (DESIGN.md
-    // sections 1 and 4). The scrim has no fill (translucency is banned); the
-    // plate reads as an overlay by being bone on black.
+    // Nested confirmation on the Hub surface.
     MouseArea {
         id: confirmScrim
         anchors.fill: parent
@@ -2112,13 +2072,14 @@ Item {
 
         Rectangle {
             id: plate
+            objectName: "addonRemoval"
             anchors.centerIn: parent
             width: 380
             height: plateCol.implicitHeight + Tokens.s5 * 2
             radius: Tokens.radius
-            color: Tokens.bone
-            border.width: 2
-            border.color: Tokens.inkOnBone
+            color: Tokens.controlsCrate ? Tokens.popover : Tokens.bone
+            border.width: Tokens.controlsCrate ? 1 : 2
+            border.color: Tokens.controlsCrate ? Tokens.line : Tokens.inkOnBone
 
             // absorb clicks inside the plate so they do not dismiss it.
             MouseArea { anchors.fill: parent }
@@ -2132,7 +2093,7 @@ Item {
                 Text {
                     width: parent.width
                     text: I18n.tr("Remove %1?").arg(pg.confirmName || pg.confirmId || I18n.tr("add-on"))
-                    color: Tokens.inkOnBone; font.family: Tokens.ui
+                    color: Tokens.controlsCrate ? Tokens.ink : Tokens.inkOnBone; font.family: Tokens.ui
                     font.pixelSize: Tokens.fValue; font.weight: Font.Medium
                     wrapMode: Text.WordWrap
                 }
@@ -2141,10 +2102,26 @@ Item {
                     text: pg.confirmKind === "omarchy"
                         ? I18n.tr("This removes the add-on from the Omarchy bar. You can install it again from the market.")
                         : I18n.tr("This deletes the add-on and its settings from your desktop. You can reinstall it from RyoStore.")
-                    color: Tokens.inkOnBoneDim; font.family: Tokens.ui
+                    color: Tokens.controlsCrate ? Tokens.inkSecondary : Tokens.inkOnBoneDim; font.family: Tokens.ui
                     font.pixelSize: Tokens.fSmall; wrapMode: Text.WordWrap
                 }
                 Row {
+                    anchors.right: parent.right
+                    visible: Tokens.controlsCrate
+                    spacing: Tokens.s3
+
+                    Btn {
+                        text: I18n.tr("CANCEL")
+                        onAct: pg.confirmRemove = false
+                    }
+                    Btn {
+                        text: I18n.tr("REMOVE")
+                        primary: true
+                        onAct: pg.confirmRemoval()
+                    }
+                }
+                Row {
+                    visible: !Tokens.controlsCrate
                     anchors.right: parent.right
                     spacing: Tokens.s3
 

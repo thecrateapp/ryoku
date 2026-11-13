@@ -106,11 +106,20 @@ Column {
                     Item {
                         id: mark
                         anchors { right: parent.right; rightMargin: Tokens.s4; verticalCenter: parent.verticalCenter }
-                        width: row.isActive ? chip.width : (row.isSelectable ? hint.width : 0)
-                        height: 20
+                        width: row.isActive ? (Tokens.controlsCrate ? currentProvider.width : chip.width) : (row.isSelectable ? hint.width : 0)
+                        height: Tokens.controlsCrate ? currentProvider.implicitHeight : 20
+                        Chip {
+                            id: currentProvider
+                            objectName: "currentProvider"
+                            visible: Tokens.controlsCrate && row.isActive
+                            text: I18n.tr("CURRENT")
+                            interactive: false
+                            outlinedSelection: true
+                            on: true
+                        }
                         Rectangle {
                             id: chip
-                            visible: row.isActive
+                            visible: !Tokens.controlsCrate && row.isActive
                             width: curLabel.width + Tokens.s3
                             height: 20
                             radius: Tokens.radius

@@ -5,6 +5,7 @@ import QtQuick.Controls
 import Quickshell
 import Quickshell.Io
 import Ryoku.Ui
+import Ryoku.Ui as Kit
 import Ryoku.Ui.Singletons
 import "../Singletons"
 import "../Combos.js" as Combos
@@ -416,24 +417,39 @@ Item {
 
     // ── reusable poster parts ─────────────────────────────────────────────────
     // a hairline status chip: mono caps, tinted to its meaning.
-    component Pill: Rectangle {
+    component Pill: Loader {
         id: pill
         property string label: ""
         property color tint: Tokens.inkMuted
-        implicitWidth: pillT.implicitWidth + Tokens.s3
-        implicitHeight: 20
-        radius: Tokens.radius
-        color: "transparent"
-        border.width: Tokens.border
-        border.color: Qt.rgba(pill.tint.r, pill.tint.g, pill.tint.b, 0.5)
-        Text {
-            id: pillT
-            anchors.centerIn: parent
-            text: I18n.tr(pill.label)
-            color: pill.tint
-            font.family: Tokens.mono
-            font.pixelSize: Tokens.fTiny
-            font.letterSpacing: 1
+        sourceComponent: Tokens.controlsCrate ? cratePill : stockPill
+        Component {
+            id: cratePill
+            Kit.Chip {
+                objectName: "importStatus"
+                text: I18n.tr(pill.label)
+                interactive: false
+                labelInk: pill.tint
+            }
+        }
+        Component {
+            id: stockPill
+            Rectangle {
+                implicitWidth: pillT.implicitWidth + Tokens.s3
+                implicitHeight: 20
+                radius: Tokens.radius
+                color: "transparent"
+                border.width: Tokens.border
+                border.color: Qt.rgba(pill.tint.r, pill.tint.g, pill.tint.b, 0.5)
+                Text {
+                    id: pillT
+                    anchors.centerIn: parent
+                    text: I18n.tr(pill.label)
+                    color: pill.tint
+                    font.family: Tokens.mono
+                    font.pixelSize: Tokens.fTiny
+                    font.letterSpacing: 1
+                }
+            }
         }
     }
     // a bordered plate the wizard cards are built on.
@@ -449,38 +465,14 @@ Item {
         id: head
         anchors { left: parent.left; right: parent.right; top: parent.top }
         anchors.topMargin: Tokens.s6
-        // the register row sits off the title: a rule over a 32px
-        // title needs more than the gap between two lines of body text
         spacing: Tokens.s3
 
-        Row {
-            // the register row holds a fixed box, so the rule and the seal keep
-            // their distance from the title on every page
-            height: Tokens.s5
-            spacing: Tokens.s2
-            Rectangle {
-                width: 16; height: 1; color: Tokens.ink
-                anchors.verticalCenter: parent.verticalCenter
-            }
-            Text {
-                text: UiPreferences.brandMark("力"); color: Tokens.ink; font.family: Tokens.jp
-                font.pixelSize: 11; anchors.verticalCenter: parent.verticalCenter
-            }
-            Text {
-                text: I18n.tr("TOOLS"); color: Tokens.inkMuted; font.family: Tokens.ui
-                font.pixelSize: 9; font.weight: Font.Medium; font.letterSpacing: Tokens.trackMark
-                anchors.verticalCenter: parent.verticalCenter
-            }
-        }
-        Text {
-            text: I18n.tr("Import config"); color: Tokens.ink
-            font.family: Tokens.display; font.pixelSize: Tokens.fTitle; font.weight: Tokens.displayWeight
-        }
-        Text {
-            width: Math.min(parent.width, 720)
-            text: I18n.tr("Bring another setup onto Ryoku. Everything it touches is backed up.")
-            color: Tokens.inkMuted; font.family: Tokens.ui
-            font.pixelSize: Tokens.fBody; wrapMode: Text.WordWrap
+        PageHeader {
+            width: parent.width
+            hubStyle: true
+            eyebrow: I18n.tr("TOOLS")
+            title: I18n.tr("Import config")
+            blurb: I18n.tr("Bring another setup onto Ryoku. Everything it touches is backed up.")
         }
     }
 

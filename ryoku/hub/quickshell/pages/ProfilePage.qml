@@ -4,6 +4,7 @@ import QtQuick
 import Quickshell
 import Quickshell.Io
 import Ryoku.Ui
+import Ryoku.Ui as Kit
 import Ryoku.Ui.Singletons
 import "../Singletons"
 
@@ -133,42 +134,58 @@ Item {
     readonly property int heroDir: pg.heroLeft ? -1 : 1
 
     // A small corner eye-toggle for a block, shown only in EDIT mode.
-    component EyeChip: Rectangle {
+    component EyeChip: Loader {
         id: chip
         property string block: ""
         readonly property bool on: pg.blockOn(chip.block)
         visible: pg.editing
         z: 50
-        width: crow.width + Tokens.s3 * 2
-        height: 26
-        radius: Tokens.radius
-        color: chip.on ? Tokens.bone : Qt.rgba(Tokens.paper.r, Tokens.paper.g, Tokens.paper.b, 0.9)
-        border.width: Tokens.border
-        border.color: chip.on ? Tokens.bone : Tokens.lineStrong
-        Row {
-            id: crow
-            anchors.centerIn: parent
-            spacing: Tokens.s1
-            Text {
-                anchors.verticalCenter: parent.verticalCenter
-                text: chip.on ? "\u25c9" : "\u25cb"
-                color: chip.on ? Tokens.inkOnBone : Tokens.inkDim
-                font.pixelSize: 11
-            }
-            Text {
-                anchors.verticalCenter: parent.verticalCenter
+        sourceComponent: Tokens.controlsCrate ? crateChip : stockChip
+        Component {
+            id: crateChip
+            Kit.Chip {
+                objectName: "profileVisibility"
                 text: chip.block.toUpperCase()
-                color: chip.on ? Tokens.inkOnBone : Tokens.inkDim
-                font.family: Tokens.ui
-                font.pixelSize: 8
-                font.letterSpacing: 0.5
+                outlinedSelection: true
+                on: chip.on
+                onClicked: pg.toggleBlock(chip.block)
             }
         }
-        HoverHandler { cursorShape: Qt.PointingHandCursor }
-        MouseArea {
-            anchors.fill: parent
-            anchors.margins: -9
-            onClicked: pg.toggleBlock(chip.block)
+        Component {
+            id: stockChip
+            Rectangle {
+                width: crow.width + Tokens.s3 * 2
+                height: 26
+                radius: Tokens.radius
+                color: chip.on ? Tokens.bone : Qt.rgba(Tokens.paper.r, Tokens.paper.g, Tokens.paper.b, 0.9)
+                border.width: Tokens.border
+                border.color: chip.on ? Tokens.bone : Tokens.lineStrong
+                Row {
+                    id: crow
+                    anchors.centerIn: parent
+                    spacing: Tokens.s1
+                    Text {
+                        anchors.verticalCenter: parent.verticalCenter
+                        text: chip.on ? "\u25c9" : "\u25cb"
+                        color: chip.on ? Tokens.inkOnBone : Tokens.inkDim
+                        font.pixelSize: 11
+                    }
+                    Text {
+                        anchors.verticalCenter: parent.verticalCenter
+                        text: chip.block.toUpperCase()
+                        color: chip.on ? Tokens.inkOnBone : Tokens.inkDim
+                        font.family: Tokens.ui
+                        font.pixelSize: 8
+                        font.letterSpacing: 0.5
+                    }
+                }
+                HoverHandler { cursorShape: Qt.PointingHandCursor }
+                MouseArea {
+                    anchors.fill: parent
+                    anchors.margins: -9
+                    onClicked: pg.toggleBlock(chip.block)
+                }
+            }
         }
     }
 
@@ -378,6 +395,7 @@ Item {
     // ── stage ───────────────────────────────────────────────────────────────
 
     Rectangle {
+        visible: !Tokens.controlsCrate
         anchors.fill: parent
         color: Tokens.paper
     }
@@ -613,7 +631,7 @@ Item {
 
     // Marginalia spine.
     Item {
-        visible: pg.blockVisible("marginalia")
+        visible: !Tokens.controlsCrate && pg.blockVisible("marginalia")
         opacity: pg.blockOpacity("marginalia")
         anchors.left: pg.heroLeft ? undefined : parent.left
         anchors.right: pg.heroLeft ? parent.right : undefined
@@ -634,6 +652,7 @@ Item {
     }
     EyeChip {
         block: "marginalia"
+        visible: pg.editing && (!Tokens.controlsCrate || pg.f("text.marginalia", "") !== "")
         anchors.left: pg.heroLeft ? undefined : parent.left
         anchors.right: pg.heroLeft ? parent.right : undefined
         anchors.leftMargin: Tokens.s2
@@ -672,7 +691,13 @@ Item {
             // title needs more than the gap between two lines of body text
             spacing: Tokens.s3
 
+            PageHeader {
+                visible: Tokens.controlsCrate && !pg.editing
+                width: parent.width
+                title: pg.f("text.name", pg.fv(SysInfo.sysUser))
+            }
             Row {
+                visible: !Tokens.controlsCrate
                 // the register row holds a fixed box, so the rule and the seal keep
                 // their distance from the title on every page
                 height: Tokens.s5
@@ -698,6 +723,7 @@ Item {
                 // the headline runs wide, over the empty space left of the hero,
                 // so long names shrink to fit on one line instead of truncating.
                 width: 560
+                visible: !Tokens.controlsCrate || pg.editing
                 field: "text.name"
                 value: pg.f("text.name", pg.fv(SysInfo.sysUser))
                 color: Tokens.ink
@@ -722,6 +748,16 @@ Item {
                 font.weight: Tokens.displayWeight
                 font.italic: true
                 font.pixelSize: Tokens.fRow
+            }
+            Text {
+                width: parent.width
+                text: pg.f("text.marginalia", "")
+                visible: Tokens.controlsCrate && pg.blockVisible("marginalia") && text !== ""
+                opacity: pg.blockOpacity("marginalia")
+                color: Tokens.inkMuted
+                font.family: Tokens.ui
+                font.pixelSize: Tokens.fSmall
+                wrapMode: Text.WordWrap
             }
         }
 
@@ -890,25 +926,33 @@ Item {
             { x: 372, sx: 372, cy: firstY + Math.round(gap * 0.94), fx: 0.47, fy: 0.44, k: "frac", name: UiPreferences.text("亀裂 · ", "") + I18n.tr("FRACTURE"), big: false }
         ]
 
-        // Eyebrow for the live column, with the never-still pulse.
+        // The poster uses a pulse. Crate keeps the telemetry label and optional gloss.
         Row {
             x: telem.cx
             y: 296
             spacing: Tokens.s2
+            Kit.TrackLabel {
+                objectName: "profileTelemetryLabel"
+                visible: Tokens.controlsCrate
+                text: UiPreferences.text("脈 · ", "") + I18n.tr("LIVE TELEMETRY")
+                tone: "active"
+            }
             Rectangle {
+                visible: !Tokens.controlsCrate
                 anchors.verticalCenter: parent.verticalCenter
                 width: 6
                 height: 6
                 radius: 3
                 color: Tokens.ink
                 SequentialAnimation on opacity {
-                    running: true
+                    running: !Tokens.controlsCrate
                     loops: Animation.Infinite
                     NumberAnimation { to: 0.2; duration: 850; easing.type: Easing.InOutQuad }
                     NumberAnimation { to: 1; duration: 850; easing.type: Easing.InOutQuad }
                 }
             }
             Text {
+                visible: !Tokens.controlsCrate
                 anchors.verticalCenter: parent.verticalCenter
                 text: UiPreferences.text("脈 · ", "") + I18n.tr("LIVE TELEMETRY")
                 color: Tokens.inkMuted

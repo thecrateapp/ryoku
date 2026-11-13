@@ -274,38 +274,14 @@ Item {
             left: parent.left; right: parent.right; top: parent.top
             leftMargin: Tokens.s6; rightMargin: Tokens.s6; topMargin: Tokens.s6
         }
-        // the register row sits off the title: a rule over a 32px
-        // title needs more than the gap between two lines of body text
         spacing: Tokens.s3
 
-        Row {
-            // the register row holds a fixed box, so the rule and the seal keep
-            // their distance from the title on every page
-            height: Tokens.s5
-            spacing: Tokens.s2
-            Rectangle {
-                width: 16; height: 1; color: Tokens.ink
-                anchors.verticalCenter: parent.verticalCenter
-            }
-            Text {
-                text: UiPreferences.brandMark("力"); color: Tokens.ink; font.family: Tokens.jp
-                font.pixelSize: 11; anchors.verticalCenter: parent.verticalCenter
-            }
-            Text {
-                text: I18n.tr("TOOLS"); color: Tokens.inkMuted; font.family: Tokens.ui
-                font.pixelSize: 9; font.weight: Font.Medium; font.letterSpacing: Tokens.trackMark
-                anchors.verticalCenter: parent.verticalCenter
-            }
-        }
-        Text {
-            text: I18n.tr("Dictation"); color: Tokens.ink
-            font.family: Tokens.display; font.pixelSize: Tokens.fTitle; font.weight: Tokens.displayWeight
-        }
-        Text {
-            width: Math.min(parent.width, 720)
-            text: I18n.tr("Voice typing: engine, model, and the key the cloud one needs.")
-            color: Tokens.inkMuted; font.family: Tokens.ui
-            font.pixelSize: Tokens.fBody; wrapMode: Text.WordWrap
+        PageHeader {
+            width: parent.width
+            hubStyle: true
+            eyebrow: I18n.tr("TOOLS")
+            title: I18n.tr("Dictation")
+            blurb: I18n.tr("Voice typing: engine, model, and the key the cloud one needs.")
         }
     }
 
@@ -494,9 +470,9 @@ Item {
                                 // tint10 + ink border + a corner dot, the same tell
                                 // Gallery uses for a content-rich tile (a full-card
                                 // invert would break the two-ink-levels bone rule).
-                                color: card.active ? (Tokens.selectFill ? Tokens.tint10 : Tokens.rowWash) : (cardHov.hovered ? Tokens.tint5 : "transparent")
+                                color: card.active && !Tokens.controlsCrate ? (Tokens.selectFill ? Tokens.tint10 : Tokens.rowWash) : (cardHov.hovered ? Tokens.tint5 : "transparent")
                                 border.width: Tokens.border
-                                border.color: card.active ? Tokens.mark : (cardHov.hovered ? Tokens.lineStrong : Tokens.line)
+                                border.color: card.active ? (Tokens.controlsCrate ? Tokens.pickEdge : Tokens.mark) : (cardHov.hovered ? Tokens.lineStrong : Tokens.line)
                                 Behavior on color { ColorAnimation { duration: Tokens.snap } }
                                 Behavior on border.color { ColorAnimation { duration: Tokens.snap } }
 
@@ -545,7 +521,18 @@ Item {
                                         width: cardCol.width
                                         height: (card.busy && pg.dlPercent >= 0) ? 12 : 0
                                         visible: card.busy && pg.dlPercent >= 0
+                                        Beam {
+                                            objectName: "dictationDownloadProgress"
+                                            visible: Tokens.controlsCrate
+                                            anchors.left: parent.left; anchors.right: pgPct.left
+                                            anchors.rightMargin: Tokens.s2
+                                            anchors.verticalCenter: parent.verticalCenter
+                                            height: parent.height
+                                            interactive: false
+                                            value: pg.dlPercent / 100
+                                        }
                                         Rectangle {
+                                            visible: !Tokens.controlsCrate
                                             id: pgTrack
                                             anchors.left: parent.left
                                             anchors.right: pgPct.left
@@ -576,7 +563,7 @@ Item {
                                 // selected marker, out of the flow so it never nudges
                                 // the name (Gallery's corner dot idiom).
                                 Text {
-                                    visible: card.active
+                                    visible: card.active && !Tokens.controlsCrate
                                     anchors.right: parent.right; anchors.bottom: parent.bottom
                                     anchors.rightMargin: Tokens.s3; anchors.bottomMargin: Tokens.s2
                                     text: "\u25cf"
@@ -701,7 +688,7 @@ Item {
                                 height: 36
                                 radius: Tokens.radius
                                 color: "transparent"
-                                border.width: keyInput.activeFocus ? 2 : Tokens.border
+                                border.width: keyInput.activeFocus && !Tokens.controlsCrate ? 2 : Tokens.border
                                 border.color: keyInput.activeFocus ? Tokens.focus : (keyMa.containsMouse ? Tokens.lineStrong : Tokens.line)
                                 Behavior on border.color { ColorAnimation { duration: Tokens.snap } }
 
@@ -824,19 +811,25 @@ Item {
 
     MouseArea {
         id: downloadConfirm
+        function acceptDownload() {
+            const key = pg.pendingDownload;
+            pg.pendingDownload = "";
+            pg.download(key);
+        }
         anchors.fill: parent
         visible: pg.pendingPreset !== null
         z: 100
         onClicked: pg.pendingDownload = ""
 
         Rectangle {
+            objectName: "dictationConfirmation"
             anchors.centerIn: parent
             width: Math.min(parent.width - Tokens.s6 * 2, Tokens.cardWide)
             height: confirmCol.implicitHeight + Tokens.s5 * 2
             radius: Tokens.radius
-            color: Tokens.bone
-            border.width: 2
-            border.color: Tokens.inkOnBone
+            color: Tokens.controlsCrate ? Tokens.popover : Tokens.bone
+            border.width: Tokens.controlsCrate ? 1 : 2
+            border.color: Tokens.controlsCrate ? Tokens.line : Tokens.inkOnBone
 
             MouseArea { anchors.fill: parent }
 
@@ -851,7 +844,7 @@ Item {
                     text: pg.pendingPreset
                         ? I18n.tr("Download %1?").arg(I18n.tr(pg.pendingPreset.label))
                         : ""
-                    color: Tokens.inkOnBone
+                    color: Tokens.controlsCrate ? Tokens.ink : Tokens.inkOnBone
                     font.family: Tokens.ui
                     font.pixelSize: Tokens.fValue
                     font.weight: Font.Medium
@@ -862,12 +855,28 @@ Item {
                     text: pg.pendingPreset
                         ? I18n.tr("This model needs a %1 download. Dictation keeps using your current model until it finishes.").arg(pg.pendingPreset.size)
                         : ""
-                    color: Tokens.inkOnBoneDim
+                    color: Tokens.controlsCrate ? Tokens.inkSecondary : Tokens.inkOnBoneDim
                     font.family: Tokens.ui
                     font.pixelSize: Tokens.fSmall
                     wrapMode: Text.WordWrap
                 }
                 Row {
+                    anchors.right: parent.right
+                    visible: Tokens.controlsCrate
+                    spacing: Tokens.s3
+
+                    Btn {
+                        text: I18n.tr("CANCEL")
+                        onAct: pg.pendingDownload = ""
+                    }
+                    Btn {
+                        text: pg.pendingPreset ? I18n.tr("DOWNLOAD %1").arg(pg.pendingPreset.size) : I18n.tr("DOWNLOAD")
+                        primary: true
+                        onAct: downloadConfirm.acceptDownload()
+                    }
+                }
+                Row {
+                    visible: !Tokens.controlsCrate
                     anchors.right: parent.right
                     spacing: Tokens.s3
 
@@ -911,13 +920,7 @@ Item {
                             font.letterSpacing: Tokens.trackLabel
                         }
                         HoverHandler { id: downloadHover; cursorShape: Qt.PointingHandCursor }
-                        TapHandler {
-                            onTapped: {
-                                var key = pg.pendingDownload;
-                                pg.pendingDownload = "";
-                                pg.download(key);
-                            }
-                        }
+                        TapHandler { onTapped: downloadConfirm.acceptDownload() }
                     }
                 }
             }

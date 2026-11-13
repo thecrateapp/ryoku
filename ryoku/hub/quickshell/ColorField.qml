@@ -78,6 +78,7 @@ Rectangle {
     // keeps the config's own syntax. ───────────────────────────────────────
     Popup {
         id: dlg
+        objectName: "colorPickerDialog"
         parent: Overlay.overlay
         anchors.centerIn: parent
         modal: true
@@ -100,6 +101,7 @@ Rectangle {
         }
 
         background: Rectangle {
+            radius: Tokens.controlsCrate ? Tokens.radius : 0
             color: Tokens.paper
             border.width: Tokens.border
             border.color: Tokens.lineStrong

@@ -50,10 +50,11 @@ Item {
     }
 
     Rectangle {
+        objectName: "appPickerPlate"
         anchors.centerIn: parent
         width: Math.min(parent.width * 0.7, 460)
         height: Math.min(parent.height * 0.82, 540)
-        radius: Tokens.radius * 2
+        radius: Tokens.controlsCrate ? Tokens.radius : Tokens.radius * 2
         color: Tokens.paper
         border.width: Tokens.border
         border.color: Tokens.lineStrong

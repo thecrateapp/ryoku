@@ -994,40 +994,16 @@ Item {
         // cards below, so the title lands over the first column, not centred.
         width: parent.width - Tokens.s3
         x: 0
-        // the register row sits off the title: a rule over a 32px
-        // title needs more than the gap between two lines of body text
         spacing: Tokens.s3
 
-        Row {
-            // the register row holds a fixed box, so the rule and the seal keep
-            // their distance from the title on every page
-            height: Tokens.s5
-            spacing: Tokens.s2
-            Rectangle {
-                width: 16; height: 1; color: Tokens.ink
-                anchors.verticalCenter: parent.verticalCenter
-            }
-            Text {
-                text: UiPreferences.brandMark("力"); color: Tokens.ink; font.family: Tokens.jp
-                font.pixelSize: 11; anchors.verticalCenter: parent.verticalCenter
-            }
-            Text {
-                text: I18n.tr("DEVICES"); color: Tokens.inkMuted; font.family: Tokens.ui
-                font.pixelSize: 9; font.weight: Font.Medium; font.letterSpacing: Tokens.trackMark
-                anchors.verticalCenter: parent.verticalCenter
-            }
-        }
-        Text {
-            text: I18n.tr("Input"); color: Tokens.ink
-            font.family: Tokens.display; font.pixelSize: Tokens.fTitle; font.weight: Tokens.displayWeight
-        }
-        Text {
-            width: Math.min(parent.width, 720)
-            text: pg.tab === "MOUSE"
+        PageHeader {
+            width: parent.width
+            hubStyle: true
+            eyebrow: I18n.tr("DEVICES")
+            title: I18n.tr("Input")
+            blurb: pg.tab === "MOUSE"
                 ? I18n.tr("Extra buttons on a connected mouse, rebound to keys. Touchpads and laptop pads are left alone.")
                 : I18n.tr("Keyboard, pointer and touchpad, and key repeat.")
-            color: Tokens.inkMuted; font.family: Tokens.ui
-            font.pixelSize: Tokens.fBody; wrapMode: Text.WordWrap
         }
         Tabs {
             options: pg.tabs

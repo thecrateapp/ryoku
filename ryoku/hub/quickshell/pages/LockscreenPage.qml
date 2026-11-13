@@ -6,6 +6,7 @@ import QtQuick.Shapes
 import Quickshell
 import Quickshell.Io
 import Ryoku.Ui
+import Ryoku.Ui as Kit
 import Ryoku.Ui.Singletons
 
 // Lockscreen management. RyoStore owns discovery and installation; this page
@@ -988,59 +989,18 @@ Item {
         // card column instead of floating in the middle of a page-wide window
         x: Tokens.s6
         width: Math.max(320, pg.width - Tokens.s6 * 2 - Tokens.s3)
-        // the register row sits off the title: a rule over a 32px
-        // title needs more than the gap between two lines of body text
         spacing: Tokens.s3
 
-        Row {
-            // the register row holds a fixed box, so the rule and the seal keep
-            // their distance from the title on every page
-            height: Tokens.s5
-            spacing: Tokens.s2
-            Rectangle {
-                width: 16; height: 1; color: Tokens.ink
-                anchors.verticalCenter: parent.verticalCenter
-            }
-            Text {
-                text: UiPreferences.brandMark("力"); color: Tokens.ink; font.family: Tokens.jp
-                font.pixelSize: 11; anchors.verticalCenter: parent.verticalCenter
-            }
-            Text {
-                text: I18n.tr("DESKTOP"); color: Tokens.inkMuted; font.family: Tokens.ui
-                font.pixelSize: 9; font.weight: Font.Medium; font.letterSpacing: Tokens.trackMark
-                anchors.verticalCenter: parent.verticalCenter
-            }
-        }
-
-        // title with its one utility action (rescan the installed skins) beside it.
-        Item {
+        PageHeader {
             width: parent.width
-            height: title.height
-            Text {
-                id: title
-                anchors.left: parent.left
-                anchors.verticalCenter: parent.verticalCenter
-                text: I18n.tr("Lockscreen")
-                color: Tokens.ink
-                font.family: Tokens.display
-                font.weight: Tokens.displayWeight
-                font.pixelSize: Tokens.fTitle
-            }
-            Btn {
-                anchors.right: parent.right
-                anchors.verticalCenter: parent.verticalCenter
+            hubStyle: true
+            eyebrow: I18n.tr("DESKTOP")
+            title: I18n.tr("Lockscreen")
+            blurb: I18n.tr("Pick the skin your lock and sign-in screens wear. It only swaps the look, never your login; applying reskins the sign-in screen too, so you will be asked for your password.")
+            actions: Btn {
                 text: I18n.tr("BROWSE RYOSTORE")
                 onAct: pg.browseStore()
             }
-        }
-
-        Text {
-            width: Math.min(parent.width, 720)
-            // the load-bearing caveat, kept verbatim: it only swaps the look,
-            // never your login.
-            text: I18n.tr("Pick the skin your lock and sign-in screens wear. It only swaps the look, never your login; applying reskins the sign-in screen too, so you will be asked for your password.")
-            color: Tokens.inkMuted; font.family: Tokens.ui
-            font.pixelSize: Tokens.fBody; wrapMode: Text.WordWrap
         }
         Text {
             width: Math.min(parent.width, 720)
@@ -1201,9 +1161,9 @@ Item {
 
                     // three-mode chip row.
                     Row { topPadding: Tokens.s1; spacing: Tokens.s2
-                        Chip { label: I18n.tr("Unlock at sign-in"); mode: "unlock-on-login" }
-                        Chip { label: I18n.tr("Never ask"); mode: "never-ask" }
-                        Chip { label: I18n.tr("Ask each time"); mode: "ask" }
+                        SignInMode { label: I18n.tr("Unlock at sign-in"); mode: "unlock-on-login" }
+                        SignInMode { label: I18n.tr("Never ask"); mode: "never-ask" }
+                        SignInMode { label: I18n.tr("Ask each time"); mode: "ask" }
                     }
 
                     Text { width: parent.width; topPadding: Tokens.s1; text: pg.kStatusLine; color: Tokens.inkDim; font.family: Tokens.ui; font.pixelSize: Tokens.fSmall; wrapMode: Text.WordWrap }
@@ -1579,8 +1539,8 @@ Item {
                                 color: Tokens.ink; font.family: Tokens.ui; font.pixelSize: Tokens.fSmall
                             }
                             Row { topPadding: Tokens.s1; spacing: Tokens.s2
-                                Chip { label: I18n.tr("Security key or password"); mode: "sk-either"; kind: "security-key" }
-                                Chip { label: I18n.tr("Security key + password"); mode: "sk-mfa"; kind: "security-key" }
+                                SignInMode { label: I18n.tr("Security key or password"); mode: "sk-either"; kind: "security-key" }
+                                SignInMode { label: I18n.tr("Security key + password"); mode: "sk-mfa"; kind: "security-key" }
                             }
                             Text {
                                 width: parent.width
@@ -2067,7 +2027,7 @@ Item {
 
     // ── one sign-in mode chip ───────────────────────────────────────────────
     // same grammar as a tile: selected = ink border + tint10 fill + a dot.
-    component Chip: Rectangle {
+    component SignInMode: Loader {
         id: chip
         property string label: ""
         property string mode: ""
@@ -2078,42 +2038,60 @@ Item {
         readonly property bool busy: chip.kind === "security-key"
             ? (pg.skPending === "mode" && ((chip.mode === "sk-mfa" && pg.skPendingTarget === "mfa") || (chip.mode === "sk-either" && pg.skPendingTarget === "either")))
             : (pg.kpending === chip.mode)
-        implicitWidth: chLab.implicitWidth + Tokens.s4 * 2
-        height: Tokens.ctlH + 4
-        radius: Tokens.radius
-        color: chip.on ? Tokens.tint10 : (chHover.hovered ? Tokens.tint5 : "transparent")
-        border.width: Tokens.border
-        border.color: chip.on ? Tokens.mark : (chHover.hovered ? Tokens.lineStrong : Tokens.line)
-        opacity: (((chip.kind === "security-key") ? (pg.skPending !== "") : (pg.kpending !== "")) && !chip.busy) ? 0.4 : 1
-        Behavior on color { ColorAnimation { duration: Tokens.snap } }
-        Behavior on border.color { ColorAnimation { duration: Tokens.snap } }
-        Behavior on opacity { NumberAnimation { duration: Tokens.snap } }
-
-        Row {
-            id: chLab
-            anchors.centerIn: parent
-            spacing: Tokens.s1
-            Rectangle {
-                anchors.verticalCenter: parent.verticalCenter
-                visible: chip.on
-                width: 5; height: 5; radius: 2.5; color: Tokens.ink
-            }
-            Text {
-                anchors.verticalCenter: parent.verticalCenter
-                text: chip.busy ? (I18n.tr(chip.label) + "\u2026") : I18n.tr(chip.label)
-                color: chip.on ? Tokens.ink : Tokens.inkMuted
-                font.family: Tokens.ui; font.pixelSize: Tokens.fSmall
-                font.weight: chip.on ? Font.DemiBold : Font.Medium
+        function choose() {
+            if (chip.kind === "security-key")
+                pg.sksetMode(chip.mode === "sk-mfa" ? "mfa" : "either");
+            else
+                pg.kchoose(chip.mode);
+        }
+        sourceComponent: Tokens.controlsCrate ? crateChip : stockChip
+        Component {
+            id: crateChip
+            Kit.Chip {
+                objectName: "signInMode"
+                text: I18n.tr(chip.label) + (chip.busy ? "\u2026" : "")
+                outlinedSelection: true
+                on: chip.on
+                enabled: chip.kind === "security-key" ? pg.skPending === "" : pg.kpending === ""
+                onClicked: chip.choose()
             }
         }
+        Component {
+            id: stockChip
+            Rectangle {
+                implicitWidth: chLab.implicitWidth + Tokens.s4 * 2
+                height: Tokens.ctlH + 4
+                radius: Tokens.radius
+                color: chip.on ? Tokens.tint10 : (chHover.hovered ? Tokens.tint5 : "transparent")
+                border.width: Tokens.border
+                border.color: chip.on ? Tokens.mark : (chHover.hovered ? Tokens.lineStrong : Tokens.line)
+                opacity: (((chip.kind === "security-key") ? (pg.skPending !== "") : (pg.kpending !== "")) && !chip.busy) ? 0.4 : 1
+                Behavior on color { ColorAnimation { duration: Tokens.snap } }
+                Behavior on border.color { ColorAnimation { duration: Tokens.snap } }
+                Behavior on opacity { NumberAnimation { duration: Tokens.snap } }
 
-        HoverHandler { id: chHover; cursorShape: Qt.PointingHandCursor }
-        TapHandler {
-            onTapped: {
-                if (chip.kind === "security-key")
-                    pg.sksetMode(chip.mode === "sk-mfa" ? "mfa" : "either");
-                else
-                    pg.kchoose(chip.mode);
+                Row {
+                    id: chLab
+                    anchors.centerIn: parent
+                    spacing: Tokens.s1
+                    Rectangle {
+                        anchors.verticalCenter: parent.verticalCenter
+                        visible: chip.on
+                        width: 5; height: 5; radius: 2.5; color: Tokens.ink
+                    }
+                    Text {
+                        anchors.verticalCenter: parent.verticalCenter
+                        text: chip.busy ? (I18n.tr(chip.label) + "\u2026") : I18n.tr(chip.label)
+                        color: chip.on ? Tokens.ink : Tokens.inkMuted
+                        font.family: Tokens.ui; font.pixelSize: Tokens.fSmall
+                        font.weight: chip.on ? Font.DemiBold : Font.Medium
+                    }
+                }
+
+                HoverHandler { id: chHover; cursorShape: Qt.PointingHandCursor }
+                TapHandler {
+                    onTapped: chip.choose()
+                }
             }
         }
     }
@@ -2147,9 +2125,9 @@ Item {
 
         implicitHeight: body.implicitHeight + Tokens.s6
         radius: Tokens.radius
-        color: tile.active ? (Tokens.selectFill ? Tokens.tint10 : Tokens.rowWash) : (hover.hovered ? Tokens.tint5 : "transparent")
+        color: tile.active && !Tokens.controlsCrate ? (Tokens.selectFill ? Tokens.tint10 : Tokens.rowWash) : (hover.hovered ? Tokens.tint5 : "transparent")
         border.width: Tokens.border
-        border.color: tile.active ? Tokens.mark : (hover.hovered ? Tokens.lineStrong : Tokens.line)
+        border.color: tile.active ? (Tokens.controlsCrate ? Tokens.pickEdge : Tokens.mark) : (hover.hovered ? Tokens.lineStrong : Tokens.line)
         Behavior on color { ColorAnimation { duration: Tokens.snap } }
         Behavior on border.color { ColorAnimation { duration: Tokens.snap } }
 
@@ -2158,7 +2136,7 @@ Item {
             anchors { top: parent.top; right: parent.right; topMargin: Tokens.s2; rightMargin: Tokens.s2 }
             width: 5; height: 5; radius: 2.5
             color: Tokens.mark
-            visible: tile.active
+            visible: tile.active && !Tokens.controlsCrate
         }
 
         Column {
@@ -2175,7 +2153,7 @@ Item {
                 radius: Tokens.radius
                 color: "transparent"
                 border.width: Tokens.border
-                border.color: tile.active ? Tokens.mark : (hover.hovered ? Tokens.hoverInk : Tokens.line)
+                border.color: tile.active && !Tokens.controlsCrate ? Tokens.mark : (hover.hovered ? Tokens.hoverInk : Tokens.line)
                 clip: true
                 Behavior on border.color { ColorAnimation { duration: Tokens.snap } }
 
@@ -2421,15 +2399,16 @@ Item {
 
     Rectangle {
         id: fplate
+        objectName: "fingerprintDialog"
         anchors.centerIn: parent
         visible: pg.foverlay
         z: 999
         width: Math.min(parent.width - Tokens.s6 * 2, 420)
         height: 368
         radius: Tokens.radius
-        color: Tokens.paperLift
+        color: Tokens.controlsCrate ? Tokens.popover : Tokens.paperLift
         border.width: Tokens.border
-        border.color: Tokens.lineStrong
+        border.color: Tokens.controlsCrate ? Tokens.line : Tokens.lineStrong
         focus: true
         Keys.onEscapePressed: pg.fcloseOverlay()
 
@@ -2439,11 +2418,12 @@ Item {
             anchors.margins: Tokens.s5
             spacing: Tokens.s4
 
-            // header: eyebrow + close
             Item {
+                id: fpDialogHeader
                 width: parent.width
-                height: 16
+                height: Tokens.controlsCrate ? fpDismiss.implicitHeight : 16
                 Text {
+                    visible: !Tokens.controlsCrate
                     anchors { left: parent.left; verticalCenter: parent.verticalCenter }
                     text: pg.fnaming ? I18n.tr("NAME THIS PRINT")
                         : (pg.foverlayMode === "enroll" ? I18n.tr("ENROLLMENT") : I18n.tr("VERIFY"))
@@ -2451,8 +2431,17 @@ Item {
                     font.pixelSize: Tokens.fMicro; font.weight: Font.Medium
                     font.letterSpacing: Tokens.trackMark
                 }
-                // close: a real hit area, not a bare glyph
+                Kit.IconButton {
+                    id: fpDismiss
+                    objectName: "fingerprintDismiss"
+                    visible: Tokens.controlsCrate
+                    anchors { right: parent.right; verticalCenter: parent.verticalCenter }
+                    glyph: "close"
+                    Accessible.name: I18n.tr("Close")
+                    onClicked: pg.fcloseOverlay()
+                }
                 Item {
+                    visible: !Tokens.controlsCrate
                     anchors { right: parent.right; verticalCenter: parent.verticalCenter }
                     width: 28; height: 28
                     Glyph {
@@ -2469,7 +2458,7 @@ Item {
             // body: ring + readout + guidance, or the naming step
             Item {
                 width: parent.width
-                height: fplate.height - Tokens.s5 * 2 - 16 - logCol.height - footRow.height - Tokens.s4 * 3
+                height: fplate.height - Tokens.s5 * 2 - fpDialogHeader.height - logCol.height - footRow.height - Tokens.s4 * 3
 
                 // live enroll: ring fills stage by stage
                 Column {
@@ -2486,9 +2475,14 @@ Item {
                             frac: pg.fringFrac
                             spin: pg.fstagesTotal === 0 && pg.fpending === "enroll"
                         }
+                        Kit.Glyph {
+                            anchors.centerIn: parent
+                            visible: Tokens.controlsCrate && pg.fstatus === "enroll-completed"
+                            name: "check-circle"; size: 44; color: Tokens.ink
+                        }
                         Glyph {
                             anchors.centerIn: parent
-                            visible: pg.fstatus === "enroll-completed"
+                            visible: !Tokens.controlsCrate && pg.fstatus === "enroll-completed"
                             path: pg.pCheck; size: 44; weight: 2.2; tint: Tokens.ink
                         }
                         Text {
@@ -2532,14 +2526,24 @@ Item {
                             frac: 0
                             spin: true
                         }
-                        Glyph {
+                        Kit.Glyph {
                             anchors.centerIn: parent
-                            visible: pg.fpending !== "verify" && pg.fmatchWin
-                            path: pg.pCheck; size: 44; weight: 2.2; tint: Tokens.ink
+                            visible: Tokens.controlsCrate && pg.fpending !== "verify" && pg.fmatchWin
+                            name: "check-circle"; size: 44; color: Tokens.ink
                         }
                         Glyph {
                             anchors.centerIn: parent
-                            visible: pg.fpending !== "verify" && !pg.fmatchWin
+                            visible: !Tokens.controlsCrate && pg.fpending !== "verify" && pg.fmatchWin
+                            path: pg.pCheck; size: 44; weight: 2.2; tint: Tokens.ink
+                        }
+                        Kit.Glyph {
+                            anchors.centerIn: parent
+                            visible: Tokens.controlsCrate && pg.fpending !== "verify" && !pg.fmatchWin
+                            name: "close"; size: 40; color: Tokens.ink
+                        }
+                        Glyph {
+                            anchors.centerIn: parent
+                            visible: !Tokens.controlsCrate && pg.fpending !== "verify" && !pg.fmatchWin
                             path: pg.pX; size: 40; weight: 2.2; tint: Tokens.ink
                         }
                     }

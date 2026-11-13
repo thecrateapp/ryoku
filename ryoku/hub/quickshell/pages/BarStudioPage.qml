@@ -206,67 +206,20 @@ Item {
         // the title starts over the first card column instead of floating centred
         x: 0
         width: page.width - 14
-        // the register row sits off the title: a rule over a 32px
-        // title needs more than the gap between two lines of body text
         spacing: Tokens.s3
 
-        Item {
+        PageHeader {
             width: parent.width
-            height: 14
-            Row {
-                // the register row holds a fixed box, so the rule and the seal keep
-                // their distance from the title on every page
-                height: Tokens.s5
-                id: ebrow
-                spacing: Tokens.s2
-                anchors.verticalCenter: parent.verticalCenter
-                Rectangle { width: 16; height: 1; color: Tokens.ink; anchors.verticalCenter: parent.verticalCenter }
-                Text {
-                    text: UiPreferences.brandMark("力"); color: Tokens.ink; font.family: Tokens.jp
-                    font.pixelSize: 11; anchors.verticalCenter: parent.verticalCenter
-                }
-                Text {
-                    text: I18n.tr("DESKTOP"); color: Tokens.inkMuted; font.family: Tokens.ui
-                    font.pixelSize: 9; font.weight: Font.Medium; font.letterSpacing: Tokens.trackMark
-                    anchors.verticalCenter: parent.verticalCenter
-                }
-            }
-            Rectangle {
-                anchors { left: ebrow.right; right: crossMark.left; verticalCenter: parent.verticalCenter }
-                anchors.leftMargin: Tokens.s3; anchors.rightMargin: Tokens.s3
-                height: 1; color: Tokens.lineSoft
-            }
-            Text {
-                id: crossMark
-                anchors { right: slashMark.left; rightMargin: Tokens.s2; verticalCenter: parent.verticalCenter }
-                text: "+"; color: Tokens.inkFaint
-                font.family: Tokens.mono; font.pixelSize: 10
-            }
-            Text {
-                id: slashMark
-                anchors { right: parent.right; verticalCenter: parent.verticalCenter }
-                text: "///"; color: Tokens.inkFaint
-                font.family: Tokens.mono; font.pixelSize: 10
-            }
-        }
-        Text {
-            text: page.subshellsOnly ? I18n.tr("Subshells") : I18n.tr("Bar Studio")
-            color: Tokens.ink
-            font.family: Tokens.display
-            font.weight: Tokens.displayWeight
-            font.pixelSize: Tokens.fTitle
-        }
-        // One compact legend serves both Subshells and Bar Studio.
-        Text {
-            width: parent.width
-            text: (page.subshellsOnly
+            hubStyle: true
+            eyebrow: I18n.tr("DESKTOP")
+            endMarks: true
+            eyebrowHeight: 14
+            blurbWidth: width
+            title: page.subshellsOnly ? I18n.tr("Subshells") : I18n.tr("Bar Studio")
+            blurb: (page.subshellsOnly
                 ? I18n.tr("Complete shell experiences with their own panels, docks and tools.")
                 : I18n.tr("Which bar the desktop draws, and how it looks."))
                 + "   |   ▲ = " + I18n.tr("Uses more resources than other options")
-            color: Tokens.inkMuted
-            font.family: Tokens.ui
-            font.pixelSize: Tokens.fBody
-            wrapMode: Text.WordWrap
         }
     }
 

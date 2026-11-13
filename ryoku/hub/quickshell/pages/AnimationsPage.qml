@@ -3,6 +3,7 @@ import QtQuick
 import QtQuick.Controls
 import Quickshell.Io
 import Ryoku.Ui
+import Ryoku.Ui as Kit
 import Ryoku.Ui.Singletons
 import "../Singletons"
 import ".."
@@ -647,28 +648,15 @@ Item {
         // framed page: the pageArea already insets it, so the head starts at the
         // body's own left edge, over the first card column
         width: Math.max(320, pg.width - Tokens.s4)
-        // the register row sits off the title: a rule over a 32px
-        // title needs more than the gap between two lines of body text
         spacing: Tokens.s3
 
-        Row {
-            // the register row holds a fixed box, so the rule and the seal keep
-            // their distance from the title on every page
-            height: Tokens.s5
-            spacing: Tokens.s2
-            Rectangle { width: 16; height: 1; color: Tokens.ink; anchors.verticalCenter: parent.verticalCenter }
-            Text { text: UiPreferences.brandMark("力"); color: Tokens.ink; font.family: Tokens.jp; font.pixelSize: Tokens.fMicro; anchors.verticalCenter: parent.verticalCenter }
-            Text {
-                text: I18n.tr("DESKTOP"); color: Tokens.inkMuted; font.family: Tokens.ui
-                font.pixelSize: Tokens.fTiny; font.weight: Font.Medium; font.letterSpacing: Tokens.trackMark
-                anchors.verticalCenter: parent.verticalCenter
-            }
-        }
-        Text { text: I18n.tr("Animations"); color: Tokens.ink; font.family: Tokens.display; font.pixelSize: Tokens.fTitle; font.weight: Tokens.displayWeight }
-        Text {
-            width: Math.min(parent.width, 720)
-            text: I18n.tr("Pick a feel and watch it live; fine-tune any one animation under Advanced.")
-            color: Tokens.inkMuted; font.family: Tokens.ui; font.pixelSize: Tokens.fBody; wrapMode: Text.WordWrap
+        PageHeader {
+            width: parent.width
+            hubStyle: true
+            eyebrow: I18n.tr("DESKTOP")
+            scaleEyebrow: true
+            title: I18n.tr("Animations")
+            blurb: I18n.tr("Pick a feel and watch it live; fine-tune any one animation under Advanced.")
         }
         Item { width: 1; height: Tokens.s1 }
     }
@@ -853,25 +841,41 @@ Item {
                                 }
                                 Repeater {
                                     model: pg.feels
-                                    delegate: Rectangle {
+                                    delegate: Loader {
                                         id: chip
                                         required property var modelData
-                                        readonly property bool active: pg.feelActive(chip.modelData.c)
-                                        width: chipT.implicitWidth + Tokens.s4; height: Tokens.ctlH
-                                        radius: Tokens.radius
-                                        color: chip.active ? Tokens.bone : (chh.hovered ? Tokens.tint10 : "transparent")
-                                        border.width: Tokens.border
-                                        border.color: chip.active ? Tokens.bone : (chh.hovered ? Tokens.lineStrong : Tokens.line)
-                                        Behavior on color { ColorAnimation { duration: Tokens.snap } }
-                                        Text {
-                                            id: chipT
-                                            anchors.centerIn: parent
-                                            text: chip.modelData.name
-                                            color: chip.active ? Tokens.inkOnBone : Tokens.inkDim
-                                            font.family: Tokens.ui; font.pixelSize: Tokens.fSmall
+                                        readonly property bool selected: pg.feelActive(chip.modelData.c)
+                                        sourceComponent: Tokens.controlsCrate ? crateChip : stockChip
+                                        Component {
+                                            id: crateChip
+                                            Kit.Chip {
+                                                objectName: "curvePreset"
+                                                text: chip.modelData.name
+                                                outlinedSelection: true
+                                                on: chip.selected
+                                                onClicked: pg.upsertCurve(pg.selectedCurve, chip.modelData.c[0], chip.modelData.c[1], chip.modelData.c[2], chip.modelData.c[3])
+                                            }
                                         }
-                                        HoverHandler { id: chh; cursorShape: Qt.PointingHandCursor }
-                                        TapHandler { onTapped: pg.upsertCurve(pg.selectedCurve, chip.modelData.c[0], chip.modelData.c[1], chip.modelData.c[2], chip.modelData.c[3]) }
+                                        Component {
+                                            id: stockChip
+                                            Rectangle {
+                                                width: chipT.implicitWidth + Tokens.s4; height: Tokens.ctlH
+                                                radius: Tokens.radius
+                                                color: chip.selected ? Tokens.bone : (chh.hovered ? Tokens.tint10 : "transparent")
+                                                border.width: Tokens.border
+                                                border.color: chip.selected ? Tokens.bone : (chh.hovered ? Tokens.lineStrong : Tokens.line)
+                                                Behavior on color { ColorAnimation { duration: Tokens.snap } }
+                                                Text {
+                                                    id: chipT
+                                                    anchors.centerIn: parent
+                                                    text: chip.modelData.name
+                                                    color: chip.selected ? Tokens.inkOnBone : Tokens.inkDim
+                                                    font.family: Tokens.ui; font.pixelSize: Tokens.fSmall
+                                                }
+                                                HoverHandler { id: chh; cursorShape: Qt.PointingHandCursor }
+                                                TapHandler { onTapped: pg.upsertCurve(pg.selectedCurve, chip.modelData.c[0], chip.modelData.c[1], chip.modelData.c[2], chip.modelData.c[3]) }
+                                            }
+                                        }
                                     }
                                 }
                             }

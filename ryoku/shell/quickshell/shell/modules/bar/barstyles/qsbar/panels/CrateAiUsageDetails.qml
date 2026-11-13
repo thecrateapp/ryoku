@@ -305,6 +305,8 @@ Flickable {
                         }
                     }
                     Item {
+                        id: dayLabels
+                        objectName: "aiDayLabels"
                         width: parent.width
                         height: Tokens.s4
                         Repeater {
@@ -316,7 +318,7 @@ Flickable {
                                 readonly property bool last: index === curve.days.length - 1
                                 width: 36
                                 // the end days sit inside the panel instead of overhanging it
-                                x: first ? 0 : last ? parent.width - width
+                                x: first ? 0 : last ? dayLabels.width - width
                                     : (curve.points[index] ? curve.points[index][0] : 0) - width / 2
                                 horizontalAlignment: first ? Text.AlignLeft : last ? Text.AlignRight : Text.AlignHCenter
                                 text: details.theme.aiDayLabel(modelData.date)

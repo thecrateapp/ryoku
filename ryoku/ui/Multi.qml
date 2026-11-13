@@ -12,7 +12,16 @@ Flow {
     spacing: Tokens.controlsCrate ? 8 : 5
 
     Repeater {
-        model: multi.options
+        model: Tokens.outlineSelections ? multi.options : []
+        Chip {
+            required property string modelData
+            text: I18n.tr(modelData)
+            on: multi.chosen.indexOf(modelData) >= 0
+            onClicked: multi.toggled(modelData)
+        }
+    }
+    Repeater {
+        model: Tokens.outlineSelections ? [] : multi.options
         Rectangle {
             required property string modelData
             readonly property bool on: multi.chosen.indexOf(modelData) >= 0

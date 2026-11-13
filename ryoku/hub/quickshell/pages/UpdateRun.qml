@@ -96,7 +96,18 @@ Column {
         width: view.width
         height: 12
 
+        Beam {
+            objectName: "updateProgress"
+            visible: Tokens.controlsCrate
+            anchors.left: parent.left; anchors.right: pct.left
+            anchors.rightMargin: Tokens.s3
+            anchors.verticalCenter: parent.verticalCenter
+            height: parent.height
+            interactive: false
+            value: view.run.fillFraction
+        }
         Rectangle {
+            visible: !Tokens.controlsCrate
             id: track
             anchors.left: parent.left; anchors.right: pct.left
             anchors.rightMargin: Tokens.s3
@@ -397,10 +408,18 @@ Column {
                                             }
                                         }
 
+                                        Beam {
+                                            objectName: "updatePieceProgress"
+                                            visible: Tokens.controlsCrate && pieceRow.pieceRunning
+                                            width: parent.width; height: 8
+                                            interactive: false
+                                            value: pieceRow.fillFraction
+                                            indeterminate: pieceRow.typical <= 0 && pieceRow.progress <= 0
+                                        }
                                         Rectangle {
                                             id: pieceTrack
                                             width: parent.width; height: 3
-                                            visible: pieceRow.pieceRunning
+                                            visible: !Tokens.controlsCrate && pieceRow.pieceRunning
                                             color: Tokens.lineSoft
                                             antialiasing: false
 
@@ -464,11 +483,11 @@ Column {
         visible: view.stalled && !view.run.keepWaiting
         spacing: Tokens.s4
 
-        Rectangle { width: 2; height: stallCol.implicitHeight; color: Tokens.ink; antialiasing: false }
+        Rectangle { visible: !Tokens.controlsCrate; width: 2; height: stallCol.implicitHeight; color: Tokens.ink; antialiasing: false }
 
         Column {
             id: stallCol
-            width: parent.width - 2 - Tokens.s4
+            width: Tokens.controlsCrate ? parent.width : parent.width - 2 - Tokens.s4
             spacing: Tokens.s2
 
             Text {

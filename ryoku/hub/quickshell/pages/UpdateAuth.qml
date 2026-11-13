@@ -22,11 +22,11 @@ Row {
     // the field takes focus as soon as the question appears
     onVisibleChanged: if (visible) field.forceActiveFocus()
 
-    Rectangle { width: 2; height: col.implicitHeight; color: Tokens.ink; antialiasing: false }
+    Rectangle { visible: !Tokens.controlsCrate; width: 2; height: col.implicitHeight; color: Tokens.ink; antialiasing: false }
 
     Column {
         id: col
-        width: auth.width - 2 - Tokens.s4
+        width: Tokens.controlsCrate ? auth.width : auth.width - 2 - Tokens.s4
         spacing: Tokens.s3
 
         Text {

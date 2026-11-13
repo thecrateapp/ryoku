@@ -8,6 +8,7 @@ import Quickshell.Io
 import Quickshell.Networking
 import Quickshell.Bluetooth
 import Ryoku.Ui
+import Ryoku.Ui as Kit
 import Ryoku.Ui.Singletons
 
 // Connections (SYSTEM). A self-contained, full-bleed pluggable page: its own
@@ -258,53 +259,85 @@ Item {
 
     // a small tappable pill (Pair / Disconnect / Show / Hide). 22 tall so it
     // sits inside a device tile; a shorter sibling of Ryoku.Ui Btn.
-    component MiniPill: Rectangle {
+    component MiniPill: Loader {
         id: mp
         property string text: ""
         property bool armed: true
         property bool onBone: false
         signal act()
-        implicitHeight: 22
-        implicitWidth: mpLab.implicitWidth + 18
-        radius: Tokens.radius
-        opacity: armed ? 1 : 0.3
-        color: onBone
-            ? (mph.hovered && armed ? Tokens.inkOnBoneDim : Tokens.inkOnBone)
-            : (mph.hovered && armed ? Tokens.tint10 : "transparent")
-        border.width: Tokens.border
-        border.color: onBone ? Tokens.inkOnBone : (mph.hovered && armed ? Tokens.lineStrong : Tokens.line)
-        Behavior on color { ColorAnimation { duration: Tokens.snap } }
-        Behavior on border.color { ColorAnimation { duration: Tokens.snap } }
-        Text {
-            id: mpLab
-            anchors.centerIn: parent
-            text: mp.text
-            color: mp.onBone ? Tokens.bone : Tokens.ink
-            font.family: Tokens.ui
-            font.pixelSize: Tokens.fMicro
-            font.weight: Font.Medium
+        sourceComponent: Tokens.controlsCrate ? crateMp : stockMp
+        Component {
+            id: crateMp
+            Kit.Chip {
+                objectName: "connectionAction"
+                text: mp.text
+                outlinedSelection: true
+                on: false
+                enabled: mp.armed
+                onClicked: mp.act()
+            }
         }
-        HoverHandler { id: mph; enabled: mp.armed; cursorShape: Qt.PointingHandCursor }
-        TapHandler { enabled: mp.armed; onTapped: mp.act() }
+        Component {
+            id: stockMp
+            Rectangle {
+                implicitHeight: 22
+                implicitWidth: mpLab.implicitWidth + 18
+                radius: Tokens.radius
+                opacity: mp.armed ? 1 : 0.3
+                color: mp.onBone
+                    ? (mph.hovered && mp.armed ? Tokens.inkOnBoneDim : Tokens.inkOnBone)
+                    : (mph.hovered && mp.armed ? Tokens.tint10 : "transparent")
+                border.width: Tokens.border
+                border.color: mp.onBone ? Tokens.inkOnBone : (mph.hovered && mp.armed ? Tokens.lineStrong : Tokens.line)
+                Behavior on color { ColorAnimation { duration: Tokens.snap } }
+                Behavior on border.color { ColorAnimation { duration: Tokens.snap } }
+                Text {
+                    id: mpLab
+                    anchors.centerIn: parent
+                    text: mp.text
+                    color: mp.onBone ? Tokens.bone : Tokens.ink
+                    font.family: Tokens.ui
+                    font.pixelSize: Tokens.fMicro
+                    font.weight: Font.Medium
+                }
+                HoverHandler { id: mph; enabled: mp.armed; cursorShape: Qt.PointingHandCursor }
+                TapHandler { enabled: mp.armed; onTapped: mp.act() }
+            }
+        }
     }
 
     // an error is inverted text and the word (DESIGN section 1): a small bone
     // chip carrying the failure, no red. used for connect/pair failures.
-    component ErrChip: Rectangle {
+    component ErrChip: Loader {
         id: ec
         property string text: ""
-        implicitHeight: 22
-        implicitWidth: ecLab.implicitWidth + 16
-        radius: Tokens.radius
-        color: Tokens.bone
-        Text {
-            id: ecLab
-            anchors.centerIn: parent
-            text: ec.text
-            color: Tokens.inkOnBone
-            font.family: Tokens.ui
-            font.pixelSize: Tokens.fSmall
-            font.weight: Font.Medium
+        sourceComponent: Tokens.controlsCrate ? crateEc : stockEc
+        Component {
+            id: crateEc
+            Kit.Chip {
+                objectName: "connectionFailure"
+                text: ec.text
+                interactive: false
+                labelInk: Tokens.alert
+            }
+        }
+        Component {
+            id: stockEc
+            Rectangle {
+                implicitHeight: 22
+                implicitWidth: ecLab.implicitWidth + 16
+                radius: Tokens.radius
+                color: Tokens.bone
+                Text {
+                    id: ecLab
+                    anchors.centerIn: parent
+                    text: ec.text
+                    color: Tokens.inkOnBone
+                    font.family: Tokens.ui
+                    font.pixelSize: Tokens.fSmall
+                    font.weight: Font.Medium
+                }
+            }
         }
     }
 
@@ -340,7 +373,7 @@ Item {
             height: 44
             radius: Tokens.radius
             color: cr.editing ? Tokens.tint5 : "transparent"
-            border.width: cr.editing ? 2 : Tokens.border
+            border.width: cr.editing && !Tokens.controlsCrate ? 2 : Tokens.border
             border.color: cr.editing ? Tokens.ink : Tokens.line
             Behavior on color { ColorAnimation { duration: Tokens.snap } }
             Behavior on border.color { ColorAnimation { duration: Tokens.snap } }
@@ -1290,14 +1323,16 @@ Item {
                                 height: details.length ? 60 : 46
                                 radius: Tokens.radius
                                 // inverted to bone only while the theme keeps the fill
-                                readonly property bool inv: netItem.isActive && Tokens.selectFill
+                                readonly property bool inv: !Tokens.controlsCrate && netItem.isActive && Tokens.selectFill
+                                border.width: Tokens.controlsCrate && netItem.isActive ? 1 : 0
+                                border.color: Tokens.pickEdge
                                 color: rowBg.inv ? Tokens.bone
-                                    : (netItem.isActive ? Tokens.rowWash
+                                    : (netItem.isActive && !Tokens.controlsCrate ? Tokens.rowWash
                                     : (rowHover.hovered ? Tokens.tint5 : "transparent"))
                                 Behavior on color { ColorAnimation { duration: Tokens.snap } }
 
                                 Rectangle {
-                                    visible: netItem.isActive && !rowBg.inv
+                                    visible: !Tokens.controlsCrate && netItem.isActive && !rowBg.inv
                                     anchors.left: parent.left
                                     anchors.verticalCenter: parent.verticalCenter
                                     width: 2; height: parent.height - Tokens.s4; radius: 1
@@ -1405,18 +1440,36 @@ Item {
                                     Repeater {
                                         model: bandRow.entries
 
-                                        delegate: Btn {
+                                        delegate: Loader {
+                                            id: bandOption
                                             required property var modelData
-                                            // the row by id, not `parent`: a Repeater delegate has no
-                                            // parent yet while it is being created, so anchoring to it
-                                            // logged a TypeError for every band chip built.
                                             anchors.verticalCenter: bandRow.verticalCenter
-                                            compact: true
-                                            text: wifi.bandLabel(modelData.band)
-                                            primary: wifi.selectedBands[netItem.ssid] === modelData.band
-                                            armed: !wifi.connecting
-                                            onAct: wifi.selectBand(netItem.ssid,
-                                                wifi.selectedBands[netItem.ssid] === modelData.band ? "" : modelData.band)
+                                            readonly property bool selected: wifi.selectedBands[netItem.ssid] === bandOption.modelData.band
+                                            function choose() {
+                                                wifi.selectBand(netItem.ssid, selected ? "" : modelData.band);
+                                            }
+                                            sourceComponent: Tokens.controlsCrate ? crateBand : stockBand
+                                            Component {
+                                                id: crateBand
+                                                Kit.Chip {
+                                                    objectName: "wifiBand"
+                                                    text: wifi.bandLabel(bandOption.modelData.band)
+                                                    on: bandOption.selected
+                                                    outlinedSelection: true
+                                                    enabled: !wifi.connecting
+                                                    onClicked: bandOption.choose()
+                                                }
+                                            }
+                                            Component {
+                                                id: stockBand
+                                                Btn {
+                                                    compact: true
+                                                    text: wifi.bandLabel(bandOption.modelData.band)
+                                                    primary: bandOption.selected
+                                                    armed: !wifi.connecting
+                                                    onAct: bandOption.choose()
+                                                }
+                                            }
                                         }
                                     }
                                 }
@@ -1494,7 +1547,7 @@ Item {
                                     height: 32
                                     radius: Tokens.radius
                                     color: "transparent"
-                                    border.width: pwField.activeFocus ? 2 : Tokens.border
+                                    border.width: pwField.activeFocus && !Tokens.controlsCrate ? 2 : Tokens.border
                                     border.color: pwField.activeFocus ? Tokens.focus : Tokens.line
                                     Behavior on border.color { ColorAnimation { duration: Tokens.snap } }
 
@@ -2442,38 +2495,14 @@ Item {
         Column {
             id: head
             anchors { left: parent.left; right: parent.right; top: parent.top }
-            // the register row sits off the title: a rule over a 32px
-            // title needs more than the gap between two lines of body text
             spacing: Tokens.s3
 
-            Row {
-                // the register row holds a fixed box, so the rule and the seal keep
-                // their distance from the title on every page
-                height: Tokens.s5
-                spacing: Tokens.s2
-                Rectangle {
-                    width: 16; height: 1; color: Tokens.ink
-                    anchors.verticalCenter: parent.verticalCenter
-                }
-                Text {
-                    text: UiPreferences.brandMark("\u529b"); color: Tokens.ink; font.family: Tokens.jp
-                    font.pixelSize: 11; anchors.verticalCenter: parent.verticalCenter
-                }
-                Text {
-                    text: I18n.tr("DEVICES"); color: Tokens.inkMuted; font.family: Tokens.ui
-                    font.pixelSize: 9; font.weight: Font.Medium; font.letterSpacing: Tokens.trackMark
-                    anchors.verticalCenter: parent.verticalCenter
-                }
-            }
-            Text {
-                text: I18n.tr("Connections"); color: Tokens.ink
-                font.family: Tokens.display; font.pixelSize: Tokens.fTitle; font.weight: Tokens.displayWeight
-            }
-            Text {
-                width: Math.min(parent.width, 720)
-                text: I18n.tr("Wi-Fi, Bluetooth, hotspot and phone connections, applied live.")
-                color: Tokens.inkMuted; font.family: Tokens.ui
-                font.pixelSize: Tokens.fBody; wrapMode: Text.WordWrap
+            PageHeader {
+                width: parent.width
+                hubStyle: true
+                eyebrow: I18n.tr("DEVICES")
+                title: I18n.tr("Connections")
+                blurb: I18n.tr("Wi-Fi, Bluetooth, hotspot and phone connections, applied live.")
             }
         }
 

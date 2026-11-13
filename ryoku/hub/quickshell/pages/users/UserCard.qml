@@ -2,6 +2,7 @@ pragma ComponentBehavior: Bound
 
 import QtQuick
 import Ryoku.Ui
+import Ryoku.Ui as Kit
 import Ryoku.Ui.Singletons
 
 Item {
@@ -277,12 +278,20 @@ Item {
                                 ? used + " / " + cardRoot.formatBytes(cardRoot.storage.limitBytes)
                                 : used + " · " + I18n.tr("No limit");
                         }
-                        color: Tokens.inkMuted
+                        color: Tokens.controlsCrate && cardRoot.storageFraction > 0.9 ? Tokens.alert : Tokens.inkMuted
                         font.family: Tokens.mono
                         font.pixelSize: Tokens.fMicro
                     }
                 }
+                Beam {
+                    objectName: "storageQuota"
+                    visible: Tokens.controlsCrate
+                    width: parent.width; height: 8
+                    interactive: false
+                    value: cardRoot.storageFraction
+                }
                 Rectangle {
+                    visible: !Tokens.controlsCrate
                     width: parent.width
                     height: 5
                     radius: 2
@@ -337,38 +346,55 @@ Item {
                         model: cardRoot.permissionDefs.filter(function(def) {
                             return String(def.id || "") !== "admin";
                         })
-                        delegate: Rectangle {
+                        delegate: Loader {
                             id: permissionChip
                             required property var modelData
                             readonly property string permissionId: String(modelData.id || "")
                             readonly property bool selected: cardRoot.selectedPermissions.indexOf(permissionId) >= 0
-                            width: permissionRow.implicitWidth + Tokens.s3 * 2
-                            height: 25
-                            radius: Tokens.radius
-                            color: selected ? Tokens.bone : "transparent"
-                            border.width: Tokens.border
-                            border.color: selected ? Tokens.bone : Tokens.line
-                            opacity: cardRoot.canManage ? 1 : 0.78
-
-                            Row {
-                                id: permissionRow
-                                anchors.centerIn: parent
-                                spacing: Tokens.s1
-                                Text {
-                                    text: permissionChip.selected ? "✓" : "+"
-                                    color: permissionChip.selected ? Tokens.inkOnBone : Tokens.inkFaint
-                                    font.family: Tokens.ui
-                                    font.pixelSize: Tokens.fTiny
-                                }
-                                Text {
+                            sourceComponent: Tokens.controlsCrate ? cratePermissionChip : stockPermissionChip
+                            Component {
+                                id: cratePermissionChip
+                                Kit.Chip {
+                                    objectName: "permission"
                                     text: cardRoot.permissionLabel(permissionChip.permissionId)
-                                    color: permissionChip.selected ? Tokens.inkOnBone : Tokens.inkMuted
-                                    font.family: Tokens.ui
-                                    font.pixelSize: Tokens.fMicro
+                                    outlinedSelection: true
+                                    on: permissionChip.selected
+                                    enabled: cardRoot.canManage
+                                    onClicked: cardRoot.togglePermission(permissionChip.permissionId)
                                 }
                             }
-                            HoverHandler { enabled: cardRoot.canManage; cursorShape: Qt.PointingHandCursor }
-                            TapHandler { enabled: cardRoot.canManage; onTapped: cardRoot.togglePermission(permissionChip.permissionId) }
+                            Component {
+                                id: stockPermissionChip
+                                Rectangle {
+                                    width: permissionRow.implicitWidth + Tokens.s3 * 2
+                                    height: 25
+                                    radius: Tokens.radius
+                                    color: permissionChip.selected ? Tokens.bone : "transparent"
+                                    border.width: Tokens.border
+                                    border.color: permissionChip.selected ? Tokens.bone : Tokens.line
+                                    opacity: cardRoot.canManage ? 1 : 0.78
+
+                                    Row {
+                                        id: permissionRow
+                                        anchors.centerIn: parent
+                                        spacing: Tokens.s1
+                                        Text {
+                                            text: permissionChip.selected ? "✓" : "+"
+                                            color: permissionChip.selected ? Tokens.inkOnBone : Tokens.inkFaint
+                                            font.family: Tokens.ui
+                                            font.pixelSize: Tokens.fTiny
+                                        }
+                                        Text {
+                                            text: cardRoot.permissionLabel(permissionChip.permissionId)
+                                            color: permissionChip.selected ? Tokens.inkOnBone : Tokens.inkMuted
+                                            font.family: Tokens.ui
+                                            font.pixelSize: Tokens.fMicro
+                                        }
+                                    }
+                                    HoverHandler { enabled: cardRoot.canManage; cursorShape: Qt.PointingHandCursor }
+                                    TapHandler { enabled: cardRoot.canManage; onTapped: cardRoot.togglePermission(permissionChip.permissionId) }
+                                }
+                            }
                         }
                     }
                     Text {

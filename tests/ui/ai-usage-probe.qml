@@ -92,6 +92,16 @@ ShellRoot {
             const curve = find(claude, "aiCurve");
             if (!curve || curve.points.length !== 7)
                 throw new Error("The last seven days draw as a curve");
+            const labels = find(claude, "aiDayLabels");
+            function checkDates() {
+                const days = labels.children.filter(child => child.first !== undefined);
+                if (days.length !== 7 || days[0].x !== 0 || days[6].x + days[6].width !== labels.width
+                    || Math.abs(days[3].x + days[3].width / 2 - curve.points[3][0]) > 0.01)
+                    throw new Error("The day captions must follow the curve and stay inside its edges");
+            }
+            checkDates();
+            details.width = 260;
+            checkDates();
             const ys = curve.points.map(p => p[1]);
             if (Math.min(...ys) !== ys[3] || ys[2] !== curve.baseY)
                 throw new Error("The busiest day peaks and an idle day sits on the baseline: " + ys);

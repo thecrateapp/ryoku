@@ -88,6 +88,7 @@ Item {
 
     // the plate.
     Rectangle {
+        visible: !Tokens.controlsCrate
         anchors.fill: parent
         color: Tokens.paper
     }
@@ -110,6 +111,7 @@ Item {
 
     // the poster spine: a rotated edge label reading bottom-up (the Berserk move).
     Item {
+        visible: !Tokens.controlsCrate
         anchors.left: parent.left
         anchors.leftMargin: Tokens.s4
         anchors.verticalCenter: parent.verticalCenter
@@ -149,7 +151,15 @@ Item {
             spacing: Tokens.s7
 
             // masthead: eyebrow over the bilingual title, ink on paper.
+            PageHeader {
+                visible: Tokens.controlsCrate
+                width: parent.width
+                title: I18n.tr("GRATITUDE")
+                gloss: "感謝"
+                blurb: I18n.tr("The roots we grow from - every project, distro, and hand this build stands on.")
+            }
             Column {
+                visible: !Tokens.controlsCrate
                 width: parent.width
                 spacing: Tokens.s4
 

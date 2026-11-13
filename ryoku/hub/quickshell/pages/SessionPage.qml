@@ -177,39 +177,14 @@ Item {
     Column {
         id: head
         anchors { left: parent.left; right: parent.right; top: parent.top }
-        // the register row sits off the title: a rule over a 32px
-        // title needs more than the gap between two lines of body text
         spacing: Tokens.s3
 
-        Row {
-            // the register row holds a fixed box, so the rule and the seal keep
-            // their distance from the title on every page
-            height: Tokens.s5
-            spacing: Tokens.s2
-            Rectangle {
-                width: 16; height: 1; color: Tokens.ink
-                anchors.verticalCenter: parent.verticalCenter
-            }
-            Text {
-                text: UiPreferences.brandMark("力"); color: Tokens.ink; font.family: Tokens.jp
-                font.pixelSize: 11; anchors.verticalCenter: parent.verticalCenter
-            }
-            Text {
-                text: I18n.tr("SYSTEM"); color: Tokens.inkMuted; font.family: Tokens.ui
-                font.pixelSize: 9; font.weight: Font.Medium; font.letterSpacing: Tokens.trackMark
-                anchors.verticalCenter: parent.verticalCenter
-            }
-        }
-        Text {
-            text: I18n.tr("Session"); color: Tokens.ink
-            font.family: Tokens.display; font.pixelSize: Tokens.fTitle; font.weight: Tokens.displayWeight
-        }
-        Text {
-            // a blurb is prose, so it keeps a reading cap while the body fills.
-            width: Math.min(parent.width, 720)
-            text: I18n.tr("What runs at login, and the variables your session exports.")
-            color: Tokens.inkMuted; font.family: Tokens.ui
-            font.pixelSize: Tokens.fBody; wrapMode: Text.WordWrap
+        PageHeader {
+            width: parent.width
+            hubStyle: true
+            eyebrow: I18n.tr("SYSTEM")
+            title: I18n.tr("Session")
+            blurb: I18n.tr("What runs at login, and the variables your session exports.")
         }
     }
 
