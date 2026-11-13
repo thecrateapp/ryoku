@@ -20,7 +20,7 @@ PanelWindow {
     WlrLayershell.layer: WlrLayer.Overlay
     WlrLayershell.namespace: "ryoku-dashboard"
 
-    readonly property int barBottom: root.v2BarHeight
+    readonly property int barBottom: root.panelAnchor
     readonly property int gap: 6
 
     property real reveal: root.dashboardVisible ? 1 : 0

@@ -27,7 +27,7 @@ PanelWindow {
     WlrLayershell.layer: WlrLayer.Overlay
     WlrLayershell.namespace: "ryoku-mpris"
 
-    readonly property int barBottom: root.v2BarHeight
+    readonly property int barBottom: root.panelAnchor
     readonly property int gap: 6
 
     // ── the player ──────────────────────────────────────────────────────────

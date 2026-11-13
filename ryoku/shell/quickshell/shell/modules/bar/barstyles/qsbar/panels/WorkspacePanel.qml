@@ -17,7 +17,7 @@ PanelWindow {
     WlrLayershell.layer: WlrLayer.Overlay
     WlrLayershell.namespace: "ryoku-workspace"
 
-    readonly property int barBottom: root.v2BarHeight
+    readonly property int barBottom: root.panelAnchor
     readonly property int gap: 6
 
     property real reveal: root.workspaceVisible ? 1 : 0

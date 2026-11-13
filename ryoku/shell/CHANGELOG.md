@@ -1,6 +1,10 @@
 # Changelog: ryoku/shell/
 
 ## Unreleased
+- **QS Bar panels keep their gap from a bar moved off the edge.** Panels sat at
+  the bar's height plus a 6 px gap and ignored the bar's own offset from the
+  screen edge (barGapTop/Bottom), so with the bar 6 px down they touched it. They
+  now anchor past the bar's real edge (Theme.panelAnchor), as Settings does.
 - **The crate clipboard keeps its size after a Hub save.** The Hub's Desktop
   page writes its whole document, the stock clipboard sizes (65 % wide, 42 %
   high, 18/12/9 px corners) included, and a written size beat the crate one, so

@@ -19,7 +19,7 @@ PanelWindow {
     WlrLayershell.namespace: "quickshell"
     mask: Region {}
 
-    readonly property int barBottom: root.v2BarHeight
+    readonly property int barBottom: root.panelAnchor
     readonly property int gap: 6
 
     property real reveal: root.tooltipShown ? 1 : 0

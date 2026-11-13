@@ -2423,6 +2423,10 @@ Item {
     }
     // Lead faces the anchored edge, trail the desktop, so consumers skip barPosition.
     readonly property int barGapLead: barPosition === "bottom" ? barGapBottom : barGapTop
+    // Where a panel's side facing the bar starts: past the bar's height AND its
+    // offset from the screen edge (barGapTop/Bottom). Panels used the height
+    // alone, so a bar moved off the edge swallowed their gap and they touched it.
+    readonly property int panelAnchor: v2BarHeight + barGapLead
     readonly property int barGapTrail: barPosition === "bottom" ? barGapTop : barGapBottom
     function barShellStyleValid(value) {
         return value === "islands" || value === "full" || value === "fit"

@@ -22,7 +22,7 @@ PanelWindow {
     WlrLayershell.layer: WlrLayer.Overlay
     WlrLayershell.namespace: "ryoku-traymenu"
 
-    readonly property int barBottom: root.v2BarHeight
+    readonly property int barBottom: root.panelAnchor
     readonly property int gap: 8
 
     // Relocate the live item by its stable service key so the card re-renders

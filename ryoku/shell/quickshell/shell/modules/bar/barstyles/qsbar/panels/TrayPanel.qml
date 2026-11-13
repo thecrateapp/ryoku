@@ -18,7 +18,7 @@ PanelWindow {
     WlrLayershell.namespace: "ryoku-tray"
     // no mask → whole overlay is interactive (modal): click-outside + ESC work
 
-    readonly property int barBottom: root.v2BarHeight
+    readonly property int barBottom: root.panelAnchor
     readonly property int gap: 6
     readonly property int popupW: 328
     readonly property int maxListH: 320

@@ -140,7 +140,7 @@ PanelWindow {
     readonly property color plateFill: Tokens.controlsCrate ? Tokens.glass : Tokens.paper
     readonly property color plateTone: Tokens.controlsCrate ? Tokens.popover : Tokens.paper
 
-    readonly property int barH: cc.root.v2BarHeight
+    readonly property int barH: cc.root.panelAnchor
     readonly property int plateW: Math.min(tk.plateW, cc.width - 2 * tk.screenMargin)
     // The plate is as tall as it needs to be: the rail's natural height or the
     // page's, whichever is taller, capped by the screen and by tk.plateH. A short

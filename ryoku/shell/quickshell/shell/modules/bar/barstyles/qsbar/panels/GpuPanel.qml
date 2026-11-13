@@ -17,7 +17,7 @@ PanelWindow {
     WlrLayershell.layer: WlrLayer.Overlay
     WlrLayershell.namespace: "ryoku-gpu"
 
-    readonly property int barBottom: root.v2BarHeight
+    readonly property int barBottom: root.panelAnchor
     readonly property int gap: 6
     readonly property int gpuUtil: root.gpuPercent
     readonly property int gpuTemp: root.gpuTemperatureC
