@@ -134,6 +134,12 @@ PanelWindow {
 
     CcTokens { id: tk; root: cc.root }
 
+    // Under controls "crate" the plate is the shared glass every floating surface
+    // uses (Tokens.glass, frosted by the compositor), not opaque paper. plateTone
+    // is the same grey at full alpha, for the covers that must hide what is below.
+    readonly property color plateFill: Tokens.controlsCrate ? Tokens.glass : Tokens.paper
+    readonly property color plateTone: Tokens.controlsCrate ? Tokens.popover : Tokens.paper
+
     readonly property int barH: cc.root.v2BarHeight
     readonly property int plateW: Math.min(tk.plateW, cc.width - 2 * tk.screenMargin)
     // The plate is as tall as it needs to be: the rail's natural height or the
@@ -170,7 +176,7 @@ PanelWindow {
             }
         }
         radius: tk.corner
-        color: Tokens.paper
+        color: cc.plateFill
         border.width: 1
         border.color: Tokens.line
         clip: true
@@ -263,8 +269,8 @@ PanelWindow {
             Behavior on opacity { NumberAnimation { duration: tk.fade } }
             gradient: Gradient {
                 GradientStop { position: 0.0; color: "transparent" }
-                GradientStop { position: 0.6; color: Qt.rgba(Tokens.paper.r, Tokens.paper.g, Tokens.paper.b, 0.8) }
-                GradientStop { position: 1.0; color: Tokens.paper }
+                GradientStop { position: 0.6; color: Qt.rgba(cc.plateFill.r, cc.plateFill.g, cc.plateFill.b, cc.plateFill.a * 0.8) }
+                GradientStop { position: 1.0; color: cc.plateFill }
             }
         }
 
@@ -281,7 +287,7 @@ PanelWindow {
 
             Rectangle {
                 anchors.fill: parent
-                color: Tokens.paper
+                color: cc.plateTone
                 opacity: 0.96
             }
             CcSearch {

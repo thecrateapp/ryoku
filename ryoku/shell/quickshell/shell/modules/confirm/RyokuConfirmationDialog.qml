@@ -68,7 +68,8 @@ PanelWindow {
             width: Math.min(Tokens.s7 * 8, root.width - Tokens.s4 * 2)
             height: content.implicitHeight + Tokens.s5 * 2
             radius: Tokens.radius
-            color: Tokens.paper
+            // the shared crate glass, frosted by decoration.lua's ryoku-dialog rule
+            color: Tokens.controlsCrate ? Tokens.glass : Tokens.paper
             border.width: Tokens.border
             border.color: Tokens.line
             opacity: root.action !== "" ? 1 : 0

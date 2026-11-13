@@ -12,6 +12,11 @@
   they resize the tile; niri and Wayfire get the same pair (#797).
 
 ### Changed
+- **The QS Bar panels are frosted under the crate glass.** Each panel and the
+  bar's control center map their own layer, which the bar's blur rule never
+  matched, so they drew the glass over an unfrosted desktop. A second
+  `crate-glass-blur-panels` rule blurs them only where they draw
+  (`modules/decoration.lua`).
 - **Login raises the reload cover.** The session autostart chain calls
   `ryoku-reload-cover begin boot` after the environment push and before
   `session-start` restarts the shell services, so the desktop is covered from

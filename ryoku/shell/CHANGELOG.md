@@ -1,6 +1,12 @@
 # Changelog: ryoku/shell/
 
 ## Unreleased
+- **Every crate panel and dialog wears the Controls glass.** The QS Bar panels
+  (the plugin panel among them) lost their filled drop shadow, which showed
+  through the translucent glass and turned it near-black; under controls
+  "crate" their depth is the hairline and the compositor frost. The QS Bar
+  control center and the confirmation dialog fill with the shared glass instead
+  of opaque paper.
 - Kairos, Orpheus, FrameBars, the audio popouts and Game Bar now use the
   device route when adjusting speaker volume. Their readouts include any
   master gain already applied, and their controls retain their 100 % limit.
