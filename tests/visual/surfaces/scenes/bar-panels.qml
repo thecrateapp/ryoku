@@ -184,6 +184,42 @@ ShellRoot {
         function dismissOne(e) {}
         function dismissAll() {}
     }
+    QtObject {
+        id: mediaPanel
+        property bool visible: true
+        property bool active: true
+        property bool playing: true
+        property string playerName: "Crate"
+        property string trackTitle: "Pronto"
+        property string trackArtist: "Repion"
+        property string trackAlbum: "Ciudad lenta"
+        property url artSource: ""
+        property string outputLabel: "Speakers"
+        property bool outputHeadphones: false
+        property real shownPos: 84
+        property real curLen: 222
+        property bool canSeek: true
+        property bool canPrevious: true
+        property bool canNext: true
+        property bool canTogglePlaying: true
+        property var levels: { const out = []; for (let i = 0; i < 48; i++) out.push(0.2 + 0.7 * Math.abs(Math.sin(i * 0.7) * Math.cos(i * 0.23))); return out }
+        property int bands: 48
+        property bool eqOn: true
+        property string eqPreset: "Bass"
+        property var eqPresets: ["Flat", "Bass", "Treble", "Vocal", "Pop", "Rock", "Jazz", "Classic"]
+        property var eqBandLabels: ["31", "63", "125", "250", "500", "1k", "2k", "4k", "8k", "16k"]
+        property int eqRange: 12
+        property var eqGains: [6, 5, 3, 1, 0, -1, 0, 1, 2, 2]
+        function fmtTime(s) { const m = Math.floor(s / 60), x = Math.floor(s % 60); return m + ":" + (x < 10 ? "0" : "") + x }
+        function seekTo(f) {}
+        function previous() {}
+        function next() {}
+        function togglePlaying() {}
+        function eqPresetLabel(p) { return p }
+        function setEqOn(v) { eqOn = v }
+        function setEqBand(i, db) {}
+        function applyEqPreset(p) { eqPreset = p }
+    }
 
     component Card: Rectangle {
         default property alias body: inner.data
@@ -198,14 +234,14 @@ ShellRoot {
     }
 
     FloatingWindow {
-        implicitWidth: 1760
-        implicitHeight: 900
+        implicitWidth: 1840
+        implicitHeight: 1160
         color: Tokens.paper
 
         Rectangle {
             id: sheet
-            width: 1760
-            height: 900
+            width: 1840
+            height: 1160
             color: Tokens.paper
             Row {
                 x: 16; y: 16
@@ -222,6 +258,7 @@ ShellRoot {
                 Card { cardWidth: 320; CrateNetworkDetails { width: parent.width; panel: netPanel } }
                 Card { cardWidth: 320; CratePowerProfileDetails { width: parent.width; panel: powerPanel } }
                 Card { cardWidth: 320; CrateNotificationList { width: parent.width; panel: notifPanel } }
+                Card { cardWidth: 440; CrateMediaDetails { width: parent.width; panel: mediaPanel } }
             }
         }
 

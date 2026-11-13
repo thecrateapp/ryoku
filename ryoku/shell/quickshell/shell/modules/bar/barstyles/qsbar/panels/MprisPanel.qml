@@ -91,6 +91,31 @@ PanelWindow {
         mprisPanel.player.position = target
     }
 
+    // ── what the crate body reads and drives ────────────────────────────────
+    readonly property string trackTitle: player ? (player.trackTitle || "") : ""
+    readonly property string trackArtist: player ? (player.trackArtist || "") : ""
+    readonly property string trackAlbum: player ? (player.trackAlbum || "") : ""
+    readonly property url artSource: artwork.source
+    readonly property string outputLabel: Audio.nodeLabel(Audio.sink)
+    readonly property bool outputHeadphones: Audio.nodeIcon(Audio.sink) === "headphones"
+    readonly property bool canSeek: player ? player.canSeek : false
+    readonly property bool canPrevious: player ? player.canGoPrevious : false
+    readonly property bool canNext: player ? player.canGoNext : false
+    readonly property bool canTogglePlaying: player ? player.canTogglePlaying : false
+    function previous() { if (player) player.previous() }
+    function next() { if (player) player.next() }
+    function togglePlaying() { if (player) player.togglePlaying() }
+    readonly property bool eqOn: Equalizer.on
+    readonly property string eqPreset: Equalizer.preset
+    readonly property var eqPresets: Equalizer.presets
+    readonly property var eqBandLabels: Equalizer.bandLabels
+    readonly property int eqRange: Equalizer.range
+    readonly property var eqGains: Equalizer.gains
+    function eqPresetLabel(name) { return Equalizer.presetLabel(name) }
+    function setEqOn(enabled) { Equalizer.setOn(enabled) }
+    function setEqBand(i, db) { Equalizer.setBand(i, db) }
+    function applyEqPreset(name) { Equalizer.applyPreset(name) }
+
     // ── spectrum ────────────────────────────────────────────────────────────
     // One analyser serves every music surface; claim it only while the card is up.
     readonly property var levels: AudioBars.levels
@@ -162,8 +187,8 @@ PanelWindow {
         id: card
         // Wide enough for the record beside a full track block, and for ten band
         // sliders that still read as sliders rather than hairlines.
-        width: 560
-        height: col.implicitHeight + 28
+        width: Tokens.controlsCrate ? 440 : 560
+        height: panelBody.implicitHeight + panelBody.inset * 2
         radius: reveal > 0.001 ? root.panelRadius : 0
         color: "transparent"
         border.color: root.panelBorder
@@ -192,10 +217,28 @@ PanelWindow {
 
         MouseArea { anchors.fill: parent; onClicked: {} }
 
+        Loader {
+            id: panelBody
+            readonly property int inset: Tokens.controlsCrate ? Tokens.s4 : 14
+            anchors.left: parent.left
+            anchors.right: parent.right
+            anchors.top: parent.top
+            anchors.margins: inset
+            sourceComponent: Tokens.controlsCrate ? crateBody : stockBody
+        }
+
+        Component {
+            id: crateBody
+            CrateMediaDetails {
+                panel: mprisPanel
+                onCloseRequested: mprisPanel.root.mprisVisible = false
+            }
+        }
+
+        Component {
+            id: stockBody
         Column {
             id: col
-            anchors.fill: parent
-            anchors.margins: 14
             spacing: 10
 
             // ── header ──
@@ -837,6 +880,7 @@ PanelWindow {
                     }
                 }
             }
+        }
         }
     }
 }

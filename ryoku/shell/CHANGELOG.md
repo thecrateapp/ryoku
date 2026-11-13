@@ -12,6 +12,10 @@
   notification is a hairline card like the popups (app, summary, two lines of
   body, its own dismiss), the list scrolls inside the panel, and Clear all is
   a kit button.
+- **The QS Bar media panel follows the Crate theme.** The record still turns
+  while playing, now with hairline grooves and the spectrum as marks around
+  it; the position is a kit beam, the transport kit icon buttons, and the ten
+  equalizer bands a curve with a draggable node per band over the presets.
 - **CPU, GPU and temperatures in QS Bar follow the Crate theme.** The CPU and
   GPU panels show usage history and hardware readings. The temperatures panel
   shows sensor limits and lets you choose which sensor appears on the bar.
