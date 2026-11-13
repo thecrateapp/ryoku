@@ -173,36 +173,43 @@ Item {
         required property var root
         required property var targetScreen
 
+        // The layer stays mapped and is only armed while a popup is open on another
+        // screen. Mapping two full-screen layers on every click cost a few hundred
+        // ms per panel (the plugin panel, which had none, opened twice as fast);
+        // arming only swaps the input region and keyboard focus of a live surface.
+        readonly property bool armed: root.anyPopupVisible
+            && !root.keyboardPopupVisible
+            && !!targetScreen && targetScreen.name !== ""
+            && !root.isActivePopupScreenName(targetScreen.name)
+
         screen: targetScreen
-        color: Qt.rgba(0, 0, 0, 0.001)
+        color: "transparent"
         anchors { top: true; bottom: true; left: true; right: true }
         exclusionMode: ExclusionMode.Ignore
         WlrLayershell.layer: WlrLayer.Overlay
-        WlrLayershell.focusable: dismissLayer.visible
-        WlrLayershell.keyboardFocus: dismissLayer.visible ? WlrKeyboardFocus.Exclusive : WlrKeyboardFocus.None
+        WlrLayershell.focusable: dismissLayer.armed
+        WlrLayershell.keyboardFocus: dismissLayer.armed ? WlrKeyboardFocus.Exclusive : WlrKeyboardFocus.None
         WlrLayershell.namespace: "quickshell-popup-dismiss"
-        mask: Region { item: hitArea }
+        // idle: an empty input region, so every click passes through
+        mask: dismissLayer.armed ? armedRegion : idleRegion
+        property Region armedRegion: Region { item: hitArea }
+        property Region idleRegion: Region {}
 
-        Rectangle {
+        Item {
             id: hitArea
             x: 0
             y: 0
             width: dismissLayer.width
             height: dismissLayer.height
-            color: Qt.rgba(0, 0, 0, 0.001)
 
             MouseArea {
                 anchors.fill: parent
-                enabled: dismissLayer.visible
+                enabled: dismissLayer.armed
                 acceptedButtons: Qt.LeftButton | Qt.RightButton | Qt.MiddleButton
                 onClicked: dismissLayer.root.closePopups()
             }
         }
-        visible: root.anyPopupVisible
-            && !root.keyboardPopupVisible
-            && targetScreen
-            && targetScreen.name !== ""
-            && !root.isActivePopupScreenName(targetScreen.name)
+        visible: targetScreen && targetScreen.name !== ""
     }
 
     Variants {
