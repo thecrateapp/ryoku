@@ -11,7 +11,7 @@ Column {
     required property real availableHeight
     signal closeRequested()
 
-    spacing: Tokens.s2
+    spacing: Tokens.s3
 
     component Metric: Column {
         id: metric
@@ -105,7 +105,7 @@ Column {
             Kit.Divider { width: parent.width; quiet: true }
             Kit.TrackLabel {
                 width: parent.width
-                text: I18n.tr("DRIVES: %1").arg(details.storage.root.storageDrives.length)
+                text: I18n.tr("Drives · %1").arg(details.storage.root.storageDrives.length)
                 tone: "accent"
             }
 

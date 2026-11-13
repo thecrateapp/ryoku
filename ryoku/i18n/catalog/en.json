@@ -2990,6 +2990,7 @@
   "DRAG TO PLACE": "DRAG TO PLACE",
   "DRAG TO REPOSITION": "DRAG TO REPOSITION",
   "DRIVES: %1": "DRIVES: %1",
+  "Drives · %1": "Drives · %1",
   "DROP WIDGET": "DROP WIDGET",
   "DRY RUN: no disk is touched; commands are printed only": "DRY RUN: no disk is touched; commands are printed only",
   "DRYRUN: $RYOKU_TARGET_CHROOT /mnt runuser -u $u -- env HOME=/home/$u ryoku materialize": "DRYRUN: $RYOKU_TARGET_CHROOT /mnt runuser -u $u -- env HOME=/home/$u ryoku materialize",

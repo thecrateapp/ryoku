@@ -66,7 +66,7 @@ PanelWindow {
 
     Rectangle {
         id: card
-        width: 300
+        width: Tokens.controlsCrate ? 320 : 300
         height: panelBody.implicitHeight + 2 * panelBody.inset
         radius: reveal > 0.001 ? root.panelRadius : 0
         color: "transparent"

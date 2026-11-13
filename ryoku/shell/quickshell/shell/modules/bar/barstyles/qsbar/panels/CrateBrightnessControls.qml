@@ -11,31 +11,13 @@ Column {
     signal stepRequested(bool up)
     signal closeRequested()
 
-    spacing: Tokens.s2
+    spacing: Tokens.s3
 
-    Item {
+    CrateResourceHeader {
         width: parent.width
-        height: 32
-
-        Kit.TrackLabel {
-            anchors.left: parent.left
-            anchors.right: closeButton.left
-            anchors.verticalCenter: parent.verticalCenter
-            text: I18n.tr("Brightness")
-            tone: "accent"
-        }
-        Kit.IconButton {
-            id: closeButton
-            anchors.right: parent.right
-            anchors.verticalCenter: parent.verticalCenter
-            width: 32
-            height: 32
-            glyph: "close"
-            Accessible.role: Accessible.Button
-            Accessible.name: I18n.tr("Close")
-            Accessible.onPressAction: controls.closeRequested()
-            onClicked: controls.closeRequested()
-        }
+        title: I18n.tr("Brightness")
+        closeObjectName: "closeBrightness"
+        onCloseRequested: controls.closeRequested()
     }
 
     Item {

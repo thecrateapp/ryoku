@@ -10,30 +10,13 @@ Column {
 
     readonly property bool low: battery.hasReading && battery.percent <= 20
         && !battery.charging && battery.status !== "fully-charged"
-    spacing: Tokens.s2
+    spacing: Tokens.s3
 
-    Item {
+    CrateResourceHeader {
         width: parent.width
-        height: closeButton.height
-        Kit.TrackLabel {
-            anchors.left: parent.left
-            anchors.right: closeButton.left
-            anchors.verticalCenter: parent.verticalCenter
-            text: I18n.tr("Battery")
-            tone: "accent"
-        }
-        Kit.IconButton {
-            id: closeButton
-            objectName: "closeBattery"
-            anchors.right: parent.right
-            width: 32
-            height: 32
-            glyph: "close"
-            Accessible.role: Accessible.Button
-            Accessible.name: I18n.tr("Close")
-            Accessible.onPressAction: details.closeRequested()
-            onClicked: details.closeRequested()
-        }
+        title: I18n.tr("Battery")
+        closeObjectName: "closeBattery"
+        onCloseRequested: details.closeRequested()
     }
 
     Column {
@@ -77,32 +60,10 @@ Column {
         }
     }
 
-    component DetailRow: Item {
-        id: row
-        required property string label
-        required property string valueText
-        width: parent.width
-        height: Math.max(Tokens.px(22), caption.implicitHeight, amount.implicitHeight)
+    // a readout line: the kit's InfoRow, hidden when there is no reading
+    component DetailRow: Kit.InfoRow {
+        width: parent ? parent.width : 0
         visible: valueText.length > 0
-        Kit.TrackLabel {
-            id: caption
-            anchors.left: parent.left
-            anchors.right: amount.left
-            anchors.rightMargin: Tokens.s2
-            anchors.verticalCenter: parent.verticalCenter
-            text: row.label
-            wrapMode: Text.WrapAtWordBoundaryOrAnywhere
-        }
-        Text {
-            id: amount
-            anchors.right: parent.right
-            anchors.verticalCenter: parent.verticalCenter
-            text: row.valueText
-            font.family: Tokens.mono
-            font.pixelSize: Tokens.px(13)
-            font.features: { "tnum": 1 }
-            color: Tokens.ink
-        }
     }
     Column {
         width: parent.width

@@ -28,45 +28,28 @@ Column {
 
     spacing: Tokens.s3
 
-    Item {
+    CrateResourceHeader {
         width: parent.width
-        height: 32
-        Kit.TrackLabel {
-            anchors.left: parent.left
-            anchors.verticalCenter: parent.verticalCenter
-            text: I18n.tr("Network")
-            tone: "accent"
+        title: I18n.tr("Network")
+        closeObjectName: "closeNetwork"
+        onCloseRequested: details.closeRequested()
+        Kit.IconButton {
+            objectName: "netScan"
+            visible: details.listUsable
+            width: 32
+            height: 32
+            glyph: "refresh"
+            on: details.panel.scanning
+            Accessible.name: I18n.tr("Search for networks")
+            onClicked: details.panel.scan()
         }
-        Row {
-            anchors.right: parent.right
+        Kit.Sw {
+            objectName: "netRadio"
+            visible: details.panel.hasWifi
             anchors.verticalCenter: parent.verticalCenter
-            spacing: Tokens.s1
-            Kit.IconButton {
-                objectName: "netScan"
-                visible: details.listUsable
-                width: 32
-                height: 32
-                glyph: "refresh"
-                on: details.panel.scanning
-                Accessible.name: I18n.tr("Search for networks")
-                onClicked: details.panel.scan()
-            }
-            Kit.Sw {
-                objectName: "netRadio"
-                visible: details.panel.hasWifi
-                anchors.verticalCenter: parent.verticalCenter
-                on: !details.panel.wifiBlocked
-                Accessible.name: I18n.tr("Wi-Fi radio")
-                onToggled: details.panel.toggleWifi()
-            }
-            Kit.IconButton {
-                objectName: "closeNetwork"
-                width: 32
-                height: 32
-                glyph: "close"
-                Accessible.name: I18n.tr("Close")
-                onClicked: details.closeRequested()
-            }
+            on: !details.panel.wifiBlocked
+            Accessible.name: I18n.tr("Wi-Fi radio")
+            onToggled: details.panel.toggleWifi()
         }
     }
 
@@ -108,9 +91,9 @@ Column {
         visible: details.panel.mode !== "none"
         width: parent.width
         readonly property real captionWidth: Math.max(ifaceRow.labelImplicitWidth, linkRow.labelImplicitWidth, edgeRow.labelImplicitWidth)
-        Kit.MeterRow { id: ifaceRow; width: parent.width; labelWidth: linkRows.captionWidth; showMeter: false; label: I18n.tr("Interface"); valueText: details.panel.iface || "—" }
-        Kit.MeterRow { id: linkRow; visible: details.panel.linkSpeed !== ""; width: parent.width; labelWidth: linkRows.captionWidth; showMeter: false; label: I18n.tr("Link"); valueText: details.panel.linkSpeed }
-        Kit.MeterRow { id: edgeRow; width: parent.width; labelWidth: linkRows.captionWidth; showMeter: false; label: I18n.tr("Edge"); valueText: details.panel.edgeText() }
+        Kit.InfoRow { id: ifaceRow; width: parent.width; labelWidth: linkRows.captionWidth; label: I18n.tr("Interface"); valueText: details.panel.iface || "—" }
+        Kit.InfoRow { id: linkRow; visible: details.panel.linkSpeed !== ""; width: parent.width; labelWidth: linkRows.captionWidth; label: I18n.tr("Link"); valueText: details.panel.linkSpeed }
+        Kit.InfoRow { id: edgeRow; width: parent.width; labelWidth: linkRows.captionWidth; label: I18n.tr("Edge"); valueText: details.panel.edgeText() }
     }
 
     // the optional speed test
@@ -139,29 +122,26 @@ Column {
         visible: details.panel.speedDetailsVisible
         width: parent.width
         readonly property real captionWidth: Math.max(pingRow.labelImplicitWidth, downRow.labelImplicitWidth, upRow.labelImplicitWidth)
-        Kit.MeterRow {
+        Kit.InfoRow {
             id: pingRow
             labelWidth: speedRows.captionWidth
             width: parent.width
-            showMeter: false
             label: I18n.tr("Ping")
             valueText: details.speed && details.speed.phase === "latency" ? I18n.tr("Testing…")
                 : details.panel.speedRunOk ? details.panel.formatPing(details.speed.pingMs) : "—"
         }
-        Kit.MeterRow {
+        Kit.InfoRow {
             id: downRow
             labelWidth: speedRows.captionWidth
             width: parent.width
-            showMeter: false
             label: I18n.tr("Download")
             valueText: details.speed && details.speed.phase === "download" ? I18n.tr("Testing…")
                 : details.panel.speedRunOk ? details.panel.formatMbps(details.speed.downloadMbps) : "—"
         }
-        Kit.MeterRow {
+        Kit.InfoRow {
             id: upRow
             labelWidth: speedRows.captionWidth
             width: parent.width
-            showMeter: false
             label: I18n.tr("Upload")
             valueText: details.speed && details.speed.phase === "upload" ? I18n.tr("Testing…")
                 : details.panel.speedRunOk ? details.panel.formatMbps(details.speed.uploadMbps) : "—"

@@ -11,7 +11,7 @@ Column {
     readonly property bool hasReading: memory.memTotal > 0
     signal closeRequested()
     signal btopRequested()
-    spacing: Tokens.s2
+    spacing: Tokens.s3
 
     CrateResourceHeader {
         width: parent.width
@@ -38,45 +38,10 @@ Column {
         Accessible.name: I18n.tr("Memory usage")
     }
 
-    component Stat: Item {
-        id: stat
-        required property string label
-        required property string amount
-        required property string secondary
-        width: parent.width
-        height: Math.max(Tokens.px(22), caption.implicitHeight, primary.implicitHeight, extra.implicitHeight)
-        Kit.TrackLabel {
-            id: caption
-            anchors.left: parent.left
-            anchors.right: primary.left
-            anchors.rightMargin: Tokens.s2
-            anchors.verticalCenter: parent.verticalCenter
-            text: stat.label
-            wrapMode: Text.WrapAtWordBoundaryOrAnywhere
-        }
-        Text {
-            id: primary
-            anchors.right: extra.left
-            anchors.rightMargin: Tokens.s2
-            anchors.verticalCenter: parent.verticalCenter
-            text: stat.amount
-            color: Tokens.ink
-            font.family: Tokens.mono
-            font.pixelSize: Tokens.px(13)
-            font.features: { "tnum": 1 }
-        }
-        Text {
-            id: extra
-            anchors.right: parent.right
-            anchors.verticalCenter: parent.verticalCenter
-            width: Math.max(mibWidth.advanceWidth, implicitWidth)
-            horizontalAlignment: Text.AlignRight
-            text: stat.secondary
-            color: Tokens.inkSecondary
-            font.family: Tokens.mono
-            font.pixelSize: Tokens.px(11)
-            font.features: { "tnum": 1 }
-        }
+    // a readout line: the kit's InfoRow, its MiB column aligned across rows
+    component Stat: Kit.InfoRow {
+        width: parent ? parent.width : 0
+        secondaryWidth: mibWidth.advanceWidth
     }
     TextMetrics {
         id: mibWidth
@@ -88,7 +53,7 @@ Column {
     component Capacity: Stat {
         required property int mib
         visible: details.hasReading
-        amount: (mib / 1024).toFixed(1) + " GiB"
+        valueText: (mib / 1024).toFixed(1) + " GiB"
         secondary: mib + " MiB"
     }
 
@@ -101,7 +66,7 @@ Column {
         Stat {
             label: I18n.tr("Speed")
             visible: details.memory.root.memorySpeedMTs > 0
-            amount: details.memory.root.memorySpeedMTs + " MT/s"
+            valueText: details.memory.root.memorySpeedMTs + " MT/s"
             secondary: details.memory.root.memoryType
         }
     }

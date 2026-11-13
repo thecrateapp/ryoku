@@ -142,24 +142,11 @@ PanelWindow {
             anchors.margins: 16
             spacing: 12
 
-            Item {
+            CrateResourceHeader {
                 width: parent.width
-                height: 28
-                Kit.TrackLabel {
-                    anchors.left: parent.left
-                    anchors.verticalCenter: parent.verticalCenter
-                    tone: "accent"
-                    text: I18n.tr("Volume")
-                }
-                Kit.IconButton {
-                    anchors.right: parent.right
-                    anchors.verticalCenter: parent.verticalCenter
-                    width: 28
-                    height: 28
-                    glyph: "close"
-                    Accessible.name: I18n.tr("Close")
-                    onClicked: root.volVisible = false
-                }
+                title: I18n.tr("Volume")
+                closeObjectName: "closeVolume"
+                onCloseRequested: root.volVisible = false
             }
 
             Item {

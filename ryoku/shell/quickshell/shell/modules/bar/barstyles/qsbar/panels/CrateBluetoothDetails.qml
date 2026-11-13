@@ -26,46 +26,29 @@ Column {
 
     spacing: Tokens.s3
 
-    Item {
+    CrateResourceHeader {
         width: parent.width
-        height: 32
-        Kit.TrackLabel {
-            anchors.left: parent.left
-            anchors.verticalCenter: parent.verticalCenter
-            text: details.panel.numConnected > 0
-                ? I18n.tr("Bluetooth · %1").arg(details.panel.numConnected) : I18n.tr("Bluetooth")
-            tone: "accent"
+        title: details.panel.numConnected > 0
+            ? I18n.tr("Bluetooth · %1").arg(details.panel.numConnected) : I18n.tr("Bluetooth")
+        closeObjectName: "closeBluetooth"
+        onCloseRequested: details.closeRequested()
+        Kit.IconButton {
+            objectName: "btScan"
+            visible: details.panel.btOn
+            width: 32
+            height: 32
+            glyph: "refresh"
+            on: details.panel.scanning
+            Accessible.name: details.panel.scanning ? I18n.tr("Stop scanning") : I18n.tr("Scan for devices")
+            onClicked: details.panel.toggleScan()
         }
-        Row {
-            anchors.right: parent.right
+        Kit.Sw {
+            objectName: "btRadio"
             anchors.verticalCenter: parent.verticalCenter
-            spacing: Tokens.s1
-            Kit.IconButton {
-                objectName: "btScan"
-                visible: details.panel.btOn
-                width: 32
-                height: 32
-                glyph: "refresh"
-                on: details.panel.scanning
-                Accessible.name: details.panel.scanning ? I18n.tr("Stop scanning") : I18n.tr("Scan for devices")
-                onClicked: details.panel.toggleScan()
-            }
-            Kit.Sw {
-                objectName: "btRadio"
-                anchors.verticalCenter: parent.verticalCenter
-                on: details.panel.btOn
-                enabled: !details.panel.blocked
-                Accessible.name: I18n.tr("Bluetooth radio")
-                onToggled: details.powerRequested()
-            }
-            Kit.IconButton {
-                objectName: "closeBluetooth"
-                width: 32
-                height: 32
-                glyph: "close"
-                Accessible.name: I18n.tr("Close")
-                onClicked: details.closeRequested()
-            }
+            on: details.panel.btOn
+            enabled: !details.panel.blocked
+            Accessible.name: I18n.tr("Bluetooth radio")
+            onToggled: details.powerRequested()
         }
     }
 

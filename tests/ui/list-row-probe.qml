@@ -20,6 +20,7 @@ ShellRoot {
             on: true
             Kit.Btn { id: action; compact: true; outline: true; text: "Connect" }
         }
+        Kit.InfoRow { id: info; y: 130; width: 360; label: "Link"; valueText: "866 Mb/s"; secondary: "5 GHz"; secondaryWidth: 60 }
         Kit.SheetHeader {
             id: head
             y: 80
@@ -49,6 +50,10 @@ ShellRoot {
                 throw new Error("SheetHeader must signal back");
             if (action.implicitHeight !== 28)
                 throw new Error("A compact crate Btn must be 28 px, got " + action.implicitHeight);
+            if (info.implicitHeight !== 24)
+                throw new Error("An InfoRow must be 24 px, got " + info.implicitHeight);
+            if (info.valuePixelSize !== 12)
+                throw new Error("An InfoRow value must be 12 px, got " + info.valuePixelSize);
             console.log("LIST-ROW-PROBE-PASS");
             Qt.quit();
         }

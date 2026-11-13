@@ -7,6 +7,8 @@ Item {
 
     required property string title
     required property string closeObjectName
+    // trailing actions before the close button (a rescan IconButton, a radio Sw)
+    default property alias actions: trailing.data
     signal closeRequested()
 
     width: parent.width
@@ -14,10 +16,18 @@ Item {
     Kit.TrackLabel {
         id: heading
         anchors.left: parent.left
-        anchors.right: closeButton.left
+        anchors.right: trailing.left
+        anchors.rightMargin: Tokens.s2
         anchors.verticalCenter: parent.verticalCenter
         text: header.title
         tone: "accent"
+    }
+    Row {
+        id: trailing
+        anchors.right: closeButton.left
+        anchors.rightMargin: trailing.children.length > 0 ? Tokens.s1 : 0
+        anchors.verticalCenter: parent.verticalCenter
+        spacing: Tokens.s1
     }
     Kit.IconButton {
         id: closeButton
