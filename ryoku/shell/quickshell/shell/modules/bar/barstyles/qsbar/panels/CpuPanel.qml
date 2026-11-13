@@ -38,7 +38,7 @@ PanelWindow {
     property real reveal: root.cpuVisible ? 1 : 0
     Behavior on reveal {
         NumberAnimation {
-            duration: root.cpuVisible ? 160 : 120
+            duration: root.cpuVisible ? root.panelRevealIn : root.panelRevealOut
             easing.type: root.cpuVisible ? Easing.OutCubic : Easing.InCubic
         }
     }

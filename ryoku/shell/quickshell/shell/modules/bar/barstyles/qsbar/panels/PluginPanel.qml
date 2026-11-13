@@ -44,7 +44,7 @@ PanelWindow {
     property real reveal: root.pluginPanelVisible ? 1 : 0
     Behavior on reveal {
         NumberAnimation {
-            duration: root.pluginPanelVisible ? 160 : 120
+            duration: root.pluginPanelVisible ? root.panelRevealIn : root.panelRevealOut
             easing.type: root.pluginPanelVisible ? Easing.OutCubic : Easing.InCubic
         }
     }

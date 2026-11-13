@@ -133,7 +133,7 @@ PanelWindow {
     property real reveal: root.mprisVisible ? 1 : 0
     Behavior on reveal {
         NumberAnimation {
-            duration: root.mprisVisible ? 160 : 120
+            duration: root.mprisVisible ? root.panelRevealIn : root.panelRevealOut
             easing.type: root.mprisVisible ? Easing.OutCubic : Easing.InCubic
         }
     }

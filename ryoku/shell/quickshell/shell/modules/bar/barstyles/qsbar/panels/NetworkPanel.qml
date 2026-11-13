@@ -451,7 +451,7 @@ PanelWindow {
     property real reveal: root.networkVisible ? 1 : 0
     Behavior on reveal {
         NumberAnimation {
-            duration: root.networkVisible ? 160 : 120
+            duration: root.networkVisible ? root.panelRevealIn : root.panelRevealOut
             easing.type: root.networkVisible ? Easing.OutCubic : Easing.InCubic
         }
     }

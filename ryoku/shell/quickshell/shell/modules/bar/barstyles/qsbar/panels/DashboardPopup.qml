@@ -26,7 +26,7 @@ PanelWindow {
     property real reveal: root.dashboardVisible ? 1 : 0
     Behavior on reveal {
         NumberAnimation {
-            duration: root.dashboardVisible ? 220 : 150
+            duration: root.dashboardVisible ? root.panelRevealIn : root.panelRevealOut
             easing.type: root.dashboardVisible ? Easing.OutCubic : Easing.InCubic
         }
     }

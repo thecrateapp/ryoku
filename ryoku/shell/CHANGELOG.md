@@ -1,6 +1,9 @@
 # Changelog: ryoku/shell/
 
 ## Unreleased
+- **QS Bar panels reveal faster.** Every panel, the bar's notch and QS Bar
+  Settings share one reveal (Theme.panelRevealIn/Out): 90 ms in and 80 ms out,
+  down from 160/120 (220/150 for the dashboard).
 - **QS Bar panels keep their gap from a bar moved off the edge.** Panels sat at
   the bar's height plus a 6 px gap and ignored the bar's own offset from the
   screen edge (barGapTop/Bottom), so with the bar 6 px down they touched it. They

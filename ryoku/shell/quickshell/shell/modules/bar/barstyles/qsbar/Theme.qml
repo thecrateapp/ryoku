@@ -1018,7 +1018,7 @@ Item {
     property real   aiUsageReveal: aiUsageVisible ? 1 : 0
     Behavior on aiUsageReveal {
         NumberAnimation {
-            duration: theme.aiUsageVisible ? 160 : 120
+            duration: theme.aiUsageVisible ? theme.panelRevealIn : theme.panelRevealOut
             easing.type: theme.aiUsageVisible ? Easing.OutCubic : Easing.InCubic
         }
     }
@@ -1910,7 +1910,7 @@ Item {
     property real volReveal: volVisible ? 1 : 0
     Behavior on volReveal {
         NumberAnimation {
-            duration: theme.volVisible ? 160 : 120
+            duration: theme.volVisible ? theme.panelRevealIn : theme.panelRevealOut
             easing.type: theme.volVisible ? Easing.OutCubic : Easing.InCubic
         }
     }
@@ -2427,6 +2427,10 @@ Item {
     // offset from the screen edge (barGapTop/Bottom). Panels used the height
     // alone, so a bar moved off the edge swallowed their gap and they touched it.
     readonly property int panelAnchor: v2BarHeight + barGapLead
+    // One reveal for every panel, the bar's notch and Settings: short enough to
+    // read as instant once the window is up (was 160 in / 120 out).
+    readonly property int panelRevealIn: 90
+    readonly property int panelRevealOut: 80
     readonly property int barGapTrail: barPosition === "bottom" ? barGapTop : barGapBottom
     function barShellStyleValid(value) {
         return value === "islands" || value === "full" || value === "fit"
@@ -3295,7 +3299,7 @@ Item {
     }
     Behavior on panelInsetReveal {
         NumberAnimation {
-            duration: theme.anchoredPanelVisible ? 160 : 120
+            duration: theme.anchoredPanelVisible ? theme.panelRevealIn : theme.panelRevealOut
             easing.type: theme.anchoredPanelVisible ? Easing.OutCubic : Easing.InCubic
         }
     }

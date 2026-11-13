@@ -35,7 +35,7 @@ PanelWindow {
     property real reveal: root.thermalVisible ? 1 : 0
     Behavior on reveal {
         NumberAnimation {
-            duration: root.thermalVisible ? 160 : 120
+            duration: root.thermalVisible ? root.panelRevealIn : root.panelRevealOut
             easing.type: root.thermalVisible ? Easing.OutCubic : Easing.InCubic
         }
     }

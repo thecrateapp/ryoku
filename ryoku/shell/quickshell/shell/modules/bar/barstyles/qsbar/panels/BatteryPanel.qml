@@ -55,7 +55,7 @@ PanelWindow {
     property real reveal: root.batteryVisible ? 1 : 0
     Behavior on reveal {
         NumberAnimation {
-            duration: root.batteryVisible ? 160 : 120
+            duration: root.batteryVisible ? root.panelRevealIn : root.panelRevealOut
             easing.type: root.batteryVisible ? Easing.OutCubic : Easing.InCubic
         }
     }

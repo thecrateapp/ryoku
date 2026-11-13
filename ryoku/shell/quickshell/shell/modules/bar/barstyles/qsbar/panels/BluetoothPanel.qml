@@ -139,7 +139,7 @@ PanelWindow {
     property real reveal: root.bluetoothVisible ? 1 : 0
     Behavior on reveal {
         NumberAnimation {
-            duration: root.bluetoothVisible ? 160 : 120
+            duration: root.bluetoothVisible ? root.panelRevealIn : root.panelRevealOut
             easing.type: root.bluetoothVisible ? Easing.OutCubic : Easing.InCubic
         }
     }

@@ -23,7 +23,7 @@ PanelWindow {
     property real reveal: root.workspaceVisible ? 1 : 0
     Behavior on reveal {
         NumberAnimation {
-            duration: root.workspaceVisible ? 160 : 120
+            duration: root.workspaceVisible ? root.panelRevealIn : root.panelRevealOut
             easing.type: root.workspaceVisible ? Easing.OutCubic : Easing.InCubic
         }
     }

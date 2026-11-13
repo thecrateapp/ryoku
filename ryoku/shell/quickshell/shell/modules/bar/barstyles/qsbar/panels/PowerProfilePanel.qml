@@ -49,7 +49,7 @@ PanelWindow {
     property real reveal: root.powerProfileVisible ? 1 : 0
     Behavior on reveal {
         NumberAnimation {
-            duration: root.powerProfileVisible ? 160 : 120
+            duration: root.powerProfileVisible ? root.panelRevealIn : root.panelRevealOut
             easing.type: root.powerProfileVisible ? Easing.OutCubic : Easing.InCubic
         }
     }

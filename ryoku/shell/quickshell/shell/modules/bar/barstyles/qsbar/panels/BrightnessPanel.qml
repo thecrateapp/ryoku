@@ -27,7 +27,7 @@ PanelWindow {
     property real reveal: root.brightnessVisible ? 1 : 0
     Behavior on reveal {
         NumberAnimation {
-            duration: root.brightnessVisible ? 160 : 120
+            duration: root.brightnessVisible ? root.panelRevealIn : root.panelRevealOut
             easing.type: root.brightnessVisible ? Easing.OutCubic : Easing.InCubic
         }
     }

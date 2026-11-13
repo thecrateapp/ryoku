@@ -26,7 +26,7 @@ PanelWindow {
     property real reveal: root.trayVisible ? 1 : 0
     Behavior on reveal {
         NumberAnimation {
-            duration: root.trayVisible ? 160 : 120
+            duration: root.trayVisible ? root.panelRevealIn : root.panelRevealOut
             easing.type: root.trayVisible ? Easing.OutCubic : Easing.InCubic
         }
     }

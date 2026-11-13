@@ -31,7 +31,7 @@ PanelWindow {
     property real reveal: root.gpuVisible ? 1 : 0
     Behavior on reveal {
         NumberAnimation {
-            duration: root.gpuVisible ? 160 : 120
+            duration: root.gpuVisible ? root.panelRevealIn : root.panelRevealOut
             easing.type: root.gpuVisible ? Easing.OutCubic : Easing.InCubic
         }
     }

@@ -42,8 +42,8 @@ QtObject {
 
 
     // ── motion ───────────────────────────────────────────────────────────────
-    readonly property int revealOpen: Tokens.durSlowEffects
-    readonly property int revealClose: Tokens.durDefaultEffects
+    readonly property int revealOpen: t.root ? t.root.panelRevealIn : Tokens.durSlowEffects
+    readonly property int revealClose: t.root ? t.root.panelRevealOut : Tokens.durDefaultEffects
     readonly property int fade: Tokens.durFastEffects
     readonly property int pageOut: Tokens.durFastEffects
     readonly property int pageIn: Tokens.durDefaultSpatial

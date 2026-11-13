@@ -181,7 +181,7 @@ PanelWindow {
     property real reveal: root.notifVisible ? 1 : 0
     Behavior on reveal {
         NumberAnimation {
-            duration: root.notifVisible ? 160 : 120
+            duration: root.notifVisible ? root.panelRevealIn : root.panelRevealOut
             easing.type: root.notifVisible ? Easing.OutCubic : Easing.InCubic
         }
     }
