@@ -178,8 +178,6 @@ Singleton {
     // a theme style's controls "crate": the crate-mark geometry for the kit
     // (straight chips, the Beam slider, plateless icon buttons, mono labels)
     property bool controlsCrate: false
-    // The Hub selects options with a one-pixel outline in its Crate skin.
-    property bool outlineSelections: false
     readonly property int fValue: px(compact ? 22 : 26)    // a cell's value
     readonly property int fRow: px(compact ? 13 : 15)      // a row name
     readonly property int fBody: px(compact ? 12 : 14)

@@ -134,7 +134,6 @@ Item {
             Kit.Chip {
                 objectName: "controlVisibility"
                 text: I18n.tr(chip.label)
-                outlinedSelection: true
                 on: chip.checked
                 onClicked: chip.changed(!chip.checked)
             }

@@ -146,7 +146,6 @@ Item {
             Kit.Chip {
                 objectName: "profileVisibility"
                 text: chip.block.toUpperCase()
-                outlinedSelection: true
                 on: chip.on
                 onClicked: pg.toggleBlock(chip.block)
             }

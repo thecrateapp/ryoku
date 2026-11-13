@@ -114,7 +114,6 @@ Column {
                             visible: Tokens.controlsCrate && row.isActive
                             text: I18n.tr("CURRENT")
                             interactive: false
-                            outlinedSelection: true
                             on: true
                         }
                         Rectangle {

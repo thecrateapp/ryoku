@@ -19,16 +19,7 @@ Row {
     spacing: Tokens.s2
 
     Repeater {
-        model: Tokens.outlineSelections ? tabs.options : []
-        Chip {
-            required property string modelData
-            text: I18n.tr(modelData).toUpperCase()
-            on: tabs.current === modelData
-            onClicked: tabs.chose(modelData)
-        }
-    }
-    Repeater {
-        model: Tokens.outlineSelections ? [] : tabs.options
+        model: tabs.options
         Rectangle {
             id: plate
             required property string modelData

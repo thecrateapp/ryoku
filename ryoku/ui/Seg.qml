@@ -68,17 +68,7 @@ Item {
         width: seg.width
         spacing: Tokens.controlsCrate ? 8 : Tokens.s1
         Repeater {
-            model: Tokens.outlineSelections ? seg.options : []
-            Chip {
-                required property string modelData
-                text: I18n.tr(seg.labels && seg.labels[modelData] !== undefined ? seg.labels[modelData] : modelData)
-                width: Math.max(seg.minSeg, implicitWidth)
-                on: seg.current === modelData
-                onClicked: seg.chose(modelData)
-            }
-        }
-        Repeater {
-            model: Tokens.outlineSelections ? [] : seg.options
+            model: seg.options
             Rectangle {
                 required property string modelData
                 readonly property bool on: seg.current === modelData

@@ -58,11 +58,6 @@ Rectangle {
     radius: Tokens.controlsCrate ? Tokens.radius : 0
     focus: true
 
-    Binding {
-        target: Tokens
-        property: "outlineSelections"
-        value: Tokens.controlsCrate
-    }
 
     // ── which page ───────────────────────────────────────────────────────
     property string section: "windowmanager"
@@ -1621,7 +1616,6 @@ Rectangle {
             visible: Tokens.controlsCrate
             anchors.fill: parent
             text: ubLabel.text
-            outlinedSelection: true
             on: updatesBtn.here
             onClicked: hub.section = "updates"
         }
@@ -1676,7 +1670,6 @@ Rectangle {
             visible: Tokens.controlsCrate
             anchors.fill: parent
             text: fbLabel.text
-            outlinedSelection: true
             on: filesPop.open
             onClicked: filesPop.open = !filesPop.open
         }

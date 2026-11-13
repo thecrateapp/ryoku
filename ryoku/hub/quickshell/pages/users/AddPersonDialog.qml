@@ -258,7 +258,6 @@ Popup {
                                 Kit.Chip {
                                     objectName: "permission"
                                     text: dialog.permissionLabel(permissionChip.modelData)
-                                    outlinedSelection: true
                                     on: permissionChip.selected
                                     onClicked: dialog.togglePermission(permissionChip.permissionId)
                                 }

@@ -271,7 +271,6 @@ Item {
             Kit.Chip {
                 objectName: "connectionAction"
                 text: mp.text
-                outlinedSelection: true
                 on: false
                 enabled: mp.armed
                 onClicked: mp.act()
@@ -1455,7 +1454,6 @@ Item {
                                                     objectName: "wifiBand"
                                                     text: wifi.bandLabel(bandOption.modelData.band)
                                                     on: bandOption.selected
-                                                    outlinedSelection: true
                                                     enabled: !wifi.connecting
                                                     onClicked: bandOption.choose()
                                                 }

@@ -329,8 +329,9 @@
 
 ### Changed
 - **Crate Settings uses the shared page headers and controls.** The current
-  section and selected chips use a thin outline. Updates, downloads and account
-  quotas show their progress on the kit beam.
+  section takes the pick edge, and selected chips, segments and tabs look as
+  they do on every other surface (filled with the mark under crate). Updates,
+  downloads and account quotas show their progress on the kit beam.
 - **Compositor switching recognises complete checkout deployments.** A desktop
   with a working provider, config and greeter session remains switchable when
   its variant package is not published for the host; published targets that are

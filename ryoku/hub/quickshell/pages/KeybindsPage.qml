@@ -1099,7 +1099,6 @@ Item {
                                         Kit.Chip {
                                             objectName: "appCandidate"
                                             text: I18n.tr(chip.modelData.label)
-                                            outlinedSelection: true
                                             on: chip.sel
                                             onClicked: pg.setApp(roleCard.role, chip.modelData.cmd)
                                         }
@@ -1186,7 +1185,6 @@ Item {
                                             Kit.Chip {
                                                 objectName: "shellChip"
                                                 text: I18n.tr(shellChip.modelData.label)
-                                                outlinedSelection: true
                                                 on: shellChip.selected
                                                 enabled: shellChip.modelData.installed && !pg.shellBusy
                                                 onClicked: pg.setShell(shellChip.modelData.key)
@@ -1263,7 +1261,6 @@ Item {
                                             Kit.Chip {
                                                 objectName: "promptChip"
                                                 text: I18n.tr(promptChip.modelData.label)
-                                                outlinedSelection: true
                                                 on: promptChip.selected
                                                 enabled: !pg.shellBusy
                                                 onClicked: pg.setZshPrompt(promptChip.modelData.mode)
@@ -1401,7 +1398,6 @@ Item {
                                             Kit.Chip {
                                                 objectName: "starshipPaletteChip"
                                                 text: starshipPaletteChip.modelData.label
-                                                outlinedSelection: true
                                                 on: starshipPaletteChip.selected
                                                 enabled: !pg.starshipBusy
                                                 onClicked: pg.setStarshipPalette(starshipPaletteChip.modelData.mode)

@@ -851,7 +851,6 @@ Item {
                                             Kit.Chip {
                                                 objectName: "curvePreset"
                                                 text: chip.modelData.name
-                                                outlinedSelection: true
                                                 on: chip.selected
                                                 onClicked: pg.upsertCurve(pg.selectedCurve, chip.modelData.c[0], chip.modelData.c[1], chip.modelData.c[2], chip.modelData.c[3])
                                             }

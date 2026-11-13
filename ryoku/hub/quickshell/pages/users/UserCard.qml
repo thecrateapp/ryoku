@@ -357,7 +357,6 @@ Item {
                                 Kit.Chip {
                                     objectName: "permission"
                                     text: cardRoot.permissionLabel(permissionChip.permissionId)
-                                    outlinedSelection: true
                                     on: permissionChip.selected
                                     enabled: cardRoot.canManage
                                     onClicked: cardRoot.togglePermission(permissionChip.permissionId)

@@ -2050,7 +2050,6 @@ Item {
             Kit.Chip {
                 objectName: "signInMode"
                 text: I18n.tr(chip.label) + (chip.busy ? "\u2026" : "")
-                outlinedSelection: true
                 on: chip.on
                 enabled: chip.kind === "security-key" ? pg.skPending === "" : pg.kpending === ""
                 onClicked: chip.choose()

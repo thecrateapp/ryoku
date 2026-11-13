@@ -41,7 +41,7 @@ ShellRoot {
     }
 
     function choice(item, key) {
-        if (item instanceof Kit.Chip && item.modelData === key) return item;
+        if (item.modelData === key && item.on !== undefined) return item;
         for (const child of item.children) {
             const found = choice(child, key);
             if (found) return found;
@@ -79,18 +79,18 @@ ShellRoot {
                 probe.check(!probe.crate || Qt.colorEqual(edge.border.color, Tokens.pickEdge), "route outline color");
                 probe.check(updates.visible === probe.crate, "Updates shortcut style");
                 if (probe.step === 1) {
-                    probe.check(Tokens.outlineSelections === probe.crate, "Hub selection policy");
+                    // the Hub selects options exactly as every other surface does:
+                    // no Hub-only variant, a selected option filled with the mark
                     for (const group of [tabs, segments, chips, multi]) {
                         const one = probe.choice(group, "One");
-                        if (!probe.crate) {
-                            probe.check(!one || !one.outlined, "stock option styling");
-                            continue;
-                        }
                         const two = probe.choice(group, "Two");
-                        probe.check(one && two && one.outlined && one.border.width === 1
-                            && Qt.colorEqual(one.border.color, Tokens.pickEdge), "selected option edge");
-                        two.clicked();
-                        probe.check(!one.on && two.on, "group selection callback");
+                        probe.check(one && two && one.on && !two.on, "selection follows the shared kit");
+                        if (probe.crate && group !== tabs)
+                            probe.check(Qt.colorEqual(one.color, Tokens.mark), "a selected option is filled with the mark");
+                        if (typeof two.clicked === "function") two.clicked();
+                        else if (group === multi) group.toggled("Two");
+                        else group.chose("Two");
+                        probe.check(two.on, "group selection callback");
                     }
                     probe.check(files.visible === probe.crate, "Files shortcut style");
                     if (probe.crate) {
