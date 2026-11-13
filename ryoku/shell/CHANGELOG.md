@@ -8,6 +8,10 @@
 - **The QS Bar power profile panel follows the Crate theme.** The profiles
   the daemon offers sit in one row of equal chips, the current one filled; the
   thermal reading follows as a readout row when a sensor exists.
+- **The QS Bar notification history follows the Crate theme.** Each pending
+  notification is a hairline card like the popups (app, summary, two lines of
+  body, its own dismiss), the list scrolls inside the panel, and Clear all is
+  a kit button.
 - **Memory and storage in QS Bar follow the Crate theme.** Memory shows its
   usage history and module speed. Storage shows root filesystem usage and
   the inventory of physical drives.

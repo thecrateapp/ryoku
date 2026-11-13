@@ -196,7 +196,7 @@ PanelWindow {
     Rectangle {
         id: card
         width: 320
-        height: col.implicitHeight + 24
+        height: panelBody.implicitHeight + panelBody.inset * 2
         radius: reveal > 0.001 ? root.panelRadius : 0
         color: "transparent"
         border.color: root.panelBorder
@@ -225,10 +225,29 @@ PanelWindow {
 
         MouseArea { anchors.fill: parent; onClicked: {} }
 
+        Loader {
+            id: panelBody
+            readonly property int inset: Tokens.controlsCrate ? Tokens.s4 : 12
+            anchors.left: parent.left
+            anchors.right: parent.right
+            anchors.top: parent.top
+            anchors.margins: inset
+            focus: true
+            sourceComponent: Tokens.controlsCrate ? crateBody : stockBody
+        }
+
+        Component {
+            id: crateBody
+            CrateNotificationList {
+                panel: notifPanel
+                onCloseRequested: notifPanel.root.notifVisible = false
+            }
+        }
+
+        Component {
+            id: stockBody
         Column {
             id: col
-            anchors.fill: parent
-            anchors.margins: 12
             spacing: 8
 
             // ── header ──
@@ -399,6 +418,7 @@ PanelWindow {
                     onClicked: notifPanel.dismissAll()
                 }
             }
+        }
         }
     }
 }
