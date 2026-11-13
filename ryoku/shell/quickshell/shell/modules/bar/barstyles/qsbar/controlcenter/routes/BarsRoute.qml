@@ -130,10 +130,14 @@ Item {
                     SettingRow {
                         anchors.left: parent.left
                         anchors.right: parent.right
-                        controlWidth: 130
+                        // the slot is the segments' own one-row width: a fixed 130
+                        // fit the stock chips, and the crate ones wrapped onto two lines
+                        controlWidth: edgeSeg.implicitWidth
                         label: I18n.tr("Edge")
                         source: "shell.json"
                         Seg {
+                            id: edgeSeg
+                            objectName: "edgeSeg"
                             anchors.right: parent.right
                             anchors.verticalCenter: parent.verticalCenter
                             options: ["top", "bottom"]

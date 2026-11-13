@@ -263,8 +263,11 @@ Item {
                         label: I18n.tr("Workspaces")
                         desc: I18n.tr("Only the active workspace, or a fixed 1-5 / 1-10 row.")
                         source: "shell.json"
-                        controlWidth: Math.max(120, 62 * 3)
+                        // the segments' own one-row width, in either look
+                        controlWidth: workspaceSeg.implicitWidth
                         Seg {
+                            id: workspaceSeg
+                            objectName: "workspaceSeg"
                             anchors.right: parent.right
                             anchors.verticalCenter: parent.verticalCenter
                             options: ["Active", "1-5", "1-10"]

@@ -1,6 +1,10 @@
 # Changelog: ryoku/shell/
 
 ## Unreleased
+- **QS Bar Settings no longer stacks the Edge and Workspaces buttons.** Their
+  row slot was a fixed width sized for the stock chips, and the larger crate
+  chips wrapped onto a second line; the slot is now the buttons' own one-row
+  width in either look.
 - **The QS Bar dashboard speaks crate.** Under controls "crate" the clock,
   weather and calendar panel drops its frosted islands for the kit: the month
   with today in the mark and a picked day edged, the time in the display face,
