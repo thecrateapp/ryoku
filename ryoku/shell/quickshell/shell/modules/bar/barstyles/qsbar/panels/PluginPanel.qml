@@ -3,6 +3,7 @@ import "../modules"
 import Quickshell
 import Quickshell.Wayland
 import Ryoku.PluginKit
+import Ryoku.Ui.Singletons
 
 // The bar panel a plugin may open under its glyph: one shared window, one plugin
 // at a time, drawn on the same connected surface the built-in panels use so a
@@ -55,7 +56,9 @@ PanelWindow {
     Rectangle {
         id: card
         width: pp.cardW
-        height: Math.min(pp.maxCardH, (content.item ? content.item.implicitHeight : 0) + 24)
+        // the crate family's 16 px inset; a plugin's own panel draws its content
+        readonly property int inset: Tokens.controlsCrate ? Tokens.s4 : 12
+        height: Math.min(pp.maxCardH, (content.item ? content.item.implicitHeight : 0) + card.inset * 2)
         radius: pp.reveal > 0.001 ? root.panelRadius : 0
         color: "transparent"
         border.color: root.panelBorder
@@ -91,7 +94,7 @@ PanelWindow {
             anchors.left: parent.left
             anchors.right: parent.right
             anchors.top: parent.top
-            anchors.margins: 12
+            anchors.margins: card.inset
             height: item ? item.implicitHeight : 0
             source: (pp.entry && pp.panelRel !== "")
                 ? "file://" + pp.entry.dir + "/" + pp.panelRel + pp.versionQuery : ""

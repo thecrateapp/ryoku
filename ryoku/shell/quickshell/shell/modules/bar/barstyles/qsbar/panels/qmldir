@@ -17,6 +17,7 @@ CrateThermalsDetails CrateThermalsDetails.qml
 CrateTrayAppsBody CrateTrayAppsBody.qml
 CrateTrayMenuBody CrateTrayMenuBody.qml
 CrateUsageSummary CrateUsageSummary.qml
+CrateWorkspacesBody CrateWorkspacesBody.qml
 DashboardPopup DashboardPopup.qml
 CpuPanel CpuPanel.qml
 GpuPanel GpuPanel.qml

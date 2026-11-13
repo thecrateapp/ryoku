@@ -24,6 +24,10 @@
   with open, pin and menu buttons, one that needs attention takes the pick, and
   an app's menu is drawn like the desktop menu: 32 px rows, hairline
   separators, a pick mark on checked entries and a turning submenu chevron.
+- **The QS Bar workspace list follows the Crate theme.** Each workspace is a
+  list row with its window count; the active one takes the pick and the one
+  the arrow keys reached shows its edge. Plugin panels take the family's
+  16 px inset.
 - **CPU, GPU and temperatures in QS Bar follow the Crate theme.** The CPU and
   GPU panels show usage history and hardware readings. The temperatures panel
   shows each sensor’s full name, temperature meter and limit, and lets you

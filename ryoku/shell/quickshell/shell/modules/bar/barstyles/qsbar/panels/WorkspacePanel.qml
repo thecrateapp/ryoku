@@ -55,8 +55,22 @@ PanelWindow {
         }
         readonly property var activeWs: WorkspaceIsolation.activeWorkspace(
             Wm.workspaces, root.activePopupScreenName, root.isolateMonitors, Wm.focusedWorkspace)
-        width: 240
-        height: col.implicitHeight + 24
+        // what the crate body reads and drives
+        readonly property var workspaces: {
+            var out = [], vs = card.filteredWorkspaces
+            for (var i = 0; i < vs.length; i++)
+                out.push({ id: vs[i].id, name: vs[i].name, windows: vs[i].windows || 0 })
+            return out
+        }
+        readonly property int activeId: card.activeWs ? card.activeWs.id : -1
+        function goTo(id) {
+            root.gotoWorkspace(id)
+            root.workspaceVisible = false
+        }
+        function close() { root.workspaceVisible = false }
+
+        width: Tokens.controlsCrate ? 320 : 240
+        height: panelBody.implicitHeight + panelBody.inset * 2
         radius: reveal > 0.001 ? root.panelRadius : 0
         color: "transparent"
         border.color: root.panelBorder
@@ -87,10 +101,25 @@ PanelWindow {
 
         MouseArea { anchors.fill: parent; onClicked: {} }
 
+        Loader {
+            id: panelBody
+            readonly property int inset: Tokens.controlsCrate ? Tokens.s4 : 12
+            anchors.left: parent.left
+            anchors.right: parent.right
+            anchors.top: parent.top
+            anchors.margins: inset
+            sourceComponent: Tokens.controlsCrate ? crateBody : stockBody
+        }
+
+        Component {
+            id: crateBody
+            CrateWorkspacesBody { panel: card }
+        }
+
+        Component {
+            id: stockBody
         Column {
             id: col
-            anchors.fill: parent
-            anchors.margins: 12
             spacing: 8
 
             Item {
@@ -158,6 +187,7 @@ PanelWindow {
                     }
                 }
             }
+        }
         }
     }
 
