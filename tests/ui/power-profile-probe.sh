@@ -6,6 +6,10 @@ repo="$(cd "$here/../.." && pwd)"
 work="$(mktemp -d)"
 trap 'rm -rf -- "$work"' EXIT
 mkdir -p "$work/Ryoku" "$work/config" "$work/runtime"
+# Spanish runs the longest labels: every chip's text has to fit its chip.
+mkdir -p "$work/config/ryoku"
+echo '{"language":"es"}' > "$work/config/ryoku/shell.json"
+export RYOKU_I18N_DIR="$repo/ryoku/i18n/catalog"
 chmod 700 "$work/runtime"
 ln -s "${RYOKU_UI_SOURCE:-$repo/ryoku/ui}" "$work/Ryoku/Ui"
 cp "$repo/ryoku/shell/quickshell/shell/modules/bar/barstyles/qsbar/panels/CratePowerProfileDetails.qml" "$work/"

@@ -159,6 +159,31 @@ ShellRoot {
         function toggleSpeedTest() {}
     }
 
+    QtObject {
+        id: powerPanel
+        property var profiles: [
+            { key: "power-saver", label: "Power Saver" },
+            { key: "balanced", label: "Balanced" },
+            { key: "performance", label: "Performance" }
+        ]
+        property string current: "performance"
+        property bool thermalAvailable: true
+        property int thermalC: 57
+        function choose(key) { current = key }
+    }
+    QtObject {
+        id: notifPanel
+        property var pending: [
+            { key: "n:1", appName: "Crate", summary: "Download complete", body: "Pronto by Repion is now available offline." },
+            { key: "n:2", appName: "Firefox", summary: "Upload finished", body: "" },
+            { key: "n:3", appName: "Ryoku", summary: "Update ready", body: "Ryoku 1.0.9 is installed. Log out and back in to finish." }
+        ]
+        readonly property int unreadCount: pending.length
+        property int listCap: 420
+        function openNotification(e) {}
+        function dismissOne(e) {}
+        function dismissAll() {}
+    }
 
     component Card: Rectangle {
         default property alias body: inner.data
@@ -195,6 +220,8 @@ ShellRoot {
                 spacing: 16
                 Card { cardWidth: 320; CrateBluetoothDetails { width: parent.width; panel: btPanel } }
                 Card { cardWidth: 320; CrateNetworkDetails { width: parent.width; panel: netPanel } }
+                Card { cardWidth: 320; CratePowerProfileDetails { width: parent.width; panel: powerPanel } }
+                Card { cardWidth: 320; CrateNotificationList { width: parent.width; panel: notifPanel } }
             }
         }
 

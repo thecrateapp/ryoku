@@ -26,6 +26,7 @@ Column {
         id: choices
         objectName: "powerProfileChoices"
         readonly property var profiles: details.panel.profiles || []
+        readonly property var shortLabels: ({ "power-saver": "Saver" })
         width: parent.width
         spacing: Tokens.s2
         activeFocusOnTab: true
@@ -54,7 +55,8 @@ Column {
                 objectName: "profile-" + modelData.key
                 width: (choices.width - choices.spacing * Math.max(0, choices.profiles.length - 1))
                     / Math.max(1, choices.profiles.length)
-                text: I18n.tr(modelData.label)
+                // the short name (Spanish "Ahorro de energía" overflows a third of the panel)
+                text: I18n.tr(choices.shortLabels[modelData.key] || modelData.label)
                 on: details.panel.current === modelData.key
                 Accessible.role: Accessible.RadioButton
                 Accessible.name: text

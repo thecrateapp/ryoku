@@ -55,6 +55,11 @@ ShellRoot {
                 throw new Error("Every offered profile needs a chip");
             if (saver.y !== perf.y || Math.abs(saver.width - perf.width) > 1)
                 throw new Error("The chips must share one row at one width");
+            for (const chip of [saver, balanced, perf]) {
+                // the chip's natural width is its text plus 28 px of padding
+                if (chip.implicitWidth - 28 + 8 > chip.width)
+                    throw new Error("\"" + chip.text + "\" overflows its " + chip.width + " px chip");
+            }
             if (perf.x + perf.width > 296.5)
                 throw new Error("The chips must fit the panel, right edge " + (perf.x + perf.width));
             if (!balanced.on || saver.on || perf.on)
