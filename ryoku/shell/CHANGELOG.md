@@ -1,6 +1,12 @@
 # Changelog: ryoku/shell/
 
 ## Unreleased
+- **Output volume holds, and boost passes 100 % again.** A volume written to a
+  device node snapped back to the old level about 250 ms later, and anything
+  past 100 % fell to 100 %: WirePlumber resyncs a device node from its saved
+  route. The QS Bar volume panel, the bar's wheel and Controls now set device
+  levels through `wpctl`, which updates the route; app streams keep the direct
+  write. A drag writes only its newest value once each call ends.
 - **Crate sliders and meters have a slimmer Beam.** The glow is 6 px tall
   at rest and the handle reaches 8 px on hover or keyboard focus.
 - **A leftover default-rice marker no longer resets the desktop.** The

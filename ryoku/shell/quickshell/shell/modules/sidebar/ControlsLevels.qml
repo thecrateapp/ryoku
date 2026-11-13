@@ -148,7 +148,7 @@ Item {
             onAdjusted: value => {
                 if (!root.volumeAvailable)
                     return;
-                Audio.sink.audio.volume = value;
+                Audio.setSinkVolume(value, 1);
                 if (value > 0)
                     Audio.sink.audio.muted = false;
             }

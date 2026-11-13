@@ -7,6 +7,7 @@ import Quickshell.Services.Pipewire
 import Ryoku.Ui.Singletons
 import shell.services
 import "lib/audiosink.js" as AudioSink
+import "lib/sinkvolume.js" as SinkVolume
 
 // audio graph for the mixer: classifies Pipewire nodes into output devices,
 // input devices, and per-app playback streams; switches the default sink/source
@@ -163,6 +164,30 @@ Singleton {
     onLiveLinksChanged: listSettle.restart()
 
     Component.onCompleted: root.syncAudioLists()
+
+    // A device's volume goes through WirePlumber (see lib/sinkvolume.js): a write
+    // to the node itself is reverted from the saved route a moment later. Only
+    // the newest value of a drag is written once the running call ends.
+    property var _volumePending: null
+    function setNodeVolume(node, v, limit) {
+        if (!node || node.id === undefined) return;
+        root._volumePending = { id: node.id, v: v, limit: limit };
+        root._flushVolume();
+    }
+    function setSinkVolume(v, limit) { root.setNodeVolume(root.sink, v, limit); }
+    function _flushVolume() {
+        const next = SinkVolume.nextWrite({ busy: volumeWriter.running, pending: root._volumePending });
+        if (!next) return;
+        root._volumePending = null;
+        const args = SinkVolume.volumeArgs(next.id, next.v, next.limit);
+        if (!args) return;
+        volumeWriter.command = ["wpctl"].concat(args);
+        volumeWriter.running = true;
+    }
+    Process {
+        id: volumeWriter
+        onExited: root._flushVolume()
+    }
 
     function setOutput(n) { if (n) Pipewire.preferredDefaultAudioSink = n; }
     function setInput(n) { if (n) Pipewire.preferredDefaultAudioSource = n; }

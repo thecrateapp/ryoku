@@ -167,7 +167,7 @@ PanelWindow {
                         // dropping the cap while boosted pulls the sink back to 0 dB
                         if (!root.audioBoost && audio.sink && audio.sink.audio
                                 && audio.sink.audio.volume > 1)
-                            audio.sink.audio.volume = 1
+                            Audio.setSinkVolume(1, 1)
                     }
                 }
             }
@@ -191,7 +191,7 @@ PanelWindow {
                         const s = Audio.sink;
                         if (!s || !s.audio) return;
                         if (s.audio.muted && v > 0) s.audio.muted = false;
-                        s.audio.volume = v;
+                        Audio.setSinkVolume(v, volPanel.boostOn ? 1.5 : 1);
                     }
                 }
                 Text {
@@ -421,7 +421,7 @@ PanelWindow {
                     if (!s || !s.audio) return
                     var pct = Math.max(0, Math.min(volSlider.maxPct, mx / volSlider.width * volSlider.maxPct))
                     if (s.audio.muted && pct > 0) s.audio.muted = false
-                    s.audio.volume = pct / 100
+                    Audio.setSinkVolume(pct / 100, volSlider.maxPct / 100)
                 }
 
                 UiText {
@@ -478,7 +478,7 @@ PanelWindow {
                         var s = audio.sink
                         if (!s || !s.audio) return
                         var step = w.angleDelta.y > 0 ? 0.05 : -0.05
-                        s.audio.volume = Math.max(0, Math.min(volSlider.maxPct / 100, s.audio.volume + step))
+                        Audio.setSinkVolume(s.audio.volume + step, volSlider.maxPct / 100)
                     }
                 }
             }
@@ -517,7 +517,7 @@ PanelWindow {
                         // dropping the cap while boosted pulls the sink back to 0 dB
                         if (!root.audioBoost && audio.sink && audio.sink.audio
                                 && audio.sink.audio.volume > 1)
-                            audio.sink.audio.volume = 1
+                            Audio.setSinkVolume(1, 1)
                     }
                 }
             }

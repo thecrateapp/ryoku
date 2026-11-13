@@ -68,7 +68,7 @@ Item {
         var next = up
             ? (cur === 65 ? 67 : cur === 67 ? 70 : Math.floor(cur / 5) * 5 + 5)
             : (cur === 70 ? 67 : cur === 67 ? 65 : Math.ceil(cur / 5) * 5 - 5)
-        s.audio.volume = Math.max(0, Math.min(max, next / 100))
+        Audio.setSinkVolume(next / 100, max)
     }
     function toggleMute() {
         var s = audio.sink

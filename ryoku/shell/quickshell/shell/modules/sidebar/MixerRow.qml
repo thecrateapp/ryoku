@@ -28,7 +28,12 @@ Item {
     opacity: enabled || Tokens.controlsCrate ? 1 : 0.48
 
     function setLevel(value): void {
-        if (root.audio)
+        if (!root.audio)
+            return;
+        // a device's level goes through WirePlumber; a stream keeps the direct write
+        if (root.device)
+            Audio.setNodeVolume(root.node, value, 1);
+        else
             root.audio.volume = Math.max(0, Math.min(1, value));
     }
 
