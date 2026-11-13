@@ -29,8 +29,9 @@ Rectangle {
         }
     }
 
-    implicitWidth: lab.implicitWidth + (compact ? 20 : 30)
-    implicitHeight: compact ? 24 : (Tokens.controlsCrate ? 34 : 32)
+    implicitWidth: lab.implicitWidth + (compact ? (Tokens.controlsCrate ? 24 : 20) : 30)
+    // crate-mark: a compact button is the mock-up's 28 px .btn.sm with 11 px text
+    implicitHeight: compact ? (Tokens.controlsCrate ? 28 : 24) : (Tokens.controlsCrate ? 34 : 32)
     radius: Tokens.radius
     // 0.5, not 0.3: a control that cannot act must still be legible as itself
     // (the reader needs to see what is there and why it is inert), while the
@@ -56,7 +57,7 @@ Rectangle {
         color: Tokens.controlsCrate ? (btn.primary && btn.armed ? Tokens.paper : Tokens.ink)
             : btn.outline ? Tokens.mark : (btn.primary && btn.armed ? Tokens.inkOnBone : Tokens.ink)
         font.family: Tokens.controlsCrate ? Tokens.mono : Tokens.ui
-        font.pixelSize: btn.compact ? 10 : (Tokens.controlsCrate ? 12 : 11)
+        font.pixelSize: btn.compact ? (Tokens.controlsCrate ? 11 : 10) : (Tokens.controlsCrate ? 12 : 11)
         font.weight: Tokens.controlsCrate ? Font.Normal : Font.Medium
         font.letterSpacing: Tokens.controlsCrate ? 12 * 0.04 : Tokens.trackLabel
         // Longer translations (Portuguese, German) must not be clipped when a

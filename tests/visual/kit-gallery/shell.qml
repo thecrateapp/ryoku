@@ -6,11 +6,11 @@ import Ryoku.Ui.Singletons
 ShellRoot {
     FloatingWindow {
         implicitWidth: 560
-        implicitHeight: 860
+        implicitHeight: 1060
         color: Tokens.paper
         Rectangle {
             id: sheet
-            width: 560; height: 860
+            width: 560; height: 1060
             color: Tokens.popover
             Column {
                 anchors.fill: parent
@@ -47,6 +47,19 @@ ShellRoot {
                     LevelRow { id: lv1; width: parent.width; labelWidth: levels.capW; label: "Volume"; glyph: "volume_up"; value: 0.77; muteEnabled: true }
                     LevelRow { id: lv2; width: parent.width; labelWidth: levels.capW; label: "Brightness"; glyph: "brightness_high"; value: 1 }
                     LevelRow { id: lv3; width: parent.width; labelWidth: levels.capW; label: "Mic"; glyph: "mic_off"; value: 0.4; muted: true; muteEnabled: true; expandable: false }
+                }
+                Section { width: parent.width; title: "SheetHeader / ListRow / SignalBars" }
+                SheetHeader { width: parent.width; title: "Wi-Fi"; Sw { on: true } }
+                Column { width: parent.width; spacing: 6
+                    ListRow { width: parent.width; title: "Casa-5G"; sub: "Connected · 82 % · WPA2"; on: true
+                        leading: Component { SignalBars { strength: 82; on: true } }
+                        Btn { compact: true; text: "Disconnect" } }
+                    ListRow { width: parent.width; title: "Estudio"; sub: "WPA3 · 71 %"
+                        leading: Component { SignalBars { strength: 71 } }
+                        Btn { compact: true; outline: true; text: "Connect" } }
+                    ListRow { width: parent.width; title: "Jabra Evolve"; sub: "Paired · trusted"; glyph: "headphones"; quiet: true
+                        IconButton { width: 28; height: 28; iconSize: 16; glyph: "delete" }
+                        Btn { compact: true; outline: true; text: "Connect" } }
                 }
             }
         }

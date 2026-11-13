@@ -63,3 +63,6 @@ LevelRow 1.0 LevelRow.qml
 RowsMath 1.0 lib/rows.js
 Glyph 1.0 Glyph.qml
 StreamRow 1.0 StreamRow.qml
+SignalBars 1.0 SignalBars.qml
+ListRow 1.0 ListRow.qml
+SheetHeader 1.0 SheetHeader.qml
