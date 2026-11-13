@@ -1,6 +1,7 @@
+pragma ComponentBehavior: Bound
+
 import QtQuick
-import Quickshell
-import Quickshell.Io
+import Ryoku.Ui as Kit
 import Ryoku.Ui.Singletons
 
 Item {
@@ -18,17 +19,53 @@ Item {
     readonly property real usedGiB: root.systemMemUsedGiB
     readonly property real totalGiB: root.systemMemTotalGiB
     readonly property string usedLabel: String(Math.round(usedGiB)).padStart(2, '0') + "G"
-    readonly property string tooltipText: usedGiB.toFixed(1) + "/" + totalGiB.toFixed(0) + "G"
+    readonly property bool hasReading: totalGiB > 0
+    readonly property string tooltipText: Tokens.controlsCrate && !hasReading ? I18n.tr("No data")
+        : usedGiB.toFixed(1) + "/" + totalGiB.toFixed(0) + "G"
     readonly property color contentColor: root.widgetContentColor("G4", root.widgetIconColor)
 
-    Row {
-        id: row
-        anchors.centerIn: parent
-        anchors.horizontalCenterOffset: -1
-        spacing: 4
+    Accessible.role: Accessible.Button
+    Accessible.name: I18n.tr("Memory")
+    Accessible.description: tooltipText
+    Accessible.onPressAction: rootMod.togglePanel()
 
+    function togglePanel() {
+        tip.hide()
+        root.memVisible = !root.memVisible
+    }
+
+    Component {
+        id: crateIcon
         Item {
-            anchors.verticalCenter: parent.verticalCenter
+            width: 18
+            height: rootMod.root.iconOnly("G4") ? 22 : 18
+            Kit.Glyph {
+                objectName: "memoryGlyph"
+                name: "memory-stick"
+                size: 18
+                color: rootMod.contentColor
+                Accessible.ignored: true
+            }
+            Rectangle {
+                objectName: "memoryIconTrack"
+                visible: rootMod.root.iconOnly("G4") && rootMod.hasReading
+                anchors.horizontalCenter: parent.horizontalCenter
+                anchors.bottom: parent.bottom
+                width: 16
+                height: 1
+                color: Qt.rgba(rootMod.contentColor.r, rootMod.contentColor.g, rootMod.contentColor.b, 0.24)
+                Rectangle {
+                    width: Math.round(parent.width * rootMod.percent / 100)
+                    height: parent.height
+                    color: rootMod.contentColor
+                }
+            }
+        }
+    }
+
+    Component {
+        id: stockIcon
+        Item {
             width: 16
             height: 16
 
@@ -74,14 +111,29 @@ Item {
                 }
             }
         }
+    }
+
+    Row {
+        id: row
+        anchors.centerIn: parent
+        anchors.horizontalCenterOffset: Tokens.controlsCrate ? 0 : -1
+        spacing: Tokens.controlsCrate ? 6 : 4
+
+        Loader {
+            anchors.verticalCenter: parent.verticalCenter
+            sourceComponent: Tokens.controlsCrate ? crateIcon : stockIcon
+        }
 
         UiText {
-            visible: !root.iconOnly("G4")
+            objectName: "memoryLabel"
+            visible: !rootMod.root.iconOnly("G4")
             anchors.verticalCenter: parent.verticalCenter
-            text: rootMod.usedLabel
+            text: Tokens.controlsCrate && !rootMod.hasReading ? "\u2014" : rootMod.usedLabel
             color: rootMod.contentColor
-            font.family: root.mono
+            font.family: Tokens.controlsCrate ? Tokens.mono : rootMod.root.mono
             font.pixelSize: 12
+            font.features: Tokens.controlsCrate ? { "tnum": 1 } : {}
+            Accessible.ignored: true
         }
     }
 
@@ -93,6 +145,6 @@ Item {
         cursorShape: Qt.PointingHandCursor
         onEntered: tip.show()
         onExited: { tip.hide() }
-        onClicked: { tip.hide(); root.memVisible = !root.memVisible }
+        onClicked: rootMod.togglePanel()
     }
 }

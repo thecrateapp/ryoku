@@ -4,6 +4,10 @@ BluetoothPanel BluetoothPanel.qml
 BrightnessPanel BrightnessPanel.qml
 CrateBatteryDetails CrateBatteryDetails.qml
 CrateBrightnessControls CrateBrightnessControls.qml
+CrateMemoryDetails CrateMemoryDetails.qml
+CrateResourceHeader CrateResourceHeader.qml
+CrateStorageDetails CrateStorageDetails.qml
+CrateUsageSummary CrateUsageSummary.qml
 DashboardPopup DashboardPopup.qml
 CpuPanel CpuPanel.qml
 GpuPanel GpuPanel.qml

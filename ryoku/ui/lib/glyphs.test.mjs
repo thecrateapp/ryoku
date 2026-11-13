@@ -77,3 +77,14 @@ test("the freedesktop icon names the OSD emits resolve too", () => {
   assert.equal(resolve("brightness-low"), "sun");
   assert.equal(resolve("input-keyboard"), "keyboard");
 });
+
+test("the memory module and drives render distinct glyphs in the widget foreground", () => {
+  const names = ["memory-stick", "ssd-square", "ssd-round"];
+  const glyphs = names.map(name => svg(name, "#19aacc"));
+  for (const glyph of glyphs) {
+    assert.ok(glyph.includes("#19aacc"));
+    assert.ok(!glyph.includes("currentColor"));
+  }
+  assert.equal(new Set(glyphs).size, names.length);
+  assert.notEqual(glyphs[0], svg("memory", "#19aacc"));
+});

@@ -244,8 +244,8 @@ PanelWindow {
 
     Rectangle {
         id: card
-        width: 340
-        height: col.implicitHeight + 24
+        width: Tokens.controlsCrate ? Math.min(340, Math.max(0, parent.width - 12)) : 340
+        height: panelBody.implicitHeight + panelBody.inset * 2
         radius: reveal > 0.001 ? root.panelRadius : 0
         color: "transparent"
         border.color: root.panelBorder
@@ -274,156 +274,178 @@ PanelWindow {
 
         MouseArea { anchors.fill: parent; onClicked: {} }
 
-        Column {
-            id: col
-            anchors.fill: parent
-            anchors.margins: 12
-            spacing: 8
+        Loader {
+            id: panelBody
+            readonly property int inset: Tokens.controlsCrate ? Tokens.s4 : 12
+            anchors.left: parent.left
+            anchors.right: parent.right
+            anchors.top: parent.top
+            anchors.margins: inset
+            focus: true
+            sourceComponent: Tokens.controlsCrate ? crateBody : stockBody
+        }
 
-            Item {
-                width: parent.width
-                height: 24
-                UiText {
-                    anchors.left: parent.left
-                    anchors.verticalCenter: parent.verticalCenter
-                    text: I18n.tr("STORAGE")
-                    color: root.ink
-                    font.family: root.mono
-                    font.pixelSize: 13
-                    font.letterSpacing: 2
-                    font.weight: Font.Medium
+        Component {
+            id: crateBody
+            CrateStorageDetails {
+                storage: storagePanel
+                availableHeight: Math.max(0, card.parent.height - storagePanel.barBottom
+                    - 2 * storagePanel.gap - 2 * panelBody.inset)
+                onCloseRequested: storagePanel.root.storageVisible = false
+            }
+        }
+
+        Component {
+            id: stockBody
+            Column {
+                id: col
+                spacing: 8
+
+                Item {
+                    width: parent.width
+                    height: 24
+                    UiText {
+                        anchors.left: parent.left
+                        anchors.verticalCenter: parent.verticalCenter
+                        text: I18n.tr("STORAGE")
+                        color: root.ink
+                        font.family: root.mono
+                        font.pixelSize: 13
+                        font.letterSpacing: 2
+                        font.weight: Font.Medium
+                    }
+                    UiText {
+                        anchors.right: closeText.left
+                        anchors.rightMargin: 16
+                        anchors.verticalCenter: parent.verticalCenter
+                        text: I18n.tr("DRIVES: %1").arg(root.storageDrives.length)
+                        color: root.sumiHi
+                        font.family: root.mono
+                        font.pixelSize: 9
+                        font.letterSpacing: 0.5
+                    }
+                    UiText {
+                        id: closeText
+                        anchors.right: parent.right
+                        anchors.verticalCenter: parent.verticalCenter
+                        text: "✕"
+                        color: closeMa.containsMouse ? root.seal : root.sumi
+                        font.pixelSize: 12
+                        Behavior on color { ColorAnimation { duration: 120 } }
+                        MouseArea {
+                            id: closeMa
+                            anchors.fill: parent
+                            hoverEnabled: true
+                            cursorShape: Qt.PointingHandCursor
+                            onClicked: root.storageVisible = false
+                        }
+                    }
                 }
+
+                Rectangle { width: parent.width; height: 1; color: root.sep }
+
+                Item {
+                    width: parent.width
+                    height: 16
+                    UiText {
+                        id: fsLbl
+                        anchors.left: parent.left
+                        anchors.verticalCenter: parent.verticalCenter
+                        text: I18n.tr("ROOT")
+                        color: root.sectionInk
+                        font.family: root.mono
+                        font.pixelSize: 11
+                        font.letterSpacing: 1
+                    }
+                    UiText {
+                        id: fsVal
+                        anchors.right: parent.right
+                        anchors.verticalCenter: parent.verticalCenter
+                        text: storagePanel.pct + "%"
+                        color: root.seal
+                        font.family: root.mono
+                        font.pixelSize: 11
+                        font.weight: Font.Medium
+                    }
+                    Rectangle {
+                        anchors.left: fsLbl.right
+                        anchors.leftMargin: 8
+                        anchors.right: fsVal.left
+                        anchors.rightMargin: 8
+                        anchors.verticalCenter: parent.verticalCenter
+                        height: 8
+                        radius: 4
+                        color: root.fillActive
+                        Rectangle {
+                            width: parent.width * storagePanel.pct / 100
+                            height: parent.height
+                            radius: 4
+                            color: root.seal
+                            Behavior on width { NumberAnimation { duration: 300 } }
+                        }
+                    }
+                }
+
+                Row {
+                    width: parent.width
+                    height: 30
+
+                    Repeater {
+                        model: [
+                            { label: I18n.tr("USED"), value: storagePanel.usedGiB.toFixed(1) + " GiB" },
+                            { label: I18n.tr("FREE"), value: storagePanel.freeGiB.toFixed(1) + " GiB" },
+                            { label: I18n.tr("TOTAL"), value: storagePanel.totalGiB.toFixed(1) + " GiB" }
+                        ]
+                        delegate: Item {
+                            required property var modelData
+                            width: col.width / 3
+                            height: 30
+                            UiText {
+                                anchors.top: parent.top
+                                text: I18n.tr(modelData.label)
+                                color: root.sumi
+                                font.family: root.mono
+                                font.pixelSize: 9
+                                font.letterSpacing: 1
+                            }
+                            UiText {
+                                anchors.bottom: parent.bottom
+                                text: modelData.value
+                                color: root.ink
+                                font.family: root.mono
+                                font.pixelSize: 11
+                            }
+                        }
+                    }
+                }
+
+                Rectangle { width: parent.width; height: 1; color: root.sep }
+
+                Column {
+                    width: parent.width
+                    spacing: 0
+                    visible: root.storageDrives.length > 0
+
+                    Repeater {
+                        model: root.storageDrives
+                        delegate: DriveRow {
+                            required property var modelData
+                            required property int index
+                            drive: modelData
+                            lastRow: index === root.storageDrives.length - 1
+                        }
+                    }
+                }
+
                 UiText {
-                    anchors.right: closeText.left
-                    anchors.rightMargin: 16
-                    anchors.verticalCenter: parent.verticalCenter
-                    text: I18n.tr("DRIVES: %1").arg(root.storageDrives.length)
+                    width: parent.width
+                    visible: root.storageDrives.length === 0
+                    text: root.storageInventoryAvailable ? I18n.tr("No physical drives found") : I18n.tr("Reading drive information…")
                     color: root.sumiHi
                     font.family: root.mono
-                    font.pixelSize: 9
-                    font.letterSpacing: 0.5
+                    font.pixelSize: 10
+                    horizontalAlignment: Text.AlignHCenter
                 }
-                UiText {
-                    id: closeText
-                    anchors.right: parent.right
-                    anchors.verticalCenter: parent.verticalCenter
-                    text: "✕"
-                    color: closeMa.containsMouse ? root.seal : root.sumi
-                    font.pixelSize: 12
-                    Behavior on color { ColorAnimation { duration: 120 } }
-                    MouseArea {
-                        id: closeMa
-                        anchors.fill: parent
-                        hoverEnabled: true
-                        cursorShape: Qt.PointingHandCursor
-                        onClicked: root.storageVisible = false
-                    }
-                }
-            }
-
-            Rectangle { width: parent.width; height: 1; color: root.sep }
-
-            Item {
-                width: parent.width
-                height: 16
-                UiText {
-                    id: fsLbl
-                    anchors.left: parent.left
-                    anchors.verticalCenter: parent.verticalCenter
-                    text: I18n.tr("ROOT")
-                    color: root.sectionInk
-                    font.family: root.mono
-                    font.pixelSize: 11
-                    font.letterSpacing: 1
-                }
-                UiText {
-                    id: fsVal
-                    anchors.right: parent.right
-                    anchors.verticalCenter: parent.verticalCenter
-                    text: storagePanel.pct + "%"
-                    color: root.seal
-                    font.family: root.mono
-                    font.pixelSize: 11
-                    font.weight: Font.Medium
-                }
-                Rectangle {
-                    anchors.left: fsLbl.right
-                    anchors.leftMargin: 8
-                    anchors.right: fsVal.left
-                    anchors.rightMargin: 8
-                    anchors.verticalCenter: parent.verticalCenter
-                    height: 8
-                    radius: 4
-                    color: root.fillActive
-                    Rectangle {
-                        width: parent.width * storagePanel.pct / 100
-                        height: parent.height
-                        radius: 4
-                        color: root.seal
-                        Behavior on width { NumberAnimation { duration: 300 } }
-                    }
-                }
-            }
-
-            Row {
-                width: parent.width
-                height: 30
-
-                Repeater {
-                    model: [
-                        { label: I18n.tr("USED"), value: storagePanel.usedGiB.toFixed(1) + " GiB" },
-                        { label: I18n.tr("FREE"), value: storagePanel.freeGiB.toFixed(1) + " GiB" },
-                        { label: I18n.tr("TOTAL"), value: storagePanel.totalGiB.toFixed(1) + " GiB" }
-                    ]
-                    delegate: Item {
-                        required property var modelData
-                        width: col.width / 3
-                        height: 30
-                        UiText {
-                            anchors.top: parent.top
-                            text: I18n.tr(modelData.label)
-                            color: root.sumi
-                            font.family: root.mono
-                            font.pixelSize: 9
-                            font.letterSpacing: 1
-                        }
-                        UiText {
-                            anchors.bottom: parent.bottom
-                            text: modelData.value
-                            color: root.ink
-                            font.family: root.mono
-                            font.pixelSize: 11
-                        }
-                    }
-                }
-            }
-
-            Rectangle { width: parent.width; height: 1; color: root.sep }
-
-            Column {
-                width: parent.width
-                spacing: 0
-                visible: root.storageDrives.length > 0
-
-                Repeater {
-                    model: root.storageDrives
-                    delegate: DriveRow {
-                        required property var modelData
-                        required property int index
-                        drive: modelData
-                        lastRow: index === root.storageDrives.length - 1
-                    }
-                }
-            }
-
-            UiText {
-                width: parent.width
-                visible: root.storageDrives.length === 0
-                text: root.storageInventoryAvailable ? I18n.tr("No physical drives found") : I18n.tr("Reading drive information…")
-                color: root.sumiHi
-                font.family: root.mono
-                font.pixelSize: 10
-                horizontalAlignment: Text.AlignHCenter
             }
         }
     }

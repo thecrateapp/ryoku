@@ -1,6 +1,9 @@
 # Changelog: ryoku/shell/
 
 ## Unreleased
+- **Memory and storage in QS Bar follow the Crate theme.** Memory shows its
+  usage history and module speed. Storage shows root filesystem usage and
+  the inventory of physical drives.
 - **The QS Bar battery widget follows the Crate theme.** Its Solar icon tracks
   the battery state. The panel shows the percentage, a read-only charge meter
   and the available runtime, health, power, capacity and cycle readings.

@@ -1,4 +1,5 @@
 import QtQuick
+import Ryoku.Ui as Kit
 import Ryoku.Ui.Singletons
 
 Item {
@@ -16,12 +17,33 @@ Item {
     opacity: root.modStorage && root.storageAvailable ? 1 : 0
     Behavior on opacity { NumberAnimation { duration: 140; easing.type: Easing.OutCubic } }
 
+    Accessible.role: Accessible.Button
+    Accessible.name: I18n.tr("STORAGE")
+    Accessible.description: tooltipText
+    Accessible.onPressAction: rootMod.togglePanel()
+
+    function togglePanel() {
+        tip.hide()
+        root.storageVisible = !root.storageVisible
+    }
+
     Row {
         id: row
         anchors.centerIn: parent
-        spacing: 4
+        spacing: Tokens.controlsCrate ? 6 : 4
+
+        Kit.Glyph {
+            objectName: "storageGlyph"
+            visible: Tokens.controlsCrate
+            anchors.verticalCenter: parent.verticalCenter
+            name: "ssd-square"
+            size: 18
+            color: rootMod.contentColor
+            Accessible.ignored: true
+        }
 
         UiText {
+            visible: !Tokens.controlsCrate
             anchors.verticalCenter: parent.verticalCenter
             width: 15
             text: "󰋊"
@@ -32,12 +54,14 @@ Item {
         }
 
         UiText {
+            objectName: "storagePercent"
             visible: !root.iconOnly("G18")
             anchors.verticalCenter: parent.verticalCenter
             text: String(Math.min(100, rootMod.percent)).padStart(2, "0") + "%"
             color: rootMod.contentColor
-            font.family: root.mono
+            font.family: Tokens.controlsCrate ? Tokens.mono : root.mono
             font.pixelSize: 12
+            font.features: Tokens.controlsCrate ? { "tnum": 1 } : {}
         }
     }
 
@@ -49,6 +73,6 @@ Item {
         cursorShape: Qt.PointingHandCursor
         onEntered: tip.show()
         onExited: tip.hide()
-        onClicked: { tip.hide(); root.storageVisible = !root.storageVisible }
+        onClicked: rootMod.togglePanel()
     }
 }
