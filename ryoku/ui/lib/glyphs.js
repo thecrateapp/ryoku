@@ -141,6 +141,7 @@ var ALIAS = {
     "network_wifi_2_bar": "wi-fi-low",
     "network_wifi_1_bar": "wi-fi-low",
     "signal_wifi_0_bar": "wi-fi-none",
+    "signal_wifi_off": "wi-fi-off",
     "arrow_forward": "alt-arrow-right",
     "north_east": "arrow-right-up",
     "display_settings": "display",

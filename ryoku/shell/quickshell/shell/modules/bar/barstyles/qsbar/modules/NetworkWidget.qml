@@ -3,6 +3,7 @@ import Quickshell
 import Quickshell.Io
 import "../IconMap.js" as IconMap
 import Ryoku.Ui.Singletons
+import Ryoku.Ui as Kit
 import shell.services
 
 Item {
@@ -76,10 +77,23 @@ Item {
         anchors.centerIn: parent
         spacing: 4
 
+        // crate-mark: the kit catalogue's Solar glyph at 18 px, in the widget's colour
+        Kit.Glyph {
+            objectName: "networkGlyph"
+            visible: Tokens.controlsCrate
+            anchors.verticalCenter: parent.verticalCenter
+            name: rootMod.mode === "wifi" ? rootMod.wifiIconName
+                : rootMod.mode === "ethernet" ? "lan" : "signal_wifi_off"
+            size: 18
+            color: rootMod.mode === "none"
+                ? Qt.rgba(rootMod.contentColor.r, rootMod.contentColor.g, rootMod.contentColor.b, 0.65)
+                : rootMod.contentColor
+        }
+
         // ── wifi: icon ──
         IconText {
             anchors.verticalCenter: parent.verticalCenter
-            visible: rootMod.mode === "wifi"
+            visible: rootMod.mode === "wifi" && !Tokens.controlsCrate
             text: IconMap.icon(rootMod.wifiIconName)
             color: rootMod.contentColor
             font.pixelSize: 15
@@ -88,7 +102,7 @@ Item {
 
         IconText {
             anchors.verticalCenter: parent.verticalCenter
-            visible: rootMod.mode !== "wifi"
+            visible: rootMod.mode !== "wifi" && !Tokens.controlsCrate
             text: IconMap.icon(rootMod.mode === "ethernet" ? "lan" : "signal_wifi_off")
             color: rootMod.mode === "ethernet"
                 ? rootMod.contentColor

@@ -33,3 +33,4 @@ VolumePanel VolumePanel.qml
 WorkspacePanel WorkspacePanel.qml
 PluginPanel PluginPanel.qml
 CrateBluetoothDetails CrateBluetoothDetails.qml
+CrateNetworkDetails CrateNetworkDetails.qml

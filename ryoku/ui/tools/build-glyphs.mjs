@@ -57,7 +57,7 @@ const alias = {
   expand_less: "alt-arrow-up", check_circle: "check-circle", add_circle: "add-circle", desktop_windows: "display",
   open_in_new: "square-arrow-right-up", speaker: "speaker", headphones: "headphones-round", monitor: "monitor",
   signal_wifi_4_bar: "wi-fi", network_wifi_3_bar: "wi-fi-high", network_wifi_2_bar: "wi-fi-low",
-  network_wifi_1_bar: "wi-fi-low", signal_wifi_0_bar: "wi-fi-none", arrow_forward: "alt-arrow-right",
+  network_wifi_1_bar: "wi-fi-low", signal_wifi_0_bar: "wi-fi-none", signal_wifi_off: "wi-fi-off", arrow_forward: "alt-arrow-right",
   north_east: "arrow-right-up", display_settings: "display", memory: "cpu", gamepad: "gamepad",
   mouse: "mouse-minimalistic", phone: "smartphone", watch: "watch-round", content_paste: "clipboard-text", refresh: "refresh", add: "add-circle", verified: "shield-check", verified_off: "shield",
   "audio-headphones": "headphones-round", "audio-headset": "headphones-round", "audio-card": "speaker",

@@ -48,6 +48,34 @@ PanelWindow {
         return count
     }
 
+    // crate-mark: CrateNetworkDetails reads these and calls the functions below
+    readonly property bool crate: Tokens.controlsCrate
+    readonly property bool useNM: root.useNM
+    readonly property var speed: speedTest
+    function toggleSpeedTest() {
+        if (speedTest.running) {
+            speedTest.cancel()
+            netPanel.speedTestAttempted = false
+        } else {
+            netPanel.speedTestAttempted = true
+            speedTest.start()
+        }
+    }
+    function forgetPasswordNetwork() {
+        if (netPanel.nmAdapterReady && netPanel.nmPasswordNetwork)
+            nmAdapter.item.forgetNetwork({ known: true, network: netPanel.nmPasswordNetwork, profileUuid: "" })
+        netPanel.clearNmPassword()
+    }
+    // the password and hidden-network fields live in the stock body or the crate one
+    function focusNmPassword() {
+        if (netPanel.crate) crateDetails.focusPassword()
+        else if (nmPasswordInput.visible) nmPasswordInput.forceActiveFocus()
+    }
+    function focusHidden() {
+        if (netPanel.crate) crateDetails.focusHidden()
+        else if (hiddenSsidInput.visible) hiddenSsidInput.forceActiveFocus()
+    }
+
     function networkKey(entry) {
         if (!entry)
             return ""
@@ -321,10 +349,7 @@ PanelWindow {
         nmConnectionError = ""
         nmConnecting = false
         nmConnectTimeout.stop()
-        Qt.callLater(function() {
-            if (nmPasswordInput.visible)
-                nmPasswordInput.forceActiveFocus()
-        })
+        Qt.callLater(function() { netPanel.focusNmPassword() })
     }
 
     function clearNmPassword() {
@@ -351,7 +376,7 @@ PanelWindow {
         netPanel.hiddenError = false
         netPanel.hiddenSsid = ""
         netPanel.hiddenPassword = ""
-        Qt.callLater(function() { if (hiddenSsidInput.visible) hiddenSsidInput.forceActiveFocus() })
+        Qt.callLater(function() { netPanel.focusHidden() })
     }
 
     function cancelHidden() {
@@ -419,10 +444,8 @@ PanelWindow {
         // empty the field so the next password isn't typed onto the rejected one
         nmPasswordText = ""
         nmPasswordInput.text = ""
-        Qt.callLater(function() {
-            if (nmPasswordInput.visible)
-                nmPasswordInput.forceActiveFocus()
-        })
+        if (netPanel.crate) crateDetails.clearPassword()
+        Qt.callLater(function() { netPanel.focusNmPassword() })
     }
 
     property real reveal: root.networkVisible ? 1 : 0
@@ -439,8 +462,8 @@ PanelWindow {
 
     Rectangle {
         id: card
-        width: 300
-        height: col.implicitHeight + 24
+        width: netPanel.crate ? 320 : 300
+        height: netPanel.crate ? crateDetails.implicitHeight + 2 * Tokens.s4 : col.implicitHeight + 24
         radius: reveal > 0.001 ? root.panelRadius : 0
         color: "transparent"
         border.color: root.panelBorder
@@ -505,8 +528,21 @@ PanelWindow {
 
         MouseArea { anchors.fill: parent; onClicked: {} }
 
+        CrateNetworkDetails {
+            id: crateDetails
+            visible: netPanel.crate
+            anchors.left: parent.left
+            anchors.right: parent.right
+            anchors.top: parent.top
+            anchors.margins: Tokens.s4
+            panel: netPanel
+            onCloseRequested: root.networkVisible = false
+            onSettingsRequested: { root.networkVisible = false; netPanel.openWifiSettings() }
+        }
+
         Column {
             id: col
+            visible: !netPanel.crate
             anchors.fill: parent
             anchors.margins: 12
             spacing: 8
