@@ -12,6 +12,9 @@
   notification is a hairline card like the popups (app, summary, two lines of
   body, its own dismiss), the list scrolls inside the panel, and Clear all is
   a kit button.
+- **CPU, GPU and temperatures in QS Bar follow the Crate theme.** The CPU and
+  GPU panels show usage history and hardware readings. The temperatures panel
+  shows sensor limits and lets you choose which sensor appears on the bar.
 - **Memory and storage in QS Bar follow the Crate theme.** Memory shows its
   usage history and module speed. Storage shows root filesystem usage and
   the inventory of physical drives.

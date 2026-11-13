@@ -74,8 +74,8 @@ PanelWindow {
 
     Rectangle {
         id: card
-        width: 340
-        height: col.implicitHeight + 24
+        width: Tokens.controlsCrate ? 320 : 340
+        height: panelBody.implicitHeight + panelBody.inset * 2
         radius: reveal > 0.001 ? root.panelRadius : 0
         color: "transparent"
         border.color: root.panelBorder
@@ -104,166 +104,189 @@ PanelWindow {
 
         MouseArea { anchors.fill: parent; onClicked: {} }
 
-        Column {
-            id: col
-            anchors.fill: parent
-            anchors.margins: 12
-            spacing: 8
+        Loader {
+            id: panelBody
+            readonly property int inset: Tokens.controlsCrate ? Tokens.s4 : 12
+            anchors.left: parent.left
+            anchors.right: parent.right
+            anchors.top: parent.top
+            anchors.margins: inset
+            focus: true
+            sourceComponent: Tokens.controlsCrate ? crateBody : stockBody
+        }
 
-            Item {
-                width: parent.width
-                height: 24
-                UiText {
-                    anchors.left: parent.left
-                    anchors.verticalCenter: parent.verticalCenter
-                    text: "GPU"
-                    color: root.ink
-                    font.family: root.mono
-                    font.pixelSize: 13
-                    font.letterSpacing: 2
-                    font.weight: Font.Medium
+        Component {
+            id: crateBody
+            CrateGpuDetails {
+                gpu: gpuPanel
+                onCloseRequested: gpuPanel.root.gpuVisible = false
+                onBtopRequested: {
+                    gpuPanel.root.gpuVisible = false
+                    Spawn.runApp(["bash", "-c", "kitty 'btop'"], { label: "btop" })
                 }
+            }
+        }
+
+        Component {
+            id: stockBody
+            Column {
+                spacing: 8
+
+                Item {
+                    width: parent.width
+                    height: 24
+                    UiText {
+                        anchors.left: parent.left
+                        anchors.verticalCenter: parent.verticalCenter
+                        text: "GPU"
+                        color: root.ink
+                        font.family: root.mono
+                        font.pixelSize: 13
+                        font.letterSpacing: 2
+                        font.weight: Font.Medium
+                    }
+                    UiText {
+                        anchors.right: parent.right
+                        anchors.verticalCenter: parent.verticalCenter
+                        text: "✕"
+                        color: closeMa.containsMouse ? root.seal : root.sumi
+                        font.pixelSize: 12
+                        Behavior on color { ColorAnimation { duration: 120 } }
+                        MouseArea {
+                            id: closeMa
+                            anchors.fill: parent
+                            hoverEnabled: true
+                            cursorShape: Qt.PointingHandCursor
+                            onClicked: root.gpuVisible = false
+                        }
+                    }
+                }
+
+                Rectangle { width: parent.width; height: 1; color: root.sep }
+
+                InfoRow {
+                    label: I18n.tr("Model")
+                    value: root.gpuAvailable
+                        ? (root.gpuName !== "" ? root.gpuName
+                            : (root.gpuBackend === "nvidia" ? "NVIDIA GPU" : "GPU"))
+                        : ""
+                }
+
+                Item {
+                    width: parent.width
+                    height: 16
+                    visible: root.gpuAvailable
+                    UiText {
+                        id: gpuLbl
+                        anchors.left: parent.left
+                        anchors.verticalCenter: parent.verticalCenter
+                        text: I18n.tr("USAGE")
+                        color: root.sectionInk
+                        font.family: root.mono
+                        font.pixelSize: 11
+                        font.letterSpacing: 1
+                    }
+                    UiText {
+                        id: gpuVal
+                        anchors.right: parent.right
+                        anchors.verticalCenter: parent.verticalCenter
+                        text: gpuPanel.gpuUtil + "%"
+                        color: root.seal
+                        font.family: root.mono
+                        font.pixelSize: 11
+                        font.weight: Font.Medium
+                    }
+                    Rectangle {
+                        anchors.left: gpuLbl.right
+                        anchors.leftMargin: 8
+                        anchors.right: gpuVal.left
+                        anchors.rightMargin: 8
+                        anchors.verticalCenter: parent.verticalCenter
+                        height: 8
+                        radius: 4
+                        color: root.fillActive
+                        Rectangle {
+                            width: parent.width * gpuPanel.gpuUtil / 100
+                            height: parent.height
+                            radius: 4
+                            color: root.seal
+                            Behavior on width { NumberAnimation { duration: 300 } }
+                        }
+                    }
+                }
+
+                Sparkline {
+                    width: parent.width
+                    root: gpuPanel.root
+                    value: gpuPanel.gpuUtil
+                    active: gpuPanel.visible && root.gpuVisible
+                    visible: root.gpuAvailable
+                }
+
+                InfoRow {
+                    label: I18n.tr("Temperature")
+                    value: gpuPanel.gpuTemp > 0 ? gpuPanel.gpuTemp + "°C" : ""
+                }
+                InfoRow {
+                    label: I18n.tr("VRAM")
+                    value: gpuPanel.gpuMemTotal > 0
+                        ? gpuPanel.gib(gpuPanel.gpuMemUsed) + " / " + gpuPanel.gib(gpuPanel.gpuMemTotal)
+                        : ""
+                }
+                InfoRow {
+                    label: I18n.tr("Graphics clock")
+                    value: root.gpuClockMHz > 0 ? root.gpuClockMHz + " MHz" : ""
+                }
+                InfoRow {
+                    label: I18n.tr("Power")
+                    value: root.gpuPowerW > 0
+                        ? root.gpuPowerW.toFixed(0) + " W"
+                            + (root.gpuPowerLimitW > 0 ? " / " + root.gpuPowerLimitW.toFixed(0) + " W" : "")
+                        : ""
+                }
+                InfoRow {
+                    label: I18n.tr("Fan · state")
+                    value: root.gpuFanPercent > 0 || root.gpuPerformanceState !== ""
+                        ? (root.gpuFanPercent > 0 ? root.gpuFanPercent + "%" : "-")
+                            + (root.gpuPerformanceState !== "" ? " · " + root.gpuPerformanceState : "")
+                        : ""
+                }
+                InfoRow { label: I18n.tr("Driver"); value: root.gpuDriverVersion }
+
                 UiText {
-                    anchors.right: parent.right
-                    anchors.verticalCenter: parent.verticalCenter
-                    text: "✕"
-                    color: closeMa.containsMouse ? root.seal : root.sumi
-                    font.pixelSize: 12
+                    width: parent.width
+                    visible: !root.gpuAvailable
+                    text: I18n.tr("GPU telemetry unavailable")
+                    color: root.sumiHi
+                    font.family: root.mono
+                    font.pixelSize: 10
+                    horizontalAlignment: Text.AlignHCenter
+                }
+
+                Rectangle { width: parent.width; height: 1; color: root.sep }
+
+                Rectangle {
+                    width: parent.width
+                    height: 28
+                    radius: root.panelButtonRadius
+                    color: btopMa.containsMouse ? root.fillPrimaryHover : root.seal
                     Behavior on color { ColorAnimation { duration: 120 } }
+                    UiText {
+                        anchors.centerIn: parent
+                        text: I18n.tr("Open btop")
+                        color: root.paper
+                        font.family: root.mono
+                        font.pixelSize: 11
+                    }
                     MouseArea {
-                        id: closeMa
+                        id: btopMa
                         anchors.fill: parent
                         hoverEnabled: true
                         cursorShape: Qt.PointingHandCursor
-                        onClicked: root.gpuVisible = false
-                    }
-                }
-            }
-
-            Rectangle { width: parent.width; height: 1; color: root.sep }
-
-            InfoRow {
-                label: I18n.tr("Model")
-                value: root.gpuAvailable
-                    ? (root.gpuName !== "" ? root.gpuName
-                        : (root.gpuBackend === "nvidia" ? "NVIDIA GPU" : "GPU"))
-                    : ""
-            }
-
-            Item {
-                width: parent.width
-                height: 16
-                visible: root.gpuAvailable
-                UiText {
-                    id: gpuLbl
-                    anchors.left: parent.left
-                    anchors.verticalCenter: parent.verticalCenter
-                    text: I18n.tr("USAGE")
-                    color: root.sectionInk
-                    font.family: root.mono
-                    font.pixelSize: 11
-                    font.letterSpacing: 1
-                }
-                UiText {
-                    id: gpuVal
-                    anchors.right: parent.right
-                    anchors.verticalCenter: parent.verticalCenter
-                    text: gpuPanel.gpuUtil + "%"
-                    color: root.seal
-                    font.family: root.mono
-                    font.pixelSize: 11
-                    font.weight: Font.Medium
-                }
-                Rectangle {
-                    anchors.left: gpuLbl.right
-                    anchors.leftMargin: 8
-                    anchors.right: gpuVal.left
-                    anchors.rightMargin: 8
-                    anchors.verticalCenter: parent.verticalCenter
-                    height: 8
-                    radius: 4
-                    color: root.fillActive
-                    Rectangle {
-                        width: parent.width * gpuPanel.gpuUtil / 100
-                        height: parent.height
-                        radius: 4
-                        color: root.seal
-                        Behavior on width { NumberAnimation { duration: 300 } }
-                    }
-                }
-            }
-
-            Sparkline {
-                width: parent.width
-                root: gpuPanel.root
-                value: gpuPanel.gpuUtil
-                active: gpuPanel.visible && root.gpuVisible
-                visible: root.gpuAvailable
-            }
-
-            InfoRow {
-                label: I18n.tr("Temperature")
-                value: gpuPanel.gpuTemp > 0 ? gpuPanel.gpuTemp + "°C" : ""
-            }
-            InfoRow {
-                label: I18n.tr("VRAM")
-                value: gpuPanel.gpuMemTotal > 0
-                    ? gpuPanel.gib(gpuPanel.gpuMemUsed) + " / " + gpuPanel.gib(gpuPanel.gpuMemTotal)
-                    : ""
-            }
-            InfoRow {
-                label: I18n.tr("Graphics clock")
-                value: root.gpuClockMHz > 0 ? root.gpuClockMHz + " MHz" : ""
-            }
-            InfoRow {
-                label: I18n.tr("Power")
-                value: root.gpuPowerW > 0
-                    ? root.gpuPowerW.toFixed(0) + " W"
-                        + (root.gpuPowerLimitW > 0 ? " / " + root.gpuPowerLimitW.toFixed(0) + " W" : "")
-                    : ""
-            }
-            InfoRow {
-                label: I18n.tr("Fan · state")
-                value: root.gpuFanPercent > 0 || root.gpuPerformanceState !== ""
-                    ? (root.gpuFanPercent > 0 ? root.gpuFanPercent + "%" : "-")
-                        + (root.gpuPerformanceState !== "" ? " · " + root.gpuPerformanceState : "")
-                    : ""
-            }
-            InfoRow { label: I18n.tr("Driver"); value: root.gpuDriverVersion }
-
-            UiText {
-                width: parent.width
-                visible: !root.gpuAvailable
-                text: I18n.tr("GPU telemetry unavailable")
-                color: root.sumiHi
-                font.family: root.mono
-                font.pixelSize: 10
-                horizontalAlignment: Text.AlignHCenter
-            }
-
-            Rectangle { width: parent.width; height: 1; color: root.sep }
-
-            Rectangle {
-                width: parent.width
-                height: 28
-                radius: root.panelButtonRadius
-                color: btopMa.containsMouse ? root.fillPrimaryHover : root.seal
-                Behavior on color { ColorAnimation { duration: 120 } }
-                UiText {
-                    anchors.centerIn: parent
-                    text: I18n.tr("Open btop")
-                    color: root.paper
-                    font.family: root.mono
-                    font.pixelSize: 11
-                }
-                MouseArea {
-                    id: btopMa
-                    anchors.fill: parent
-                    hoverEnabled: true
-                    cursorShape: Qt.PointingHandCursor
-                    onClicked: {
-                        root.gpuVisible = false
-                        Spawn.runApp(["bash", "-c", "kitty 'btop'"], { label: "btop" })
+                        onClicked: {
+                            root.gpuVisible = false
+                            Spawn.runApp(["bash", "-c", "kitty 'btop'"], { label: "btop" })
+                        }
                     }
                 }
             }

@@ -1,5 +1,7 @@
 {
   "% GPU": "% GPU",
+  "%1 GHz max": "%1 GHz máx.",
+  "%1° scale": "Escala de %1°",
   "0": "0",
   "0°": "0°",
   "1": "1",
@@ -73,6 +75,7 @@
   "GB": "GB",
   "GLOBAL": "GLOBAL",
   "GPU": "GPU",
+  "GPU usage": "Uso de GPU",
   "GPU ·": "GPU ·",
   "GUESTS_": "GUESTS_",
   "General": "General",
@@ -86,6 +89,7 @@
   "Hearthstone": "Hearthstone",
   "Host": "Host",
   "I": "I",
+  "I/O wait": "Espera de E/S",
   "IMG": "IMG",
   "IP": "IP",
   "Img": "Img",

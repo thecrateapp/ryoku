@@ -1263,10 +1263,12 @@ Item {
     // One ShellRoot-level sampler feeds all monitor BarSlots. This replaces
     // per-widget bash/awk polling for CPU and memory, so adding monitors does not
     // multiply these status process chains.
+    property bool systemCpuAvailable: false
     property int systemCpuPercent: 0
     property int systemCpuUserPercent: 0
     property int systemCpuSystemPercent: 0
     property int systemCpuIoWaitPercent: 0
+    property bool _systemCpuPrevValid: false
     property real _systemCpuPrevIdle: -1
     property real _systemCpuPrevTotal: -1
     property real _systemCpuPrevUser: -1
@@ -1280,6 +1282,7 @@ Item {
     property string cpuEnergyPreference: ""
     property string cpuScalingGovernor: ""
     property int cpuThrottleCount: 0
+    property bool systemLoadAvailable: false
     property real systemLoad1: 0
     property real systemLoad5: 0
     property real systemLoad15: 0
@@ -1364,9 +1367,11 @@ Item {
 
     function parseSystemCpu(text) {
         var lines = String(text || "").split("\n")
-        if (lines.length === 0 || lines[0].indexOf("cpu ") !== 0) return
         var parts = lines[0].trim().split(/\s+/)
-        if (parts.length < 8) return
+        if (lines[0].indexOf("cpu ") !== 0 || parts.length < 8) {
+            systemCpuAvailable = false
+            return
+        }
 
         function field(index) {
             var value = parseFloat(parts[index])
@@ -1381,8 +1386,13 @@ Item {
             var v = parseFloat(parts[i])
             if (!isNaN(v)) total += v
         }
-        if (isNaN(idle) || isNaN(total) || total <= 0) return
+        if (isNaN(idle) || isNaN(total) || total <= 0) {
+            systemCpuAvailable = false
+            return
+        }
 
+        // A utilization sample needs two complete counter snapshots.
+        const validCounters = Number.isFinite(total) && parts.slice(1).every(part => /^\d+$/.test(part))
         if (_systemCpuPrevTotal >= 0 && total > _systemCpuPrevTotal) {
             var totalDelta = total - _systemCpuPrevTotal
             var idleDelta = idle - _systemCpuPrevIdle
@@ -1394,8 +1404,12 @@ Item {
                 Math.round((system - _systemCpuPrevSystem) / totalDelta * 100)))
             systemCpuIoWaitPercent = Math.max(0, Math.min(100,
                 Math.round((ioWait - _systemCpuPrevIoWait) / totalDelta * 100)))
+            systemCpuAvailable = validCounters && _systemCpuPrevValid
+        } else if (!validCounters || total < _systemCpuPrevTotal) {
+            systemCpuAvailable = false
         }
 
+        _systemCpuPrevValid = validCounters
         _systemCpuPrevIdle = idle
         _systemCpuPrevTotal = total
         _systemCpuPrevUser = user
@@ -1439,6 +1453,8 @@ Item {
 
     function parseSystemLoad(text) {
         var fields = String(text || "").trim().split(/\s+/)
+        systemLoadAvailable = fields.length >= 3 && fields.slice(0, 3).every(
+            field => Number.isFinite(Number(field)) && Number(field) >= 0)
         if (fields.length < 3) return
         systemLoad1 = parseFloat(fields[0]) || 0
         systemLoad5 = parseFloat(fields[1]) || 0
@@ -1708,6 +1724,7 @@ Item {
         path: "/proc/stat"
         readLabel: "/proc/stat"
         onTextReady: content => theme.parseSystemCpu(content)
+        onLoadFailed: theme.systemCpuAvailable = false
     }
 
     DeferredFileView {
@@ -1722,6 +1739,7 @@ Item {
         path: "/proc/loadavg"
         readLabel: "/proc/loadavg"
         onTextReady: content => theme.parseSystemLoad(content)
+        onLoadFailed: theme.systemLoadAvailable = false
     }
 
     DeferredFileView {

@@ -8,6 +8,7 @@ Column {
     required property int percent
     required property bool hasReading
     required property string caption
+    property string valueText: percent + "%"
 
     width: parent.width
     Item {
@@ -18,7 +19,7 @@ Column {
             objectName: "usagePercentage"
             anchors.left: parent.left
             anchors.verticalCenter: parent.verticalCenter
-            text: summary.hasReading ? summary.percent + "%" : "\u2014"
+            text: summary.hasReading ? summary.valueText : "\u2014"
             color: Tokens.ink
             font.family: Tokens.mono
             font.pixelSize: Tokens.px(28)
