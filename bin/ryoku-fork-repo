@@ -41,8 +41,13 @@ monorepo_dirs() {
 }
 
 pkgnames_of() {
+  # A PKGBUILD reads makepkg's variables ($startdir...) at top level, so source
+  # it without nounset; an empty answer means it could not be read at all.
+  local names
   # shellcheck disable=SC1090
-  (source "$repo_root/release/packages/$1/PKGBUILD" >/dev/null 2>&1; echo "${pkgname[@]}")
+  names=$(set +eu; source "$repo_root/release/packages/$1/PKGBUILD" >/dev/null 2>&1; echo "${pkgname[@]}")
+  [ -n "$names" ] || die "could not read pkgname from release/packages/$1/PKGBUILD"
+  echo "$names"
 }
 
 installed_dirs() {
@@ -76,6 +81,13 @@ cmd_build() {
   pkgver=$("$repo_root/bin/ryoku-release-version" --pkgver)
   if [ "$all" = 1 ]; then dirs=$(monorepo_dirs); else dirs=$(installed_dirs); fi
   [ -n "$dirs" ] || die "no monorepo package to build"
+  # every installed package at a monorepo version must be in the set, or the
+  # published ones would pin a version the rest cannot follow
+  local covered missing n
+  covered=" $(for d in $dirs; do pkgnames_of "$d"; done | tr '\n' ' ') "
+  missing=$(pacman -Q | awk '$2 ~ /^1:1\.[0-9]+\.[0-9]+\.r[0-9]+\.g/ {print $1}' | while read -r n; do
+    [[ $covered == *" $n "* ]] || echo "$n"; done)
+  [ -z "$missing" ] || die "installed monorepo packages left out of the build: $(echo $missing)"
   echo "building $(echo "$dirs" | wc -w) packages at $pkgver into $repo_dir"
 
   mkdir -p "$build_dir" "$log_dir"
