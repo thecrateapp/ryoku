@@ -32,8 +32,11 @@ type accountSeedState struct {
 	files   []AccountSeedCopy
 	present map[string]bool
 	// shell.json means the account is in use and its look is the user's
-	shellStore  bool
-	activeRice  bool
+	shellStore bool
+	activeRice bool
+	// .previous/.baseline exist once any rice was applied: the look is the
+	// user's even when shell.json is missing
+	riceApplied bool
 	ricePending bool
 	defaultRice bool
 }
@@ -48,7 +51,7 @@ func planAccountSeed(s accountSeedState) AccountSeedPlan {
 			p.Copies = append(p.Copies, f)
 		}
 	}
-	p.QueueRice = s.defaultRice && !s.shellStore && !s.activeRice && !s.ricePending
+	p.QueueRice = s.defaultRice && !s.shellStore && !s.activeRice && !s.riceApplied && !s.ricePending
 	return p
 }
 
@@ -119,6 +122,8 @@ func accountSeedNow() accountSeedState {
 	s.shellStore = sys.PathPresent(filepath.Join(ryoku, "shell.json"))
 	active, _ := os.ReadFile(filepath.Join(ryoku, "rices", ".active"))
 	s.activeRice = strings.TrimSpace(string(active)) != ""
+	s.riceApplied = sys.PathPresent(filepath.Join(ryoku, "rices", ".previous")) ||
+		sys.PathPresent(filepath.Join(ryoku, "rices", ".baseline"))
 	s.ricePending = sys.PathPresent(defaultRiceMarker())
 	s.defaultRice = sys.Exists(filepath.Join(systemRicesDir(), defaultRiceSlug, "rice.json"))
 	return s

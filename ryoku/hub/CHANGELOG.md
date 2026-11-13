@@ -3,6 +3,10 @@
 ## Unreleased
 
 ### Fixed
+- **Applying a rice keeps the look it replaces.** The `.previous` slot an
+  apply overwrites moves to `rices/.history/<stamp>` first, and the newest ten
+  stay. `ryoku-hub rice restore history/<stamp>` brings one back, so a second
+  apply can no longer destroy the only copy of the user's own setup.
 - **Shift plus a number key records in the shortcut recorder (#788).** The
   number row is read by key position, so Super+Shift+1 records as itself
   instead of being ignored, on any keyboard layout.

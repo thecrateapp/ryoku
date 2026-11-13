@@ -34,9 +34,22 @@ if command -v ryoku-host >/dev/null 2>&1; then
 		log_intro "service activation reconcile failed; continuing session startup"
 fi
 
+# A rice applied on this account leaves .active, .previous or .baseline behind;
+# from then on the look is the user's, and a leftover marker must not replace it.
+account_has_applied_rice() {
+	local rices="${XDG_CONFIG_HOME:-$HOME/.config}/ryoku/rices" active=""
+	[[ -r $rices/.active ]] && IFS= read -r active <"$rices/.active"
+	[[ -n $active || -d $rices/.previous || -d $rices/.baseline ]]
+}
+
 consume_default_rice() {
 	local marker="$state/default-rice-pending" slug="" attempt ready=false
-	[[ -r $marker ]] || return 0
+	[[ -e $marker ]] || return 0
+	if account_has_applied_rice; then
+		log_intro "dropping the default rice marker: this account already applied a rice"
+		rm -f -- "$marker"
+		return 0
+	fi
 	IFS= read -r slug <"$marker" || true
 	if [[ -z $slug ]]; then
 		log_intro "default rice marker is empty; keeping it for the next login"

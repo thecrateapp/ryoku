@@ -12,6 +12,7 @@ import (
 	"sort"
 	"strconv"
 	"strings"
+	"time"
 
 	"ryostore/compat"
 )
@@ -934,6 +935,68 @@ func snapshotStores(slot string) error {
 	return nil
 }
 
+// riceHistoryKeep is how many replaced .previous slots .history holds.
+const riceHistoryKeep = 10
+
+// rotatePrevious moves the .previous slot an apply is about to replace into
+// .history/<stamp>, keeping the newest riceHistoryKeep. Without it a second
+// apply (a stray first-login default rice, a misclick) overwrites the only
+// copy of the user's own look.
+func rotatePrevious(now time.Time) error {
+	prev := filepath.Join(ricesDir(), ".previous")
+	if _, err := os.Stat(prev); err != nil {
+		return nil
+	}
+	hist := filepath.Join(ricesDir(), ".history")
+	if err := os.MkdirAll(hist, 0o755); err != nil {
+		return err
+	}
+	stamp := now.Format("20060102-150405")
+	dst := filepath.Join(hist, stamp)
+	for i := 1; ; i++ {
+		if _, err := os.Lstat(dst); os.IsNotExist(err) {
+			break
+		}
+		dst = filepath.Join(hist, fmt.Sprintf("%s.%d", stamp, i))
+	}
+	if err := os.Rename(prev, dst); err != nil {
+		return err
+	}
+	entries, err := os.ReadDir(hist)
+	if err != nil {
+		return err
+	}
+	var names []string
+	for _, e := range entries {
+		if e.IsDir() {
+			names = append(names, e.Name())
+		}
+	}
+	sort.Strings(names)
+	for len(names) > riceHistoryKeep {
+		_ = os.RemoveAll(filepath.Join(hist, names[0]))
+		names = names[1:]
+	}
+	return nil
+}
+
+// riceRestoreSlot maps the `rice restore` argument to a reserved slot: none or
+// "baseline" is the pristine pre-rice setup, "previous" the state before the
+// last apply, and "history/<stamp>" one of the older replaced looks.
+func riceRestoreSlot(arg string) (string, error) {
+	switch arg {
+	case "", "baseline":
+		return ".baseline", nil
+	case "previous":
+		return ".previous", nil
+	}
+	if stamp, ok := strings.CutPrefix(arg, "history/"); ok &&
+		stamp != "" && stamp != "." && stamp != ".." && !strings.ContainsAny(stamp, "/\\") {
+		return filepath.Join(".history", stamp), nil
+	}
+	return "", fmt.Errorf("rice restore takes baseline, previous or history/<stamp>, not %q", arg)
+}
+
 // ensureBaseline snapshots the pristine pre-rice setup exactly once; it is never
 // overwritten, so the user can always return to how the machine shipped/was.
 func ensureBaseline() {
@@ -1081,6 +1144,7 @@ func applyRice(slug string, layers []string) error {
 	if err != nil {
 		return err
 	}
+	_ = rotatePrevious(time.Now())
 	_ = snapshotStores(".previous")
 	ensureBaseline()
 
@@ -1789,9 +1853,13 @@ func runRice(args []string) error {
 		}
 		return nil
 	case "restore":
-		slot := ".baseline"
-		if len(args) >= 2 && args[1] == "previous" {
-			slot = ".previous"
+		arg := ""
+		if len(args) >= 2 {
+			arg = args[1]
+		}
+		slot, err := riceRestoreSlot(arg)
+		if err != nil {
+			return err
 		}
 		if err := restoreRice(slot); err != nil {
 			return err

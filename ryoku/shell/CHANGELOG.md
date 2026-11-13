@@ -1,6 +1,10 @@
 # Changelog: ryoku/shell/
 
 ## Unreleased
+- **A leftover default-rice marker no longer resets the desktop.** The
+  installer's first-login marker could outlive that login and apply the default
+  rice days later, over every setting, widget and plugin the user had changed.
+  `ryoku-session-intro` now drops it when the account already applied a rice.
 - **Memory and storage in QS Bar follow the Crate theme.** Memory shows its
   usage history and module speed. Storage shows root filesystem usage and
   the inventory of physical drives.

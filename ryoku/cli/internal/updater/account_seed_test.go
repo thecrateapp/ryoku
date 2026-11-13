@@ -89,6 +89,22 @@ func TestMaterializeLeavesACustomisedAccountAlone(t *testing.T) {
 	}
 }
 
+// shell.json can go missing (a crash mid-write, a reset store) on an account
+// that already applied a rice; the rice slots still say the look is the
+// user's, so materialize must not queue the default rice over it.
+func TestMaterializeNeverQueuesOverAnAppliedRice(t *testing.T) {
+	for _, slot := range []string{".previous", ".baseline"} {
+		f := newAccountFixture(t)
+		writeFile(t, filepath.Join(f.home, ".config/ryoku/rices", slot, "desktop.json"), "{}\n")
+		if err := Materialize(); err != nil {
+			t.Fatal(err)
+		}
+		if _, err := os.Lstat(filepath.Join(f.state, "ryoku/default-rice-pending")); !os.IsNotExist(err) {
+			t.Fatalf("%s present: the default rice was queued over an applied rice (err=%v)", slot, err)
+		}
+	}
+}
+
 func TestPlanAccountSeedRice(t *testing.T) {
 	for _, c := range []struct {
 		name string
@@ -99,6 +115,7 @@ func TestPlanAccountSeedRice(t *testing.T) {
 		{"no packaged default rice", accountSeedState{}, false},
 		{"shell already ran", accountSeedState{defaultRice: true, shellStore: true}, false},
 		{"a rice is active", accountSeedState{defaultRice: true, activeRice: true}, false},
+		{"a rice was applied before", accountSeedState{defaultRice: true, riceApplied: true}, false},
 		{"already queued", accountSeedState{defaultRice: true, ricePending: true}, false},
 		{"root", accountSeedState{defaultRice: true, root: true}, false},
 	} {

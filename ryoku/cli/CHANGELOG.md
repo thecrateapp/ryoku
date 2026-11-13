@@ -1,6 +1,9 @@
 # Ryoku CLI Changelog
 
 ## Unreleased
+- **Materialize never queues the default rice over an applied one.** An
+  account whose `rices/.previous` or `.baseline` exists already chose a look,
+  so a missing `shell.json` no longer counts as a new account.
 - **Reboots after an update no longer stop at the Limine menu.** Limine 12.9.5
   moved its remembered-entry EFI variable to a new vendor GUID; doctor and the
   boot guard now clear it under both GUIDs.
