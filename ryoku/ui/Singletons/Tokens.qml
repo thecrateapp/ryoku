@@ -153,6 +153,8 @@ Singleton {
     readonly property color pickInkDim: selectFill ? inkOnBoneDim : inkDim
     readonly property color sunDeep: Qt.darker(sun, 1.3)
     readonly property color alert: "#e2342a"
+    // a caution that is not an error (usage past its pace): the palette's tertiary
+    readonly property color warn: role("tertiary", "#e0a526")
 
     // ── type ─────────────────────────────────────────────────────────────
     property string display: "Fraunces"

@@ -15,7 +15,7 @@ ShellRoot {
         function aiBehindPace(pct, ts) { return ts > 0 && pct > 60 }
         function aiFmtReset(ts) { return "2d 4h" }
         function aiPaceText(pct, ts) { return ts > 0 ? (pct > 60 ? "8% behind pace" : "4% ahead of pace") : "" }
-        function aiExpectedPct(ts) { return 55 }
+        function aiExpectedPct(ts) { return 55 }  // 45 % expected used today
         function aiDayTokens(d) { return Math.max(0, (d && d.tokens) || 0) }
         function aiRecentTotal(r) { let t = 0; for (const d of r) t += aiDayTokens(d); return t }
         function aiRecentPeak(r) { let p = 0; for (const d of r) p = Math.max(p, aiDayTokens(d)); return p }
@@ -80,13 +80,21 @@ ShellRoot {
                 throw new Error("Every shown provider needs a section");
             if (find(claude, "aiPct").text !== "72%" || Math.abs(find(claude, "aiMeter").value - 0.72) > 0.001)
                 throw new Error("The used share reads as a figure and a beam");
-            if (!Qt.colorEqual(find(claude, "aiPct").color, Tokens.alert) || Qt.colorEqual(find(codex, "aiPct").color, Tokens.alert))
-                throw new Error("Only a provider behind pace turns to the alert");
+            if (Qt.colorEqual(find(claude, "aiPct").color, Tokens.alert) || Qt.colorEqual(find(codex, "aiPct").color, Tokens.alert))
+                throw new Error("Nothing turns red: pace shows on the beam");
+            const mark = find(claude, "aiPaceMark"), meter = find(claude, "aiMeter");
+            if (!mark || !mark.visible || Math.abs(mark.x - meter.width * 0.45) > 1.5)
+                throw new Error("The beam marks where use should be today, x " + (mark ? mark.x : "none"));
+            if (!find(claude, "aiOverPace").visible || find(codex, "aiOverPace").visible)
+                throw new Error("Only the share past today's mark shows, on a provider ahead of it");
             if (find(claude, "aiPace").text !== "8% behind pace")
                 throw new Error("The pace line reads the panel");
-            const busiest = find(claude, "aiBar-3"), half = find(claude, "aiBar-1"), idle = find(claude, "aiBar-2");
-            if (!busiest || Math.abs(half.height * 2 - busiest.height) > 1 || idle.height !== 0)
-                throw new Error("The chart scales to its busiest day");
+            const curve = find(claude, "aiCurve");
+            if (!curve || curve.points.length !== 7)
+                throw new Error("The last seven days draw as a curve");
+            const ys = curve.points.map(p => p[1]);
+            if (Math.min(...ys) !== ys[3] || ys[2] !== curve.baseY)
+                throw new Error("The busiest day peaks and an idle day sits on the baseline: " + ys);
             if (!find(claude, "aiWindow-5h"))
                 throw new Error("The other limit windows list");
             if (find(codex, "aiStatus").text.indexOf("(stale)") < 0)

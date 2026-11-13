@@ -1,6 +1,10 @@
 # Changelog: ryoku/shell/
 
 ## Unreleased
+- **The AI usage panel no longer turns a provider red.** Pace shows on the
+  weekly beam instead: a hairline tick where use should be today, and the share
+  past it in the palette's caution tone. The last seven days draw as a 1 px
+  curve over a fading area with a dot on today, in place of the bars.
 - **Output volume holds, and boost passes 100 % again.** A volume written to a
   device node snapped back to the old level about 250 ms later, and anything
   past 100 % fell to 100 %: WirePlumber resyncs a device node from its saved

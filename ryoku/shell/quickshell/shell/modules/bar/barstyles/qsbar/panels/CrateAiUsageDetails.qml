@@ -1,6 +1,7 @@
 pragma ComponentBehavior: Bound
 
 import QtQuick
+import QtQuick.Shapes
 import Ryoku.Ui as Kit
 import Ryoku.Ui.Singletons
 
@@ -76,7 +77,7 @@ Flickable {
                 required property int index
                 readonly property var p: modelData
                 readonly property bool behind: details.theme.aiBehindPace(p.pct, p.paceTs)
-                readonly property color tone: section.behind ? Tokens.alert : Tokens.ink
+                readonly property color tone: Tokens.ink
                 objectName: "ai-" + p.id
                 width: content.width
                 spacing: Tokens.s2
@@ -147,7 +148,7 @@ Flickable {
                                         ? I18n.tr("· resets in %1").arg(details.theme.aiFmtReset(section.p.resetTs)).replace(/^·\s*/, "")
                                         : "",
                                     section.p.fresh ? "" : I18n.tr("(stale)")].filter(s => s !== "").join(" ")
-                            color: section.behind ? Tokens.alert : Tokens.inkMuted
+                            color: Tokens.inkMuted
                             font.family: Tokens.mono
                             font.pixelSize: 11
                             elide: Text.ElideRight
@@ -168,15 +169,43 @@ Flickable {
                     }
                 }
 
-                Kit.Beam {
-                    objectName: "aiMeter"
+                // the weekly share, with a hairline tick where use should be today
+                // and the share past it in the caution tone
+                Item {
+                    readonly property real expected: section.p.paceTs > 0
+                        ? (100 - details.theme.aiExpectedPct(section.p.paceTs)) / 100 : -1
+                    readonly property real used: Math.max(0, Math.min(100, section.p.pct)) / 100
                     width: parent.width
+                    height: meter.height
                     visible: section.p.has
-                    interactive: false
-                    from: 0
-                    to: 1
-                    value: Math.max(0, Math.min(100, section.p.pct)) / 100
-                    Accessible.name: section.p.name
+                    Kit.Beam {
+                        id: meter
+                        objectName: "aiMeter"
+                        width: parent.width
+                        interactive: false
+                        from: 0
+                        to: 1
+                        value: parent.used
+                        Accessible.name: section.p.name
+                    }
+                    Rectangle {
+                        objectName: "aiOverPace"
+                        visible: section.behind && parent.expected >= 0 && parent.used > parent.expected
+                        x: Math.round(meter.width * parent.expected)
+                        y: meter.cy
+                        width: Math.max(0, Math.round(meter.width * parent.used) - x)
+                        height: 1
+                        color: Tokens.warn
+                    }
+                    Rectangle {
+                        objectName: "aiPaceMark"
+                        visible: parent.expected >= 0
+                        x: Math.round(meter.width * parent.expected)
+                        y: meter.cy - 4
+                        width: 1
+                        height: 9
+                        color: Tokens.inkSubtle
+                    }
                 }
 
                 Item {
@@ -188,7 +217,7 @@ Flickable {
                         objectName: "aiPace"
                         anchors.left: parent.left
                         text: details.theme.aiPaceText(section.p.pct, section.p.paceTs)
-                        color: section.behind ? Tokens.alert : Tokens.mark
+                        color: section.behind ? Tokens.warn : Tokens.inkMuted
                         font.family: Tokens.mono
                         font.pixelSize: 11
                     }
@@ -212,59 +241,88 @@ Flickable {
                         width: parent.width
                         text: I18n.tr("LAST 7 DAYS · %1 TOKENS").arg(details.theme.aiTokenCount(details.theme.aiRecentTotal(parent.days)))
                     }
-                    Row {
-                        id: chart
-                        width: parent.width
+                    // a 1 px curve over a fading area, a head dot on today
+                    Item {
+                        id: curve
+                        objectName: "aiCurve"
                         readonly property var days: parent.days
                         readonly property real peak: parent.peak
+                        readonly property real baseY: height - 1
+                        readonly property var points: {
+                            const out = [], n = curve.days.length;
+                            for (let i = 0; i < n; i++) {
+                                const t = details.theme.aiDayTokens(curve.days[i]);
+                                out.push([4 + i * (curve.width - 8) / Math.max(1, n - 1),
+                                          curve.baseY - (curve.height - 8) * t / curve.peak]);
+                            }
+                            return out;
+                        }
+                        readonly property string path: {
+                            const p = curve.points;
+                            if (p.length < 2) return "";
+                            let d = "M " + p[0][0] + " " + p[0][1];
+                            for (let k = 0; k < p.length - 1; k++) {
+                                const p0 = p[Math.max(0, k - 1)], p1 = p[k], p2 = p[k + 1], p3 = p[Math.min(p.length - 1, k + 2)];
+                                d += " C " + (p1[0] + (p2[0] - p0[0]) / 6) + " " + Math.min(curve.baseY, p1[1] + (p2[1] - p0[1]) / 6)
+                                    + " " + (p2[0] - (p3[0] - p1[0]) / 6) + " " + Math.min(curve.baseY, p2[1] - (p3[1] - p1[1]) / 6)
+                                    + " " + p2[0] + " " + p2[1];
+                            }
+                            return d;
+                        }
+                        width: parent.width
+                        height: 40
+                        Rectangle { y: curve.baseY; width: curve.width; height: 1; color: Tokens.lineSoft }
+                        Shape {
+                            anchors.fill: parent
+                            preferredRendererType: Shape.CurveRenderer
+                            ShapePath {
+                                strokeWidth: 0
+                                strokeColor: "transparent"
+                                fillGradient: LinearGradient {
+                                    x1: 0; y1: 0; x2: 0; y2: curve.height
+                                    GradientStop { position: 0; color: Qt.rgba(Tokens.mark.r, Tokens.mark.g, Tokens.mark.b, 0.22) }
+                                    GradientStop { position: 1; color: Qt.rgba(Tokens.mark.r, Tokens.mark.g, Tokens.mark.b, 0) }
+                                }
+                                PathSvg {
+                                    path: curve.points.length > 1
+                                        ? curve.path + " L " + curve.points[curve.points.length - 1][0] + " " + curve.baseY
+                                            + " L " + curve.points[0][0] + " " + curve.baseY + " Z" : ""
+                                }
+                            }
+                            ShapePath {
+                                strokeWidth: 1
+                                strokeColor: Tokens.beamTail
+                                fillColor: "transparent"
+                                PathSvg { path: curve.path }
+                            }
+                        }
+                        Rectangle {
+                            readonly property var head: curve.points.length ? curve.points[curve.points.length - 1] : [0, 0]
+                            visible: curve.points.length > 0
+                            x: head[0] - 4; y: head[1] - 4; width: 8; height: 8; radius: 4
+                            color: Qt.rgba(Tokens.mark.r, Tokens.mark.g, Tokens.mark.b, 0.22)
+                            Rectangle { anchors.centerIn: parent; width: 4; height: 4; radius: 2; color: Tokens.thumb }
+                        }
+                    }
+                    Item {
+                        width: parent.width
+                        height: Tokens.s4
                         Repeater {
-                            model: chart.days
-                            Column {
-                                id: day
+                            model: curve.days
+                            Text {
                                 required property var modelData
                                 required property int index
-                                readonly property real tokens: details.theme.aiDayTokens(modelData)
-                                width: chart.width / Math.max(1, chart.days.length)
-                                spacing: 2
-                                Text {
-                                    width: parent.width
-                                    horizontalAlignment: Text.AlignHCenter
-                                    text: day.tokens > 0 ? details.theme.aiTokenCount(day.tokens) : "0"
-                                    color: Tokens.inkSubtle
-                                    font.family: Tokens.mono
-                                    font.pixelSize: 10
-                                    font.features: { "tnum": 1 }
-                                    elide: Text.ElideRight
-                                }
-                                Item {
-                                    width: parent.width
-                                    height: 32
-                                    Rectangle {
-                                        objectName: "aiBar-" + day.index
-                                        anchors.bottom: parent.bottom
-                                        anchors.horizontalCenter: parent.horizontalCenter
-                                        width: 6
-                                        height: day.tokens > 0 ? Math.max(2, parent.height * day.tokens / chart.peak) : 0
-                                        radius: 1
-                                        color: section.behind ? Tokens.alert : Tokens.mark
-                                        opacity: 0.8
-                                        Behavior on height { NumberAnimation { duration: 300 } }
-                                    }
-                                    Rectangle {
-                                        anchors.bottom: parent.bottom
-                                        width: parent.width
-                                        height: 1
-                                        color: Tokens.lineSoft
-                                    }
-                                }
-                                Text {
-                                    width: parent.width
-                                    horizontalAlignment: Text.AlignHCenter
-                                    text: details.theme.aiDayLabel(day.modelData.date)
-                                    color: Tokens.inkSubtle
-                                    font.family: Tokens.mono
-                                    font.pixelSize: 10
-                                }
+                                readonly property bool first: index === 0
+                                readonly property bool last: index === curve.days.length - 1
+                                width: 36
+                                // the end days sit inside the panel instead of overhanging it
+                                x: first ? 0 : last ? parent.width - width
+                                    : (curve.points[index] ? curve.points[index][0] : 0) - width / 2
+                                horizontalAlignment: first ? Text.AlignLeft : last ? Text.AlignRight : Text.AlignHCenter
+                                text: details.theme.aiDayLabel(modelData.date)
+                                color: Tokens.inkSubtle
+                                font.family: Tokens.mono
+                                font.pixelSize: 10
                             }
                         }
                     }
