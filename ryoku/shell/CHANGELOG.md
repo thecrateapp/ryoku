@@ -16,6 +16,10 @@
   while playing, now with hairline grooves and the spectrum as marks around
   it; the position is a kit beam, the transport kit icon buttons, and the ten
   equalizer bands a curve with a draggable node per band over the presets.
+- **The QS Bar AI usage panel follows the Crate theme.** Each provider shows
+  its weekly share as a figure and a beam, the pace line, the last seven days
+  as a hairline bar chart and its other limit windows as readout rows; a
+  provider behind pace turns to the alert, and OpenCode's models follow.
 - **CPU, GPU and temperatures in QS Bar follow the Crate theme.** The CPU and
   GPU panels show usage history and hardware readings. The temperatures panel
   shows each sensor’s full name, temperature meter and limit, and lets you

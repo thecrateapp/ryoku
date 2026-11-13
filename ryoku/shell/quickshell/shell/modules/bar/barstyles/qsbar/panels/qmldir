@@ -2,6 +2,7 @@ AiUsagePanel AiUsagePanel.qml
 BatteryPanel BatteryPanel.qml
 BluetoothPanel BluetoothPanel.qml
 BrightnessPanel BrightnessPanel.qml
+CrateAiUsageDetails CrateAiUsageDetails.qml
 CrateBatteryDetails CrateBatteryDetails.qml
 CrateBrightnessControls CrateBrightnessControls.qml
 CrateCpuDetails CrateCpuDetails.qml

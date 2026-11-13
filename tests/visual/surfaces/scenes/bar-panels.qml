@@ -220,6 +220,38 @@ ShellRoot {
         function setEqBand(i, db) {}
         function applyEqPreset(p) { eqPreset = p }
     }
+    QtObject {
+        id: aiTheme
+        property bool aiRefreshing: false
+        function aiBehindPace(pct, ts) { return ts > 0 && pct > 60 }
+        function aiFmtReset(ts) { return ts === 1 ? "2d 4h" : "3h 12m" }
+        function aiPaceText(pct, ts) { return ts > 0 ? (pct > 60 ? "8% behind pace" : "4% ahead of pace") : "" }
+        function aiExpectedPct(ts) { return 36 }
+        function aiDayTokens(d) { return Math.max(0, (d && d.tokens) || 0) }
+        function aiRecentTotal(r) { let t = 0; for (const d of r) t += aiDayTokens(d); return t }
+        function aiRecentPeak(r) { let x = 0; for (const d of r) x = Math.max(x, aiDayTokens(d)); return x }
+        function aiTokenCount(n) { return n >= 1e6 ? (n / 1e6).toFixed(1) + "M" : Math.round(n / 1000) + "k" }
+        function aiDayLabel(date) { return ["Fr", "Sa", "Su", "Mo", "Tu", "We", "Th"][(Number(date.slice(-2)) - 7) % 7] }
+        function regenerateAiUsage() {}
+    }
+    QtObject {
+        id: aiPanel
+        property var root: aiTheme
+        readonly property var week: [
+            { date: "2026-11-07", tokens: 1200000 }, { date: "2026-11-08", tokens: 400000 },
+            { date: "2026-11-09", tokens: 0 }, { date: "2026-11-10", tokens: 8200000 },
+            { date: "2026-11-11", tokens: 5600000 }, { date: "2026-11-12", tokens: 9100000 },
+            { date: "2026-11-13", tokens: 3300000 }
+        ]
+        property var providers: [
+            { id: "claude", name: "Claude", tinted: false, logo: Qt.resolvedUrl("modules/bar/barstyles/qsbar/assets/claude.svg"),
+              markW: 18, markH: 18, has: true, fresh: true, plan: "", pct: 72, resetTs: 1, paceTs: 1, recent: week,
+              extras: [{ label: "5h", pct: 34, resetTs: 2 }] },
+            { id: "codex", name: "Codex", tinted: true, logo: Qt.resolvedUrl("modules/bar/barstyles/qsbar/assets/codex-cli.svg"),
+              markW: 18, markH: 18, has: true, fresh: true, plan: "Pro", pct: 18, resetTs: 1, paceTs: 1, recent: week, extras: [] }
+        ]
+        property var models: []
+    }
 
     component Card: Rectangle {
         default property alias body: inner.data
@@ -250,6 +282,7 @@ ShellRoot {
                 Card { cardWidth: 320; CrateMemoryDetails { width: parent.width; memory: memory } }
                 Card { cardWidth: 320; CrateStorageDetails { width: parent.width; storage: storage; availableHeight: 600 } }
                 Card { cardWidth: 320; CrateBrightnessControls { width: parent.width; percent: 70 } }
+                Card { cardWidth: 320; CrateAiUsageDetails { width: parent.width; height: implicitHeight; panel: aiPanel } }
             }
             Row {
                 x: 16; y: 470

@@ -81,6 +81,26 @@ PanelWindow {
     readonly property bool   ocShow:      root.aiToolShown("opencode") && ocHas
     readonly property bool   anyShow:     clShow || cxShow || ocShow
 
+    // what the crate body reads: the shown providers in the bar's order, and
+    // OpenCode's per-model rows
+    readonly property var providers: {
+        var out = []
+        if (clShow) out.push({ id: "claude", name: "Claude", tinted: false,
+            logo: Qt.resolvedUrl("../assets/claude.svg"), markW: 18, markH: 18,
+            has: clHas, fresh: clFresh, plan: "", pct: clPct7d, resetTs: clReset7dTs,
+            paceTs: clReset7dTs, recent: clRecent || [], extras: clExtras })
+        if (cxShow) out.push({ id: "codex", name: "Codex", tinted: true,
+            logo: Qt.resolvedUrl("../assets/codex-cli.svg"), markW: 18, markH: 18,
+            has: cxHas, fresh: cxFresh, plan: cxPlan, pct: cxPct, resetTs: cxResetTs,
+            paceTs: cxReset7dTs, recent: cxRecent || [], extras: cxExtras })
+        if (ocShow) out.push({ id: "opencode", name: "OpenCode", tinted: true,
+            logo: Qt.resolvedUrl("../assets/opencode-mark.svg"), markW: 20, markH: 12,
+            has: ocHas, fresh: ocFresh, plan: ocPlan, pct: ocPct7d, resetTs: 0,
+            paceTs: 0, recent: ocRecent || [], extras: ocExtras })
+        return out
+    }
+    readonly property var models: ocShow ? (ocModels || []) : []
+
     readonly property real reveal: root.aiUsageReveal
     visible: reveal > 0.001
     WlrLayershell.keyboardFocus: root.aiUsageVisible ? WlrKeyboardFocus.Exclusive : WlrKeyboardFocus.None
@@ -330,8 +350,8 @@ PanelWindow {
 
     Rectangle {
         id: card
-        width: 372
-        height: Math.min(col.implicitHeight + 24, parent.height - 2 * (barBottom + gap))
+        width: Tokens.controlsCrate ? 320 : 372
+        height: Math.min(panelBody.implicitHeight + panelBody.inset * 2, parent.height - 2 * (barBottom + gap))
         radius: reveal > 0.001 ? root.panelRadius : 0
         color: "transparent"
         border.color: root.panelBorder
@@ -363,10 +383,27 @@ PanelWindow {
 
         MouseArea { anchors.fill: parent; onClicked: {} }
 
+        Loader {
+            id: panelBody
+            readonly property int inset: Tokens.controlsCrate ? Tokens.s4 : 12
+            anchors.fill: parent
+            anchors.margins: inset
+            sourceComponent: Tokens.controlsCrate ? crateBody : stockBody
+        }
+
+        Component {
+            id: crateBody
+            CrateAiUsageDetails {
+                panel: aiPanel
+                onCloseRequested: aiPanel.root.aiUsageVisible = false
+            }
+        }
+
+        Component {
+            id: stockBody
         Flickable {
             id: scroller
-            anchors.fill: parent
-            anchors.margins: 12
+            implicitHeight: col.implicitHeight
             contentWidth: width
             contentHeight: col.implicitHeight
             clip: true
@@ -512,8 +549,8 @@ PanelWindow {
                 }
             }
         }
+        }
     }
-
     // Usage data + polling live in Theme.qml (shared with the bar chips); this
     // panel only renders from root.ai* and bumps the refresh cadence via
     // root.aiUsageVisible.
