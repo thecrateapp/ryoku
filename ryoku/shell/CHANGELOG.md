@@ -1,6 +1,9 @@
 # Changelog: ryoku/shell/
 
 ## Unreleased
+- Controls now fits the vitals and section heights when it warms up in the
+  background. The AI usage chart keeps its first and last day labels inside
+  the chart as providers appear, resize, or disappear.
 - **Super+Esc opens at once.** Controls was built on demand and dropped 15 s
   after closing, so opening it after a pause rebuilt the whole tree, about 3 s
   under load. Each screen now builds it in the background 4 s after the shell

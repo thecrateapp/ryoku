@@ -80,7 +80,6 @@ Item {
                         : modelData.id === "media" ? mediaSection
                         : modelData.id === "levels" ? levelsSection
                         : bottomSection
-                    height: item ? item.implicitHeight : 0
                     opacity: active ? 1 : 0
                     transform: Translate { y: sectionLoader.active ? 0 : Tokens.s2 * root.s }
 
