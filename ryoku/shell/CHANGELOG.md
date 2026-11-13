@@ -1,6 +1,12 @@
 # Changelog: ryoku/shell/
 
 ## Unreleased
+- **The crate clipboard keeps its size after a Hub save.** The Hub's Desktop
+  page writes its whole document, the stock clipboard sizes (65 % wide, 42 %
+  high, 18/12/9 px corners) included, and a written size beat the crate one, so
+  the clipboard grew back to the stock size. Under crate a stock value now reads
+  as untouched; a size the user changed still wins. The outer panel takes the
+  shared 6 px corner too.
 - **Super+Esc opens at once.** Controls was built on demand and dropped 15 s
   after closing, so opening it after a pause rebuilt the whole tree, about 3 s
   under load. Each screen now builds it in the background 4 s after the shell

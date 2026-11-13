@@ -10,6 +10,7 @@ import Ryoku.Ui as Kit
 import "../../components"
 import "../../utils/fuzzy.js" as Fuzzy
 import "../../services/lib/screens.js" as Screens
+import "sizing.js" as Sizing
 
 /**
  * once per screen, replacing the old sidebar clipboard page. The card is a
@@ -127,12 +128,12 @@ Scope {
     }
 
     readonly property var layout: Config.clipboard || ({})
-    readonly property real widthPercent: Math.max(40, Math.min(90, root.layout.widthPercent === undefined ? (Tokens.controlsCrate ? 50 : 65) : Number(root.layout.widthPercent)))
-    readonly property real heightPercent: Math.max(24, Math.min(72, root.layout.heightPercent === undefined ? (Tokens.controlsCrate ? 40 : 42) : Number(root.layout.heightPercent)))
+    readonly property real widthPercent: Math.max(40, Math.min(90, Sizing.sized(root.layout.widthPercent, 65, 50, Tokens.controlsCrate)))
+    readonly property real heightPercent: Math.max(24, Math.min(72, Sizing.sized(root.layout.heightPercent, 42, 40, Tokens.controlsCrate)))
     readonly property real bottomPercent: Math.max(0, Math.min(20, root.layout.bottomPercent === undefined ? 0 : Number(root.layout.bottomPercent)))
-    readonly property real panelRadius: Math.max(0, Math.min(32, root.layout.panelRadius === undefined ? (Tokens.controlsCrate ? 10 : 18) : Number(root.layout.panelRadius)))
-    readonly property real paneRadius: Math.max(0, Math.min(32, root.layout.paneRadius === undefined ? (Tokens.controlsCrate ? Tokens.radius : 12) : Number(root.layout.paneRadius)))
-    readonly property real cardRadius: Math.max(0, Math.min(32, root.layout.cardRadius === undefined ? (Tokens.controlsCrate ? Tokens.radius : 9) : Number(root.layout.cardRadius)))
+    readonly property real panelRadius: Math.max(0, Math.min(32, Sizing.sized(root.layout.panelRadius, 18, Tokens.radius, Tokens.controlsCrate)))
+    readonly property real paneRadius: Math.max(0, Math.min(32, Sizing.sized(root.layout.paneRadius, 12, Tokens.radius, Tokens.controlsCrate)))
+    readonly property real cardRadius: Math.max(0, Math.min(32, Sizing.sized(root.layout.cardRadius, 9, Tokens.radius, Tokens.controlsCrate)))
 
     // A single pane: header (icon, title, count), a hairline, the card list, and
     // a compact actionable empty state. `s` scales it; ids inside stay local, so
