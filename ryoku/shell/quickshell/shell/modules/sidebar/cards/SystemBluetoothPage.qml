@@ -30,7 +30,9 @@ Item {
     readonly property var pairedDevices: root.devices.filter(device => device && !device.connected && (device.paired || device.bonded))
     readonly property var discoveredDevices: root.devices.filter(device => device && !device.connected && !device.paired && !device.bonded)
 
-    implicitHeight: content.implicitHeight
+    // crate-mark: the mock-up's sheet (CrateBluetoothBody); the stock body otherwise
+    readonly property bool crate: Tokens.controlsCrate
+    implicitHeight: root.crate ? crateBody.implicitHeight : content.implicitHeight
     height: implicitHeight
 
     function syncDiscovery(): void {
@@ -280,8 +282,17 @@ Item {
         HoverHandler { id: deviceHover }
     }
 
+    CrateBluetoothBody {
+        id: crateBody
+        visible: root.crate
+        width: root.width
+        page: root
+        s: root.s
+    }
+
     Column {
         id: content
+        visible: !root.crate
         width: root.width
         spacing: Tokens.s4 * root.s
 
