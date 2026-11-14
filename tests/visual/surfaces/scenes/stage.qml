@@ -7,6 +7,9 @@ import stage.services
 import stage.modules.common
 import stage.modules.ii.editMode
 import stage.modules.ii.background.widgets
+import stage.modules.ii.background.shortcuts
+import stage.modules.common.widgets
+import stage.modules.common.draw
 
 // The Stage editor over a stand-in wallpaper: the toolbar above the framed
 // desktop, the catalogue panel's plate and header with a page of rows, chips
@@ -16,13 +19,13 @@ import stage.modules.ii.background.widgets
 ShellRoot {
     FloatingWindow {
         implicitWidth: 1400
-        implicitHeight: 860
+        implicitHeight: 1460
         color: Tokens.paper
 
         Rectangle {
             id: sheet
             width: 1400
-            height: 860
+            height: 1460
             // a stand-in wallpaper, so the glass has something to sit on
             gradient: Gradient {
                 orientation: Gradient.Horizontal
@@ -207,6 +210,71 @@ ShellRoot {
             EditBarMenu {
                 x: 380
                 y: 640
+            }
+
+            // The panel pages' own pieces, the selection's align strip, the
+            // sketch tray and a shortcut's menu, along the bottom.
+            Rectangle {
+                x: 20
+                y: 1000
+                width: 400
+                height: 440
+                radius: Tokens.radius
+                color: Tokens.controlsCrate ? Tokens.glass : Appearance.colors.colLayer0
+                border.width: 1
+                border.color: Tokens.line
+
+                Column {
+                    x: 10
+                    y: 10
+                    width: 380
+                    spacing: 10
+                    EditDockDesignPicker {
+                        width: 380
+                        currentValue: "ryoku"
+                    }
+                    Row {
+                        spacing: 8
+                        ColorPreviewButton {
+                            width: 120
+                            colorScheme: MaterialThemeLoader.schemeType
+                        }
+                        ColorPreviewButton {
+                            width: 120
+                            colorScheme: "scheme-monochrome"
+                        }
+                    }
+                }
+            }
+
+            EditAlignBar {
+                x: 460
+                y: 1000
+                count: 3
+            }
+
+            DrawToolbar {
+                x: 460
+                y: 1080
+                palette: ["#111111", "#e2342a", "#2a7de2"]
+                currentColor: "#111111"
+                strokeWidth: 6
+                statusText: "Saved"
+            }
+
+            ItemContextDialog {
+                x: 960
+                y: 1000
+                width: 420
+                height: 400
+                title: "Files"
+                subtitle: "Application"
+                iconSymbol: "folder"
+                actions: [{ "id": "open", "text": "Open", "icon": "open_in_new" },
+                          { "id": "pin", "text": "Pin to dock", "icon": "keep" },
+                          { "id": "remove", "text": "Remove", "icon": "delete", "destructive": true }]
+                doneId: "open"
+                doneText: "Opened"
             }
         }
 
