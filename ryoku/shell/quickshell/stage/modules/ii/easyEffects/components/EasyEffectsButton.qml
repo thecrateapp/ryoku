@@ -3,6 +3,8 @@ import QtQuick.Layouts
 import stage.modules.common
 import stage.modules.common.functions
 import stage.modules.common.widgets
+import Ryoku.Ui as Ui
+import Ryoku.Ui.Singletons
 /**
  * The app's labelled pill button, in five emphases:
  *   filled  — primary, the one thing a screen is for (Save, Done)
@@ -55,8 +57,15 @@ RippleButton {
             anchors.centerIn: parent
             spacing: EasyEffectsStyle.gapSmall
 
+            Ui.Glyph {
+                objectName: "easyEffectsButtonGlyph"
+                visible: Tokens.controlsCrate && root.symbol.length > 0
+                name: root.symbol
+                size: root.iconSize
+                color: root.colContent
+            }
             MaterialSymbol {
-                visible: root.symbol.length > 0
+                visible: !Tokens.controlsCrate && root.symbol.length > 0
                 text: root.symbol
                 iconSize: root.iconSize
                 fill: root.filledSymbol ? 1 : 0

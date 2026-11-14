@@ -2,6 +2,8 @@ import QtQuick
 import QtQuick.Layouts
 import stage.modules.common
 import stage.modules.common.widgets
+import Ryoku.Ui as Ui
+import Ryoku.Ui.Singletons
 /**
  * A small status pill: "Playing now", "In use", "Default", a count. Tinted with the
  * colour of whatever it sits on (`colContent`) unless a fill is given, so one pill works
@@ -45,8 +47,14 @@ Rectangle {
             color: root.colContent
         }
 
+        Ui.Glyph {
+            visible: Tokens.controlsCrate && root.symbol.length > 0
+            name: root.symbol
+            size: EasyEffectsStyle.iconSmall
+            color: root.colContent
+        }
         MaterialSymbol {
-            visible: root.symbol.length > 0
+            visible: !Tokens.controlsCrate && root.symbol.length > 0
             text: root.symbol
             iconSize: EasyEffectsStyle.iconSmall
             fill: root.filledSymbol ? 1 : 0

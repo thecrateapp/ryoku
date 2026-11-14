@@ -7,6 +7,8 @@ import stage.services
 import stage.modules.common
 import stage.modules.common.draw
 import stage.modules.common.widgets
+import Ryoku.Ui as Ui
+import Ryoku.Ui.Singletons
 import "../../../common/draw/StrokeGeometry.js" as StrokeGeometry
 
 /**
@@ -129,10 +131,17 @@ Item {
     }
 
     // ── Layout ──────────────────────────────────────────────────────────────
+    // Under crate the editor is an opaque working surface (Tokens.popover) in a
+    // hairline at the shared corner, and the sheet takes the same corner.
+    readonly property bool crate: Tokens.controlsCrate
+
     Rectangle {
+        objectName: "sketchPlate"
         anchors.fill: parent
-        color: Appearance.colors.colLayer0
-        radius: Appearance.rounding.normal
+        color: root.crate ? Tokens.popover : Appearance.colors.colLayer0
+        radius: root.crate ? Tokens.radius : Appearance.rounding.normal
+        border.width: root.crate ? Tokens.border : 0
+        border.color: Tokens.line
     }
 
     ColumnLayout {
@@ -166,7 +175,7 @@ Item {
                 anchors.centerIn: parent
                 width: Math.min(sheetArea.width, sheetArea.height * sheetArea.sheetAspect)
                 height: Math.min(sheetArea.height, sheetArea.width / sheetArea.sheetAspect)
-                radius: Appearance.rounding.small
+                radius: root.crate ? Tokens.radius : Appearance.rounding.small
                 // Opaque, and not a theme layer that might be translucent: this rectangle
                 // is what the saved PNG is painted on, and a note whose drawing came out
                 // half-transparent would look broken everywhere it was shown.

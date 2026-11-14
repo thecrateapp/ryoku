@@ -7,6 +7,7 @@ import stage.services
 import stage.modules.common
 import stage.modules.common.widgets
 import stage.modules.common.functions
+import Ryoku.Ui as Ui
 import Ryoku.Ui.Singletons
 
 /**
@@ -94,7 +95,11 @@ StyledFlickable {
             Layout.leftMargin: 4
             Layout.rightMargin: 4
             implicitHeight: Math.round(width * 10 / 16)
-            radius: Appearance.rounding.verylarge
+            // Under crate the picture sits at the shared corner and the tags
+            // and the button over it are popover tags in a hairline.
+            readonly property bool crate: Tokens.controlsCrate
+            objectName: "wallpaperPreview"
+            radius: preview.crate ? Tokens.radius : Appearance.rounding.verylarge
             color: Appearance.colors.colLayer1
 
             readonly property bool showsEngine: root.wallpaperEngine && !root.ownScreen && !root.lockTarget
@@ -129,9 +134,16 @@ StyledFlickable {
                 }
             }
 
+            Ui.Glyph {
+                anchors.centerIn: parent
+                visible: preview.crate && (root.targetPath === "" || preview.showsEngine)
+                name: root.wallpaperEngine ? "animation" : "wallpaper"
+                size: 36
+                color: Tokens.inkSubtle
+            }
             MaterialSymbol {
                 anchors.centerIn: parent
-                visible: root.targetPath === "" || preview.showsEngine
+                visible: !preview.crate && (root.targetPath === "" || preview.showsEngine)
                 text: root.wallpaperEngine ? "animation" : "wallpaper"
                 iconSize: Appearance.font.pixelSize.huge * 1.5
                 color: Appearance.colors.colOnSurfaceVariant
@@ -154,14 +166,29 @@ StyledFlickable {
                 visible: root.coloursFromHere
                 implicitWidth: coloursRow.implicitWidth + 20
                 implicitHeight: preview.pillHeight
-                radius: Appearance.rounding.full
-                color: Appearance.colors.colPrimaryContainer
+                radius: preview.crate ? Tokens.radius : Appearance.rounding.full
+                color: preview.crate ? Tokens.popover : Appearance.colors.colPrimaryContainer
+                border.width: preview.crate ? Tokens.border : 0
+                border.color: Tokens.line
 
                 Row {
                     id: coloursRow
                     anchors.centerIn: parent
                     spacing: 6
+                    Ui.Glyph {
+                        anchors.verticalCenter: parent.verticalCenter
+                        visible: preview.crate
+                        name: "palette"
+                        size: 14
+                        color: Tokens.mark
+                    }
+                    Ui.TrackLabel {
+                        anchors.verticalCenter: parent.verticalCenter
+                        visible: preview.crate
+                        text: Translation.tr("Colours")
+                    }
                     MaterialSymbol {
+                        visible: !preview.crate
                         anchors.verticalCenter: parent.verticalCenter
                         text: "palette"
                         fill: 1
@@ -170,6 +197,7 @@ StyledFlickable {
                     }
                     StyledText {
                         anchors.verticalCenter: parent.verticalCenter
+                        visible: !preview.crate
                         text: Translation.tr("Colours")
                         font.pixelSize: Appearance.font.pixelSize.smaller
                         font.weight: Font.DemiBold
@@ -208,8 +236,37 @@ StyledFlickable {
 
             // The action, bottom-right: icon-only on a card this narrow
             // (settings-expressive §4, < 420px).
+            // Under crate: the kit's IconButton on a popover tag.
+            Rectangle {
+                objectName: "wallpaperKitChange"
+                anchors.right: parent.right
+                anchors.bottom: parent.bottom
+                anchors.margins: 10
+                visible: preview.crate
+                width: preview.pillHeight
+                height: preview.pillHeight
+                radius: Tokens.radius
+                color: Tokens.popover
+                border.width: Tokens.border
+                border.color: Tokens.line
+
+                Ui.IconButton {
+                    id: kitChange
+                    anchors.fill: parent
+                    glyph: "photo_library"
+                    onClicked: root.openPageRequested("wallpapers")
+                }
+                StyledToolTip {
+                    requireOverlay: false
+                    extraVisibleCondition: false
+                    alternativeVisibleCondition: kitChange.hot
+                    text: Translation.tr("Choose from your folder")
+                }
+            }
+
             RippleButton {
                 id: changeButton
+                visible: !preview.crate
                 anchors.right: parent.right
                 anchors.bottom: parent.bottom
                 anchors.margins: 10

@@ -4,12 +4,21 @@ import QtQuick
 import QtQuick.Layouts
 import Quickshell
 import Quickshell.Widgets
+import Ryoku.Ui as Ui
 import Ryoku.Ui.Singletons
 import stage.modules.common
 import stage.modules.common.widgets
 
 Item {
     id: root
+
+    // Under crate a picked or done row is the kit's selection: the pick wash
+    // in the 1 px pickEdge with the pick ink, not the bone plate.
+    readonly property bool crate: Tokens.controlsCrate
+    readonly property color pickPlate: root.crate ? Tokens.pickFill : Tokens.bone
+    readonly property color pickRim: root.crate ? Tokens.pickEdge : Tokens.bone
+    readonly property color pickOn: root.crate ? Tokens.pickInk : Tokens.inkOnBone
+    readonly property color pickOnDim: root.crate ? Tokens.pickInkDim : Tokens.inkOnBoneDim
 
     required property string screenName
     property Item overlayParent: null
@@ -879,11 +888,13 @@ Item {
                     opacity: tile.selected ? 1 : 0
                     anchors.fill: parent
                     anchors.margins: -Tokens.s2
+                    objectName: "shortcutSelectionHalo"
                     radius: Tokens.radius
-                    color: Tokens.tint16
-                    border.color: Tokens.bone
+                    color: root.crate ? Tokens.pickFill : Tokens.tint16
+                    border.color: root.pickRim
                     border.width: root.focusId === tile.entry.id && root.selectedIds.length > 1
-                        ? Tokens.border * 3 : Tokens.border * 2
+                        ? (root.crate ? Tokens.border * 2 : Tokens.border * 3)
+                        : (root.crate ? Tokens.border : Tokens.border * 2)
                     Behavior on opacity {
                         NumberAnimation { duration: Tokens.snap; easing.type: Tokens.ease }
                     }
@@ -923,7 +934,7 @@ Item {
                                 }
                             }
                         }
-                        MaterialSymbol {
+                        ShortcutSymbol {
                             anchors.centerIn: parent
                             visible: (tile.entry.apps ?? []).length === 0
                             text: "folder"

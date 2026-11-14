@@ -9,6 +9,7 @@ import Quickshell.Io
 import Quickshell.Services.Mpris
 import stage.modules.common.models
 import stage.modules.ii.background.widgets
+import Ryoku.Ui.Singletons
 AbstractBackgroundWidget {
     id: root
 
@@ -151,7 +152,7 @@ AbstractBackgroundWidget {
                     text: root.trackArtist
                     color: root.colSubtextOnOne
                     font.family: Appearance.font.family.main
-                    font.pixelSize: 14
+                    font.pixelSize: Tokens.controlsCrate ? Tokens.fBody : 14
                     font.weight: Font.Light
                     font.variableAxes: ({ "wght": 300 })
                     elide: Text.ElideRight

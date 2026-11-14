@@ -3,6 +3,8 @@ import QtQuick.Layouts
 import stage.services
 import stage.modules.common
 import stage.modules.common.widgets
+import Ryoku.Ui as Ui
+import Ryoku.Ui.Singletons
 import stage.modules.ii.background.widgets
 
 /**
@@ -47,6 +49,9 @@ Item {
     readonly property bool hasPage: root.configPage !== ""
 
     readonly property int padding: 8
+    // Under crate the card is the one glass in a 1 px hairline, no shadow,
+    // and its close is the kit's IconButton.
+    readonly property bool crate: Tokens.controlsCrate
     readonly property real headerHeight: 44
     // The page reports what it needs through its own flickable. Until it has
     // loaded there is nothing to ask, so the card holds a line's worth of
@@ -80,6 +85,7 @@ Item {
 
     StyledRectangularShadow {
         target: card
+        visible: !root.crate
     }
 
     // A click anywhere on the card is a click ON it, never a click away.
@@ -90,9 +96,12 @@ Item {
 
     Rectangle {
         id: card
+        objectName: "editConfigCard"
         anchors.fill: parent
-        radius: Appearance.rounding.windowRounding
-        color: Appearance.m3colors.m3surfaceContainer
+        radius: root.crate ? Tokens.radius : Appearance.rounding.windowRounding
+        color: root.crate ? Tokens.glass : Appearance.m3colors.m3surfaceContainer
+        border.width: root.crate ? Tokens.border : 0
+        border.color: Tokens.line
     }
 
     RowLayout {
@@ -105,7 +114,13 @@ Item {
         height: root.headerHeight
         spacing: 8
 
+        Ui.Glyph {
+            visible: root.crate
+            name: root.metadata?.icon ?? "tune"
+            color: Tokens.inkSecondary
+        }
         MaterialSymbol {
+            visible: !root.crate
             text: root.metadata?.icon ?? "tune"
             iconSize: Appearance.font.pixelSize.larger
             color: Appearance.colors.colOnSurfaceVariant
@@ -133,7 +148,18 @@ Item {
             }
         }
 
+        Ui.IconButton {
+            objectName: "editConfigKitClose"
+            visible: root.crate
+            Layout.alignment: Qt.AlignVCenter
+            implicitWidth: 32
+            implicitHeight: 32
+            glyph: "close"
+            onClicked: root.dismissRequested()
+        }
+
         Rectangle {
+            visible: !root.crate
             Layout.alignment: Qt.AlignVCenter
             implicitWidth: 32
             implicitHeight: 32

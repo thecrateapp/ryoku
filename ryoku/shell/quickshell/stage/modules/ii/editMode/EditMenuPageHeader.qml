@@ -2,6 +2,8 @@ import QtQuick
 import QtQuick.Layouts
 import stage.modules.common
 import stage.modules.common.widgets
+import Ryoku.Ui as Ui
+import Ryoku.Ui.Singletons
 
 /**
  * The header of a menu page (the desktop menu's, the icon menu's): Edit Mode's drawer header - the way
@@ -23,7 +25,21 @@ RowLayout {
     Layout.rightMargin: Appearance.sizes.space1
     spacing: Appearance.sizes.space3
 
+    // Under crate both ways out are the kit's IconButtons.
+    readonly property bool crate: Tokens.controlsCrate
+
+    Ui.IconButton {
+        objectName: "editMenuKitBack"
+        visible: root.crate
+        Layout.alignment: Qt.AlignVCenter
+        implicitWidth: Appearance.sizes.controlHeight + Appearance.sizes.space2
+        implicitHeight: Appearance.sizes.controlHeight + Appearance.sizes.space2
+        glyph: "arrow_back"
+        onClicked: root.backRequested()
+    }
+
     Rectangle {
+        visible: !root.crate
         Layout.alignment: Qt.AlignVCenter
         implicitWidth: Appearance.sizes.controlHeight
         implicitHeight: Appearance.sizes.controlHeight
@@ -63,9 +79,26 @@ RowLayout {
         elide: Text.ElideRight
     }
 
+    Ui.IconButton {
+        id: kitAction
+        objectName: "editMenuKitAction"
+        visible: root.crate && root.actionSymbol !== ""
+        Layout.alignment: Qt.AlignVCenter
+        implicitWidth: Appearance.sizes.controlHeight + Appearance.sizes.space2
+        implicitHeight: Appearance.sizes.controlHeight + Appearance.sizes.space2
+        glyph: root.actionSymbol
+        onClicked: root.actionRequested()
+
+        StyledToolTip {
+            extraVisibleCondition: false
+            alternativeVisibleCondition: kitAction.hot && root.actionTooltip !== ""
+            text: root.actionTooltip
+        }
+    }
+
     Rectangle {
         Layout.alignment: Qt.AlignVCenter
-        visible: root.actionSymbol !== ""
+        visible: !root.crate && root.actionSymbol !== ""
         implicitWidth: Appearance.sizes.controlHeight
         implicitHeight: Appearance.sizes.controlHeight
         radius: Appearance.rounding.small

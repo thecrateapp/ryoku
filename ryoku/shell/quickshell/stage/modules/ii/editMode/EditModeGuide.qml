@@ -6,6 +6,8 @@ import stage
 import stage.modules.common
 import stage.modules.common.functions
 import stage.modules.common.widgets
+import Ryoku.Ui as Ui
+import Ryoku.Ui.Singletons
 import stage.services
 import stage.modules.ii.editMode
 
@@ -35,6 +37,9 @@ Item {
 
     property int step: 0
     property bool dismissed: false
+    // Under crate the card is the one glass in a hairline, with no pointer
+    // laid over it, and its two ways on are the kit's buttons.
+    readonly property bool crate: Tokens.controlsCrate
 
     /**
      * The bar step has nothing here to point at — the bar is on another layer
@@ -191,7 +196,7 @@ Item {
 
             readonly property real reach: Appearance.rounding.verysmall
 
-            visible: root.pointerShown
+            visible: root.pointerShown && !root.crate
             width: pointer.reach * 1.6
             height: width
             rotation: 45
@@ -213,8 +218,11 @@ Item {
             anchors.left: parent.left
             anchors.right: parent.right
             implicitHeight: card.bodyHeight
-            radius: Appearance.rounding.large
-            color: Appearance.colors.colPrimaryContainer
+            objectName: "editGuideCard"
+            radius: root.crate ? Tokens.radius : Appearance.rounding.large
+            color: root.crate ? Tokens.glass : Appearance.colors.colPrimaryContainer
+            border.width: root.crate ? Tokens.border : 0
+            border.color: Tokens.line
 
             ColumnLayout {
                 id: cardBody
@@ -232,7 +240,7 @@ Item {
                     StyledText {
                         Layout.fillWidth: true
                         text: root.currentStep?.title ?? ""
-                        color: Appearance.colors.colOnPrimaryContainer
+                        color: root.crate ? Tokens.ink : Appearance.colors.colOnPrimaryContainer
                         font.family: Appearance.font.family.title
                         font.variableAxes: Appearance.font.variableAxes.titleRounded
                         font.pixelSize: Appearance.font.pixelSize.large
@@ -244,7 +252,7 @@ Item {
                         text: Translation.tr("%1 of %2")
                             .arg(String(root.step + 1))
                             .arg(String(root.steps.length))
-                        color: Appearance.colors.colOnPrimaryContainer
+                        color: root.crate ? Tokens.inkSubtle : Appearance.colors.colOnPrimaryContainer
                         opacity: 0.7
                         font.pixelSize: Appearance.font.pixelSize.smaller
                     }
@@ -253,7 +261,7 @@ Item {
                 StyledText {
                     Layout.fillWidth: true
                     text: root.currentStep?.body ?? ""
-                    color: Appearance.colors.colOnPrimaryContainer
+                    color: root.crate ? Tokens.inkSecondary : Appearance.colors.colOnPrimaryContainer
                     font.pixelSize: Appearance.font.pixelSize.small
                     wrapMode: Text.WordWrap
                 }
@@ -263,7 +271,16 @@ Item {
                     Layout.topMargin: Appearance.rounding.verysmall
                     spacing: Appearance.rounding.small
 
+                    Ui.Btn {
+                        objectName: "editGuideKitSkip"
+                        visible: root.crate
+                        compact: true
+                        text: Translation.tr("Skip the tour")
+                        onAct: root.dismissed = true
+                    }
+
                     RippleButton {
+                        visible: !root.crate
                         implicitHeight: Appearance.rounding.verylarge
                         implicitWidth: skipLabel.implicitWidth + Appearance.rounding.large
                         buttonRadius: Appearance.rounding.full
@@ -286,7 +303,17 @@ Item {
 
                     Item { Layout.fillWidth: true }
 
+                    Ui.Btn {
+                        objectName: "editGuideKitNext"
+                        visible: root.crate
+                        compact: true
+                        primary: true
+                        text: root.onLastStep ? Translation.tr("Got it") : Translation.tr("Next")
+                        onAct: root.advance()
+                    }
+
                     RippleButtonWithIcon {
+                        visible: !root.crate
                         implicitHeight: Appearance.rounding.verylarge
                         centerContent: true
                         iconOnRight: !root.onLastStep

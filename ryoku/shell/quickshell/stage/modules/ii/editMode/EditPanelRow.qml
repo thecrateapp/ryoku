@@ -3,6 +3,8 @@ import QtQuick.Layouts
 import Quickshell.Widgets
 import stage.modules.common
 import stage.modules.common.widgets
+import Ryoku.Ui as Ui
+import Ryoku.Ui.Singletons
 
 /**
  * One row of Edit Mode's panel: a filled pill carrying a circled icon, a title,
@@ -103,7 +105,13 @@ MouseArea {
         }
     }
 
-    readonly property color colOn: root.selected
+    // Under crate a row is the kit's list line: the picked one takes the pick
+    // wash in the 1 px pickEdge, its glyphs are Solar, its switch the kit's Sw
+    // and its stepper kit IconButtons.
+    readonly property bool crate: Tokens.controlsCrate
+    readonly property color colOn: root.crate
+        ? (root.selected ? Tokens.pickInk : root.destructive ? Tokens.alert : Tokens.ink)
+        : root.selected
         ? Appearance.colors.colOnSecondary
         : root.destructive ? Appearance.colors.colError : Appearance.colors.colOnSurface
 
@@ -168,10 +176,17 @@ MouseArea {
 
     Rectangle {
         id: pill
+        objectName: "editRowPlate"
         anchors.fill: parent
-        radius: Appearance.rounding.small
+        radius: root.crate ? Tokens.radius : Appearance.rounding.small
         antialiasing: true
-        color: root.selected
+        border.width: root.crate && root.selected ? Tokens.border : 0
+        border.color: Tokens.pickEdge
+        color: root.crate
+            ? (root.selected ? Tokens.pickFill
+                : root.pressed ? Tokens.tint10
+                : root.containsMouse || root.activeFocus ? Tokens.tint5 : "transparent")
+            : root.selected
             ? Appearance.colors.colSecondary
             : root.pressed
                 ? Appearance.colors.colLayer1Active
@@ -214,7 +229,8 @@ MouseArea {
             implicitWidth: 30
             implicitHeight: 30
             radius: Appearance.rounding.small
-            color: root.selected
+            color: root.crate ? "transparent"
+                : root.selected
                 ? Appearance.withAlpha(Appearance.colors.colOnSecondary, 0.12)
                 : root.trailingKind === "switch" && root.switchChecked
                     ? Appearance.colors.colLayer1Active
@@ -225,10 +241,18 @@ MouseArea {
                 animation: Appearance.animation.elementMoveFast.colorAnimation.createObject(this)
             }
 
+            Ui.Glyph {
+                objectName: "editRowGlyph"
+                anchors.centerIn: parent
+                visible: root.crate && root.iconSource === ""
+                name: root.symbol
+                color: root.colOn
+            }
+
             MaterialSymbol {
                 id: symbolGlyph
                 anchors.centerIn: parent
-                visible: root.iconSource === ""
+                visible: !root.crate && root.iconSource === ""
                 text: root.symbol
                 iconSize: 18
                 fill: (root.trailingKind === "switch" && root.switchChecked) ? 1 : 0
@@ -287,7 +311,8 @@ MouseArea {
                 font.family: Appearance.font.family.main
                 font.pixelSize: Appearance.font.pixelSize.small
                 font.weight: Font.Normal
-                color: root.selected ? Appearance.colors.colOnSecondary : Appearance.colors.colSubtext
+                color: root.crate ? (root.selected ? Tokens.pickInkDim : Tokens.inkSubtle)
+                    : root.selected ? Appearance.colors.colOnSecondary : Appearance.colors.colSubtext
                 opacity: 1
                 elide: root.subtitleWrap ? Text.ElideNone : Text.ElideRight
                 wrapMode: root.subtitleWrap ? Text.Wrap : Text.NoWrap
@@ -308,10 +333,21 @@ MouseArea {
             elide: Text.ElideRight
         }
 
+        Ui.Glyph {
+            objectName: "editRowTrail"
+            Layout.alignment: Qt.AlignVCenter
+            visible: root.crate && (root.trailingKind === "chevron" || root.trailingKind === "check"
+                || root.trailingKind === "add")
+            name: root.trailingKind === "check" ? "check_circle"
+                : root.trailingKind === "add" ? "add_circle" : "chevron_right"
+            color: root.trailingKind === "check" && !root.selected ? Tokens.mark : root.colOn
+            opacity: root.trailingKind === "chevron" ? 0.7 : 1
+        }
+
         MaterialSymbol {
             Layout.alignment: Qt.AlignVCenter
-            visible: root.trailingKind === "chevron" || root.trailingKind === "check"
-                || root.trailingKind === "add"
+            visible: !root.crate && (root.trailingKind === "chevron" || root.trailingKind === "check"
+                || root.trailingKind === "add")
             text: root.trailingKind === "check" ? "check_circle"
                 : root.trailingKind === "add" ? "add_circle" : "chevron_right"
             iconSize: root.trailingKind === "chevron" ? 22 : 20
@@ -320,9 +356,18 @@ MouseArea {
             opacity: root.trailingKind === "chevron" ? 0.7 : 1
         }
 
+        Ui.Sw {
+            objectName: "editRowSwitch"
+            Layout.alignment: Qt.AlignVCenter
+            visible: root.crate && root.trailingKind === "switch"
+            on: root.switchChecked
+            // the row owns the gesture, as below
+            enabled: false
+        }
+
         StyledSwitch {
             Layout.alignment: Qt.AlignVCenter
-            visible: root.trailingKind === "switch"
+            visible: !root.crate && root.trailingKind === "switch"
             checked: root.switchChecked
             // The row owns the gesture: a 30px target inside a 58px row is a
             // target people miss, and the switch reads as a state either way.
@@ -336,9 +381,20 @@ MouseArea {
             spacing: 0
 
             StepButton {
+                visible: !root.crate
                 symbol: "remove"
                 enabled: root.stepDownEnabled
                 onTriggered: root.stepDown()
+            }
+            Ui.IconButton {
+                objectName: "editRowStepDown"
+                visible: root.crate
+                anchors.verticalCenter: parent.verticalCenter
+                width: Appearance.sizes.controlHeight + Appearance.sizes.space2
+                height: Appearance.sizes.controlHeight + Appearance.sizes.space2
+                glyph: "remove"
+                enabled: root.stepDownEnabled
+                onClicked: root.stepDown()
             }
             StyledText {
                 anchors.verticalCenter: parent.verticalCenter
@@ -346,10 +402,21 @@ MouseArea {
                 horizontalAlignment: Text.AlignHCenter
                 text: root.valueText
                 font.pixelSize: Appearance.font.pixelSize.small
-                font.family: Appearance.font.family.numbers
+                font.family: root.crate ? Tokens.mono : Appearance.font.family.numbers
                 color: root.colOn
             }
+            Ui.IconButton {
+                objectName: "editRowStepUp"
+                visible: root.crate
+                anchors.verticalCenter: parent.verticalCenter
+                width: Appearance.sizes.controlHeight + Appearance.sizes.space2
+                height: Appearance.sizes.controlHeight + Appearance.sizes.space2
+                glyph: "add"
+                enabled: root.stepUpEnabled
+                onClicked: root.stepUp()
+            }
             StepButton {
+                visible: !root.crate
                 symbol: "add"
                 enabled: root.stepUpEnabled
                 onTriggered: root.stepUp()

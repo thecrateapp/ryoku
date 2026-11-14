@@ -5,6 +5,8 @@ import Quickshell
 import stage.services
 import stage.modules.common
 import stage.modules.common.widgets
+import Ryoku.Ui as Ui
+import Ryoku.Ui.Singletons
 import stage.modules.ii.overlay
 
 OverlayBackground {
@@ -56,6 +58,13 @@ OverlayBackground {
         return String(tab?.sketch ?? "");
     }
 
+    // Under crate the note's tabs are the kit's Tabs, its hint and copy
+    // buttons Solar glyphs and kit IconButtons, and the drawing's frame the
+    // shared corner in a hairline.
+    readonly property bool crate: Tokens.controlsCrate
+    objectName: "notesPane"
+    border.width: root.crate ? Tokens.border : 0
+    border.color: Tokens.line
     property var tabOptions: root.tabsData.tabs.map((tab, index) => ({
         displayName: tab.title,
         icon: tab.icon,
@@ -263,7 +272,26 @@ OverlayBackground {
             sourceComponent: RowLayout {
                 Layout.fillWidth: true
 
+                Ui.Tabs {
+                    objectName: "notesKitTabs"
+                    visible: root.crate
+                    Layout.fillWidth: true
+                    options: root.tabOptions.map(option => ({
+                        "key": String(option.value), "label": option.displayName
+                    }))
+                    current: String(root.currentTabIndex)
+                    onChose: key => {
+                        if (root.tabEditModeEnabled) return;
+                        const index = Number(key);
+                        saveToFile();
+                        root.content = "";
+                        root.changeCurrentTab(index);
+                        Qt.callLater(() => loadTabContent(index));
+                    }
+                }
+
                 ConfigSelectionArray {
+                    visible: !root.crate
                     currentValue: root.currentTabIndex
                     Layout.fillWidth: true
                     
@@ -280,7 +308,25 @@ OverlayBackground {
                     options: root.tabOptions
                 }
 
+                Ui.Glyph {
+                    visible: root.crate
+                    name: "info"
+                    color: Tokens.inkSubtle
+                    MouseArea {
+                        id: kitInfoMouse
+                        anchors.fill: parent
+                        hoverEnabled: true
+                        cursorShape: Qt.WhatsThisCursor
+                        StyledToolTip {
+                            extraVisibleCondition: false
+                            alternativeVisibleCondition: kitInfoMouse.containsMouse
+                            text: Translation.tr("You can delete a tab with SHIFT+DELETE")
+                        }
+                    }
+                }
+
                 MaterialSymbol {
+                    visible: !root.crate
                     text: "info"
                     iconSize: Appearance.font.pixelSize.large
                     
@@ -375,8 +421,10 @@ OverlayBackground {
             sourceComponent: Rectangle {
                 implicitHeight: Math.min(sketchImage.implicitHeight + 20,
                                          sketchLoader.Layout.maximumHeight)
-                radius: Appearance.rounding.normal
+                radius: root.crate ? Tokens.radius : Appearance.rounding.normal
                 color: Appearance.colors.colLayer2
+                border.width: root.crate ? Tokens.border : 0
+                border.color: Tokens.line
 
                 Image {
                     id: sketchImage
@@ -478,7 +526,7 @@ OverlayBackground {
 
                         implicitHeight: lineHeight
                         implicitWidth: lineHeight
-                        buttonRadius: height / 2
+                        buttonRadius: root.crate ? Tokens.radius : height / 2
                         y: modelData.y
                         anchors.right: parent.right
                         anchors.rightMargin: -hitPadding
@@ -500,8 +548,17 @@ OverlayBackground {
 
                         contentItem: Item {
                             anchors.centerIn: parent
+                            Ui.Glyph {
+                                anchors.centerIn: parent
+                                visible: root.crate
+                                name: copyButton.justCopied ? "check" : "content_copy"
+                                size: copyButton.iconSizeLocal
+                                color: copyButton.justCopied ? Tokens.mark
+                                    : copyButton.hovered ? Tokens.mark : Tokens.inkSecondary
+                            }
                             MaterialSymbol {
                                 id: iconItem
+                                visible: !root.crate
                                 anchors.centerIn: parent
                                 text: copyButton.justCopied ? "check" : "content_copy"
                                 iconSize: copyButton.iconSizeLocal

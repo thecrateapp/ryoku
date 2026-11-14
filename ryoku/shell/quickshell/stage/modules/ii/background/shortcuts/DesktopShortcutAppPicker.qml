@@ -4,6 +4,7 @@ import QtQuick
 import QtQuick.Layouts
 import Quickshell
 import Ryoku.Ui
+import Ryoku.Ui as Ui
 import Ryoku.Ui.Singletons
 import stage.services
 import stage.modules.common
@@ -11,6 +12,14 @@ import stage.modules.common.widgets
 
 ColumnLayout {
     id: root
+
+    // Under crate a picked or done row is the kit's selection: the pick wash
+    // in the 1 px pickEdge with the pick ink, not the bone plate.
+    readonly property bool crate: Tokens.controlsCrate
+    readonly property color pickPlate: root.crate ? Tokens.pickFill : Tokens.bone
+    readonly property color pickRim: root.crate ? Tokens.pickEdge : Tokens.bone
+    readonly property color pickOn: root.crate ? Tokens.pickInk : Tokens.inkOnBone
+    readonly property color pickOnDim: root.crate ? Tokens.pickInkDim : Tokens.inkOnBoneDim
 
     required property string screenName
     required property string folderId
@@ -116,11 +125,11 @@ ColumnLayout {
                 width: ListView.view.width
                 height: Tokens.rowH + Tokens.s2
                 radius: Tokens.radius
-                color: inThisFolder ? Tokens.bone
+                color: inThisFolder ? root.pickPlate
                     : rowTap.pressed ? Tokens.tint16
                     : rowHover.hovered ? Tokens.tint10 : "transparent"
                 border.width: Tokens.border
-                border.color: inThisFolder ? Tokens.bone
+                border.color: inThisFolder ? root.pickRim
                     : rowHover.hovered ? Tokens.lineStrong : Tokens.line
                 opacity: canToggle ? 1 : 0.55
                 activeFocusOnTab: canToggle
@@ -152,7 +161,7 @@ ColumnLayout {
                     Text {
                         width: parent.width
                         text: appRow.modelData.name || appRow.modelData.id
-                        color: appRow.inThisFolder ? Tokens.inkOnBone : Tokens.ink
+                        color: appRow.inThisFolder ? root.pickOn : Tokens.ink
                         font.family: Tokens.ui
                         font.pixelSize: Tokens.fBody
                         font.weight: Font.Medium
@@ -161,21 +170,21 @@ ColumnLayout {
                     Text {
                         width: parent.width
                         text: appRow.statusText
-                        color: appRow.inThisFolder ? Tokens.inkOnBoneDim : Tokens.inkMuted
+                        color: appRow.inThisFolder ? root.pickOnDim : Tokens.inkMuted
                         font.family: Tokens.ui
                         font.pixelSize: Tokens.fSmall
                         elide: Text.ElideRight
                     }
                 }
 
-                MaterialSymbol {
+                ShortcutSymbol {
                     id: stateGlyph
                     anchors.right: parent.right
                     anchors.rightMargin: Tokens.s3
                     anchors.verticalCenter: parent.verticalCenter
                     text: appRow.inThisFolder ? "check_circle" : "add_circle"
                     iconSize: Tokens.s5
-                    color: appRow.inThisFolder ? Tokens.inkOnBone : Tokens.inkDim
+                    color: appRow.inThisFolder ? (root.crate ? Tokens.mark : Tokens.inkOnBone) : Tokens.inkDim
                 }
 
                 HoverHandler {

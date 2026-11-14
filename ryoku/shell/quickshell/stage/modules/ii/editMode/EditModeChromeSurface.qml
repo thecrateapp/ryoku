@@ -8,6 +8,8 @@ import stage.modules.common.functions
 import stage.modules.common.widgets
 import stage.modules.ii.editMode
 import shell.services as ShellServices
+import Ryoku.Ui as Ui
+import Ryoku.Ui.Singletons
 
 /**
  * One screen's worth of Edit Mode's chrome: a full-screen layer surface that is
@@ -640,10 +642,15 @@ PanelWindow {
                 readonly property point at: root.fromBarWindow(GlobalStates.editBarHoverX, GlobalStates.editBarHoverY,
                     GlobalStates.editBarHoverWindowWidth, GlobalStates.editBarHoverWindowHeight)
 
-                width: hoverLabel.implicitWidth + 20
+                // Under crate the name is a glass tag in a hairline, its label
+                // the tracked mono caption.
+                readonly property bool crate: Tokens.controlsCrate
+                width: (crate ? hoverKitLabel.implicitWidth : hoverLabel.implicitWidth) + 20
                 height: 26
-                radius: Appearance.rounding.full
-                color: Appearance.colors.colSecondaryContainer
+                radius: crate ? Tokens.radius : Appearance.rounding.full
+                color: crate ? Tokens.glass : Appearance.colors.colSecondaryContainer
+                border.width: crate ? Tokens.border : 0
+                border.color: Tokens.line
 
                 x: {
                     const wanted = side === "left" ? clear
@@ -661,9 +668,17 @@ PanelWindow {
                 StyledText {
                     id: hoverLabel
                     anchors.centerIn: parent
+                    visible: !parent.crate
                     text: GlobalStates.editBarHoverName
                     font.pixelSize: Appearance.font.pixelSize.smaller
                     color: Appearance.colors.colOnSecondaryContainer
+                }
+                Ui.TrackLabel {
+                    id: hoverKitLabel
+                    anchors.centerIn: parent
+                    visible: parent.crate
+                    text: GlobalStates.editBarHoverName
+                    color: Tokens.inkSecondary
                 }
 
                 opacity: 0

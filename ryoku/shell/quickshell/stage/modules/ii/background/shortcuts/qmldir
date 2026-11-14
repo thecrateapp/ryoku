@@ -6,3 +6,4 @@ DesktopShortcutContextDialog 1.0 DesktopShortcutContextDialog.qml
 DesktopShortcutGroupPopup 1.0 DesktopShortcutGroupPopup.qml
 DesktopShortcutAppPicker 1.0 DesktopShortcutAppPicker.qml
 ItemContextDialog 1.0 ItemContextDialog.qml
+ShortcutSymbol 1.0 ShortcutSymbol.qml

@@ -5,6 +5,7 @@ import QtQuick.Layouts
 import Quickshell
 import Quickshell.Widgets
 import Ryoku.Ui
+import Ryoku.Ui as Ui
 import Ryoku.Ui.Singletons
 import stage.services
 import stage.modules.common
@@ -12,6 +13,14 @@ import stage.modules.common.widgets
 
 FocusScope {
     id: root
+
+    // Under crate a picked or done row is the kit's selection: the pick wash
+    // in the 1 px pickEdge with the pick ink, not the bone plate.
+    readonly property bool crate: Tokens.controlsCrate
+    readonly property color pickPlate: root.crate ? Tokens.pickFill : Tokens.bone
+    readonly property color pickRim: root.crate ? Tokens.pickEdge : Tokens.bone
+    readonly property color pickOn: root.crate ? Tokens.pickInk : Tokens.inkOnBone
+    readonly property color pickOnDim: root.crate ? Tokens.pickInkDim : Tokens.inkOnBoneDim
 
     required property var entry
     required property rect tileRect
@@ -167,7 +176,7 @@ FocusScope {
         opacity: actionEnabled ? 1 : 0.45
         activeFocusOnTab: actionEnabled
 
-        MaterialSymbol {
+        ShortcutSymbol {
             id: actionGlyph
             anchors.left: parent.left
             anchors.leftMargin: Tokens.s3
@@ -282,7 +291,7 @@ FocusScope {
                             }
                         }
                     }
-                    MaterialSymbol {
+                    ShortcutSymbol {
                         anchors.centerIn: parent
                         visible: root.apps.length === 0
                         text: "folder"
@@ -448,17 +457,18 @@ FocusScope {
                                 visible: memberHover.hovered && root.canTakeOut
                                 height: Tokens.s5
                                 width: takeOutText.implicitWidth + Tokens.s2
-                                radius: height / 2
-                                color: Tokens.bone
+                                // under crate a confirm action: filled with the mark
+                                radius: root.crate ? Tokens.radius : height / 2
+                                color: root.crate ? Tokens.mark : Tokens.bone
                                 border.width: Tokens.border
-                                border.color: Tokens.bone
+                                border.color: root.crate ? Tokens.mark : Tokens.bone
                                 z: 2
                                 Text {
                                     id: takeOutText
                                     anchors.centerIn: parent
                                     text: Translation.tr("Take out")
-                                    color: Tokens.inkOnBone
-                                    font.family: Tokens.ui
+                                    color: root.crate ? Tokens.paper : Tokens.inkOnBone
+                                    font.family: root.crate ? Tokens.mono : Tokens.ui
                                     font.pixelSize: Tokens.fTiny
                                 }
                                 TapHandler {

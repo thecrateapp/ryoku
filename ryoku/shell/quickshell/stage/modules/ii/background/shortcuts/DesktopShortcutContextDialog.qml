@@ -4,6 +4,7 @@ import QtQuick
 import QtQuick.Layouts
 import Quickshell
 import Ryoku.Ui
+import Ryoku.Ui as Ui
 import Ryoku.Ui.Singletons
 import stage.services
 import stage.modules.common
@@ -11,6 +12,14 @@ import stage.modules.common.widgets
 
 ItemContextDialog {
     id: root
+
+    // Under crate a picked or done row is the kit's selection: the pick wash
+    // in the 1 px pickEdge with the pick ink, not the bone plate.
+    readonly property bool crate: Tokens.controlsCrate
+    readonly property color pickPlate: root.crate ? Tokens.pickFill : Tokens.bone
+    readonly property color pickRim: root.crate ? Tokens.pickEdge : Tokens.bone
+    readonly property color pickOn: root.crate ? Tokens.pickInk : Tokens.inkOnBone
+    readonly property color pickOnDim: root.crate ? Tokens.pickInkDim : Tokens.inkOnBoneDim
     required property var entry
     required property string screenName
     property string page: ""
@@ -148,12 +157,28 @@ ItemContextDialog {
         Layout.bottomMargin: Tokens.s1
         implicitHeight: Tokens.rowH
 
-        IconBtn {
+        // under crate the kit's IconButton with the Solar arrow
+        Item {
             id: backButton
             anchors.left: parent.left
             anchors.verticalCenter: parent.verticalCenter
-            glyph: "‹"
-            onAct: header.backRequested()
+            implicitWidth: root.crate ? kitBack.implicitWidth : stockBack.implicitWidth
+            implicitHeight: root.crate ? kitBack.implicitHeight : stockBack.implicitHeight
+            width: implicitWidth
+            height: implicitHeight
+            IconBtn {
+                id: stockBack
+                visible: !root.crate
+                glyph: "‹"
+                onAct: header.backRequested()
+            }
+            Ui.IconButton {
+                id: kitBack
+                objectName: "shortcutKitBack"
+                visible: root.crate
+                glyph: "arrow_back"
+                onClicked: header.backRequested()
+            }
         }
         Text {
             anchors.left: backButton.right
@@ -198,7 +223,7 @@ ItemContextDialog {
         radius: Tokens.radius
         color: rowTap.pressed ? Tokens.tint16 : rowHover.hovered ? Tokens.tint10 : "transparent"
         border.width: activeFocus ? Tokens.border : 0
-        border.color: Tokens.bone
+        border.color: root.pickRim
         opacity: rowEnabled ? 1 : 0.4
         activeFocusOnTab: rowEnabled
         Behavior on color { ColorAnimation { duration: Tokens.snap } }
@@ -215,7 +240,7 @@ ItemContextDialog {
             visible: source.toString().length > 0
             fillMode: Image.PreserveAspectFit
         }
-        MaterialSymbol {
+        ShortcutSymbol {
             id: rowSymbol
             anchors.centerIn: rowImage
             visible: !rowImage.visible
@@ -498,7 +523,7 @@ ItemContextDialog {
                             visible: source.toString().length > 0
                             fillMode: Image.PreserveAspectFit
                         }
-                        MaterialSymbol {
+                        ShortcutSymbol {
                             anchors.centerIn: parent
                             visible: root.iconSource.toString().length === 0
                             text: root.entry.type === "group" || root.entry.type === "directory" ? "folder"
@@ -550,7 +575,7 @@ ItemContextDialog {
         border.width: Tokens.border
         border.color: toolHover.hovered ? Tokens.lineStrong : Tokens.line
         Behavior on color { ColorAnimation { duration: Tokens.snap } }
-        MaterialSymbol {
+        ShortcutSymbol {
             id: toolGlyph
             anchors.centerIn: parent
             text: tool.symbol

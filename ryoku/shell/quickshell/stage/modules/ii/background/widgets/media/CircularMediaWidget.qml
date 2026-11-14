@@ -18,6 +18,12 @@ import stage.modules.common.widgets
 import stage.modules.ii.background.widgets
 AbstractBackgroundWidget {
     id: root
+    // The face's two neutral ends, white and black in stock: the glass
+    // reflection and the tint the art's colours are cut with for text, and
+    // the shade the progress outline is cut with. Under crate they are the
+    // palette's light and dark ends (paper and ink, by which is lighter).
+    readonly property color sheenInk: Tokens.controlsCrate ? (Tokens.light ? Tokens.paper : Tokens.ink) : "#FFFFFF"
+    readonly property color shadeInk: Tokens.controlsCrate ? (Tokens.light ? Tokens.ink : Tokens.paper) : "#000000"
 
     configEntryName: "circular_media"
 
@@ -114,8 +120,8 @@ AbstractBackgroundWidget {
     readonly property color activeOnPrimary: root.useDynamicColors ? blendedColors.colOnPrimary : WidgetColorScheme.colors.colOnPrimary
 
     // Text colors are blended with white (neutral tinting) to prevent extremely vibrant/hard-to-read text, matching reference watch displays
-    readonly property color activeTextColor: root.useDynamicColors ? ColorUtils.mix("#FFFFFF", root.artDominantColor, 0.90) : WidgetColorScheme.colors.colOnSurface
-    readonly property color activeSubtextColor: root.useDynamicColors ? ColorUtils.mix("#FFFFFF", root.artDominantColor, 0.80) : WidgetColorScheme.colors.colOnSurfaceVariant
+    readonly property color activeTextColor: root.useDynamicColors ? ColorUtils.mix(root.sheenInk, root.artDominantColor, 0.90) : WidgetColorScheme.colors.colOnSurface
+    readonly property color activeSubtextColor: root.useDynamicColors ? ColorUtils.mix(root.sheenInk, root.artDominantColor, 0.80) : WidgetColorScheme.colors.colOnSurfaceVariant
 
     // Trigger position updates for the progress bar
     Timer {
@@ -352,7 +358,7 @@ AbstractBackgroundWidget {
                                 anchors.fill: parent
                                 shapeString: "Cookie9Sided"
                                 color: "transparent"
-                                borderColor: ColorUtils.mix("#000000", root.activeAccentColor, 0.70)
+                                borderColor: ColorUtils.mix(root.shadeInk, root.activeAccentColor, 0.70)
                                 borderWidth: 0.055
                             }
 
@@ -604,8 +610,8 @@ AbstractBackgroundWidget {
                     cached: true
                     gradient: Gradient {
                         GradientStop { position: 0.0; color: "transparent" }
-                        GradientStop { position: 0.3; color: ColorUtils.applyAlpha("#FFFFFF", 0.42) }
-                        GradientStop { position: 0.7; color: ColorUtils.applyAlpha("#FFFFFF", 0.42) }
+                        GradientStop { position: 0.3; color: ColorUtils.applyAlpha(root.sheenInk, 0.42) }
+                        GradientStop { position: 0.7; color: ColorUtils.applyAlpha(root.sheenInk, 0.42) }
                         GradientStop { position: 1.0; color: "transparent" }
                     }
                     layer.enabled: true
@@ -661,8 +667,8 @@ AbstractBackgroundWidget {
                     cached: true
                     gradient: Gradient {
                         GradientStop { position: 0.0; color: "transparent" }
-                        GradientStop { position: 0.3; color: ColorUtils.applyAlpha("#FFFFFF", 0.28) }
-                        GradientStop { position: 0.7; color: ColorUtils.applyAlpha("#FFFFFF", 0.28) }
+                        GradientStop { position: 0.3; color: ColorUtils.applyAlpha(root.sheenInk, 0.28) }
+                        GradientStop { position: 0.7; color: ColorUtils.applyAlpha(root.sheenInk, 0.28) }
                         GradientStop { position: 1.0; color: "transparent" }
                     }
                     layer.enabled: true

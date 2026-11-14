@@ -50,6 +50,122 @@
   (`inir/modules/iris/dock/`, `ui/lib/glyphs.js`, `hyprland/modules/decoration.lua`;
   `tests/ui/shima-dock-kit-probe.sh`, `tests/hyprland-crate-glass.lua`,
   `tests/visual/surfaces/scenes/shima-dock.qml`).
+- **Desktop shortcuts use the kit's selection and Solar glyphs under crate.**
+  Selected icons, done actions and apps already in a folder take the pick
+  wash in the 1 px pick edge with the pick ink instead of the bone plate; the
+  folder's "Take out" is filled with the mark; the menus' and dialogs' icons
+  are Solar glyphs (through ShortcutSymbol) and the way back the kit
+  IconButton. The desktop icons' own plates and label pills, which the user
+  styles, stay. Stock is unchanged
+  (`quickshell/stage/modules/ii/background/shortcuts/`, `ui/tools/`).
+- **The EasyEffects widget takes the shared corner and Solar glyphs under
+  crate.** Its panes, cards, rows, fields, chips and pills use the 6 px
+  corner instead of the expressive ladder and the full pill, and its actions
+  and effect chips draw Solar glyphs; the kit gains the stand-ins its effect
+  icons name. Stock is unchanged (`quickshell/stage/modules/ii/easyEffects/`,
+  `ui/tools/`).
+- **The notes widget and its sketch editor use the kit under crate.** The
+  note's tabs are the kit Tabs, its hint and copy buttons Solar glyphs, its
+  pane and drawing frame a hairline at the 6 px corner. The sketch editor is an
+  opaque popover surface; its draw tray an opaque popover plate whose tools
+  are drawn as kit icon buttons (Solar glyphs, the mark when on, no plate),
+  the thickness the kit Beam with a mono readout, and the status a popover
+  tag. The pen's fallback inks stay data colours. Stock is unchanged
+  (`quickshell/stage/modules/ii/overlay/notes/`,
+  `quickshell/stage/modules/common/draw/`; `tests/ui/stage-kit-probe.sh`).
+- **The editor's colour schemes are pick cards under crate.** The chosen scheme
+  takes the pick wash in the 1 px pick edge and the pick ink, the others a
+  hairline over the glass, and a scheme still loading shows a Solar glyph.
+  Stock is unchanged (`quickshell/stage/modules/common/widgets/ColorPreviewButton.qml`).
+- **The editor's wallpaper pages use the kit under crate.** The picture grid's
+  tiles take the 6 px corner and the applied one the 1 px pick edge and a check
+  tag; the current picture's tags and its change button are popover tags with
+  Solar glyphs and a kit IconButton; the screen map's edited screen takes the
+  pick edge, its names are mono tags and its swap and copy actions kit
+  IconButtons; the framing coach and control plate are opaque popover plates
+  with kit IconButtons, and the snap marker a plain disc. Stock is unchanged
+  (`quickshell/stage/modules/ii/editMode/`; `tests/ui/stage-kit-probe.sh`).
+- **The editor's catalogue, dock and style pages use the kit under crate.** The
+  catalogue search is the kit Field (kept in step with the query, Escape
+  empties it and then lets the keyboard go), and so is the new folder's name;
+  apps on the desktop take the pick wash in the 1 px pick edge; the carried
+  row is a glass tag. The dock design cards are pick cards; the selection's
+  align strip is an opaque popover plate with kit IconButtons; the style
+  presets' apply, rename and delete are kit IconButtons with Solar glyphs. The
+  kit Field gains selectAll() and releaseFocus(). Stock is unchanged
+  (`quickshell/stage/modules/ii/editMode/`, `ui/Field.qml`).
+- **The widget faces' icons have Solar glyphs too.** The kit's catalogue gains
+  the Solar stand-ins and Material aliases for the icons the widget faces and
+  the wallpaper framing coach draw (`photo_library`, `animation`, `pan_tool`,
+  `done_all`, `location_on`, the timers' hourglasses, the mail widget's
+  `login` and `save`, and the rest), with struck variants for `mobile_off`,
+  `phonelink_off`, `music_off` and `hourglass_disabled`. Existing glyphs are unchanged
+  (`ui/tools/`, `ui/lib/glyphs.js`).
+- **Every Stage icon has a Solar glyph under crate.** The kit's catalogue gains
+  105 Solar Outline icons and 145 Material aliases (`schedule`, `album`,
+  `calendar_month`, the align and view icons, and the rest the widget
+  catalogue, the bar's components, the editor's rows and the widget buttons
+  name), so no Stage icon falls back to the font glyph under crate. Existing
+  glyphs are unchanged (`ui/tools/`, `ui/lib/glyphs.js`;
+  `tests/ui/stage-kit-probe.sh` checks the registries resolve).
+- **Edit Mode's badges and catalogue search use the kit under crate.** The add
+  and remove badges on the bar's widgets and the dock's apps take the shared
+  corner, the mark and alert roles and Solar glyphs; the catalogue search's
+  mark is a Solar glyph and its clear the kit IconButton. Stock is unchanged
+  (`quickshell/stage/modules/ii/editMode/`).
+- **Resource widgets' captions follow the theme's type under crate.** The CPU,
+  RAM and disk pills and the resource fill cards and columns label their
+  readings in the Tokens type roles. Stock is unchanged
+  (`quickshell/stage/modules/ii/background/widgets/utility/`).
+- **Bluetooth widgets' captions follow the theme's type under crate.** The
+  device names and states on the battery lists and the fill cards take the
+  Tokens type roles. Stock is unchanged
+  (`quickshell/stage/modules/ii/background/widgets/bluetooth/`).
+- **Media widgets seek on the kit's Beam under crate.** The Poster and Deck
+  widgets' seek line is the kit Beam (draggable when the player can seek, a
+  progress line otherwise) instead of the wavy slider; the Android and Compact
+  widgets' small captions take the Tokens type roles; the circular widget's
+  reflection, its text tint and its outline shade are the palette's light and
+  dark ends. Stock is unchanged
+  (`quickshell/stage/modules/ii/background/widgets/media/`;
+  `tests/ui/stage-kit-probe.sh`).
+- **Clock widgets read their type and reflections from the theme under crate.**
+  The small captions on the Nothing wheel and digital clocks and the WearOS
+  dial take the Tokens type roles, and the glass reflection on the analog faces
+  (circle pointer, concentric, month, scallop, triple ring, WearOS) is the
+  palette's light end instead of white; each face names its reflection once.
+  The display numerals stay the faces' own. Stock is unchanged
+  (`quickshell/stage/modules/ii/background/widgets/clock/`;
+  `tests/ui/stage-kit-probe.sh` compiles each migrated face).
+- **Desktop widgets wear the kit's edit chrome under crate.** In Edit Mode a
+  selected widget's halo is the pick wash in the 1 px pick edge, its size
+  readout a mono tag on the popover ground, and its resize and menu grips
+  popover knobs in a hairline with Solar glyphs, warming to the mark. The card
+  the utility widgets sit on keeps the scheme's fill as desktop content, takes
+  the 6 px corner and a hairline, and drops its filled shadow; widget buttons
+  draw Solar glyphs; the missing-widget placeholder is a glass card edged in
+  the alert role. The halo, readout, grips and card move into
+  WidgetSelectionHalo, WidgetSizeReadout, WidgetEditGrip and WidgetCard, so the
+  probe and the stage scene load them without a compositor. The stock look is
+  unchanged (`quickshell/stage/modules/ii/background/widgets/`;
+  `tests/ui/stage-kit-probe.sh`, `tests/visual/surfaces/scenes/stage.qml`).
+- **The Stage editor draws with the shared kit under crate.** The edit toolbar,
+  the catalogue panel, the widget and bar menus, the widget options card and
+  the guide card are the one glass (Tokens.glass in a 1 px line at the 6 px
+  corner, no filled shadow), frosted by a new `crate-glass-blur-stage` rule on
+  the `quickshell:editMode` layer. The toolbar's display and sections are kit
+  Chips (the open section filled with the mark), snapping and undo/redo kit
+  IconButtons with Solar glyphs, and Done the filled confirm Btn. Panel rows
+  take the pick wash in the 1 px pick edge with Solar glyphs, the kit switch
+  and kit stepper buttons; option runs are kit Chips; section captions are the
+  tracked mono label; the panel header drops its lead bar and rule. The kit
+  gains Solar glyphs for the editor (gallery, palette, menu-dots, magnet,
+  panel-bottom, minus-circle, full-screen) and their Material aliases. The
+  panel's plate and header move into EditDrawerPlate and EditDrawerHeader so
+  `tests/ui/stage-kit-probe.sh` and the stage scene load them offscreen. The
+  stock look is unchanged (`quickshell/stage/modules/ii/editMode/`,
+  `hyprland/modules/decoration.lua`, `ui/`; `tests/hyprland-crate-glass.lua`,
+  `tests/visual/surfaces/scenes/stage.qml`).
 - **Pinned shots draw with the shared kit under crate.** A pin's image sits on
   an opaque card with the shared 6 px corner and a 1 px line, without the drop
   shadow. Its actions (edit, copy, copy path, close) are the kit's icon buttons

@@ -7,6 +7,8 @@ import stage.services
 import stage.modules.common
 import stage.modules.common.widgets
 import stage.modules.common.functions
+import Ryoku.Ui as Ui
+import Ryoku.Ui.Singletons
 /**
  * The pen tray: what the pen is doing, the tool, the ink, the thickness, the edits, the
  * presenting modes, and whatever the host adds to the end.
@@ -176,11 +178,20 @@ Rectangle {
 
     implicitWidth: layout.implicitWidth + root.chrome
     implicitHeight: layout.implicitHeight + root.padding * 2
-    radius: root.vertical ? Math.min(Appearance.rounding.verylarge, width / 2) : Appearance.rounding.full
+    // Under crate the tray is an opaque popover plate in a hairline at the
+    // shared corner (it floats on a layer nothing blurs), the inks sit in a
+    // hairline well, the thickness is the kit's Beam with a mono readout,
+    // and the status line a popover tag.
+    readonly property bool crate: Tokens.controlsCrate
+    objectName: "drawTray"
+    border.width: root.crate ? Tokens.border : 0
+    border.color: Tokens.line
+    radius: root.crate ? Tokens.radius
+        : root.vertical ? Math.min(Appearance.rounding.verylarge, width / 2) : Appearance.rounding.full
     // Opaque tones, not the layer tokens: those are translucent under a transparency
     // theme and lean on the compositor blurring what is behind them, and this tray floats
     // over arbitrary applications on a layer nothing blurs.
-    color: Appearance.m3colors.m3surfaceContainer
+    color: root.crate ? Tokens.popover : Appearance.m3colors.m3surfaceContainer
 
     /// A row or a column of a group, with its buttons' inner corners pressed flat.
     component Group: GridLayout {
@@ -325,8 +336,10 @@ Rectangle {
             Layout.alignment: Qt.AlignCenter
             implicitWidth: inks.implicitWidth + 8
             implicitHeight: inks.implicitHeight + 8
-            radius: root.vertical ? Appearance.rounding.large : Appearance.rounding.full
-            color: Appearance.m3colors.m3surfaceContainerHigh
+            radius: root.crate ? Tokens.radius : root.vertical ? Appearance.rounding.large : Appearance.rounding.full
+            color: root.crate ? "transparent" : Appearance.m3colors.m3surfaceContainerHigh
+            border.width: root.crate ? Tokens.border : 0
+            border.color: Tokens.line
 
             Grid {
                 id: inks
@@ -362,9 +375,16 @@ Rectangle {
                                 animation: Appearance.animation.elementMoveFast.numberAnimation.createObject(this)
                             }
 
+                            Ui.Glyph {
+                                anchors.centerIn: parent
+                                visible: root.crate && swatch.current
+                                name: "check"
+                                size: 14
+                                color: ColorUtils.getContrastingTextColor(swatch.modelData)
+                            }
                             MaterialSymbol {
                                 anchors.centerIn: parent
-                                visible: swatch.current
+                                visible: !root.crate && swatch.current
                                 text: "check"
                                 iconSize: Appearance.font.pixelSize.normal
                                 color: ColorUtils.getContrastingTextColor(swatch.modelData)
@@ -403,9 +423,9 @@ Rectangle {
             implicitWidth: root.target
             implicitHeight: root.target
             focusPolicy: Qt.NoFocus
-            buttonRadius: Appearance.rounding.full
-            colBackground: Appearance.m3colors.m3surfaceContainerHigh
-            colBackgroundHover: Appearance.colors.colSurfaceContainerHighestHover
+            buttonRadius: root.crate ? Tokens.radius : Appearance.rounding.full
+            colBackground: root.crate ? "transparent" : Appearance.m3colors.m3surfaceContainerHigh
+            colBackgroundHover: root.crate ? Tokens.tint5 : Appearance.colors.colSurfaceContainerHighestHover
             onClicked: root.inkMenuRequested(inkButton)
 
             contentItem: Item {
@@ -450,9 +470,28 @@ Rectangle {
                 onTriggered: root.widthPicked(Math.min(24, Math.round(root.strokeWidth) + 1))
             }
 
+            Ui.Beam {
+                id: kitWidth
+                objectName: "drawWidthBeam"
+                visible: root.crate && !root.vertical
+                Layout.preferredWidth: thickness.sliderWidth
+                from: 1
+                to: 24
+                stepSize: 1
+                value: root.strokeWidth
+                onMoved: v => root.widthPicked(Math.round(v))
+
+                StyledToolTip {
+                    requireOverlay: false
+                    extraVisibleCondition: false
+                    alternativeVisibleCondition: kitWidth.hot && !kitWidth.dragging
+                    text: Translation.tr("Thickness") + "  ·  Ctrl+[ ]"
+                }
+            }
+
             StyledSlider {
                 id: widthSlider
-                visible: !root.vertical
+                visible: !root.crate && !root.vertical
                 Layout.preferredWidth: thickness.sliderWidth
                 from: 1
                 to: 24
@@ -495,7 +534,7 @@ Rectangle {
                         - (widthValue.glyph.y + widthValue.glyph.height / 2))
                     text: Math.round(root.strokeWidth)
                     color: root.eraser ? Appearance.colors.colOnSurfaceVariant : Appearance.colors.colOnSurface
-                    font.family: Appearance.font.family.main
+                    font.family: root.crate ? Tokens.mono : Appearance.font.family.main
                     font.variableAxes: ({ "wght": 760, "wdth": 40, "ROND": 100 })
                     font.pixelSize: Math.round(root.target * 0.62)
                     font.features: ({ "tnum": 1 })
@@ -509,7 +548,8 @@ Rectangle {
                     anchors.leftMargin: 2
                     anchors.baseline: digits.baseline
                     text: "PX"
-                    color: Appearance.colors.colOnSurfaceVariant
+                    font.family: root.crate ? Tokens.mono : unit.defaultFont
+                    color: root.crate ? Tokens.inkSubtle : Appearance.colors.colOnSurfaceVariant
                     font.pixelSize: Appearance.font.pixelSize.smallest
                     font.weight: Font.Bold
                     font.letterSpacing: 0.6
@@ -666,8 +706,10 @@ Rectangle {
         visible: root.statusText.length > 0
         implicitWidth: status.implicitWidth + 20
         implicitHeight: status.implicitHeight + 8
-        radius: Appearance.rounding.full
-        color: Appearance.m3colors.m3inverseSurface
+        radius: root.crate ? Tokens.radius : Appearance.rounding.full
+        color: root.crate ? Tokens.popover : Appearance.m3colors.m3inverseSurface
+        border.width: root.crate ? Tokens.border : 0
+        border.color: Tokens.line
 
         StyledText {
             id: status
@@ -675,7 +717,7 @@ Rectangle {
             text: root.statusText
             font.pixelSize: Appearance.font.pixelSize.smaller
             font.weight: Font.Medium
-            color: Appearance.m3colors.m3inverseOnSurface
+            color: root.crate ? Tokens.ink : Appearance.m3colors.m3inverseOnSurface
         }
     }
 }

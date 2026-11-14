@@ -143,7 +143,8 @@ hl.layer_rule({
 -- notifications, the clipboard, the frame's prompts and menus, the docks (the
 -- Shima dock's body, label and menu in its full-output ryoku-dock-shima layer), the
 -- desktop menu, the first-boot Kit hint, a pin's action strip, the hero
--- launcher's card and the window rail under it) is the panel grey at 68 %
+-- launcher's card and the window rail under it, the Stage editor's toolbar,
+-- catalogue panel and menus) is the panel grey at 68 %
 -- (Tokens.glass); blur what is behind each, and only where it draws
 -- (ignore_alpha), so the glass reads as frosted. A pin's card is opaque and
 -- drops its shadow under crate, so on "ryopin" only the strip frosts.
@@ -159,6 +160,15 @@ if crate_glass() then
   hl.layer_rule({
     name         = "crate-glass-blur",
     match        = { namespace = "^(quickshell|ryoku-sidebar-left|ryoku-osd|ryoku-notifications|ryoku-frame|clipboard|qs-dock|ryoku-dock-shima|dockappmenu|ryoku-dock-menu|ryoku-desktop-menu|ryoku-dialog|ryoku-keys-hint|ryopin|launcher|launcher-window-rail)$" },
+    blur         = not no_blur,
+    ignore_alpha = 0.05,
+  })
+  -- The Stage editor's chrome is one screen-sized layer, clear but for the
+  -- toolbar, the catalogue panel, the widget and bar menus and the guide card;
+  -- ignore_alpha keeps the frost on those and off the desktop being edited.
+  hl.layer_rule({
+    name         = "crate-glass-blur-stage",
+    match        = { namespace = "^quickshell:(editMode)$" },
     blur         = not no_blur,
     ignore_alpha = 0.05,
   })

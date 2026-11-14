@@ -7,6 +7,7 @@ import stage.services
 import stage.modules.common
 import stage.modules.common.widgets
 import stage.modules.common.functions
+import Ryoku.Ui as Ui
 import Ryoku.Ui.Singletons
 
 /**
@@ -23,6 +24,10 @@ import Ryoku.Ui.Singletons
  */
 Item {
     id: root
+
+    // Under crate a picture is a tile at the shared corner; the applied one
+    // takes the 1 px pickEdge and a popover tag with the check glyph.
+    readonly property bool crate: Tokens.controlsCrate
 
     // "desktop", "lockscreen", "lightmode" or "screen".
     property string target: "desktop"
@@ -118,10 +123,11 @@ Item {
                 id: tile
                 width: root.cellWidth
                 height: root.cellHeight
-                radius: Appearance.rounding.small
+                objectName: "wallpaperTile"
+                radius: root.crate ? Tokens.radius : Appearance.rounding.small
                 color: Appearance.colors.colLayer1
-                border.width: cell.applied ? 2 : 0
-                border.color: cell.applied ? Appearance.colors.colPrimary : Appearance.colors.colLayer0Border
+                border.width: cell.applied ? (root.crate ? Tokens.border : 2) : 0
+                border.color: cell.applied ? (root.crate ? Tokens.pickEdge : Appearance.colors.colPrimary) : Appearance.colors.colLayer0Border
                 scale: tileMouse.containsPress ? 0.96 : 1
                 Behavior on scale {
                     enabled: !Appearance.reducedMotion
@@ -189,11 +195,21 @@ Item {
                     visible: cell.applied
                     width: 22
                     height: 22
-                    radius: width / 2
-                    color: Appearance.colors.colPrimary
+                    radius: root.crate ? Tokens.radius : width / 2
+                    color: root.crate ? Tokens.popover : Appearance.colors.colPrimary
+                    border.width: root.crate ? Tokens.border : 0
+                    border.color: Tokens.pickEdge
 
+                    Ui.Glyph {
+                        anchors.centerIn: parent
+                        visible: root.crate
+                        name: "check"
+                        size: 14
+                        color: Tokens.mark
+                    }
                     MaterialSymbol {
                         anchors.centerIn: parent
+                        visible: !root.crate
                         text: "check"
                         iconSize: 16
                         color: Appearance.colors.colOnPrimary

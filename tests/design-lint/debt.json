@@ -1380,29 +1380,19 @@
   "pixel-size": 2
  },
  "ryoku/shell/quickshell/stage/modules/ii/background/widgets/MissingWidgetPlaceholder.qml": {
-  "hex-colour": 4,
-  "pixel-size": 2
+  "hex-colour": 2
  },
  "ryoku/shell/quickshell/stage/modules/ii/background/widgets/bluetooth/BluetoothEarbudsStemWidget.qml": {
-  "pixel-size": 2
- },
- "ryoku/shell/quickshell/stage/modules/ii/background/widgets/bluetooth/BluetoothFillCardsWidget.qml": {
-  "pixel-size": 2
- },
- "ryoku/shell/quickshell/stage/modules/ii/background/widgets/bluetooth/DevicesBatteryList1x1Widget.qml": {
-  "pixel-size": 2
- },
- "ryoku/shell/quickshell/stage/modules/ii/background/widgets/bluetooth/DevicesBatteryListWidget.qml": {
   "pixel-size": 2
  },
  "ryoku/shell/quickshell/stage/modules/ii/background/widgets/bluetooth/PcBatteryBarsWidget.qml": {
   "hex-colour": 2
  },
  "ryoku/shell/quickshell/stage/modules/ii/background/widgets/clock/CirclePointerClockWidget.qml": {
-  "hex-colour": 4
+  "hex-colour": 1
  },
  "ryoku/shell/quickshell/stage/modules/ii/background/widgets/clock/ConcentricClockWidget.qml": {
-  "hex-colour": 4
+  "hex-colour": 1
  },
  "ryoku/shell/quickshell/stage/modules/ii/background/widgets/clock/DuoClockWidget.qml": {
   "pixel-size": 1
@@ -1411,38 +1401,34 @@
   "pixel-size": 3
  },
  "ryoku/shell/quickshell/stage/modules/ii/background/widgets/clock/MonthClockWidget.qml": {
-  "hex-colour": 4
- },
- "ryoku/shell/quickshell/stage/modules/ii/background/widgets/clock/NothingDigitalClockWidget.qml": {
-  "pixel-size": 3
+  "hex-colour": 1
  },
  "ryoku/shell/quickshell/stage/modules/ii/background/widgets/clock/NothingWheelClockWidget.qml": {
-  "pixel-size": 10
+  "pixel-size": 4
  },
  "ryoku/shell/quickshell/stage/modules/ii/background/widgets/clock/ScallopDotClockWidget.qml": {
-  "hex-colour": 4
+  "hex-colour": 1
  },
  "ryoku/shell/quickshell/stage/modules/ii/background/widgets/clock/ScallopNumberClockWidget.qml": {
-  "hex-colour": 4
+  "hex-colour": 1
  },
  "ryoku/shell/quickshell/stage/modules/ii/background/widgets/clock/TripleRingClockWidget.qml": {
-  "hex-colour": 4
+  "hex-colour": 1
  },
  "ryoku/shell/quickshell/stage/modules/ii/background/widgets/clock/WearOSArcClock.qml": {
-  "hex-colour": 8
+  "hex-colour": 5
  },
  "ryoku/shell/quickshell/stage/modules/ii/background/widgets/clock/WearOSClockWidget.qml": {
-  "hex-colour": 6,
-  "pixel-size": 2
+  "hex-colour": 3
  },
  "ryoku/shell/quickshell/stage/modules/ii/background/widgets/media/AndroidMediaWidget.qml": {
-  "pixel-size": 6
+  "pixel-size": 3
  },
  "ryoku/shell/quickshell/stage/modules/ii/background/widgets/media/CircularMediaWidget.qml": {
-  "hex-colour": 7
+  "hex-colour": 2
  },
  "ryoku/shell/quickshell/stage/modules/ii/background/widgets/media/CompactMediaWidget.qml": {
-  "pixel-size": 2
+  "pixel-size": 1
  },
  "ryoku/shell/quickshell/stage/modules/ii/background/widgets/media/ExpressiveMediaWidget.qml": {
   "pixel-size": 1
@@ -1480,20 +1466,8 @@
  "ryoku/shell/quickshell/stage/modules/ii/background/widgets/system/WifiPillWidget.qml": {
   "pixel-size": 1
  },
- "ryoku/shell/quickshell/stage/modules/ii/background/widgets/utility/CpuPillWidget.qml": {
-  "pixel-size": 4
- },
- "ryoku/shell/quickshell/stage/modules/ii/background/widgets/utility/DiskPillWidget.qml": {
-  "pixel-size": 4
- },
- "ryoku/shell/quickshell/stage/modules/ii/background/widgets/utility/RamPillWidget.qml": {
-  "pixel-size": 4
- },
  "ryoku/shell/quickshell/stage/modules/ii/background/widgets/utility/ResourceColumnsWidget.qml": {
-  "pixel-size": 2
- },
- "ryoku/shell/quickshell/stage/modules/ii/background/widgets/utility/ResourceFillCardsWidget.qml": {
-  "pixel-size": 2
+  "pixel-size": 1
  },
  "ryoku/shell/quickshell/stage/modules/ii/background/widgets/utility/ResourceTilesWidget.qml": {
   "pixel-size": 1

@@ -31,7 +31,11 @@ icons["bluetooth-off"] = struck(icons["bluetooth"]);
 icons["headphones-round-off"] = struck(icons["headphones-round"]);
 icons["bluetooth-square-off"] = struck(icons["bluetooth-square"]);
 // Solar has no unpin: the dock menus' "Unpin" is its pin, struck.
+icons["magnet-off"] = struck(icons["magnet"]);
 icons["pin-off"] = struck(icons["pin"]);
+icons["smartphone-off"] = struck(icons["smartphone"]);
+icons["music-note-off"] = struck(icons["music-note-2"]);
+icons["hourglass-off"] = struck(icons["hourglass"]);
 
 // Solar has no DIMM. Draw the module and its contacts at the same 24-unit scale.
 icons["memory-stick"] = SVG_OPEN
@@ -90,9 +94,83 @@ const alias = {
   cognition: "brain", terminal: "code-square", description: "document-text", build: "sledgehammer",
   public: "global", error: "danger-circle", visibility_off: "eye-closed", download: "download-minimalistic",
   folder_zip: "folder-zip", inventory_2: "archive", delete_sweep: "broom", dashboard: "widget-2",
-  // the Shima dock's app menu and windows sheet
-  keep: "pin", keep_off: "pin-off", select_window: "window-frame", picture_in_picture: "window-frame",
+// Solar has no unpin: the dock menus' "Unpin" is its pin, struck.
+  // the Shima dock's app menu and windows sheet (keep/keep_off are the Stage's)
+  select_window: "window-frame", picture_in_picture: "window-frame",
   view_carousel: "layers-minimalistic", dock_to_bottom: "square-bottom-down", bubble_chart: "square-top-up",
+  // the Stage editor's toolbar, panel rows and widget grips
+  widgets: "widget", wallpaper: "gallery", palette: "palette", dock: "panel-bottom",
+  grid_guides: "magnet", grid_off: "magnet-off", undo: "undo-left", redo: "undo-right", done: "check",
+  open_in_full: "maximize-square", aspect_ratio: "maximize-square", fit_screen: "full-screen",
+  more_horiz: "menu-dots", remove: "minus-circle", keep: "pin", keep_off: "pin-off",  // desktop widget, catalogue and Stage editor icons (Solar Outline stand-ins)
+  add_to_home_screen: "home-add", ads_click: "cursor", album: "album",
+  align_horizontal_center: "align-horizontal-center", align_horizontal_left: "align-left",
+  align_horizontal_right: "align-right", align_justify_space_even: "align-horizontal-spacing",
+  align_space_even: "align-horizontal-spacing", align_vertical_bottom: "align-bottom",
+  align_vertical_center: "align-vertical-center", align_vertical_top: "align-top", apps: "widget-4",
+  apps_outage: "danger-square", arrow_selector_tool: "cursor", attach_file: "paperclip",
+  auto_awesome: "stars", battery_android_6: "battery-full-minimalistic",
+  battery_charging_full: "battery-charge", battery_full: "battery-full", block: "forbidden-circle",
+  blur_circular: "circle-dot-dashed", blur_on: "circle-dashed", bookmark: "bookmark",
+  bookmark_remove: "bookmark-minus", bookmarks: "bookmark-square", calendar_month: "calendar-minimalistic",
+  calendar_view_day: "calendar-date", cast: "screencast", category: "widget-3",
+  center_focus_strong: "target", checklist: "checklist", circle: "record", colorize: "pipette",
+  content_cut: "scissors", content_paste_go: "clipboard-paste", create_new_folder: "add-folder",
+  crop: "crop", crop_free: "full-screen", crop_square: "crop-minimalistic", date_range: "calendar-mark",
+  deployed_code_update: "archive-up", desktop: "monitor", dock_to_bottom: "panel-bottom",
+  dock_to_left: "panel-left", do_not_disturb_on: "minus-circle", donut_large: "donut",
+  drag_indicator: "grip-vertical", drive_file_move: "move-to-folder", earbuds: "headphones-round-sound",
+  event: "calendar-mark", fiber_manual_record: "record", filter_center_focus: "target",
+  filter_drama: "cloud", fingerprint: "face-scan-circle", flag: "flag", flip: "flip-horizontal",
+  fluid_med: "dropper", folder_copy: "folder-2", format_color_fill: "paint-roller",
+  format_list_numbered: "list", format_quote: "quote", fullscreen: "full-screen", gradient: "colour-tuning",
+  graphic_eq: "soundwave", grid_view: "grid-2x2", hard_drive: "server-square", height: "move-vertical",
+  horizontal_distribute: "align-horizontal-spacing", hourglass_top: "hourglass",
+  image: "gallery-minimalistic", info: "info-circle", interests: "widget-3", label: "tag",
+  lan: "server-path", landscape: "gallery-wide", layers: "layers", lightmode: "sun",
+  linear_scale: "slider-horizontal", line_curve: "graph", line_weight: "hamburger-menu", link_off: "unlink",
+  live_tv: "tv", lockscreen: "lock-keyhole", mail: "letter", memory_alt: "cpu-bolt",
+  monitor_heart: "heart-pulse", more_vert: "menu-dots-vertical", motion_photos_on: "play-circle",
+  movie: "clapperboard", navigation: "map-arrow-up", near_me: "map-arrow-right",
+  nest_clock_farsight_analog: "clock-circle", neurology: "brain", note_stack: "notes", opacity: "waterdrop", open_with: "move",
+  panorama: "panorama", photo_size_select_small: "gallery-round", play_circle: "play-circle", radar: "radar",
+  radio_button_checked: "record-circle", remove_circle_outline: "minus-circle",
+  reset_wrench: "refresh-circle", rotate_left: "undo-left-round", rotate_right: "undo-right-round",
+  rounded_corner: "maximize-square-minimalistic", running_with_errors: "danger-triangle",
+  schedule: "clock-circle", screen: "display", screen_record: "videocamera-record",
+  shadow: "layers-minimalistic", shield_lock: "shield-keyhole", smart_display: "play-stream",
+  space_bar: "keyboard", splitscreen: "table-rows-split", sports_soccer: "football", stacks: "layers",
+  storefront: "shop", straighten: "ruler", style: "palette-2", sunny: "sun",
+  swap_horiz: "transfer-horizontal", swap_vert: "transfer-vertical", swipe: "move-horizontal",
+  swipe_vertical: "move-vertical", sync_problem: "danger-circle", system_update_alt: "download-minimalistic",
+  timer: "stopwatch", vertical_align_center: "align-vertical-center", vertical_align_top: "align-top",
+  vertical_distribute: "align-vertical-spacing", vertical_split: "sidebar", view_agenda: "layout-list",
+  view_carousel: "posts-carousel-horizontal", view_column: "table-columns-split", view_module: "grid-3x2",
+  view_week: "table-columns-split", visibility: "eye", water_drop: "waterdrop", water_full: "cup",
+  weather_mix: "cloud-snowfall", width: "move-horizontal", workspaces: "widget-5",
+  zoom_in: "magnifier-zoom-in", zoom_out_map: "maximize",
+  // the wallpaper framing coach and its snap marker
+  pan_tool: "move", face: "face-scan-circle", center_focus_weak: "target",
+  // the EasyEffects widget's effect chips
+  auto_fix_high: "magic-wand", compress: "minimize-square", diamond: "stars-minimalistic", door_front: "exit",
+  equalizer: "slider-vertical", expand: "maximize", filter_alt: "filter", grain: "circle-dot-dashed",
+  monitoring: "graph-up", noise_control_off: "soundwave-circle", piano: "music-library",
+  record_voice_over: "microphone-large", spatial_audio: "headphones-round-sound", surround_sound: "speaker",
+  voice_over_off: "microphone-2-off", voice_selection_off: "microphone-2-off",
+  // the desktop shortcuts' menus
+  dashboard_customize: "widget-add", file_copy: "copy", folder_open: "folder-open", language: "global", url: "link",
+  // the timers' and the mail widget's
+  hourglass_disabled: "hourglass-off", hourglass_empty: "hourglass-line", keyboard_arrow_down: "alt-arrow-down",
+  login: "login-2", save: "diskette",
+  // the icons the widget faces draw
+  animation: "clapperboard-play", battery_std: "battery-half", bolt: "bolt", bookmark_add: "bookmark-plus",
+  calendar_view_week: "calendar-minimalistic", check_box_outline_blank: "stop",
+  chevron_left: "alt-arrow-left", device_thermostat: "temperature", devices: "devices", directory: "folder",
+  done_all: "check-read", event_available: "calendar-mark", extension_off: "forbidden-circle",
+  group: "users-group-rounded", hourglass_bottom: "hourglass", inbox: "inbox", location_on: "map-point",
+  mobile: "smartphone", mobile_off: "smartphone-off", music_off: "music-note-off", percent: "sale",
+  phone_android: "smartphone", phonelink_off: "smartphone-off", photo_library: "gallery", sync: "refresh",
+  task_alt: "check-circle",
 };
 
 const out = `// Generated by tools/build-glyphs.mjs; do not edit by hand. The kit's glyph

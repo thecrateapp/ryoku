@@ -10,10 +10,14 @@ import stage.modules.common.functions
 import stage.modules.common.widgets
 import stage.modules.ii.background.widgets
 import stage.modules.ii.background.widgets.clock.minuteMarks
+import Ryoku.Ui.Singletons
 import "concentric"
 
 AbstractBackgroundWidget {
     id: root
+    // The glass reflection over the face: white in stock; under crate the
+    // palette's light end (paper on a light theme, ink on a dark one).
+    readonly property color sheenInk: Tokens.controlsCrate ? (Tokens.light ? Tokens.paper : Tokens.ink) : "#FFFFFF"
 
     configEntryName: "concentric_clock"
 
@@ -362,11 +366,11 @@ AbstractBackgroundWidget {
                             }
                             GradientStop {
                                 position: 0.3
-                                color: ColorUtils.applyAlpha("#FFFFFF", 0.42)
+                                color: ColorUtils.applyAlpha(root.sheenInk, 0.42)
                             }
                             GradientStop {
                                 position: 0.7
-                                color: ColorUtils.applyAlpha("#FFFFFF", 0.42)
+                                color: ColorUtils.applyAlpha(root.sheenInk, 0.42)
                             }
                             GradientStop {
                                 position: 1.0
@@ -429,11 +433,11 @@ AbstractBackgroundWidget {
                             }
                             GradientStop {
                                 position: 0.3
-                                color: ColorUtils.applyAlpha("#FFFFFF", 0.28)
+                                color: ColorUtils.applyAlpha(root.sheenInk, 0.28)
                             }
                             GradientStop {
                                 position: 0.7
-                                color: ColorUtils.applyAlpha("#FFFFFF", 0.28)
+                                color: ColorUtils.applyAlpha(root.sheenInk, 0.28)
                             }
                             GradientStop {
                                 position: 1.0

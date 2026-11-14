@@ -201,7 +201,7 @@ Item {
             return;
         root.searchWanted = false;
         root.searchHeld = false;
-        searchField.focus = false;
+        root.dropSearchField();
         root.fieldItem = item;
         root.fieldWanted = true;
         item.forceActiveFocus();
@@ -234,8 +234,25 @@ Item {
     function releaseSearchFocus() {
         root.searchWanted = false;
         root.searchHeld = false;
-        searchField.focus = false;
+        root.dropSearchField();
         root.releaseFieldFocus();
+    }
+
+    // The field the user types in: the Stage text field in stock, the kit's
+    // Field under crate. The stock field holds the query in both looks; the
+    // kit Field is kept in step with it.
+    function dropSearchField() {
+        searchField.focus = false;
+        kitSearch.releaseFocus();
+    }
+    function grabSearchField() {
+        if (root.crate) {
+            kitSearch.grabFocus();
+            kitSearch.selectAll();
+        } else {
+            searchField.forceActiveFocus();
+            searchField.selectAll();
+        }
     }
 
     function clearSearch() {
@@ -265,8 +282,7 @@ Item {
         if (!root.searchable || root.screenName !== GlobalStates.editModeMonitor)
             return;
         root.searchWanted = true;
-        searchField.forceActiveFocus();
-        searchField.selectAll();
+        root.grabSearchField();
     }
 
     Connections {
@@ -804,28 +820,19 @@ Item {
         ghost.y = p.y - ghost.height / 2;
     }
 
-    Rectangle {
+    // Under crate the panel is the one glass in a 1 px hairline (EditDrawerPlate);
+    // its reading pane lets the glass through rather than laying a second
+    // plate on it, and the header drops the lead bar and the rule (Ryoku
+    // marginalia, EditDrawerHeader).
+    readonly property bool crate: Tokens.controlsCrate
+
+    EditDrawerPlate {
         id: panel
         anchors.left: parent.left
         anchors.top: parent.top
         anchors.bottom: parent.bottom
         width: Appearance.sizes.editModeDrawerWidth
-        color: Appearance.colors.colLayer0
-        radius: Appearance.rounding.small
-        border.width: 1
-        border.color: Appearance.colors.colOutline
-        clip: true
-
-        // The remove tint: lit while a desktop widget is carried over the panel.
-        Rectangle {
-            anchors.fill: parent
-            radius: panel.radius
-            color: root.dropWouldRemove ? Appearance.colors.colLayer1Active : "transparent"
-            Behavior on color {
-                enabled: !Appearance.reducedMotion
-                animation: Appearance.animation.elementMoveFast.colorAnimation.createObject(this)
-            }
-        }
+        dropWouldRemove: root.dropWouldRemove
 
         ColumnLayout {
             id: column
@@ -836,92 +843,12 @@ Item {
             opacity: Math.max(0, Math.min(1, (GlobalStates.editDrawerProgress - 0.4) / 0.6))
 
             // ── Header ───────────────────────────────────────────────────────
-            RowLayout {
+            EditDrawerHeader {
                 Layout.fillWidth: true
-                spacing: Appearance.sizes.space3
-
-                // The section mark becomes a back action on sub-pages and
-                // provider pages with an explicit return destination.
-                Rectangle {
-                    Layout.alignment: Qt.AlignVCenter
-                    implicitWidth: Appearance.sizes.controlHeight
-                    implicitHeight: Appearance.sizes.controlHeight
-                    radius: Appearance.rounding.small
-                    color: !root.canGoBack ? "transparent"
-                        : backMouse.containsPress
-                            ? Appearance.colors.colLayer1Active
-                            : backMouse.containsMouse
-                                ? Appearance.colors.colLayer1Hover
-                                : "transparent"
-                    border.width: 1
-                    border.color: root.canGoBack
-                        ? Appearance.colors.colOutlineVariant : "transparent"
-
-                    Behavior on color {
-                        enabled: !Appearance.reducedMotion
-                        animation: Appearance.animation.elementMoveFast.colorAnimation.createObject(this)
-                    }
-
-                    MaterialSymbol {
-                        anchors.centerIn: parent
-                        text: root.canGoBack ? "arrow_back" : root.headerSymbol
-                        iconSize: 18
-                        color: Appearance.colors.colOnSurface
-                    }
-
-                    MouseArea {
-                        id: backMouse
-                        anchors.fill: parent
-                        enabled: root.canGoBack
-                        hoverEnabled: true
-                        cursorShape: Qt.PointingHandCursor
-                        onClicked: root.goBack()
-                    }
-                }
-
-                ColumnLayout {
-                    Layout.fillWidth: true
-                    Layout.minimumWidth: 0
-                    spacing: 1
-
-                    RowLayout {
-                        Layout.fillWidth: true
-                        Layout.minimumWidth: 0
-                        spacing: Appearance.sizes.space2
-
-                        Rectangle {
-                            implicitWidth: 2
-                            implicitHeight: 10
-                            radius: 1
-                            color: Appearance.colors.colOnSurfaceVariant
-                        }
-                        StyledText {
-                            text: Translation.tr("Stage editor").toUpperCase()
-                            font.family: Appearance.font.family.monospace
-                            font.pixelSize: Appearance.font.pixelSize.smallest
-                            font.weight: Font.Medium
-                            font.letterSpacing: Appearance.font.trackLabel
-                            color: Appearance.colors.colSubtext
-                        }
-                        Rectangle {
-                            Layout.fillWidth: true
-                            Layout.minimumWidth: 0
-                            implicitHeight: 1
-                            color: Appearance.colors.colOutlineVariant
-                        }
-                    }
-
-                    StyledText {
-                        Layout.fillWidth: true
-                        Layout.minimumWidth: 0
-                        text: root.headerTitle
-                        font.family: Appearance.font.family.title
-                        font.pixelSize: Appearance.font.pixelSize.larger
-                        font.weight: Font.Medium
-                        color: Appearance.colors.colOnSurface
-                        elide: Text.ElideRight
-                    }
-                }
+                canGoBack: root.canGoBack
+                symbol: root.headerSymbol
+                title: root.headerTitle
+                onBackRequested: root.goBack()
             }
 
 
@@ -975,8 +902,47 @@ Item {
                 Layout.rightMargin: Appearance.sizes.space1
                 implicitHeight: 36
 
+                Field {
+                    id: kitSearch
+                    objectName: "editKitSearch"
+                    anchors.fill: parent
+                    visible: root.crate
+                    toolbar: true
+                    glyph: "search"
+                    clearOnEscape: false
+                    placeholder: searchField.placeholderText
+                    onEdited: value => searchField.text = value
+                    onFocusedChanged: {
+                        if (kitSearch.focused) {
+                            root.searchWanted = true;
+                            root.searchHeld = true;
+                            return;
+                        }
+                        if (!root.searchHeld)
+                            return;
+                        root.searchHeld = false;
+                        root.searchWanted = false;
+                    }
+                    // as below: the first Escape empties, the second lets go
+                    onEscaped: {
+                        if (searchField.text !== "") {
+                            searchField.text = "";
+                            return;
+                        }
+                        root.releaseSearchFocus();
+                    }
+                    Connections {
+                        target: searchField
+                        function onTextChanged() {
+                            if (kitSearch.text !== searchField.text)
+                                kitSearch.text = searchField.text;
+                        }
+                    }
+                }
+
                 ToolbarTextField {
                     id: searchField
+                    visible: !root.crate
                     anchors.fill: parent
                     Layout.fillHeight: false
                     leftPadding: 32
@@ -1012,10 +978,13 @@ Item {
                     }
                 }
 
+                // Under crate the kit Field carries its own search glyph, and
+                // the clear is the kit's IconButton.
                 MaterialSymbol {
                     anchors.left: parent.left
                     anchors.leftMargin: Appearance.sizes.space3
                     anchors.verticalCenter: parent.verticalCenter
+                    visible: !root.crate
                     text: "search"
                     iconSize: 18
                     color: Appearance.colors.colSubtext
@@ -1026,7 +995,23 @@ Item {
                     anchors.rightMargin: Appearance.sizes.space1
                     anchors.verticalCenter: parent.verticalCenter
                     shown: searchField.text !== ""
-                    sourceComponent: RippleButton {
+                    sourceComponent: root.crate ? kitClear : stockClear
+                }
+                Component {
+                    id: kitClear
+                    IconButton {
+                        implicitWidth: 32
+                        implicitHeight: 32
+                        glyph: "close"
+                        onClicked: {
+                            searchField.text = "";
+                            kitSearch.grabFocus();
+                        }
+                    }
+                }
+                Component {
+                    id: stockClear
+                    RippleButton {
                         implicitWidth: 26
                         implicitHeight: 26
                         buttonRadius: Appearance.rounding.small
@@ -1053,9 +1038,10 @@ Item {
             // The reading pane is a bounded paper layer. Its own six-pixel clip
             // keeps scrolled labels and thumbnails inside the drawer surface.
             ClippingRectangle {
+                objectName: "editDrawerPane"
                 Layout.fillWidth: true
                 Layout.fillHeight: true
-                color: Appearance.withAlpha(Appearance.m3colors.m3surface, 0.965)
+                color: root.crate ? "transparent" : Appearance.withAlpha(Appearance.m3colors.m3surface, 0.965)
                 radius: Appearance.rounding.small
 
                 Loader {
@@ -1309,12 +1295,14 @@ Item {
                     width: desktopAppList.width
                     height: Tokens.rowH + Tokens.s2
                     radius: Tokens.radius
-                    color: modelData.onScreen ? Tokens.bone
+                    // under crate an app on the desktop is a picked list row:
+                    // the pick wash in the 1 px pickEdge
+                    color: modelData.onScreen ? (root.crate ? Tokens.pickFill : Tokens.bone)
                         : rowTap.pressed ? Tokens.tint16
                         : rowHover.hovered ? Tokens.tint5 : "transparent"
                     border.width: Tokens.border
-                    border.color: modelData.onScreen ? Tokens.bone
-                        : rowHover.hovered ? Tokens.lineStrong : Tokens.line
+                    border.color: modelData.onScreen ? (root.crate ? Tokens.pickEdge : Tokens.bone)
+                        : rowHover.hovered ? (root.crate ? Tokens.markHover : Tokens.lineStrong) : Tokens.line
                     opacity: Persistent.ready && !Persistent.blockWrites ? 1 : 0.45
                     activeFocusOnTab: true
 
@@ -1344,7 +1332,7 @@ Item {
                         Text {
                             width: parent.width
                             text: appRow.modelData.name ?? appRow.modelData.id
-                            color: appRow.modelData.onScreen ? Tokens.inkOnBone : Tokens.ink
+                            color: appRow.modelData.onScreen ? (root.crate ? Tokens.pickInk : Tokens.inkOnBone) : Tokens.ink
                             font.family: Tokens.ui
                             font.pixelSize: Tokens.fRow
                             font.weight: Font.Medium
@@ -1355,7 +1343,7 @@ Item {
                             visible: text.length > 0
                             text: appRow.modelData.placement
                                 || appRow.modelData.genericName || appRow.modelData.comment || ""
-                            color: appRow.modelData.onScreen ? Tokens.inkOnBoneDim : Tokens.inkMuted
+                            color: appRow.modelData.onScreen ? (root.crate ? Tokens.pickInkDim : Tokens.inkOnBoneDim) : Tokens.inkMuted
                             font.family: Tokens.ui
                             font.pixelSize: Tokens.fSmall
                             elide: Text.ElideRight
@@ -1368,7 +1356,7 @@ Item {
                         anchors.rightMargin: Tokens.s3
                         anchors.verticalCenter: parent.verticalCenter
                         text: appRow.modelData.onScreen ? Translation.tr("ON") : "+"
-                        color: appRow.modelData.onScreen ? Tokens.inkOnBone : Tokens.inkDim
+                        color: appRow.modelData.onScreen ? (root.crate ? Tokens.mark : Tokens.inkOnBone) : Tokens.inkDim
                         font.family: appRow.modelData.onScreen ? Tokens.mono : Tokens.ui
                         font.pixelSize: appRow.modelData.onScreen ? Tokens.fTiny : Tokens.fBody
                         font.letterSpacing: appRow.modelData.onScreen ? Tokens.trackLabel : 0
@@ -1997,8 +1985,21 @@ Item {
                     Layout.rightMargin: 6
                     implicitHeight: 46
 
+                    // under crate the kit's Field, kept in step with the name
+                    Field {
+                        objectName: "editKitFolderName"
+                        anchors.fill: parent
+                        visible: root.crate
+                        toolbar: true
+                        glyph: "folder"
+                        text: folderRoot.folderName
+                        placeholder: Translation.tr("Folder name")
+                        onEdited: value => folderRoot.folderName = value
+                    }
+
                     ToolbarTextField {
                         id: folderNameInput
+                        visible: !root.crate
                         anchors.fill: parent
                         leftPadding: 42
                         colBackground: Appearance.colors.colLayer1
@@ -2241,14 +2242,23 @@ Item {
         z: 100
         width: ghostRow.implicitWidth + 24
         height: 40
-        radius: Appearance.rounding.full
-        color: Appearance.m3colors.m3surfaceContainer
+        // under crate the carried row is the glass in a hairline
+        radius: root.crate ? Tokens.radius : Appearance.rounding.full
+        color: root.crate ? Tokens.glass : Appearance.m3colors.m3surfaceContainer
+        border.width: root.crate ? Tokens.border : 0
+        border.color: Tokens.line
 
         RowLayout {
             id: ghostRow
             anchors.centerIn: parent
             spacing: 8
+            Glyph {
+                visible: root.crate
+                name: root.dragMetadata?.icon ?? "widgets"
+                color: Tokens.ink
+            }
             MaterialSymbol {
+                visible: !root.crate
                 text: root.dragMetadata?.icon ?? "widgets"
                 iconSize: 20
                 color: Appearance.colors.colOnSurface

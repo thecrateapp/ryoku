@@ -38,9 +38,9 @@ end
 -- Hyprland matches namespaces with a regex; the crate rules keep to the
 -- "^prefix(a|b|c)$" shape, which this checks without a regex engine.
 local function matches(pattern, namespace)
-    local prefix, alternatives = pattern:match("^%^([%w%-]*)%(([^()]*)%)%$$")
+    local prefix, alternatives = pattern:match("^%^([%w%-:]*)%(([^()]*)%)%$$")
     if not prefix then
-        local literal = pattern:match("^%^([%w%-]+)%$$")
+        local literal = pattern:match("^%^([%w%-:]+)%$$")
         assert(literal, "unsupported namespace pattern: " .. pattern)
         return namespace == literal
     end
@@ -65,7 +65,7 @@ end
 
 -- The glass surfaces, discovered from the QML: any file that draws one of the
 -- glass fills and maps its own layer namespace.
-local glass_marker = [[Tokens\.glass|ConnectedPanelSurface|AiPanelSurface|cc\.plateFill|color: root\.bg$]]
+local glass_marker = [[Tokens\.glass|ConnectedPanelSurface|AiPanelSurface|cc\.plateFill|color: root\.bg$|color: root\.panelFill$]]
 local listing = assert(io.popen("grep -rlE '" .. glass_marker .. "' " .. shell_root .. " --include='*.qml'"))
 -- the first-boot Kit hint and the pins are their own configs (keys-hint, ryopin),
 -- outside the shell tree; a pin's glass is its action strip
@@ -94,6 +94,9 @@ local namespaces = {
     -- the Shima dock lives in inir, outside the shell tree: IrisDockSurface maps
     -- the layer and IrisDock draws the glass (body, name label, menu)
     ["ryoku-dock-shima"] = "inir/modules/iris/dock/IrisDock.qml",
+    -- the Stage editor's chrome is a stage config layer, outside the shell tree;
+    -- its glass is drawn in EditModeChromeContent, EditDrawerPlate and the menus
+    ["quickshell:editMode"] = "stage/modules/ii/editMode/EditModeChromeSurface.qml",
 }
 for path in listing:lines() do
     local file = assert(io.open(path))

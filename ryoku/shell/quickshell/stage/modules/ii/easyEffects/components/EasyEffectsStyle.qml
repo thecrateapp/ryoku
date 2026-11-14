@@ -6,6 +6,8 @@ import stage.modules.common
 import stage.modules.common.functions
 import stage.modules.common.widgets
 import stage.services
+import Ryoku.Ui as Ui
+import Ryoku.Ui.Singletons
 
 /**
  * Every colour, radius, size and motion token of the EasyEffects app.
@@ -108,15 +110,19 @@ Singleton {
     }
 
     // ── Shape ───────────────────────────────────────────────────────────
-    readonly property real radiusPane: Appearance.rounding.verylarge
-    readonly property real radiusCard: Appearance.rounding.verylarge
-    readonly property real radiusRow: Appearance.rounding.large
-    readonly property real radiusField: Appearance.rounding.small
-    readonly property real radiusChip: Appearance.rounding.normal
-    readonly property real radiusJoin: Appearance.rounding.verysmall
-    readonly property real radiusFull: Appearance.rounding.full
-    readonly property real radiusFab: Appearance.rounding.large
-    readonly property real radiusFabPressed: Appearance.rounding.normal
+    // Under crate every pane, card, row, field, chip and pill of the widget
+    // takes the one shared corner (Tokens.radius) instead of the expressive
+    // ladder and the full pill.
+    readonly property bool crate: Tokens.controlsCrate
+    readonly property real radiusPane: root.crate ? Tokens.radius : Appearance.rounding.verylarge
+    readonly property real radiusCard: root.crate ? Tokens.radius : Appearance.rounding.verylarge
+    readonly property real radiusRow: root.crate ? Tokens.radius : Appearance.rounding.large
+    readonly property real radiusField: root.crate ? Tokens.radius : Appearance.rounding.small
+    readonly property real radiusChip: root.crate ? Tokens.radius : Appearance.rounding.normal
+    readonly property real radiusJoin: root.crate ? Tokens.radius : Appearance.rounding.verysmall
+    readonly property real radiusFull: root.crate ? Tokens.radius : Appearance.rounding.full
+    readonly property real radiusFab: root.crate ? Tokens.radius : Appearance.rounding.large
+    readonly property real radiusFabPressed: root.crate ? Tokens.radius : Appearance.rounding.normal
 
     function pill(height) {
         return Math.min(height / 2, root.radiusFull);

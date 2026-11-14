@@ -5,6 +5,8 @@ EditBarAppearancePage 1.0 EditBarAppearancePage.qml
 EditBarComponentPage 1.0 EditBarComponentPage.qml
 EditBarMenu 1.0 EditBarMenu.qml
 EditColourPage 1.0 EditColourPage.qml
+EditDrawerHeader 1.0 EditDrawerHeader.qml
+EditDrawerPlate 1.0 EditDrawerPlate.qml
 EditDesktopIconsPage 1.0 EditDesktopIconsPage.qml
 EditDockAppearancePage 1.0 EditDockAppearancePage.qml
 EditDockWidgetsPage 1.0 EditDockWidgetsPage.qml

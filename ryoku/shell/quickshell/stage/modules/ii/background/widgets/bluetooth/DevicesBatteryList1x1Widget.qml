@@ -7,6 +7,7 @@ import stage.modules.common
 import stage.modules.common.functions
 import stage.modules.common.widgets
 import stage.modules.ii.background.widgets
+import Ryoku.Ui.Singletons
 AbstractBackgroundWidget {
     id: root
 
@@ -166,7 +167,7 @@ AbstractBackgroundWidget {
                                 Layout.fillWidth: true
                                 visible: rowSlot.hasItem && root.showDeviceName
                                 text: rowSlot.hasItem ? rowSlot.itemData.name : ""
-                                font.pixelSize: 12
+                                font.pixelSize: Tokens.controlsCrate ? Tokens.fSmall : 12
                                 font.weight: Font.Medium
                                 color: hasItem ? itemData.onContainer : WidgetColorScheme.colors.colOnSurfaceVariant
                                 elide: Text.ElideRight
@@ -240,7 +241,7 @@ AbstractBackgroundWidget {
                                 Layout.fillWidth: true
                                 visible: rowSlot.hasItem && root.showDeviceName
                                 text: rowSlot.hasItem ? rowSlot.itemData.name : ""
-                                font.pixelSize: 12
+                                font.pixelSize: Tokens.controlsCrate ? Tokens.fSmall : 12
                                 font.weight: Font.Medium
                                 color: itemData ? itemData.onAccent : WidgetColorScheme.colors.colOnPrimary
                                 elide: Text.ElideRight

@@ -3,6 +3,8 @@ import QtQuick.Layouts
 import stage.services
 import stage.modules.common
 import stage.modules.common.widgets
+import Ryoku.Ui as Ui
+import Ryoku.Ui.Singletons
 
 /**
  * The selection's own toolbar: align and distribute, over whatever is picked.
@@ -27,6 +29,9 @@ Item {
     id: root
 
     property int count: 0
+    // Under crate the strip is an opaque popover plate in a hairline (the
+    // widgets surface is not frosted) and its buttons the kit's IconButtons.
+    readonly property bool crate: Tokens.controlsCrate
     readonly property bool canDistribute: root.count >= 3
 
     signal requested(string mode)
@@ -62,6 +67,10 @@ Item {
         padding: 5
         spacing: 2
         implicitHeight: 44
+        objectName: "alignBarPlate"
+        colBackground: root.crate ? Tokens.popover : Appearance.colors.colLayer0
+        borderColor: root.crate ? Tokens.line : Appearance.colors.colOutline
+        radius: root.crate ? Tokens.radius : Appearance.rounding.small
 
         Repeater {
             model: root.alignModes
@@ -80,7 +89,7 @@ Item {
             Layout.rightMargin: 3
             implicitWidth: 1
             implicitHeight: 18
-            color: Appearance.colors.colOutlineVariant
+            color: root.crate ? Tokens.line : Appearance.colors.colOutlineVariant
         }
 
         Repeater {
@@ -96,25 +105,46 @@ Item {
         }
     }
 
-    component AlignButton: IconToolbarButton {
+    component AlignButton: Item {
         id: button
         property string mode: ""
         property string label: ""
         // IconToolbarButton names its glyph `text`, which reads as a caption
         // everywhere else in this file; `symbol` is what the model calls it.
         property string symbol: ""
+        readonly property string tip: button.enabled ? button.label
+            : Translation.tr("Pick a third widget to spread them out")
 
-        text: button.symbol
         Layout.alignment: Qt.AlignVCenter
         implicitWidth: 34
         implicitHeight: 34
-        iconSize: 20
-        onClicked: root.requested(button.mode)
 
-        StyledToolTip {
-            requireOverlay: false
-            text: button.enabled ? button.label
-                : Translation.tr("Pick a third widget to spread them out")
+        IconToolbarButton {
+            anchors.fill: parent
+            visible: !root.crate
+            text: button.symbol
+            iconSize: 20
+            onClicked: root.requested(button.mode)
+
+            StyledToolTip {
+                requireOverlay: false
+                text: button.tip
+            }
+        }
+        Ui.IconButton {
+            id: kitAlign
+            objectName: "alignKit-" + button.mode
+            anchors.fill: parent
+            visible: root.crate
+            glyph: button.symbol
+            onClicked: root.requested(button.mode)
+
+            StyledToolTip {
+                requireOverlay: false
+                extraVisibleCondition: false
+                alternativeVisibleCondition: kitAlign.hot
+                text: button.tip
+            }
         }
     }
 }
