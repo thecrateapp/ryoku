@@ -7,7 +7,10 @@ import "Singletons"
 // The harbour rail: ryoport's one always-present chrome. A framed masthead seal,
 // the fleet nav (Latin name and kanji seal side by side, the live berth taking
 // the sheet's // lead on a bone plate), and a scannable foot plate. The same
-// title-block grammar the Hub rail carries, flying ryoport's colours.
+// title-block grammar the Hub rail carries, flying ryoport's colours. Under
+// crate the marginalia go (the framed seal, the edition chip, the barcode) and
+// the rail speaks the Hub and Ryostore rail: a brand line, an alerts chip, kit
+// icon buttons in the foot; the kanji glosses stay.
 Item {
     id: rail
 
@@ -29,6 +32,7 @@ Item {
         { name: I18n.tr("EXPERIMENTAL"), items: [ { key: "consoles", name: I18n.tr("Consoles") } ] }
     ]
     readonly property var jpName: ({ "dashboard": "一覧", "machines": "仮想", "remotes": "遠隔", "passthrough": "透過", "consoles": "接續" })
+    readonly property bool crate: Tokens.controlsCrate
 
     Rectangle { anchors.right: parent.right; width: 1; height: parent.height; color: Tokens.line }
 
@@ -38,7 +42,39 @@ Item {
         anchors.margins: Tokens.s5
         spacing: Tokens.s4
 
+        // the crate brand line, as Ryostore's masthead
+        Item {
+            objectName: "ryovmRailBrand"
+            visible: rail.crate
+            width: parent.width
+            height: brand.implicitHeight
+            Row {
+                id: brand
+                spacing: Tokens.s3
+                Text { text: UiPreferences.brandMark("力"); color: Tokens.sun; font.family: Tokens.jp; font.pixelSize: 24 }
+                Column {
+                    anchors.verticalCenter: parent.verticalCenter
+                    spacing: 0
+                    Text {
+                        text: I18n.tr("RYOKU"); color: Tokens.ink; font.family: Tokens.mono
+                        font.pixelSize: Tokens.fBody; font.weight: Font.Medium; font.letterSpacing: Tokens.trackMark
+                    }
+                    Text {
+                        text: I18n.tr("PORT"); color: Tokens.inkMuted; font.family: Tokens.mono
+                        font.pixelSize: Tokens.fMicro; font.letterSpacing: Tokens.trackLabel
+                    }
+                }
+            }
+            Text {
+                anchors { right: parent.right; verticalCenter: parent.verticalCenter }
+                text: UiPreferences.text("港", ""); color: Tokens.inkFaint
+                font.family: Tokens.jp; font.pixelSize: 13
+            }
+        }
+
         Rectangle {
+            objectName: "ryovmRailSeal"
+            visible: !rail.crate
             width: parent.width
             height: 64
             color: "transparent"
@@ -71,8 +107,18 @@ Item {
         }
 
         // the alerts readout rides under the seal: the count is never a dead
-        // number, it is the door to the harbour log.
+        // number, it is the door to the harbour log. Under crate it is a chip.
+        Chip {
+            objectName: "ryovmRailAlerts"
+            visible: rail.crate
+            width: parent.width
+            text: I18n.tr("ALERTS") + "  " + (rail.alertCount > 0
+                ? String(rail.alertCount).padStart(2, "0") : I18n.tr("QUIET"))
+            labelInk: rail.alertCount > 0 ? Tokens.alert : Tokens.inkSecondary
+            onClicked: rail.openLog()
+        }
         Rectangle {
+            visible: !rail.crate
             width: parent.width
             height: 40
             color: "transparent"
@@ -152,10 +198,12 @@ Item {
                                 anchors.verticalCenter: parent.verticalCenter
                             }
                             Rectangle {
+                                visible: !rail.crate
                                 width: Math.max(0, nav.width - 130); height: 1; color: Tokens.lineSoft
                                 anchors.verticalCenter: parent.verticalCenter
                             }
                             Rectangle {
+                                visible: !rail.crate
                                 width: 1; height: 5; color: Tokens.line
                                 anchors.verticalCenter: parent.verticalCenter
                                 anchors.verticalCenterOffset: -2
@@ -236,11 +284,20 @@ Item {
         anchors { left: parent.left; right: parent.right; bottom: parent.bottom }
         anchors.margins: Tokens.s5
         anchors.bottomMargin: Tokens.s4
-        height: Tokens.s3 + edition.height + Tokens.s3 + plate.implicitHeight
+        height: rail.crate ? Tokens.s2 + 44 : Tokens.s3 + edition.height + Tokens.s3 + plate.implicitHeight
         Rectangle { anchors { left: parent.left; right: parent.right; top: parent.top } height: 1; color: Tokens.lineSoft }
+
+        Row {
+            objectName: "ryovmRailFoot"
+            visible: rail.crate
+            anchors { right: parent.right; bottom: parent.bottom }
+            IconButton { glyph: "settings"; onClicked: rail.openSettings() }
+            IconButton { glyph: "close"; onClicked: rail.requestQuit() }
+        }
 
         Marginalia {
             id: edition
+            visible: !rail.crate
             anchors { left: parent.left; top: parent.top; topMargin: Tokens.s3 }
             index: Version.editionIndex; label: Version.editionNumber
             glyph: "column"; glyph2: ""
@@ -249,6 +306,7 @@ Item {
         // the window controls ride the foot, opposite the edition register, so
         // the head plate stays a clean seal.
         Row {
+            visible: !rail.crate
             anchors { right: parent.right; top: parent.top; topMargin: Tokens.s2 }
             spacing: Tokens.s1
             IconBtn { glyph: "\u2699"; onAct: rail.openSettings() }
@@ -256,12 +314,14 @@ Item {
         }
         Barcode {
             id: plate
+            visible: !rail.crate
             anchors { left: parent.left; bottom: parent.bottom }
             text: I18n.tr("RYOPORT")
             unit: 1.1
             barHeight: 14
         }
         Text {
+            visible: !rail.crate
             anchors { right: parent.right; bottom: parent.bottom; bottomMargin: 2 }
             text: "+"; color: Tokens.inkFaint
             font.family: Tokens.mono; font.pixelSize: 10

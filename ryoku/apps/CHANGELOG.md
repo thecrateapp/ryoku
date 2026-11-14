@@ -19,6 +19,17 @@
   resource rows and the rail's current section take the 1 px pick edge. The
   unused progress bar is gone. The stock look is unchanged
   (`ryovm/quickshell/`).
+- `ryovm/`: **The Crate Ryoport rail drops its marginalia.** Under crate the
+  framed seal, the edition chip and the barcode give way to a brand line like
+  Ryostore's, an alerts chip that opens the harbour log, and plain settings and
+  quit buttons; the kanji glosses stay. The unused machine, fleet and "more"
+  tiles are removed (`ryovm/quickshell/Rail.qml`).
+
+### Fixed
+- `ryovm/`: **A machine's spec reads on two lines again.** The library rows
+  showed a literal `\n` between cores and memory, and "autoc" for automatic
+  cores; they now break the line and read "auto". The OS mark in a machine's
+  detail no longer overlaps its name (`VmGrid.qml`, `OsIcon.qml`).
 
 ### Added
 - `ryovm/`, `ryostore/`: **Ryoport and Ryostore follow the theme style.**

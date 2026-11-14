@@ -16,7 +16,8 @@ cat > "$work/bin/ryovm" <<'FAKE'
 #!/usr/bin/env bash
 case "${1:-}" in
 create) sleep 8 ;;
-list|catalog|cloud-catalog|lg|usb|portfwd) echo '[]' ;;
+list) echo '[{"name":"fedora-41","os":"fedora","running":false,"cores":"auto","ram":"4G","display":"gtk","diskUsed":0}]' ;;
+catalog|cloud-catalog|lg|usb|portfwd) echo '[]' ;;
 *) echo '{}' ;;
 esac
 FAKE

@@ -114,7 +114,8 @@ Item {
                 Text {
                     anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter
-                    text: slot.modelData.cores + "c\\n" + slot.modelData.ram
+                    text: (slot.modelData.cores === "auto" ? I18n.tr("auto") : slot.modelData.cores + "c")
+                        + "\n" + slot.modelData.ram
                     horizontalAlignment: Text.AlignRight
                     color: Vm.selectedName === slot.modelData.name ? Tokens.pickInk : Tokens.inkFaint
                     font.family: Tokens.mono

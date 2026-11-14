@@ -19,6 +19,10 @@ Item {
     property string label: ""
     property real size: 40
 
+    // a caller that sets only `size` still lays the mark out at that size
+    implicitWidth: root.size
+    implicitHeight: root.size
+
     readonly property string localPath: Vm.iconFor(root.slug)
     readonly property string imgSource: localPath.length > 0 ? ("file://" + localPath) : ""
     readonly property bool hasArt: img.status === Image.Ready

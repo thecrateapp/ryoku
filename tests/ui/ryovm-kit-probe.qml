@@ -8,7 +8,9 @@ import "ryovm/Singletons" as RyovmState
 // crate; downloads run on a Beam (its sweep while the size is unknown); the
 // captions are TrackLabels under crate and keep their stock face otherwise; an
 // operating system card is a PickCard; a picked list row takes the 1 px pick
-// edge under crate; the window is opaque.
+// edge under crate; the rail drops its marginalia for a brand line, an alerts
+// chip and kit icon buttons; a machine's spec breaks onto a real second line;
+// an OS mark sized only by `size` lays out at that size; the window is opaque.
 ShellRoot {
     id: probe
     property string look: "crate"
@@ -32,6 +34,9 @@ ShellRoot {
                 onChosen: probe.chosen++
             }
             Ryovm.RemoteTile { id: remote; y: 340; width: 400; host: ({ alias: "nas" }) }
+            Ryovm.Rail { id: rail; x: 600; height: 600 }
+            Ryovm.VmGrid { id: grid; y: 420; width: 400; height: 120 }
+            Ryovm.OsIcon { id: mark; x: 420; y: 320; size: 42; slug: "none" }
         }
     }
 
@@ -48,6 +53,12 @@ ShellRoot {
         if (!item) return out;
         if (item.objectName === name) out.push(item);
         for (const child of item.children) all(child, name, out);
+        return out;
+    }
+    function texts(item) {
+        let out = [];
+        if (item.text !== undefined && typeof item.text === "string") out.push(item);
+        for (const child of item.children) out = out.concat(texts(child));
         return out;
     }
     function check(test, reason) { if (!test) throw new Error(probe.look + ": " + reason); }
@@ -71,6 +82,13 @@ ShellRoot {
         check(Qt.colorEqual(os.border.color, crate ? Tokens.pickEdge : Tokens.ink), "the OS card's pick edge");
         check(remote.border.width === (crate ? 1 : 0), "a picked list row takes the pick edge only under crate");
         check(!crate || Qt.colorEqual(remote.border.color, Tokens.pickEdge), "the row's edge is the pick edge");
+        check(find(rail, "ryovmRailBrand").visible === crate && find(rail, "ryovmRailSeal").visible === !crate,
+              "the rail's brand line under crate, its framed seal in stock");
+        check(find(rail, "ryovmRailAlerts").visible === crate && find(rail, "ryovmRailFoot").visible === crate,
+              "the alerts chip and kit foot buttons under crate");
+        const spec = probe.texts(grid).find(t => t.text.indexOf("4G") >= 0);
+        check(spec && spec.text === "auto\n4G", "a machine's spec breaks onto a second line, got " + (spec ? JSON.stringify(spec.text) : "none"));
+        check(mark.width === 42 && mark.height === 42, "an OS mark sized by size alone");
     }
 
     Timer {
