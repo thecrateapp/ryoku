@@ -1,6 +1,13 @@
 # Changelog: ryoku/shell/
 
 ## Unreleased
+- **The Game Bar's stops read as stops, at the bar's size.** Under crate
+  stopping a recording and a task's armed Stop are the kit's danger button in
+  the theme's error colour instead of the accent confirm, and the resource tabs
+  and the gallery's modes follow the bar's own scale (Hub -> Game Bar -> Scale)
+  like the rest of its cards (`modules/gamebar/GameBarScaled.qml`,
+  `GameBarTextButton.qml`, `GameBarTabs.qml`, `cards/GalleryCard.qml`;
+  `tests/ui/gamebar-kit-probe.sh`).
 - **The kit button has a danger form.** A `Btn` with `danger` set fills, under
   crate, with the theme's error role and writes its label in the ink on that
   role, over primary and outline; disarmed it is a plain button. Every other

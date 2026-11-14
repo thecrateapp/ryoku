@@ -21,7 +21,7 @@ ShellRoot {
 
     FloatingWindow {
         implicitWidth: 1500
-        implicitHeight: 900
+        implicitHeight: 1400
 
         QtObject {
             id: host
@@ -71,6 +71,11 @@ ShellRoot {
             MediaCard { id: media; x: 360; y: 450; s: 1; host: host; cardId: "media"; width: 358; height: 235 }
             VoiceCard { id: voice; x: 720; y: 450; s: 1; host: host; cardId: "voice"; width: 358; height: 336 }
             TasksCard { id: tasks; x: 1090; y: 450; s: 1; host: host; cardId: "tasks"; width: 350; height: 270 }
+            // the bar's own scale: the same cards at 1.5
+            ResourcesCard { id: resourcesBig; y: 800; s: 1.5; host: host; cardId: "resources"; width: 525; height: 300 }
+            GalleryCard { id: galleryBig; x: 540; y: 800; s: 1.5; host: host; cardId: "gallery"; width: 525; height: 435 }
+            // Stop a recording, a task's armed Stop
+            GameBarTextButton { id: stopButton; x: 1100; y: 800; label: "Stop"; danger: true }
         }
     }
 
@@ -181,6 +186,25 @@ ShellRoot {
             "mute and deafen are kit buttons");
         check(probe.all(media, "gameBarTransportButton").filter(b => probe.shown(b)).length === (crate ? 3 : 0),
             "the transport is kit buttons");
+
+        // a danger action is the kit Btn's danger fill, in the theme's error role
+        const stop = probe.find(stopButton, "gameBarKitButton");
+        check(probe.shown(stop) === crate && stop.danger && !stop.primary, "Stop is the kit's danger button");
+        check(!crate || same(stop.color, Tokens.role("error", Tokens.alert)), "Stop fills with the error role");
+
+        // Tabs and Seg follow the bar's scale: at 1.5 they draw 1.5 times as wide
+        if (crate) {
+            const ratio = (big, small, name) => probe.drawnWidth(probe.find(big, name)) / probe.drawnWidth(probe.find(small, name));
+            const tabs = ratio(resourcesBig, resources, "gameBarKitTabs");
+            const seg = ratio(galleryBig, gallery, "gameBarGallerySeg");
+            check(Math.abs(tabs - 1.5) < 0.01, "the tabs draw at the bar's scale, got " + tabs);
+            check(Math.abs(seg - 1.5) < 0.01, "the Seg draws at the bar's scale, got " + seg);
+        }
+    }
+
+    // the width an item covers on screen, its scale included
+    function drawnWidth(item) {
+        return item.mapToItem(stage, item.width, 0).x - item.mapToItem(stage, 0, 0).x;
     }
 
     function exercise() {

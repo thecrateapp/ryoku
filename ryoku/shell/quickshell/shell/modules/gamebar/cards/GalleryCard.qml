@@ -218,13 +218,17 @@ GameBarCard {
         }
 
         // under crate the two modes are the kit's segmented choice
-        Kit.Seg {
-            objectName: "gameBarGallerySeg"
+        GameBarScaled {
             visible: GameBarLook.crate
-            options: ["shots", "clips"]
-            labels: ({ shots: I18n.tr("Screenshots"), clips: I18n.tr("Recordings") })
-            current: card.mode
-            onChose: key => card.mode = key
+            s: card.s
+
+            Kit.Seg {
+                objectName: "gameBarGallerySeg"
+                options: ["shots", "clips"]
+                labels: ({ shots: I18n.tr("Screenshots"), clips: I18n.tr("Recordings") })
+                current: card.mode
+                onChose: key => card.mode = key
+            }
         }
 
         Row {

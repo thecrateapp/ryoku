@@ -22,15 +22,20 @@ Item {
 
     implicitHeight: 42 * root.s
 
-    Kit.Tabs {
-        id: kitTabs
-        objectName: "gameBarKitTabs"
+    // at the bar's scale, as the rest of the card
+    GameBarScaled {
         visible: root.crate
         anchors.left: parent.left
         anchors.verticalCenter: parent.verticalCenter
-        options: root.model.map((tab, i) => ({ key: String(i), label: tab.label }))
-        current: String(root.currentIndex)
-        onChose: key => root.picked(Number(key))
+        s: root.s
+
+        Kit.Tabs {
+            id: kitTabs
+            objectName: "gameBarKitTabs"
+            options: root.model.map((tab, i) => ({ key: String(i), label: tab.label }))
+            current: String(root.currentIndex)
+            onChose: key => root.picked(Number(key))
+        }
     }
 
     Row {

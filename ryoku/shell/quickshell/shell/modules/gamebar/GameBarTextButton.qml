@@ -8,9 +8,9 @@ import "look"
 // A text button at overlay size: a 12px radius, 40px tall, one raised fill,
 // a layer wash under the pointer. The primary and danger forms take the accent
 // and error roles whole.
-// Under crate it is the kit's Btn: a primary or a danger action (Record, Stop,
-// the armed Stop of a task) is the confirm fill, the rest keep the hairline. The
-// kit has no destructive tone of its own, so danger reads as a confirm.
+// Under crate it is the kit's Btn: a primary action (Record) is the confirm
+// fill, a danger one (Stop a recording, a task's armed Stop) the kit's danger
+// fill in the theme's error role, the rest keep the hairline.
 Item {
     id: root
 
@@ -40,7 +40,8 @@ Item {
         scale: root.s
         text: root.label
         compact: root.compact
-        primary: root.primary || root.danger
+        primary: root.primary
+        danger: root.danger
         outline: root.outline
         armed: root.crate && root.enabled
         onAct: root.clicked()

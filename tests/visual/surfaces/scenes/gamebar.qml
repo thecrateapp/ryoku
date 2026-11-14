@@ -96,9 +96,10 @@ ShellRoot {
             const look = Quickshell.env("BENCH_CRATE");
             if (look === "1" || look === "0")
                 Tokens.controlsCrate = look === "1";
-            // the crate look as the Crate rice sets it: its scheme and style keys
-            // (crate-for-ryoku theme/crate/scheme.json)
-            if (look === "1") {
+            // the crate look as the Crate rice sets it (crate-for-ryoku
+            // theme/crate/scheme.json), unless the config read already brought a
+            // theme style: then the render keeps that palette and style
+            if (look === "1" && !Tokens.styled) {
                 Tokens.namedScheme = {
                     primary: "#06b6d4", secondary: "#67e8f9", tertiary: "#fbbf24", error: "#ef4444",
                     surface: "#0a0a0f", onSurface: "#f1f5f9", surfaceVariant: "#15161d",
