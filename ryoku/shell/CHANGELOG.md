@@ -1,6 +1,10 @@
 # Changelog: ryoku/shell/
 
 ## Unreleased
+- **Resource widgets' captions follow the theme's type under crate.** The CPU,
+  RAM and disk pills and the resource fill cards and columns label their
+  readings in the Tokens type roles. Stock is unchanged
+  (`quickshell/stage/modules/ii/background/widgets/utility/`).
 - **Bluetooth widgets' captions follow the theme's type under crate.** The
   device names and states on the battery lists and the fill cards take the
   Tokens type roles. Stock is unchanged

@@ -1489,20 +1489,8 @@
  "ryoku/shell/quickshell/stage/modules/ii/background/widgets/system/WifiPillWidget.qml": {
   "pixel-size": 1
  },
- "ryoku/shell/quickshell/stage/modules/ii/background/widgets/utility/CpuPillWidget.qml": {
-  "pixel-size": 4
- },
- "ryoku/shell/quickshell/stage/modules/ii/background/widgets/utility/DiskPillWidget.qml": {
-  "pixel-size": 4
- },
- "ryoku/shell/quickshell/stage/modules/ii/background/widgets/utility/RamPillWidget.qml": {
-  "pixel-size": 4
- },
  "ryoku/shell/quickshell/stage/modules/ii/background/widgets/utility/ResourceColumnsWidget.qml": {
-  "pixel-size": 2
- },
- "ryoku/shell/quickshell/stage/modules/ii/background/widgets/utility/ResourceFillCardsWidget.qml": {
-  "pixel-size": 2
+  "pixel-size": 1
  },
  "ryoku/shell/quickshell/stage/modules/ii/background/widgets/utility/ResourceTilesWidget.qml": {
   "pixel-size": 1

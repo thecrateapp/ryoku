@@ -9,6 +9,7 @@ import stage.modules.common
 import stage.modules.common.functions
 import stage.modules.common.widgets
 import stage.modules.ii.background.widgets
+import Ryoku.Ui.Singletons
 AbstractBackgroundWidget {
     id: root
 
@@ -228,7 +229,7 @@ AbstractBackgroundWidget {
                             StyledText {
                                 Layout.fillWidth: true
                                 text: cardItem.cardTitle
-                                font.pixelSize: 17 * root.contentScale
+                                font.pixelSize: (Tokens.controlsCrate ? Tokens.fBody : 17) * root.contentScale
                                 font.weight: Font.DemiBold
                                 color: cardItem.accentColor
                                 elide: Text.ElideRight
@@ -237,7 +238,7 @@ AbstractBackgroundWidget {
                             StyledText {
                                 Layout.fillWidth: true
                                 text: cardItem.cardSubtitle
-                                font.pixelSize: 15 * root.contentScale
+                                font.pixelSize: (Tokens.controlsCrate ? Tokens.fBody : 15) * root.contentScale
                                 font.weight: Font.Normal
                                 color: ColorUtils.applyAlpha(cardItem.accentColor, 0.80)
                                 elide: Text.ElideRight

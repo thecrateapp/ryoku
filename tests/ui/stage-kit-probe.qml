@@ -287,7 +287,9 @@ ShellRoot {
         "media/AndroidMediaWidget.qml", "media/CircularMediaWidget.qml", "media/CompactMediaWidget.qml",
         "media/PosterMediaWidget.qml", "media/DeckMediaWidget.qml",
         "bluetooth/DevicesBatteryList1x1Widget.qml", "bluetooth/DevicesBatteryListWidget.qml",
-        "bluetooth/BluetoothFillCardsWidget.qml"
+        "bluetooth/BluetoothFillCardsWidget.qml",
+        "utility/CpuPillWidget.qml", "utility/DiskPillWidget.qml", "utility/RamPillWidget.qml",
+        "utility/ResourceFillCardsWidget.qml", "utility/ResourceColumnsWidget.qml"
     ]
     // A player that can seek, for the media seek line.
     QtObject {

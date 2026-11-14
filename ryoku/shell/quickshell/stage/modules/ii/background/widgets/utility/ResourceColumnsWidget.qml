@@ -6,6 +6,7 @@ import stage.services
 import stage.modules.common
 import stage.modules.common.widgets
 import stage.modules.ii.background.widgets
+import Ryoku.Ui.Singletons
 /*
  * Resource Columns. Each picked metric is a pill that fills like a bar of the
  * Health "Steps" chart, its own shape riding the end of the fill and morphing
@@ -186,7 +187,7 @@ AbstractBackgroundWidget {
                     text: metrics.unit(bar.key)
                     color: bar.textCovered ? WidgetColorScheme.onAccentColor : WidgetColorScheme.subtextColorOnBg
                     font.family: Appearance.font.family.main
-                    font.pixelSize: 15
+                    font.pixelSize: Tokens.controlsCrate ? Tokens.fBody : 15
                     font.variableAxes: ({ "wght": 600, "wdth": 70, "ROND": 100 })
                     renderType: Text.QtRendering
                 }
