@@ -53,6 +53,16 @@ ShellRoot {
             }
         }
 
+        // The wallpaper framing controls over a stand-in screen.
+        EditWallpaperFramingOverlay {
+            id: framing
+            x: 1110
+            y: 0
+            width: 420
+            height: 300
+            screenName: "probe"
+        }
+
         EditWidgetMenu {
             id: widgetMenu
             y: 710
@@ -167,6 +177,15 @@ ShellRoot {
                 EditAddBadge { id: addBadge }
                 EditRemoveBadge { id: removeBadge }
             }
+            EditDockDesignPicker {
+                id: designPicker
+                Layout.fillWidth: true
+                currentValue: "ryoku"
+            }
+            EditAlignBar {
+                id: alignBar
+                count: 3
+            }
             EditMenuPageHeader {
                 id: pageHeader
                 title: "Desktop"
@@ -254,6 +273,23 @@ ShellRoot {
         check(same(addBadge.color, crate ? Tokens.mark : Appearance.colors.colPrimary)
             && same(removeBadge.color, crate ? Tokens.alert : Appearance.m3colors.m3error)
             && addBadge.radius === (crate ? Tokens.radius : 8), "the add and remove badges");
+        // the wallpaper framing coach and control plate: opaque popover plates
+        for (const name of ["framingCoach", "framingDock"]) {
+            const plate = get(framing, name);
+            check(same(plate.color, crate ? Tokens.popover : Tokens.paper), name + "'s fill");
+        }
+        check(get(framing, "framingDock").radius === (crate ? Tokens.radius : Tokens.radius * 2), "the framing plate's corner");
+        // the dock design cards and the selection's align strip
+        const chosen = get(designPicker, "dockDesign-ryoku");
+        const other = get(designPicker, "dockDesign-python");
+        check(same(chosen.color, crate ? Tokens.pickFill : Appearance.colors.colSecondaryContainer)
+            && same(chosen.border.color, crate ? Tokens.pickEdge : Appearance.colors.colSecondary)
+            && same(other.border.color, crate ? Tokens.line : Appearance.colors.colOutlineVariant),
+            "the dock design cards");
+        const strip = get(alignBar, "alignBarPlate");
+        check(same(strip.colBackground, crate ? Tokens.popover : Appearance.colors.colLayer0)
+            && same(strip.borderColor, crate ? Tokens.line : Appearance.colors.colOutline), "the align strip's plate");
+        check(get(alignBar, "alignKit-left").visible === crate, "the align buttons are kit IconButtons under crate");
         check(get(pageHeader, "editMenuKitBack").visible === crate
             && get(pageHeader, "editMenuKitAction").visible === crate, "the menu header's ways out are kit IconButtons");
     }
@@ -299,7 +335,10 @@ ShellRoot {
         "utility/CpuPillWidget.qml", "utility/DiskPillWidget.qml", "utility/RamPillWidget.qml",
         "utility/ResourceFillCardsWidget.qml", "utility/ResourceColumnsWidget.qml",
         // the catalogue panel itself (its plate and header are loaded above)
-        "../../editMode/EditModeDrawer.qml"
+        // and the pages that read the dock or the window manager
+        "../../editMode/EditModeDrawer.qml", "../../editMode/EditWallpaperRootPage.qml",
+        "../../editMode/EditWallpaperScreenMap.qml", "../../editMode/EditWallpaperFramingOverlay.qml",
+        "../../editMode/EditWallpaperPage.qml", "../../editMode/EditStylePresets.qml"
     ]
     // A player that can seek, for the media seek line.
     QtObject {

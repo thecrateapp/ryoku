@@ -1,6 +1,14 @@
 # Changelog: ryoku/shell/
 
 ## Unreleased
+- **The editor's wallpaper pages use the kit under crate.** The picture grid's
+  tiles take the 6 px corner and the applied one the 1 px pick edge and a check
+  tag; the current picture's tags and its change button are popover tags with
+  Solar glyphs and a kit IconButton; the screen map's edited screen takes the
+  pick edge, its names are mono tags and its swap and copy actions kit
+  IconButtons; the framing coach and control plate are opaque popover plates
+  with kit IconButtons, and the snap marker a plain disc. Stock is unchanged
+  (`quickshell/stage/modules/ii/editMode/`; `tests/ui/stage-kit-probe.sh`).
 - **The editor's catalogue, dock and style pages use the kit under crate.** The
   catalogue search is the kit Field (kept in step with the query, Escape
   empties it and then lets the keyboard go), and so is the new folder's name;

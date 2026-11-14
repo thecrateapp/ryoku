@@ -42,6 +42,11 @@ Item {
     id: root
 
     required property string screenName
+    // Under crate the coach and the control plate are opaque popover plates
+    // in a hairline at the shared corner (the desktop layer is not frosted),
+    // the plate's actions are the kit's IconButtons with Solar glyphs, and the
+    // snap marker is a plain disc that fills with the mark when it lands.
+    readonly property bool crate: Tokens.controlsCrate
     // The surface's net content scale (the mode's shrink): undone by the
     // controls so they draw at native size on the card.
     property real contentScale: 1
@@ -459,9 +464,11 @@ Item {
             iconSize: 18
             padding: 8
             fill: snapped ? 1 : 0
-            shape: snapped ? MaterialShape.Shape.SoftBurst : MaterialShape.Shape.Circle
-            color: snapped ? Appearance.colors.colPrimary : Appearance.colors.colPrimaryContainer
-            colSymbol: snapped ? Appearance.colors.colOnPrimary : Appearance.colors.colOnPrimaryContainer
+            shape: snapped && !root.crate ? MaterialShape.Shape.SoftBurst : MaterialShape.Shape.Circle
+            color: root.crate ? (snapped ? Tokens.mark : Tokens.popover)
+                : snapped ? Appearance.colors.colPrimary : Appearance.colors.colPrimaryContainer
+            colSymbol: root.crate ? (snapped ? Tokens.paper : Tokens.ink)
+                : snapped ? Appearance.colors.colOnPrimary : Appearance.colors.colOnPrimaryContainer
             Behavior on color {
                 animation: Appearance.animation.elementMoveFast.colorAnimation.createObject(this)
             }
@@ -553,8 +560,9 @@ Item {
             implicitWidth: Math.min(coachRow.implicitWidth + Tokens.s4 * 2,
                 root.width - Tokens.s5 * 2)
             implicitHeight: Tokens.ctlH + Tokens.s2
+            objectName: "framingCoach"
             radius: Tokens.radius
-            color: Tokens.paper
+            color: root.crate ? Tokens.popover : Tokens.paper
             border.width: Tokens.border
             border.color: root.hasNotice ? Tokens.lineStrong : Tokens.line
             opacity: root.coachIn * (dockHover.hovered
@@ -578,8 +586,17 @@ Item {
                 anchors.rightMargin: Tokens.s3
                 spacing: Tokens.s2
 
+                RyokuUi.Glyph {
+                    Layout.alignment: Qt.AlignVCenter
+                    visible: root.crate
+                    name: root.hasNotice ? "info"
+                        : root.showsSnap ? "center_focus_strong" : "pan_tool"
+                    size: Tokens.fBody
+                    color: root.hasNotice ? Tokens.ink : Tokens.inkMuted
+                }
                 MaterialSymbol {
                     Layout.alignment: Qt.AlignVCenter
+                    visible: !root.crate
                     text: root.hasNotice ? "info"
                         : root.showsSnap ? "center_focus_strong" : "pan_tool"
                     iconSize: Tokens.fBody
@@ -604,8 +621,9 @@ Item {
             Layout.alignment: Qt.AlignHCenter
             implicitWidth: dockRow.implicitWidth + Tokens.s3 * 2
             implicitHeight: root.controlHeight + Tokens.s2 * 2
-            radius: Tokens.radius * 2
-            color: Tokens.paper
+            objectName: "framingDock"
+            radius: root.crate ? Tokens.radius : Tokens.radius * 2
+            color: root.crate ? Tokens.popover : Tokens.paper
             border.width: Tokens.border
             border.color: Tokens.line
             enabled: root.ready
@@ -742,11 +760,12 @@ Item {
         Layout.preferredWidth: root.controlHeight
         Layout.preferredHeight: root.controlHeight
         radius: Tokens.radius
-        opacity: enabled ? 1 : 0.35
-        color: button.toggled ? Tokens.bone
+        opacity: root.crate ? 1 : enabled ? 1 : 0.35
+        color: root.crate ? "transparent"
+            : button.toggled ? Tokens.bone
             : buttonArea.pressed && button.enabled ? Tokens.tint16
             : buttonArea.containsMouse && button.enabled ? Tokens.tint10 : "transparent"
-        border.width: Tokens.border
+        border.width: root.crate ? 0 : Tokens.border
         border.color: button.toggled ? Tokens.bone
             : buttonArea.containsMouse && button.enabled ? Tokens.lineStrong : Tokens.line
 
@@ -759,8 +778,26 @@ Item {
             ColorAnimation { duration: Tokens.snap }
         }
 
+        // under crate: the kit's IconButton, on when toggled
+        RyokuUi.IconButton {
+            id: kitButton
+            anchors.fill: parent
+            visible: root.crate
+            glyph: button.symbol
+            rotation: button.symbolRotation
+            on: button.toggled
+            enabled: button.enabled
+            onClicked: button.clicked()
+        }
+        StyledToolTip {
+            requireOverlay: false
+            extraVisibleCondition: false
+            alternativeVisibleCondition: root.crate && kitButton.hot
+            text: button.tooltip
+        }
         MaterialSymbol {
             anchors.centerIn: parent
+            visible: !root.crate
             text: button.symbol
             rotation: button.symbolRotation
             iconSize: Tokens.fValue
@@ -771,7 +808,7 @@ Item {
         MouseArea {
             id: buttonArea
             anchors.fill: parent
-            enabled: button.enabled
+            enabled: button.enabled && !root.crate
             hoverEnabled: true
             cursorShape: Qt.PointingHandCursor
             onClicked: button.clicked()

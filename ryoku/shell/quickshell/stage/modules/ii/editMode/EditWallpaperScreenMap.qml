@@ -6,6 +6,7 @@ import stage.services
 import stage.modules.common
 import stage.modules.common.widgets
 import stage.modules.common.functions
+import Ryoku.Ui as Ui
 import Ryoku.Ui.Singletons
 
 /**
@@ -21,6 +22,11 @@ import Ryoku.Ui.Singletons
  */
 Item {
     id: root
+
+    // Under crate a screen is a tile at the shared corner; the edited one
+    // takes the 1 px pickEdge, its name a mono tag on the popover ground, and
+    // the swap and copy actions the kit's IconButtons on popover tags.
+    readonly property bool crate: Tokens.controlsCrate
 
     // The screen the mode is on.
     property string screenName: ""
@@ -68,11 +74,11 @@ Item {
         // standing 2px off the screen.
         Rectangle {
             anchors.fill: parent
-            anchors.margins: -4.5
-            radius: face.radius + 4.5
+            anchors.margins: root.crate ? -3 : -4.5
+            radius: root.crate ? Tokens.radius : face.radius + 4.5
             color: "transparent"
-            border.width: 2.5
-            border.color: Appearance.colors.colPrimary
+            border.width: root.crate ? Tokens.border : 2.5
+            border.color: root.crate ? Tokens.pickEdge : Appearance.colors.colPrimary
             opacity: tile.current ? 1 : 0
             visible: opacity > 0
             Behavior on opacity {
@@ -83,7 +89,7 @@ Item {
         ClippingRectangle {
             id: face
             anchors.fill: parent
-            radius: Appearance.rounding.small
+            radius: root.crate ? Tokens.radius : Appearance.rounding.small
             color: Appearance.colors.colLayer2
 
             Loader {
@@ -97,9 +103,15 @@ Item {
                 }
             }
 
+            Ui.Glyph {
+                anchors.centerIn: parent
+                visible: root.crate && (tile.picture === "" || Wallpapers.isVideoFile(tile.picture))
+                name: Wallpapers.isVideoFile(tile.picture) ? "movie" : "monitor"
+                color: Tokens.inkSubtle
+            }
             MaterialSymbol {
                 anchors.centerIn: parent
-                visible: tile.picture === "" || Wallpapers.isVideoFile(tile.picture)
+                visible: !root.crate && (tile.picture === "" || Wallpapers.isVideoFile(tile.picture))
                 text: Wallpapers.isVideoFile(tile.picture) ? "movie" : "monitor"
                 iconSize: Appearance.font.pixelSize.larger
                 color: Appearance.colors.colOnLayer2
@@ -143,11 +155,21 @@ Item {
                 visible: tile.coloursHere
                 width: nameTag.height
                 height: nameTag.height
-                radius: height / 2
-                color: Appearance.colors.colPrimaryContainer
+                radius: root.crate ? Tokens.radius : height / 2
+                color: root.crate ? Tokens.popover : Appearance.colors.colPrimaryContainer
+                border.width: root.crate ? Tokens.border : 0
+                border.color: Tokens.line
 
+                Ui.Glyph {
+                    anchors.centerIn: parent
+                    visible: root.crate
+                    name: "palette"
+                    size: 12
+                    color: Tokens.mark
+                }
                 MaterialSymbol {
                     anchors.centerIn: parent
+                    visible: !root.crate
                     text: "palette"
                     fill: 1
                     iconSize: Appearance.font.pixelSize.smaller
@@ -171,8 +193,12 @@ Item {
                 width: Math.max(0, Math.min(nameLabel.implicitWidth + Tokens.s4,
                     tile.width - Tokens.s3 - (tile.coloursHere ? nameTag.height + Tokens.s1 : 0)))
                 height: 22
-                radius: Appearance.rounding.full
-                color: tile.current ? Appearance.colors.colPrimary : Appearance.colors.colSurfaceContainerHigh
+                objectName: "screenNameTag"
+                radius: root.crate ? Tokens.radius : Appearance.rounding.full
+                color: root.crate ? Tokens.popover
+                    : tile.current ? Appearance.colors.colPrimary : Appearance.colors.colSurfaceContainerHigh
+                border.width: root.crate ? Tokens.border : 0
+                border.color: tile.current ? Tokens.pickEdge : Tokens.line
                 Behavior on color {
                     animation: Appearance.animation.elementMoveFast.colorAnimation.createObject(this)
                 }
@@ -184,9 +210,11 @@ Item {
                     anchors.rightMargin: 8
                     verticalAlignment: Text.AlignVCenter
                     text: WallpaperLayout.displayName(tile.name)
+                    font.family: root.crate ? Tokens.mono : nameLabel.defaultFont + (nameLabel.shouldUseNumberFont ? "," + Appearance.font.family.main : "")
                     font.pixelSize: Appearance.font.pixelSize.smallest
-                    font.weight: Font.Bold
-                    color: tile.current ? Appearance.colors.colOnPrimary : Appearance.colors.colOnSurface
+                    font.weight: root.crate ? Font.Normal : Font.Bold
+                    color: root.crate ? (tile.current ? Tokens.mark : Tokens.inkSecondary)
+                        : tile.current ? Appearance.colors.colOnPrimary : Appearance.colors.colOnSurface
                     elide: Text.ElideRight
                 }
             }
@@ -225,7 +253,54 @@ Item {
         }
     }
 
-    component TileAction: RippleButton {
+    // The swap and copy actions: the stock round button, or under crate the
+    // kit's IconButton on a popover tag.
+    component TileAction: Item {
+        id: holder
+        property int size: 32
+        property string symbol: ""
+        property string tooltip: ""
+        signal clicked()
+        readonly property bool hovered: root.crate ? kitAction.hot : action.hovered
+        implicitWidth: holder.size
+        implicitHeight: holder.size
+
+        Rectangle {
+            anchors.fill: parent
+            visible: root.crate
+            radius: Tokens.radius
+            color: Tokens.popover
+            border.width: Tokens.border
+            border.color: Tokens.line
+
+            Ui.IconButton {
+                id: kitAction
+                anchors.fill: parent
+                glyph: holder.symbol
+                enabled: holder.enabled
+                onClicked: holder.clicked()
+            }
+            StyledToolTip {
+                requireOverlay: false
+                extraVisibleCondition: false
+                alternativeVisibleCondition: kitAction.hot
+                text: holder.tooltip
+            }
+        }
+
+        StockTileAction {
+            id: action
+            anchors.fill: parent
+            visible: !root.crate
+            size: holder.size
+            symbol: holder.symbol
+            tooltip: holder.tooltip
+            enabled: holder.enabled
+            onClicked: holder.clicked()
+        }
+    }
+
+    component StockTileAction: RippleButton {
         id: action
         property int size: 32
         property string symbol: ""
