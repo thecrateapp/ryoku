@@ -73,6 +73,7 @@ Scope {
             anchors.fill: parent
             screen: root.screen
             stageEditing: root.stageEditing
+            chassisPaints: root.frameReserves
         }
         }
     }

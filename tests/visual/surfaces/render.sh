@@ -68,6 +68,19 @@ for entry in "$repo/ryoku/shell/quickshell/shell"/*; do
   [ "$(basename "$entry")" = shell.qml ] || ln -s "$entry" "$mods/root/$(basename "$entry")"
 done
 cp "$here/scenes/$scene.qml" "$mods/root/shell.qml"
+# A scene that imports inir (the Shima dock) gets inir mirrored as links with the
+# offscreen stand-ins of tests/ui/fixtures/offscreen-inir (its LiveLayer and
+# desktop menu map layer windows of their own, which cannot load offscreen). Its
+# morphing body (the menus) clips through Quickshell's ClippingRectangle, a
+# ShaderEffect the software scene graph of an offscreen render never draws, so
+# the render draws that body as a plain Rectangle of the same fill and corner.
+if grep -q '^import inir' "$here/scenes/$scene.qml"; then
+  cp -as "$repo/ryoku/shell/quickshell/inir" "$mods/inir"
+  cp -rf --remove-destination "$repo/tests/ui/fixtures/offscreen-inir/." "$mods/inir/"
+  morph="$mods/inir/modules/iris/components/IrisMorphSurface.qml"
+  sed 's/^    ClippingRectangle {$/    Rectangle {/' "$repo/ryoku/shell/quickshell/inir/modules/iris/components/IrisMorphSurface.qml" >"$morph.new"
+  mv -f "$morph.new" "$morph"
+fi
 ln -s "$build/qml/Ryoku/Blobs" "$mods/Ryoku/Blobs"
 path=$PATH
 [ -d "$here/scenes/$scene.bin" ] && path="$here/scenes/$scene.bin:$PATH"

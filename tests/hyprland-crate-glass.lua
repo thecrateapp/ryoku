@@ -83,6 +83,9 @@ local namespaces = {
     -- the Game Bar fills with the glass through its look singleton (GameBarLook),
     -- not in GameBar.qml, which maps the layer
     ["ryoku-gamebar"] = "the Game Bar (GameBarLook.panel)",
+    -- the Shima dock lives in inir, outside the shell tree: IrisDockSurface maps
+    -- the layer and IrisDock draws the glass (body, name label, menu)
+    ["ryoku-dock-shima"] = "inir/modules/iris/dock/IrisDock.qml",
 }
 for path in listing:lines() do
     local file = assert(io.open(path))

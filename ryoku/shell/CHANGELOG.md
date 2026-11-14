@@ -1,6 +1,21 @@
 # Changelog: ryoku/shell/
 
 ## Unreleased
+- **The Shima dock draws with the shared kit under crate.** Standing alone (any
+  bar style but iRiS, whose chassis still paints it), the dock's body, its name
+  label and its app menu are the one glass with a 1 px line at the 6 px corner,
+  frosted by the crate-glass rule on the `ryoku-dock-shima` layer; the body
+  floats 8 px off the edge and the menu stands 8 px clear of it. Running apps
+  carry the mark (the focused app's dots in full, another's at 40 %, an urgent
+  one in the alert), hover plates take the shared corner and the ink wash, the
+  separator the line, and a notification count fills with the mark. The menu
+  and the windows sheet use kit captions, Solar glyphs and IconButtons, mono
+  rows with the ink wash on hover, and the pick wash and 1 px pick edge on the
+  focused window. The catalogue gains the dock menu's glyphs (a struck pin for
+  Unpin). The stock look and the iRiS bar are unchanged
+  (`inir/modules/iris/dock/`, `ui/lib/glyphs.js`, `hyprland/modules/decoration.lua`;
+  `tests/ui/shima-dock-kit-probe.sh`, `tests/hyprland-crate-glass.lua`,
+  `tests/visual/surfaces/scenes/shima-dock.qml`).
 - **Pinned shots draw with the shared kit under crate.** A pin's image sits on
   an opaque card with the shared 6 px corner and a 1 px line, without the drop
   shadow. Its actions (edit, copy, copy path, close) are the kit's icon buttons
