@@ -4,7 +4,7 @@ import Ryoku.Ui.Singletons
 import "welcome" as Welcome
 
 // The Welcome on the kit, in both looks: an opaque surface; under crate the
-// step rail is the kit's keyed Tabs over a Beam of the way through, a tab
+// step rail is the kit's keyed Tabs alone (no progress beam), a tab
 // moves to its step, the page title is the kit PageHeader and a picked bar card
 // draws through PickCard, and cards and the live bar frame drop their corner
 // ticks and lead bar; stock keeps its own rail, title, cards and marginalia.
@@ -47,8 +47,7 @@ ShellRoot {
         check(rail.visible === crate, "the kit rail shows only under crate");
         const tabs = probe.tabsOf(rail);
         check(tabs.options.length === 5 && tabs.options[1].key === "1" && tabs.current === String(app.step), "a tab per step, the current one live");
-        const beam = find(app, "welcomeStepBeam");
-        check(Math.abs(beam.value - app.step / 4) < 0.001 && !beam.interactive, "the beam reads the way through");
+        check(find(app, "welcomeStepBeam") === null, "no progress beam under the step tabs");
         const header = find(app, "welcomePageHeader");
         check(header !== null && header.visible === crate && header.title.length > 0, "the page title is the kit PageHeader under crate");
         const pick = find(app, "welcomeBarPick");

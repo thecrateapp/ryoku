@@ -2,8 +2,8 @@
 
 ## Unreleased
 - **The Crate Welcome uses the shared kit.** Under crate the window is the
-  opaque panel grey; the step rail is the shared tabs over a beam of the way
-  through; each step's title is the shared page header; the picked bar card
+  opaque panel grey; the step rail is the shared tabs, whose underline marks
+  the step (no progress beam under them); each step's title is the shared page header; the picked bar card
   takes the pick edge and its dot; its cards and the live bar frame are flat on
   the 1 px hairline, without corner ticks or the store card's lead bar. The
   stock look is unchanged (`quickshell/welcome/`).

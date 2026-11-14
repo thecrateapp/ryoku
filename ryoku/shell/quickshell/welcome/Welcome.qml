@@ -165,7 +165,7 @@ Rectangle {
             }
         }
 
-        // under crate the rail is the kit's Tabs over a Beam of the way through
+        // under crate the rail is the kit's Tabs; the underline marks the step
         Column {
             objectName: "welcomeStepRail"
             visible: Tokens.controlsCrate
@@ -179,13 +179,6 @@ Rectangle {
                 options: root.stepTabs
                 current: String(root.step)
                 onChose: key => root.step = Number(key)
-            }
-            Beam {
-                objectName: "welcomeStepBeam"
-                width: stepTabs.width
-                height: 8
-                interactive: false
-                value: root.lastStep > 0 ? root.step / root.lastStep : 1
             }
         }
 
