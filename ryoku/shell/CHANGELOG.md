@@ -23,6 +23,16 @@
   scene load them offscreen; under the software renderer the card draws a
   plain clipped plate, since it has no shader effects. The kit Field reports
   keys and composition text to its owner. Stock is unchanged.
+- **The desktop visualiser draws in the mark under crate.** An unpinned look
+  is one active signal, the kit's mark on every band instead of a
+  bass-to-treble sweep, and the edge field runs from the accent to the mark
+  through the Beam's tail, the way crate-mark's equalizer draws its curve.
+  Each is still re-lit on its own hue against the wallpaper behind it, so it
+  keeps its contrast over a bright picture. A
+  pinned colour or gradient still paints exactly as chosen. The Stage
+  Editor's size and turn handles are popover knobs with a 1 px mark edge,
+  filled with the mark while held, on a hairline stem. The colour fallbacks
+  behind a pinned colour are theme roles (`modules/visualizer`).
 - **A rice that names no launcher mark gets Ryoku's own.** The bar keeps its
   wordmark and glyph in shell.json and its widget cache, so switching from a
   rice that set them (the Crate rice's CRATE) to one that did not, or restoring

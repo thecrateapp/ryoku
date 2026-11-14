@@ -1,6 +1,7 @@
 pragma ComponentBehavior: Bound
 import QtQuick
 import Ryoku.Ui
+import Ryoku.Ui.Singletons as Ui
 import "Singletons"
 
 // The desktop spectrum: geometry and colour only. Motion (or AuraMotion for the
@@ -10,6 +11,8 @@ import "Singletons"
 // the look covers, so a spectrum crossing a bright sky and a dark tree stays
 // legible along its whole width. The aura look instead paints a wallpaper-lit
 // triad through AuraField, which has its own palette rather than a ramp.
+// Under crate an unpinned look is one active signal in the kit's mark, the way
+// crate-mark's equalizer draws its curve, rather than a wallpaper-lit sweep.
 Item {
     id: root
 
@@ -102,6 +105,10 @@ Item {
             }
             return pinned;
         }
+        // Crate draws one active signal: the mark on every stop, no bass->treble
+        // walk, each stop still re-lit against the picture behind its slice so
+        // it keeps its contrast over a bright wallpaper.
+        var crate = Ui.Tokens.controlsCrate;
         var out = [];
         for (var i = 0; i < 8; i++) {
             var t = i / 7;
@@ -109,7 +116,8 @@ Item {
             var l = root.polar ? root.fieldLstar
                 : (field.vertical ? Scheme.lstarAt(root.nx, root.ny + t * root.nh * 0.875, root.nw, root.nh / 8)
                                   : Scheme.lstarAt(root.nx + t * root.nw * 0.875, root.ny, root.nw / 8, root.nh));
-            out.push(Scheme.colorAt(t, l, root.fieldSide));
+            out.push(crate ? Scheme.relit(Ui.Tokens.mark, l, root.fieldSide)
+                           : Scheme.colorAt(t, l, root.fieldSide));
         }
         return out;
     }
@@ -156,7 +164,14 @@ Item {
             var base = root.cfg.customColor;
             return [Qt.darker(base, 1.25), base, Qt.lighter(base, 1.25)];
         }
+        // Crate walks the field from the accent to the mark through the Beam's
+        // own tail, so the edge glows in the one signal colour, each stop re-lit
+        // against the picture like the bars.
         var l = root.fieldLstar;
+        if (Ui.Tokens.controlsCrate)
+            return [Scheme.relit(Ui.Tokens.sun, l, root.fieldSide),
+                    Scheme.relit(Ui.Tokens.beamTail, l, root.fieldSide),
+                    Scheme.relit(Ui.Tokens.mark, l, root.fieldSide)];
         return [Scheme.colorAt(0.12, l, root.fieldSide),
                 Scheme.colorAt(0.50, l, root.fieldSide),
                 Scheme.colorAt(0.88, l, root.fieldSide)];
