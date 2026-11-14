@@ -185,8 +185,8 @@ ShellRoot {
             }
             answered.phase = "done";
             answered.askedQuestion = "What is the Crate accent?";
-            answered.answerText = "The Crate accent is a warm red, #e2342a, with a brighter tone for marks.";
-            answered.answerActions = [{ kind: "color", value: "#e2342a", label: "#e2342a" }];
+            answered.answerText = "The Crate accent is cyan, #06b6d4, with a brighter tone for marks.";
+            answered.answerActions = [{ kind: "color", value: "#06b6d4", label: "#06b6d4" }];
             working.phase = "working";
             working.working = "Thinking";
             Stash.queueModel.append({ kind: "download", arg: "https://example.org/v", mode: "auto", name: "ambient-set.webm",
