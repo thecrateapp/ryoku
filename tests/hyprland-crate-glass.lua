@@ -67,7 +67,12 @@ end
 -- glass fills and maps its own layer namespace.
 local glass_marker = [[Tokens\.glass|ConnectedPanelSurface|AiPanelSurface|cc\.plateFill|color: root\.bg$]]
 local listing = assert(io.popen("grep -rlE '" .. glass_marker .. "' " .. shell_root .. " --include='*.qml'"))
-local namespaces = { ["ryoku-sidebar-left"] = "SidebarFrame (Super+Esc)" }
+-- The Game Bar fills with the glass through its look singleton (GameBarLook),
+-- not in GameBar.qml, which maps the layer.
+local namespaces = {
+    ["ryoku-sidebar-left"] = "SidebarFrame (Super+Esc)",
+    ["ryoku-gamebar"] = "the Game Bar (GameBarLook.panel)",
+}
 for path in listing:lines() do
     local file = assert(io.open(path))
     local body = file:read("a")
@@ -85,6 +90,15 @@ local crate = load_rules('{ "themeStyle": { "controls": "crate" } }', "{}")
 for namespace, path in pairs(namespaces) do
     assert(blurred(crate, namespace),
         string.format("%s (%s) fills with the crate glass but no crate-glass rule blurs it", namespace, path))
+end
+
+-- The Game Bar's layer also carries its dim scrim over the game: the frost must
+-- skip the scrim at the default dim (0.62) and keep the 68 % glass of the cards.
+for _, rule in ipairs(crate) do
+    if rule.name == "crate-glass-blur-gamebar" then
+        assert(rule.ignore_alpha > 0.62 and rule.ignore_alpha < 0.68,
+            "the Game Bar's frost must sit between its scrim and its glass")
+    end
 end
 
 -- Blur off (power saver, disableBlur): the rules stay but never frost, and the

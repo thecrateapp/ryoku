@@ -1,6 +1,20 @@
 # Changelog: ryoku/shell/
 
 ## Unreleased
+- **The Game Bar wears the shared kit under crate.** The strip and every card
+  are the shared glass with a hairline and the 6 px corner, one plate with no
+  second fill inside, and the compositor frosts them (a `crate-glass-blur-gamebar`
+  rule whose alpha cut sits above the default dim, so the game behind the scrim
+  is never blurred). The strip's widget buttons, pin and close, mute and deafen
+  and the media transport are the kit's plateless IconButton with the Solar
+  glyph where the catalogue has one; text buttons are Btn, the resource tabs
+  Tabs, the gallery's modes a Seg, the readings InfoRow and MeterRow, the audio
+  faders LevelRow and StreamRow, captions the tracked label, and the graphs the
+  Controls activity graph's grammar. The clock, the charge and the readings are
+  mono. The stock look is unchanged (`modules/gamebar/`, `GameBarGlyph.qml`,
+  `GameBarCaption.qml`, `hyprland/modules/decoration.lua`;
+  `tests/ui/gamebar-kit-probe.sh`, `tests/hyprland-crate-glass.lua`, scene
+  `gamebar`).
 - **The bar's audio glyph shows what you are listening through.** Under crate
   the audio widget draws a kit glyph for the default sink's device, read from
   its PipeWire properties: Bluetooth headphones, a remote speaker (a Bluetooth

@@ -7,7 +7,8 @@ import "look"
 
 // The card frame: an 8px grab margin, an 18px panel with a 1px outline, a
 // 30px title bar and a 12px content area. The widget drags from its surface;
-// the body is the default property.
+// the body is the default property. Under crate the frame is the shared glass
+// with a hairline edge and the 6 px corner, one plate with no second fill inside.
 Item {
     id: root
 
@@ -100,31 +101,25 @@ Item {
                     width: 20 * root.s
                     height: 20 * root.s
 
-                    MaterialIcon {
+                    GameBarGlyph {
                         anchors.fill: parent
-                        visible: root.iconGlyph.length === 0
-                        text: root.host ? root.host.symbolFor(root.cardId) : ""
+                        glyph: root.iconGlyph
+                        symbol: root.host ? root.host.symbolFor(root.cardId) : ""
                         color: GameBarLook.fg
-                        font.pixelSize: 20 * root.s
-                    }
-
-                    GlyphIcon {
-                        anchors.fill: parent
-                        visible: root.iconGlyph.length > 0
-                        name: root.iconGlyph
-                        color: GameBarLook.fg
-                        stroke: 1.6
                     }
                 }
 
-                Text {
+                // under crate the card's head is the kit's tracked caption in
+                // the accent tone, as the QS Bar's panels head theirs
+                GameBarCaption {
+                    objectName: "gameBarCardTitle"
                     anchors.verticalCenter: parent.verticalCenter
-                    leftPadding: 4 * root.s
+                    s: root.s
+                    tone: "accent"
+                    leftPadding: (GameBarLook.crate ? 8 : 4) * root.s
                     text: root.title
-                    color: GameBarLook.fg
-                    font.family: GameBarLook.face
-                    font.pixelSize: GameBarLook.small * root.s
-                    elide: Text.ElideRight
+                    stockColor: GameBarLook.fg
+                    stockSize: GameBarLook.small
                 }
             }
 

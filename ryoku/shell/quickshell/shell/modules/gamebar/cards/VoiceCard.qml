@@ -52,6 +52,14 @@ GameBarCard {
         return card.subtitle;
     }
 
+    // The Discord mark's tile. Under crate it is no seal: the mark alone, in the
+    // mark ink while in a call.
+    readonly property color tileFill: GameBarLook.crate ? "transparent"
+        : card.voice.inVoice ? GameBarLook.toggled : GameBarLook.raised
+    readonly property color tileInk: GameBarLook.crate
+        ? (card.voice.inVoice ? GameBarLook.toggled : GameBarLook.onLayer)
+        : (card.voice.inVoice ? GameBarLook.toggledInk : GameBarLook.onLayer)
+
     readonly property string headline: {
         if (card.voice.inVoice)
             return card.voice.channel.name || I18n.tr("Voice channel");
@@ -113,14 +121,14 @@ GameBarCard {
                 width: 36 * card.s
                 height: 36 * card.s
                 radius: GameBarLook.radiusSmall * card.s
-                color: card.voice.inVoice ? GameBarLook.toggled : GameBarLook.raised
+                color: card.tileFill
 
                 GlyphIcon {
                     anchors.centerIn: parent
                     width: 19 * card.s
                     height: 19 * card.s
                     name: "discord"
-                    color: card.voice.inVoice ? GameBarLook.toggledInk : GameBarLook.onLayer
+                    color: card.tileInk
                     stroke: 1.7
                 }
             }
@@ -319,14 +327,14 @@ GameBarCard {
                 width: 36 * card.s
                 height: 36 * card.s
                 radius: GameBarLook.radiusSmall * card.s
-                color: card.voice.inVoice ? GameBarLook.toggled : GameBarLook.raised
+                color: card.tileFill
 
                 GlyphIcon {
                     anchors.centerIn: parent
                     width: 20 * card.s
                     height: 20 * card.s
                     name: "discord"
-                    color: card.voice.inVoice ? GameBarLook.toggledInk : GameBarLook.onLayer
+                    color: card.tileInk
                     stroke: 1.7
                 }
             }

@@ -168,6 +168,17 @@ if crate_glass() then
     blur         = not no_blur,
     ignore_alpha = 0.05,
   })
+  -- The Game Bar is one full-output overlay over a game: its strip and cards are
+  -- the glass, and while the bar is open a black scrim dims the rest (Hub ->
+  -- Game Bar -> Dim, 0.62 by default). ignore_alpha sits between that scrim and
+  -- the glass (0.68, more where a card lies on the scrim), so the frost stays on
+  -- the strip and the cards and the game itself is never blurred behind them.
+  hl.layer_rule({
+    name         = "crate-glass-blur-gamebar",
+    match        = { namespace = "^ryoku-gamebar$" },
+    blur         = not no_blur,
+    ignore_alpha = 0.65,
+  })
 end
 
 -- Controls, the QS Bar panels, its control center, the OSD and the dialog reveal

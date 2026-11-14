@@ -1,13 +1,18 @@
 pragma ComponentBehavior: Bound
 
 import QtQuick
+import Ryoku.Ui as Kit
+import Ryoku.Ui.Singletons as Ui
 import "../../components"
 import "look"
 
 // A 42px row of icon and label tabs over a 1px bottom
 // border, with a 3px primary indicator tucked under the active one.
+// Under crate it is the kit's Tabs, selection drawn the way the theme draws it.
 Item {
     id: root
+
+    readonly property bool crate: Ui.Tokens.controlsCrate
 
     property real s: 1
     property var model: []
@@ -17,8 +22,20 @@ Item {
 
     implicitHeight: 42 * root.s
 
+    Kit.Tabs {
+        id: kitTabs
+        objectName: "gameBarKitTabs"
+        visible: root.crate
+        anchors.left: parent.left
+        anchors.verticalCenter: parent.verticalCenter
+        options: root.model.map((tab, i) => ({ key: String(i), label: tab.label }))
+        current: String(root.currentIndex)
+        onChose: key => root.picked(Number(key))
+    }
+
     Row {
         id: tabs
+        visible: !root.crate
         anchors.fill: parent
         anchors.bottomMargin: 1 * root.s
 
@@ -77,6 +94,7 @@ Item {
     }
 
     Rectangle {
+        visible: !root.crate
         anchors.left: parent.left
         anchors.right: parent.right
         anchors.bottom: parent.bottom
@@ -85,6 +103,7 @@ Item {
     }
 
     Rectangle {
+        visible: !root.crate
         readonly property real baseWidth: root.width / Math.max(1, root.model.length)
         readonly property real padding: 8 * root.s
         x: root.currentIndex * baseWidth + padding

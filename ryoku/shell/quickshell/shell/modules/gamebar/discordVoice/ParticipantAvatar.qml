@@ -8,7 +8,8 @@ import "../look"
 
 // One voice participant: a round avatar with a speaking ring, a mute or deaf
 // badge, and the display name under it. Everyone who is not speaking fades back
-// so the active speaker reads at a glance.
+// so the active speaker reads at a glance. Under crate the speaking ring is the
+// 1 px mark, as a picked row's edge.
 Item {
     id: root
 
@@ -48,8 +49,8 @@ Item {
         height: width
         radius: width / 2
         color: "transparent"
-        border.width: root.active ? 2 * root.s : 0
-        border.color: GameBarLook.accent
+        border.width: root.active ? (GameBarLook.crate ? 1 : 2) * root.s : 0
+        border.color: GameBarLook.crate ? GameBarLook.toggled : GameBarLook.accent
 
         Behavior on border.width {
             NumberAnimation { duration: 120 }
@@ -103,7 +104,7 @@ Item {
             text: root.initial
             color: GameBarLook.onLayer
             font.family: GameBarLook.face
-            font.pixelSize: 17 * root.s
+            font.pixelSize: GameBarLook.initial * root.s
             font.weight: Font.DemiBold
         }
 
