@@ -210,26 +210,14 @@ Item {
                                 MarkTag { on: optCard.selected }
 
                                 // The mark, previewed once, exactly as the bar draws it (data).
-                                Text {
+                                LauncherMark {
                                     id: optMark
                                     anchors.centerIn: parent
-                                width: parent.width - (page.tk ? page.tk.gap * 2 : 14)
-                                    horizontalAlignment: Text.AlignHCenter
-                                    text: optCard.iconMode
-                                        ? (page.root ? page.root.launcherLogoIconGlyph(optCard.modelData) : "")
-                                        : (page.root ? page.root.launcherLogoTextLabel(optCard.modelData) : optCard.modelData)
+                                    root: page.root
+                                    mode: optCard.iconMode ? "icon" : "text"
+                                    markId: optCard.modelData
+                                    fitWidth: parent.width - (page.tk ? page.tk.gap * 2 : 14)
                                     color: page.root ? page.root.seal : "#c0392b"
-                                    renderType: Text.NativeRendering
-                                    font.family: optCard.iconMode
-                                        ? (page.root ? page.root.launcherLogoIconFont(optCard.modelData) : "monospace")
-                                        : (page.root ? page.root.mono : "monospace")
-                                    font.pixelSize: optCard.iconMode
-                                        ? (page.root ? page.root.launcherLogoIconSize(optCard.modelData) : 15)
-                                        : 12
-                                    font.weight: Font.Bold
-                                    font.letterSpacing: optCard.iconMode ? 0 : 2
-                                    fontSizeMode: Text.HorizontalFit
-                                    minimumPixelSize: 7
                                 }
 
                                 MouseArea {

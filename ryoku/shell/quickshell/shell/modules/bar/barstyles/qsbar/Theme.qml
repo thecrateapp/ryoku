@@ -2440,7 +2440,7 @@ Item {
     // ── picker visual style (theme/wallpaper/screenshot/video pickers) ──
     property string pickerStyle: "tanzaku"   // "tanzaku", "hearthstone", "carousel"
     property string launcherLogoMode: "text"     // "text" or "icon"
-    property string launcherLogoText: "ryoku"    // "ryoku", "omarchy", "hyprland", "arch", or "omacom"
+    property string launcherLogoText: "ryoku"    // see launcherLogoTextOptions
     property string launcherLogoIcon: "ryoku"    // see launcherLogoIconGlyph()
     // Legacy launcher-logo text values migrated to the current text mode.
     readonly property var legacyLogoTextValues: ["omarchy", "hyprland"]
@@ -2820,12 +2820,14 @@ Item {
     // ids carried while the launcher drew a hardcoded mark. Leaving it out makes
     // every one of those stale records fail validation and land on "ryoku", so an
     // existing desktop keeps its own brand instead of being silently rebranded.
-    readonly property var launcherLogoTextOptions: ["ryoku", "hyprland", "arch", "omacom", "linux", "nixos", "debian", "fedora", "gentoo", "void", "wayland", "sway", "gnome", "dwm"]
-    readonly property var launcherLogoIconOptions: ["ryoku", "hyprland", "arch", "grid", "spark", "power", "dragon", "mark", "nix", "branch", "rebel", "ubuntu", "debian", "fedora", "gentoo", "void", "artix", "manjaro", "suse", "alpine", "endeavour", "garuda", "cachyos", "freebsd", "apple", "raspi", "elementary", "gnome", "alma", "centos", "devuan", "arco", "ferris", "codeberg", "gitea", "tux", "android", "mint", "kali", "popos", "zorin", "plasma", "wayland", "docker", "github", "git", "gitlab", "python", "rust", "go", "node", "react", "vue", "kube", "vim", "neovim", "firefox", "chrome", "java", "js", "ts", "cpp", "ruby", "php", "swift", "kotlin", "lua", "haskell", "blender", "figma", "redis", "postgres", "steam", "spotify", "discord", "telegram", "slack", "empire", "jedi", "sith", "mandalorian", "firstorder", "deathstar", "spaceinvaders", "ghost", "pokeball", "pokemon", "gamepad", "retropad", "d20", "playstation", "xbox", "switch", "minecraft", "wizard", "dungeon", "sword", "shield", "crown", "skull", "crossbones", "ninja", "robot", "alien", "knight", "paw", "masks", "theater", "film", "spade", "superpowers", "reddit", "twitch"]
+    readonly property var launcherLogoTextOptions: ["ryoku", "crate", "hyprland", "arch", "omacom", "linux", "nixos", "debian", "fedora", "gentoo", "void", "wayland", "sway", "gnome", "dwm"]
+    readonly property var launcherLogoIconOptions: ["ryoku", "crate", "hyprland", "arch", "grid", "spark", "power", "dragon", "mark", "nix", "branch", "rebel", "ubuntu", "debian", "fedora", "gentoo", "void", "artix", "manjaro", "suse", "alpine", "endeavour", "garuda", "cachyos", "freebsd", "apple", "raspi", "elementary", "gnome", "alma", "centos", "devuan", "arco", "ferris", "codeberg", "gitea", "tux", "android", "mint", "kali", "popos", "zorin", "plasma", "wayland", "docker", "github", "git", "gitlab", "python", "rust", "go", "node", "react", "vue", "kube", "vim", "neovim", "firefox", "chrome", "java", "js", "ts", "cpp", "ruby", "php", "swift", "kotlin", "lua", "haskell", "blender", "figma", "redis", "postgres", "steam", "spotify", "discord", "telegram", "slack", "empire", "jedi", "sith", "mandalorian", "firstorder", "deathstar", "spaceinvaders", "ghost", "pokeball", "pokemon", "gamepad", "retropad", "d20", "playstation", "xbox", "switch", "minecraft", "wizard", "dungeon", "sword", "shield", "crown", "skull", "crossbones", "ninja", "robot", "alien", "knight", "paw", "masks", "theater", "film", "spade", "superpowers", "reddit", "twitch"]
     // id -> glyph codepoint for every option. The brand/OS/dev marks are real
     // SpaceMono Nerd Font glyphs (font-logos, devicons, font-awesome), so nothing
-    // is hand-drawn; ryoku stays the CJK 力. The picker and the bar both resolve
-    // through here, so a new entry shows up in both.
+    // is hand-drawn; ryoku stays the CJK 力. The exceptions are the drawn marks
+    // (launcherLogoIconDrawn): no font carries the Crate logo, so LauncherMark
+    // draws it as a vector. The picker and the bar both resolve through here, so
+    // a new entry shows up in both.
     readonly property var launcherLogoIconCodes: ({
         "ryoku": 0x529B, "hyprland": 0xF359, "arch": 0xE732, "grid": 0xEEED, "spark": 0xE6A4, "power": 0xF011, "dragon": 0x2EEF, "mark": 0xEE99, "nix": 0xF313, "branch": 0xE666, "rebel": 0xF1D0,
         "ubuntu": 0xF31B, "debian": 0xF306, "fedora": 0xF30A, "gentoo": 0xF30D, "void": 0xF32E, "artix": 0xF31F, "manjaro": 0xF312, "suse": 0xF314, "alpine": 0xF300, "endeavour": 0xF322, "garuda": 0xF337, "cachyos": 0xF385, "freebsd": 0xF30C, "apple": 0xF302, "raspi": 0xF315, "elementary": 0xF309, "gnome": 0xF361, "alma": 0xF31D, "centos": 0xF304, "devuan": 0xF307, "arco": 0xF346, "ferris": 0xF323, "codeberg": 0xF330, "gitea": 0xF339, "tux": 0xF31A, "android": 0xE70E, "mint": 0xF30E, "kali": 0xF327, "popos": 0xF32A, "zorin": 0xF32F, "plasma": 0xF332, "wayland": 0xF367, "docker": 0xF308,
@@ -2848,7 +2850,12 @@ Item {
     }
     // omarchy's U+E900 needs a font Ryoku doesn't ship, so it's absent here and
     // any stale "omarchy" icon id falls back to ryoku via the validators below.
+    function launcherLogoIconDrawn(id) {
+        return id === "crate"
+    }
     function launcherLogoIconGlyph(id) {
+        if (launcherLogoIconDrawn(id))
+            return ""
         if (id === "ryoku")
             return UiPreferences.brandMark("力")
         var c = launcherLogoIconCodes[id]
@@ -2861,6 +2868,7 @@ Item {
         if (id === "arch") return 17
         if (id === "dragon") return 16
         if (id === "ryoku") return 15
+        if (id === "crate") return 14
         return 16
     }
     function launcherLogoIconXOffset(id) {

@@ -13,10 +13,12 @@ ConnectedBarInset ConnectedBarInset.qml
 ConnectedPanelSurface ConnectedPanelSurface.qml
 CpuTemperatureWidget CpuTemperatureWidget.qml
 CpuWidget CpuWidget.qml
+CrateGlyph CrateGlyph.qml
 GpuWidget GpuWidget.qml
 IconText IconText.qml
 IdleInhibitorWidget IdleInhibitorWidget.qml
 IdleWidget IdleWidget.qml
+LauncherMark LauncherMark.qml
 LauncherWidget LauncherWidget.qml
 LayoutWidget LayoutWidget.qml
 MediaBrowserWidget MediaBrowserWidget.qml

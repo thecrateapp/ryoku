@@ -90,23 +90,17 @@ Item {
     }
 
     // Ryoku brand mark by default; the chosen wordmark or icon option otherwise,
-    // themed with the seal. Resolvers live in Theme so the picker and bar agree.
-    Text {
+    // themed with the seal. LauncherMark draws it, the same as the Identity
+    // picker's tiles, so the picker and bar agree.
+    LauncherMark {
         id: logo
         anchors.centerIn: parent
         anchors.horizontalCenterOffset: root.launcherLogoMode === "icon"
             ? root.launcherLogoIconXOffset(root.launcherLogoIcon) : 0
-        text: root.launcherLogoMode === "icon"
-            ? root.launcherLogoIconGlyph(root.launcherLogoIcon)
-            : root.launcherLogoTextLabel(root.launcherLogoText)
-        color: root.seal
-        renderType: Text.NativeRendering
-        font.family: root.launcherLogoMode === "icon"
-            ? root.launcherLogoIconFont(root.launcherLogoIcon) : root.mono
-        font.pixelSize: root.launcherLogoMode === "icon"
-            ? root.launcherLogoIconSize(root.launcherLogoIcon) : 12
-        font.weight: Font.Bold
-        font.letterSpacing: root.launcherLogoMode === "icon" ? 0 : 2
+        root: rootMod.root
+        mode: rootMod.root.launcherLogoMode
+        markId: mode === "icon" ? rootMod.root.launcherLogoIcon : rootMod.root.launcherLogoText
+        color: rootMod.root.seal
         Behavior on color { ColorAnimation { duration: 200 } }
     }
 
