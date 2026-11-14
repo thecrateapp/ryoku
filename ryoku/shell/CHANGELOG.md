@@ -19,7 +19,8 @@
   The logo is no font glyph, so LauncherMark draws every mark (wordmark, font
   glyph or a drawn glyph) for both the bar and the Identity tiles
   (`modules/bar/barstyles/qsbar/modules/LauncherMark.qml`;
-  `tests/ui/launcher-mark-probe.sh`).
+  `tests/ui/launcher-mark-probe.sh`). The chosen wordmark and glyph are kept in
+  shell.json beside the mark's mode, so a rice can name them.
 - **A bar plugin's panel shows its caret.** The plugin panel clipped its card,
   which cut off the caret the connected surface draws outside the card and left
   only the notch in the outline; only the plugin's content is clipped now. A

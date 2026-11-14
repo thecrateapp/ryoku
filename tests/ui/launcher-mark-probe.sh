@@ -23,7 +23,7 @@ done
 cp "$here/launcher-mark-probe.qml" "$work/shell/probe.qml"
 
 cat >"$work/cfg/ryoku/shell.json" <<'JSON'
-{}
+{"qsbar":{"launcherLogoMode":"icon","launcherLogoText":"crate","launcherLogoIcon":"crate"}}
 JSON
 
 HOME="$work" XDG_CONFIG_HOME="$work/cfg" XDG_CACHE_HOME="$work/cache" \

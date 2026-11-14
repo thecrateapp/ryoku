@@ -41,6 +41,10 @@ ShellRoot {
         interval: 900
         running: true
         onTriggered: {
+            // a rice or the user's shell.json names the marks; they load from
+            // there (the widget cache is empty in this HOME)
+            if (theme.launcherLogoMode !== "icon" || theme.launcherLogoText !== "crate" || theme.launcherLogoIcon !== "crate")
+                return fail("shell.json marks not loaded: mode=" + theme.launcherLogoMode + " text=" + theme.launcherLogoText + " icon=" + theme.launcherLogoIcon);
             if (theme.launcherLogoTextOptions[1] !== "crate")
                 return fail("wordmark options[1] = " + theme.launcherLogoTextOptions[1]);
             if (theme.launcherLogoIconOptions[1] !== "crate")

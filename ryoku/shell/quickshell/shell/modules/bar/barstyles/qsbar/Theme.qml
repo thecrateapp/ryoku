@@ -3051,6 +3051,8 @@ Item {
         q.isolateMonitors = isolateMonitors
         q.pickerStyle = pickerStyle
         q.launcherLogoMode = launcherLogoMode
+        q.launcherLogoText = launcherLogoText
+        q.launcherLogoIcon = launcherLogoIcon
         q.aiTools = serializeAiTools()
         q.mprisBarStyle = mprisBarStyle
         q.mprisTitleWidth = mprisTitleWidth
@@ -3121,6 +3123,10 @@ Item {
         if (q.isolateMonitors !== undefined) isolateMonitors = q.isolateMonitors === true
         if (q.pickerStyle     !== undefined) pickerStyle     = q.pickerStyle
         if (q.launcherLogoMode !== undefined) launcherLogoMode = q.launcherLogoMode
+        // the wordmark and glyph ids travel in shell.json too, so a rice can
+        // name them; an unknown id keeps the current one
+        if (q.launcherLogoText !== undefined && launcherLogoTextValid(q.launcherLogoText)) launcherLogoText = q.launcherLogoText
+        if (q.launcherLogoIcon !== undefined && launcherLogoIconValid(q.launcherLogoIcon)) launcherLogoIcon = q.launcherLogoIcon
         if (q.aiTools !== undefined) parseAiTools(q.aiTools)
         if (q.mprisBarStyle === "default" || q.mprisBarStyle === "full")
             mprisBarStyle = q.mprisBarStyle
