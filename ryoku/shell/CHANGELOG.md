@@ -1,6 +1,11 @@
 # Changelog: ryoku/shell/
 
 ## Unreleased
+- **Crate Ryoshot uses the shared kit.** Under crate its sliders are Beams (an
+  adjustment such as brightness fills from the middle), its toolbar and region
+  bar actions are the kit's plain icon buttons with Solar glyphs where Solar
+  draws one, and its panels, buttons and tooltips take the shared 6 px corner.
+  The stock look is unchanged (`quickshell/ryoshot/`).
 - **The kit has a PickCard.** A card picked from a grid (an operating system,
   a product, a machine) speaks the same selection grammar as a PickRow: under
   crate the picked card takes the pick wash inside a 1 px pick edge and a dot

@@ -409,7 +409,7 @@ Item {
                                 required property var modelData
                                 width: (parent.width - 5 * 8) / 6
                                 height: 34
-                                radius: 8
+                                radius: Theme.corner(8)
                                 readonly property bool sel: beautify.bgKind === "preset" && beautify.bgPreset === cell.index
                                 border.color: cell.sel ? Theme.ink : beautify.hair
                                 border.width: cell.sel ? 2 : 1
@@ -716,7 +716,7 @@ Item {
         signal tapped()
         implicitWidth: tl.implicitWidth + 32
         implicitHeight: 36
-        radius: 9
+        radius: Theme.corner(9)
         color: tbn.accent ? (tbnMa.containsMouse ? Qt.lighter(beautify.vermilion, 1.12) : beautify.vermilion) : (tbnMa.containsMouse ? Qt.rgba(1, 1, 1, 0.08) : "transparent")
         border.width: tbn.accent ? 0 : 1
         border.color: beautify.hair
@@ -731,7 +731,7 @@ Item {
         signal tapped()
         width: (parent.width - 3 * 8) / 4
         height: 30
-        radius: 8
+        radius: Theme.corner(8)
         color: bgt.on ? beautify.vermilion : (btMa.containsMouse ? Qt.rgba(1, 1, 1, 0.07) : beautify.fieldBg)
         Text { anchors.centerIn: parent; text: bgt.label; color: bgt.on ? Theme.accentInk : beautify.idle; font.family: Theme.ui; font.pixelSize: 12; font.weight: bgt.on ? Font.DemiBold : Font.Medium }
         MouseArea { id: btMa; anchors.fill: parent; hoverEnabled: true; onClicked: bgt.tapped() }
@@ -744,7 +744,7 @@ Item {
         signal tapped()
         implicitWidth: pl.implicitWidth + 22
         height: 28
-        radius: 8
+        radius: Theme.corner(8)
         color: pill.on ? beautify.vermilion : (plMa.containsMouse ? Qt.rgba(1, 1, 1, 0.07) : beautify.fieldBg)
         Text { id: pl; anchors.centerIn: parent; text: pill.label; color: pill.on ? Theme.accentInk : beautify.idle; font.family: Theme.ui; font.pixelSize: 12; font.weight: pill.on ? Font.DemiBold : Font.Medium }
         MouseArea { id: plMa; anchors.fill: parent; hoverEnabled: true; onClicked: pill.tapped() }
@@ -762,7 +762,7 @@ Item {
                 required property var modelData
                 width: 22
                 height: 22
-                radius: 6
+                radius: Theme.corner(6)
                 color: sw.modelData
                 readonly property bool sel: Qt.colorEqual(cr.current, sw.modelData)
                 border.color: sw.sel ? Theme.ink : beautify.hair

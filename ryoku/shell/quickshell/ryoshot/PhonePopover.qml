@@ -54,7 +54,7 @@ Item {
 
                     Layout.fillWidth: true
                     Layout.preferredHeight: 36
-                    radius: 6
+                    radius: Theme.corner(6)
                     color: deviceMouse.containsMouse ? Theme.hover : "transparent"
 
                     Text {

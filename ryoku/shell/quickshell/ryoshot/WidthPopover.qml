@@ -68,7 +68,7 @@ Item {
                         required property var modelData
                         Layout.preferredWidth: 30
                         Layout.preferredHeight: 30
-                        radius: 6
+                        radius: Theme.corner(6)
                         readonly property bool sel: pop.selected === modelData.width
                         color: sel ? Qt.rgba(1, 1, 1, 0.08)
                             : (cellHover.hovered ? Qt.rgba(1, 1, 1, 0.04) : Qt.rgba(0, 0, 0, 0))
@@ -97,7 +97,7 @@ Item {
                     id: minus
                     Layout.preferredWidth: 26
                     Layout.preferredHeight: 26
-                    radius: 6
+                    radius: Theme.corner(6)
                     color: minusHover.hovered ? Qt.rgba(1, 1, 1, 0.06) : Qt.rgba(0, 0, 0, 0)
                     border.color: Theme.hair
                     border.width: 1
@@ -125,7 +125,7 @@ Item {
                     id: plus
                     Layout.preferredWidth: 26
                     Layout.preferredHeight: 26
-                    radius: 6
+                    radius: Theme.corner(6)
                     color: plusHover.hovered ? Qt.rgba(1, 1, 1, 0.06) : Qt.rgba(0, 0, 0, 0)
                     border.color: Theme.hair
                     border.width: 1

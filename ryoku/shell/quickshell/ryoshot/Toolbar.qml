@@ -144,7 +144,7 @@ Item {
                 id: colorBtn
                 Layout.preferredWidth: 32
                 Layout.preferredHeight: 32
-                radius: 7
+                radius: Theme.corner(7)
                 color: tb.openPopover === "color" ? Theme.press : (colorMa.containsMouse ? Theme.hover : "transparent")
                 Rectangle {
                     anchors.centerIn: parent
@@ -167,7 +167,7 @@ Item {
                 id: widthBtn
                 Layout.preferredWidth: 32
                 Layout.preferredHeight: 32
-                radius: 7
+                radius: Theme.corner(7)
                 color: tb.openPopover === "width" ? Theme.press : (widthMa.containsMouse ? Theme.hover : "transparent")
                 Rectangle {
                     anchors.centerIn: parent
@@ -229,7 +229,7 @@ Item {
             Rectangle {
                 Layout.preferredWidth: 32
                 Layout.preferredHeight: 32
-                radius: 7
+                radius: Theme.corner(7)
                 color: beautMa.containsMouse ? Theme.hover : "transparent"
                 Text {
                     anchors.centerIn: parent
@@ -248,7 +248,7 @@ Item {
                 id: helpBtn
                 Layout.preferredWidth: 32
                 Layout.preferredHeight: 32
-                radius: 7
+                radius: Theme.corner(7)
                 color: helpMa.containsMouse ? Theme.hover : "transparent"
                 Text {
                     anchors.centerIn: parent

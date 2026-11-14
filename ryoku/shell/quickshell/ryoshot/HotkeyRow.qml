@@ -75,7 +75,7 @@ Item {
             id: recBtn
             Layout.preferredHeight: 28
             Layout.preferredWidth: recLabel.implicitWidth + 24
-            radius: 6
+            radius: Theme.corner(6)
             color: hk.listening ? Theme.accent : (recHover.hovered ? Theme.press : Theme.hover)
             border.color: hk.listening ? Theme.accent : Theme.hair
             border.width: 1

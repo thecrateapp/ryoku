@@ -167,7 +167,7 @@ Item {
                     id: chooseBtn
                     Layout.preferredHeight: 28
                     Layout.preferredWidth: chooseLabel.implicitWidth + 24
-                    radius: 6
+                    radius: Theme.corner(6)
                     color: chooseHover.hovered ? Theme.press : Theme.hover
                     border.color: Theme.hair
                     border.width: 1
@@ -205,7 +205,7 @@ Item {
                     id: recordingBtn
                     Layout.preferredHeight: 28
                     Layout.preferredWidth: recordingLabel.implicitWidth + 24
-                    radius: 6
+                    radius: Theme.corner(6)
                     color: recordingHover.hovered ? Theme.press : Theme.hover
                     border.color: Theme.hair
                     border.width: 1

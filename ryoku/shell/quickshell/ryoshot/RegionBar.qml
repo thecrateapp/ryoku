@@ -212,7 +212,7 @@ Item {
                 Layout.alignment: Qt.AlignVCenter
                 Layout.preferredWidth: 32
                 Layout.preferredHeight: 32
-                radius: 7
+                radius: Theme.corner(7)
                 color: closeMa.containsMouse ? Qt.rgba(Theme.danger.r, Theme.danger.g, Theme.danger.b, 0.16) : "transparent"
                 Icon {
                     anchors.centerIn: parent

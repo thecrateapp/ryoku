@@ -114,7 +114,7 @@ Item {
                 id: square
                 Layout.fillWidth: true
                 Layout.preferredHeight: 120
-                radius: 6
+                radius: Theme.corner(6)
                 clip: true
                 color: Qt.hsva(pop.hue, 1, 1, 1)
 

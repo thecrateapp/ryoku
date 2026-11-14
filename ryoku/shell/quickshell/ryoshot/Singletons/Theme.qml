@@ -34,7 +34,10 @@ Singleton {
     readonly property string mono: Tokens.mono
     readonly property string jp: Tokens.jp
 
-    readonly property int radius: Tokens.radius * 2
+    // a panel's corner: twice the token in stock, the shared 6 px under crate
+    readonly property int radius: Tokens.controlsCrate ? Tokens.radius : Tokens.radius * 2
+    // a control's corner: its own size in stock, the shared 6 px under crate
+    function corner(px) { return Tokens.controlsCrate ? Tokens.radius : px; }
     readonly property int snap: Tokens.snap
     readonly property int move: Tokens.move
 }
