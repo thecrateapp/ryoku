@@ -804,28 +804,19 @@ Item {
         ghost.y = p.y - ghost.height / 2;
     }
 
-    Rectangle {
+    // Under crate the panel is the one glass in a 1 px hairline (EditDrawerPlate);
+    // its reading pane lets the glass through rather than laying a second
+    // plate on it, and the header drops the lead bar and the rule (Ryoku
+    // marginalia, EditDrawerHeader).
+    readonly property bool crate: Tokens.controlsCrate
+
+    EditDrawerPlate {
         id: panel
         anchors.left: parent.left
         anchors.top: parent.top
         anchors.bottom: parent.bottom
         width: Appearance.sizes.editModeDrawerWidth
-        color: Appearance.colors.colLayer0
-        radius: Appearance.rounding.small
-        border.width: 1
-        border.color: Appearance.colors.colOutline
-        clip: true
-
-        // The remove tint: lit while a desktop widget is carried over the panel.
-        Rectangle {
-            anchors.fill: parent
-            radius: panel.radius
-            color: root.dropWouldRemove ? Appearance.colors.colLayer1Active : "transparent"
-            Behavior on color {
-                enabled: !Appearance.reducedMotion
-                animation: Appearance.animation.elementMoveFast.colorAnimation.createObject(this)
-            }
-        }
+        dropWouldRemove: root.dropWouldRemove
 
         ColumnLayout {
             id: column
@@ -836,92 +827,12 @@ Item {
             opacity: Math.max(0, Math.min(1, (GlobalStates.editDrawerProgress - 0.4) / 0.6))
 
             // ── Header ───────────────────────────────────────────────────────
-            RowLayout {
+            EditDrawerHeader {
                 Layout.fillWidth: true
-                spacing: Appearance.sizes.space3
-
-                // The section mark becomes a back action on sub-pages and
-                // provider pages with an explicit return destination.
-                Rectangle {
-                    Layout.alignment: Qt.AlignVCenter
-                    implicitWidth: Appearance.sizes.controlHeight
-                    implicitHeight: Appearance.sizes.controlHeight
-                    radius: Appearance.rounding.small
-                    color: !root.canGoBack ? "transparent"
-                        : backMouse.containsPress
-                            ? Appearance.colors.colLayer1Active
-                            : backMouse.containsMouse
-                                ? Appearance.colors.colLayer1Hover
-                                : "transparent"
-                    border.width: 1
-                    border.color: root.canGoBack
-                        ? Appearance.colors.colOutlineVariant : "transparent"
-
-                    Behavior on color {
-                        enabled: !Appearance.reducedMotion
-                        animation: Appearance.animation.elementMoveFast.colorAnimation.createObject(this)
-                    }
-
-                    MaterialSymbol {
-                        anchors.centerIn: parent
-                        text: root.canGoBack ? "arrow_back" : root.headerSymbol
-                        iconSize: 18
-                        color: Appearance.colors.colOnSurface
-                    }
-
-                    MouseArea {
-                        id: backMouse
-                        anchors.fill: parent
-                        enabled: root.canGoBack
-                        hoverEnabled: true
-                        cursorShape: Qt.PointingHandCursor
-                        onClicked: root.goBack()
-                    }
-                }
-
-                ColumnLayout {
-                    Layout.fillWidth: true
-                    Layout.minimumWidth: 0
-                    spacing: 1
-
-                    RowLayout {
-                        Layout.fillWidth: true
-                        Layout.minimumWidth: 0
-                        spacing: Appearance.sizes.space2
-
-                        Rectangle {
-                            implicitWidth: 2
-                            implicitHeight: 10
-                            radius: 1
-                            color: Appearance.colors.colOnSurfaceVariant
-                        }
-                        StyledText {
-                            text: Translation.tr("Stage editor").toUpperCase()
-                            font.family: Appearance.font.family.monospace
-                            font.pixelSize: Appearance.font.pixelSize.smallest
-                            font.weight: Font.Medium
-                            font.letterSpacing: Appearance.font.trackLabel
-                            color: Appearance.colors.colSubtext
-                        }
-                        Rectangle {
-                            Layout.fillWidth: true
-                            Layout.minimumWidth: 0
-                            implicitHeight: 1
-                            color: Appearance.colors.colOutlineVariant
-                        }
-                    }
-
-                    StyledText {
-                        Layout.fillWidth: true
-                        Layout.minimumWidth: 0
-                        text: root.headerTitle
-                        font.family: Appearance.font.family.title
-                        font.pixelSize: Appearance.font.pixelSize.larger
-                        font.weight: Font.Medium
-                        color: Appearance.colors.colOnSurface
-                        elide: Text.ElideRight
-                    }
-                }
+                canGoBack: root.canGoBack
+                symbol: root.headerSymbol
+                title: root.headerTitle
+                onBackRequested: root.goBack()
             }
 
 
@@ -1053,9 +964,10 @@ Item {
             // The reading pane is a bounded paper layer. Its own six-pixel clip
             // keeps scrolled labels and thumbnails inside the drawer surface.
             ClippingRectangle {
+                objectName: "editDrawerPane"
                 Layout.fillWidth: true
                 Layout.fillHeight: true
-                color: Appearance.withAlpha(Appearance.m3colors.m3surface, 0.965)
+                color: root.crate ? "transparent" : Appearance.withAlpha(Appearance.m3colors.m3surface, 0.965)
                 radius: Appearance.rounding.small
 
                 Loader {

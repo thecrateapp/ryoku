@@ -6,6 +6,8 @@ import stage.services
 import stage.modules.common
 import stage.modules.common.widgets
 import stage.modules.common.functions
+import Ryoku.Ui as Ui
+import Ryoku.Ui.Singletons
 
 /**
  * Edit Mode's chrome: the toolbar above the shrunk desktop.
@@ -22,9 +24,46 @@ import stage.modules.common.functions
  * The toolbar owns the display target and catalogue controls. The catalogue
  * opens on the right, into room the geometry has already taken out of the
  * desktop's width.
+ *
+ * Under crate the toolbar is the one glass (Tokens.glass in a 1 px hairline,
+ * no shadow) and its controls are the kit's: the display and the sections are
+ * Chips (the open section filled with the mark), snapping and the history are
+ * IconButtons with Solar glyphs, and Done is the filled confirm Btn.
  */
 Item {
     id: root
+
+    readonly property bool crate: Tokens.controlsCrate
+    // The sections the toolbar opens, in order: the four built in, then the
+    // provider's own (Config.extraSections).
+    readonly property var sectionChoices: [
+        { "section": "widgets", "label": Translation.tr("Widgets"), "tooltip": Translation.tr("Desktop widgets") },
+        { "section": "wallpaper", "label": Translation.tr("Wallpaper"),
+          "tooltip": GlobalStates.editLockPreview ? Translation.tr("Lock screen wallpaper")
+              : Translation.tr("Wallpaper, position and screens") },
+        { "section": "style", "label": Translation.tr("Style"), "tooltip": Translation.tr("Presets, theme and colours") },
+        { "section": "dock", "label": Translation.tr("Dock"), "tooltip": Translation.tr("Dock design, apps and behaviour") }
+    ].concat(root.visibleExtraSections.map(extra => ({
+        "section": extra.section, "label": extra.label, "tooltip": extra.tooltip ?? ""
+    })))
+    function openSection(section, page) {
+        if (GlobalStates.editDrawerOpen && GlobalStates.editDrawerSection === section) {
+            root.drawerToggleRequested();
+            return;
+        }
+        root.drawerPageRequested(section, page ?? "");
+    }
+    function cycleMonitor() {
+        const names = Array.from(Quickshell.screens).map(screen => screen.name);
+        if (names.length < 2)
+            return;
+        const at = names.indexOf(GlobalStates.editModeMonitor);
+        GlobalStates.switchEditMonitor(names[(at + 1) % names.length]);
+    }
+    readonly property string monitorLabel: GlobalStates.editModeMonitor !== ""
+        ? GlobalStates.editModeMonitor
+        : (Quickshell.screens.length > 0 && Quickshell.screens[0].name !== ""
+            ? Quickshell.screens[0].name : Translation.tr("Display"))
 
     // The desktop's rectangle on screen. Defaults to the whole item, so an
     // unconnected instance parks its chrome off the edge rather than somewhere
@@ -190,6 +229,10 @@ Item {
             scale: root.toolbarScale
             transformOrigin: Item.TopLeft
             spacing: Appearance.sizes.space2
+            objectName: "editToolbar"
+            colBackground: root.crate ? Tokens.glass : Appearance.colors.colLayer0
+            radius: root.crate ? Tokens.radius : Appearance.rounding.small
+            borderColor: root.crate ? Tokens.line : Appearance.colors.colOutline
 
 
             // The output name replaces the old one-item Desktop tab. With
@@ -198,6 +241,7 @@ Item {
             IconAndTextToolbarButton {
                 id: monitorButton
                 readonly property var screens: Quickshell.screens
+                visible: !root.crate
                 opacity: root.slotReveal(0)
                 scale: (monitorButton.down ? 0.96 : 1) * root.slotScale(0)
                 Layout.alignment: Qt.AlignVCenter
@@ -209,11 +253,7 @@ Item {
                 maximumLabelWidth: 120
                 pointingHandCursor: monitorButton.screens.length > 1
                 onClicked: {
-                    const names = Array.from(monitorButton.screens).map(screen => screen.name);
-                    if (names.length < 2)
-                        return;
-                    const at = names.indexOf(GlobalStates.editModeMonitor);
-                    GlobalStates.switchEditMonitor(names[(at + 1) % names.length]);
+                    root.cycleMonitor();
                 }
 
                 StyledToolTip {
@@ -224,7 +264,31 @@ Item {
                 }
             }
 
+            // The display under crate: a chip naming the output, cycling it
+            // when there is more than one.
+            Ui.Chip {
+                id: kitMonitor
+                objectName: "editKitMonitor"
+                visible: root.crate
+                opacity: root.slotReveal(0)
+                scale: root.slotScale(0)
+                Layout.alignment: Qt.AlignVCenter
+                text: root.monitorLabel
+                interactive: Quickshell.screens.length > 1
+                onClicked: root.cycleMonitor()
+
+                StyledToolTip {
+                    requireOverlay: false
+                    extraVisibleCondition: false
+                    alternativeVisibleCondition: kitMonitor.hot
+                    text: Quickshell.screens.length > 1
+                        ? Translation.tr("Edit the next display")
+                        : Translation.tr("Editing %1").arg(kitMonitor.text)
+                }
+            }
+
             Rectangle {
+            objectName: "editToolbarRule"
             opacity: root.slotReveal(0)
             scale: root.slotScale(0)
             Layout.alignment: Qt.AlignVCenter
@@ -232,7 +296,7 @@ Item {
             Layout.rightMargin: Appearance.sizes.space1
             implicitWidth: 1
             implicitHeight: Appearance.sizes.space5
-            color: Appearance.colors.colOutline
+            color: root.crate ? Tokens.line : Appearance.colors.colOutline
         }
 
         // The catalogue choices stay one semantic group. On a constrained
@@ -240,6 +304,7 @@ Item {
         // below the legibility floor; every folded chip remains named on hover.
             Rectangle {
             id: sectionGroup
+            visible: !root.crate
             opacity: root.slotReveal(1)
             scale: root.slotScale(1)
             Layout.alignment: Qt.AlignVCenter
@@ -321,12 +386,43 @@ Item {
             }
         }
 
+        // The sections under crate: kit Chips, the open one filled with the mark.
+            Row {
+            id: kitSections
+            objectName: "editKitSections"
+            visible: root.crate
+            opacity: root.slotReveal(1)
+            scale: root.slotScale(1)
+            Layout.alignment: Qt.AlignVCenter
+            spacing: Appearance.sizes.space1
+
+            Repeater {
+                model: root.sectionChoices
+                delegate: Ui.Chip {
+                    id: kitSection
+                    required property var modelData
+                    objectName: "editKitSection-" + modelData.section
+                    text: modelData.label
+                    on: GlobalStates.editDrawerOpen && GlobalStates.editDrawerSection === modelData.section
+                    onClicked: root.openSection(modelData.section, "")
+
+                    StyledToolTip {
+                        requireOverlay: false
+                        extraVisibleCondition: false
+                        alternativeVisibleCondition: kitSection.hot && kitSection.modelData.tooltip !== ""
+                        text: kitSection.modelData.tooltip
+                    }
+                }
+            }
+        }
+
         // Edge snapping, drawn as state. It reads and toggles the key Settings
         // already offers rather than a switch of its own. Icon-only: the
         // toolbar's width is the card's inset and the labels beside it already
         // spend the words.
             IconToolbarButton {
             id: snapButton
+            visible: !root.crate
             opacity: root.slotReveal(2)
             scale: (snapButton.down ? 0.96 : 1) * root.slotScale(2)
             Layout.alignment: Qt.AlignVCenter
@@ -346,6 +442,29 @@ Item {
             }
         }
 
+            Ui.IconButton {
+            id: kitSnap
+            objectName: "editKitSnap"
+            visible: root.crate
+            opacity: root.slotReveal(2)
+            scale: root.slotScale(2)
+            Layout.alignment: Qt.AlignVCenter
+            implicitWidth: Appearance.sizes.controlHeight + Appearance.sizes.space2
+            implicitHeight: Appearance.sizes.controlHeight
+            glyph: Config.widgetSnapEnabled ? "grid_guides" : "grid_off"
+            on: Config.widgetSnapEnabled
+            onClicked: root.snapToggleRequested()
+
+            StyledToolTip {
+                requireOverlay: false
+                extraVisibleCondition: false
+                alternativeVisibleCondition: kitSnap.hot
+                text: Config.widgetSnapEnabled
+                    ? Translation.tr("Edge snapping on")
+                    : Translation.tr("Edge snapping off")
+            }
+        }
+
             Rectangle {
             opacity: root.slotReveal(3)
             scale: root.slotScale(3)
@@ -354,7 +473,7 @@ Item {
             Layout.rightMargin: Appearance.sizes.space1
             implicitWidth: 1
             implicitHeight: Appearance.sizes.space5
-            color: Appearance.colors.colOutline
+            color: root.crate ? Tokens.line : Appearance.colors.colOutline
         }
 
         // The two the keyboard already offers, for a pointer that never
@@ -364,6 +483,7 @@ Item {
         // row would slide under the pointer on the first edit.
             IconToolbarButton {
             id: undoButton
+            visible: !root.crate
             // RippleButton dims a disabled button through this same property,
             // and an outer binding replaces its rule rather than joining it -
             // so the dimming is multiplied back in by hand.
@@ -382,6 +502,7 @@ Item {
 
             IconToolbarButton {
             id: redoButton
+            visible: !root.crate
             opacity: root.slotReveal(5) * (redoButton.enabled ? 1 : 0.4)
             scale: (redoButton.down ? 0.96 : 1) * root.slotScale(5)
             Layout.alignment: Qt.AlignVCenter
@@ -395,9 +516,66 @@ Item {
             }
         }
 
-        // The labelled exit is the permanent primary action.
+            Ui.IconButton {
+            id: kitUndo
+            objectName: "editKitUndo"
+            visible: root.crate
+            opacity: root.slotReveal(4)
+            scale: root.slotScale(4)
+            Layout.alignment: Qt.AlignVCenter
+            implicitWidth: Appearance.sizes.controlHeight + Appearance.sizes.space2
+            implicitHeight: Appearance.sizes.controlHeight
+            glyph: "undo"
+            enabled: GlobalStates.editCanUndo
+            onClicked: root.undoRequested()
+
+            StyledToolTip {
+                requireOverlay: false
+                extraVisibleCondition: false
+                alternativeVisibleCondition: kitUndo.hot
+                text: Translation.tr("Undo (Ctrl+Z)")
+            }
+        }
+
+            Ui.IconButton {
+            id: kitRedo
+            objectName: "editKitRedo"
+            visible: root.crate
+            opacity: root.slotReveal(5)
+            scale: root.slotScale(5)
+            Layout.alignment: Qt.AlignVCenter
+            implicitWidth: Appearance.sizes.controlHeight + Appearance.sizes.space2
+            implicitHeight: Appearance.sizes.controlHeight
+            glyph: "redo"
+            enabled: GlobalStates.editCanRedo
+            onClicked: root.redoRequested()
+
+            StyledToolTip {
+                requireOverlay: false
+                extraVisibleCondition: false
+                alternativeVisibleCondition: kitRedo.hot
+                text: Translation.tr("Redo (Ctrl+Shift+Z)")
+            }
+        }
+
+        // The labelled exit is the permanent primary action: under crate the
+        // kit's confirm button, filled with the accent.
+            Ui.Btn {
+            id: kitDone
+            objectName: "editKitDone"
+            visible: root.crate
+            opacity: root.slotReveal(6)
+            scale: root.slotScale(6)
+            Layout.alignment: Qt.AlignVCenter
+            compact: true
+            primary: true
+            text: Translation.tr("Done")
+            onAct: root.doneRequested()
+        }
+
             IconAndTextToolbarButton {
             id: doneButton
+            visible: !root.crate
             opacity: root.slotReveal(6)
             scale: (doneButton.down ? 0.96 : 1) * root.slotScale(6)
             Layout.alignment: Qt.AlignVCenter
@@ -421,10 +599,10 @@ Item {
         id: guide
         anchors.fill: parent
         z: 150
-        tabsTarget: monitorButton
-        sectionsTarget: sectionGroup
-        historyTarget: undoButton
-        doneTarget: doneButton
+        tabsTarget: root.crate ? kitMonitor : monitorButton
+        sectionsTarget: root.crate ? kitSections : sectionGroup
+        historyTarget: root.crate ? kitUndo : undoButton
+        doneTarget: root.crate ? kitDone : doneButton
         drawerTarget: drawerReveal
     }
 

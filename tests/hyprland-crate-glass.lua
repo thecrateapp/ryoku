@@ -38,9 +38,9 @@ end
 -- Hyprland matches namespaces with a regex; the crate rules keep to the
 -- "^prefix(a|b|c)$" shape, which this checks without a regex engine.
 local function matches(pattern, namespace)
-    local prefix, alternatives = pattern:match("^%^([%w%-]*)%(([^()]*)%)%$$")
+    local prefix, alternatives = pattern:match("^%^([%w%-:]*)%(([^()]*)%)%$$")
     if not prefix then
-        local literal = pattern:match("^%^([%w%-]+)%$$")
+        local literal = pattern:match("^%^([%w%-:]+)%$$")
         assert(literal, "unsupported namespace pattern: " .. pattern)
         return namespace == literal
     end
@@ -80,6 +80,9 @@ local namespaces = {
     -- the hero launcher's layers host the glass drawn in LauncherCard and WindowTile
     ["launcher"] = "modules/launcher/variants/hero/LauncherCard.qml",
     ["launcher-window-rail"] = "modules/launcher/variants/hero/WindowTile.qml",
+    -- the Stage editor's chrome is a stage config layer, outside the shell tree;
+    -- its glass is drawn in EditModeChromeContent, EditDrawerPlate and the menus
+    ["quickshell:editMode"] = "stage/modules/ii/editMode/EditModeChromeSurface.qml",
 }
 for path in listing:lines() do
     local file = assert(io.open(path))

@@ -2,6 +2,8 @@ import stage
 import stage.services
 import stage.modules.common
 import stage.modules.common.widgets
+import Ryoku.Ui as Ui
+import Ryoku.Ui.Singletons
 import QtQuick
 import QtQuick.Layouts
 
@@ -33,10 +35,16 @@ Rectangle {
     readonly property var info: root.componentId === ""
         ? null : BarComponentRegistry.getComponent(root.componentId)
 
+    // Under crate the card is the one glass in a 1 px hairline, no shadow.
+    readonly property bool crate: Tokens.controlsCrate
+
+    objectName: "editBarMenuCard"
     implicitWidth: 244
     implicitHeight: column.implicitHeight + root.padding * 2
-    radius: Appearance.rounding.windowRounding
-    color: Appearance.colors.colSurfaceContainer
+    radius: root.crate ? Tokens.radius : Appearance.rounding.windowRounding
+    color: root.crate ? Tokens.glass : Appearance.colors.colSurfaceContainer
+    border.width: root.crate ? Tokens.border : 0
+    border.color: Tokens.line
 
     MouseArea {
         anchors.fill: parent
@@ -45,6 +53,7 @@ Rectangle {
 
     StyledRectangularShadow {
         target: root
+        visible: !root.crate
     }
 
     ColumnLayout {
@@ -61,7 +70,13 @@ Rectangle {
             Layout.bottomMargin: 4
             spacing: 8
 
+            Ui.Glyph {
+                visible: root.crate
+                name: root.info?.icon ?? "widgets"
+                color: Tokens.inkSecondary
+            }
             MaterialSymbol {
+                visible: !root.crate
                 text: root.info?.icon ?? "widgets"
                 iconSize: Appearance.font.pixelSize.larger
                 color: Appearance.colors.colOnSurfaceVariant

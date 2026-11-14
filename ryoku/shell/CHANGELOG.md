@@ -1,6 +1,23 @@
 # Changelog: ryoku/shell/
 
 ## Unreleased
+- **The Stage editor draws with the shared kit under crate.** The edit toolbar,
+  the catalogue panel, the widget and bar menus, the widget options card and
+  the guide card are the one glass (Tokens.glass in a 1 px line at the 6 px
+  corner, no filled shadow), frosted by a new `crate-glass-blur-stage` rule on
+  the `quickshell:editMode` layer. The toolbar's display and sections are kit
+  Chips (the open section filled with the mark), snapping and undo/redo kit
+  IconButtons with Solar glyphs, and Done the filled confirm Btn. Panel rows
+  take the pick wash in the 1 px pick edge with Solar glyphs, the kit switch
+  and kit stepper buttons; option runs are kit Chips; section captions are the
+  tracked mono label; the panel header drops its lead bar and rule. The kit
+  gains Solar glyphs for the editor (gallery, palette, menu-dots, magnet,
+  panel-bottom, minus-circle, full-screen) and their Material aliases. The
+  panel's plate and header move into EditDrawerPlate and EditDrawerHeader so
+  `tests/ui/stage-kit-probe.sh` and the stage scene load them offscreen. The
+  stock look is unchanged (`quickshell/stage/modules/ii/editMode/`,
+  `hyprland/modules/decoration.lua`, `ui/`; `tests/hyprland-crate-glass.lua`,
+  `tests/visual/surfaces/scenes/stage.qml`).
 - **Pinned shots draw with the shared kit under crate.** A pin's image sits on
   an opaque card with the shared 6 px corner and a 1 px line, without the drop
   shadow. Its actions (edit, copy, copy path, close) are the kit's icon buttons

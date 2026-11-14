@@ -18,6 +18,7 @@ Item {
     width: implicitWidth
     height: implicitHeight
     property alias radius: background.radius
+    property alias borderColor: background.border.color
 
     Loader {
         active: root.enableShadow

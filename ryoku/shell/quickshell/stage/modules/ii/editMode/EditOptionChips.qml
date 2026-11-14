@@ -2,6 +2,8 @@ import QtQuick
 import QtQuick.Layouts
 import stage.modules.common
 import stage.modules.common.widgets
+import Ryoku.Ui as Ui
+import Ryoku.Ui.Singletons
 
 /**
  * A named choice on Edit Mode's panel, drawn as a wrapping run of chips.
@@ -29,6 +31,10 @@ ColumnLayout {
 
     signal selected(var value)
 
+    // Under crate the run is the kit's Chips: every label spoken (a chip
+    // carries no icon), the chosen one filled with the mark.
+    readonly property bool crate: Tokens.controlsCrate
+
     spacing: Appearance.sizes.space2
     Layout.fillWidth: true
 
@@ -39,18 +45,40 @@ ColumnLayout {
         text: root.label
         font.family: Appearance.font.family.monospace
         font.pixelSize: Appearance.font.pixelSize.smaller
-        font.weight: Font.Medium
+        font.weight: root.crate ? Font.Normal : Font.Medium
         font.capitalization: Font.AllUppercase
         font.letterSpacing: Appearance.font.trackLabel
-        color: Appearance.colors.colSubtext
+        color: root.crate ? Tokens.inkSubtle : Appearance.colors.colSubtext
     }
 
     Flow {
+        objectName: "editKitChips"
+        visible: root.crate
         Layout.fillWidth: true
         spacing: Appearance.sizes.space1
 
         Repeater {
-            model: root.options
+            model: root.crate ? root.options : []
+
+            delegate: Ui.Chip {
+                required property var modelData
+                objectName: "editKitChip-" + String(modelData.value)
+                text: modelData.displayName ?? String(modelData.value)
+                on: String(modelData.value) === String(root.currentValue)
+                enabled: modelData.enabled !== false
+                onClicked: root.selected(modelData.value)
+            }
+        }
+    }
+
+    Flow {
+        objectName: "editStockChips"
+        visible: !root.crate
+        Layout.fillWidth: true
+        spacing: Appearance.sizes.space1
+
+        Repeater {
+            model: root.crate ? [] : root.options
 
             delegate: Rectangle {
                 id: chip

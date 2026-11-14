@@ -4,6 +4,8 @@ import stage
 import stage.services
 import stage.modules.common
 import stage.modules.common.widgets
+import Ryoku.Ui as Ui
+import Ryoku.Ui.Singletons
 import stage.modules.common.functions
 import stage.modules.ii.background.widgets
 
@@ -87,6 +89,9 @@ Item {
     readonly property bool canGrow: root.widget !== null && EditModeLogic.steppedScale(root.scaleFactor, 1) !== null
     readonly property bool canShrink: root.widget !== null && EditModeLogic.steppedScale(root.scaleFactor, -1) !== null
     readonly property int padding: 8
+    // Under crate the menu and the cards it opens beside it are the one
+    // glass in a 1 px hairline, with no filled shadow.
+    readonly property bool crate: Tokens.controlsCrate
 
     implicitWidth: 268
     implicitHeight: column.implicitHeight + root.padding * 2
@@ -137,6 +142,7 @@ Item {
 
     StyledRectangularShadow {
         target: card
+        visible: !root.crate
     }
 
     // A click on the card's own padding is a click ON the menu, never a
@@ -148,9 +154,12 @@ Item {
 
     Rectangle {
         id: card
+        objectName: "editWidgetMenuCard"
         anchors.fill: parent
-        radius: Appearance.rounding.windowRounding
-        color: Appearance.m3colors.m3surfaceContainer
+        radius: root.crate ? Tokens.radius : Appearance.rounding.windowRounding
+        color: root.crate ? Tokens.glass : Appearance.m3colors.m3surfaceContainer
+        border.width: root.crate ? Tokens.border : 0
+        border.color: Tokens.line
     }
 
     ColumnLayout {
@@ -169,7 +178,13 @@ Item {
             Layout.bottomMargin: 4
             spacing: 8
 
+            Ui.Glyph {
+                visible: root.crate
+                name: root.metadata ? (root.metadata.icon || "widgets") : "widgets"
+                color: Tokens.inkSecondary
+            }
             MaterialSymbol {
+                visible: !root.crate
                 text: root.metadata ? (root.metadata.icon || "widgets") : "widgets"
                 iconSize: Appearance.font.pixelSize.larger
                 color: Appearance.colors.colOnSurfaceVariant
@@ -365,6 +380,7 @@ Item {
 
             StyledRectangularShadow {
                 target: chooserCard
+                visible: !root.crate
             }
 
             MouseArea {
@@ -375,8 +391,10 @@ Item {
             Rectangle {
                 id: chooserCard
                 anchors.fill: parent
-                radius: Appearance.rounding.windowRounding
-                color: Appearance.m3colors.m3surfaceContainer
+                radius: root.crate ? Tokens.radius : Appearance.rounding.windowRounding
+                color: root.crate ? Tokens.glass : Appearance.m3colors.m3surfaceContainer
+                border.width: root.crate ? Tokens.border : 0
+                border.color: Tokens.line
             }
 
             ColumnLayout {
