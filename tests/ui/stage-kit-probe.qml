@@ -285,7 +285,9 @@ ShellRoot {
         "clock/ScallopNumberClockWidget.qml", "clock/TripleRingClockWidget.qml",
         "clock/WearOSArcClock.qml", "clock/WearOSClockWidget.qml",
         "media/AndroidMediaWidget.qml", "media/CircularMediaWidget.qml", "media/CompactMediaWidget.qml",
-        "media/PosterMediaWidget.qml", "media/DeckMediaWidget.qml"
+        "media/PosterMediaWidget.qml", "media/DeckMediaWidget.qml",
+        "bluetooth/DevicesBatteryList1x1Widget.qml", "bluetooth/DevicesBatteryListWidget.qml",
+        "bluetooth/BluetoothFillCardsWidget.qml"
     ]
     // A player that can seek, for the media seek line.
     QtObject {

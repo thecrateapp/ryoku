@@ -7,6 +7,7 @@ import stage.modules.common
 import stage.modules.common.functions
 import stage.modules.common.widgets
 import stage.modules.ii.background.widgets
+import Ryoku.Ui.Singletons
 AbstractBackgroundWidget {
     id: root
 
@@ -179,7 +180,7 @@ AbstractBackgroundWidget {
                                 Layout.fillWidth: true
                                 visible: root.showDeviceName
                                 text: deviceCard.deviceName
-                                font.pixelSize: 17
+                                font.pixelSize: Tokens.controlsCrate ? Tokens.fBody : 17
                                 font.weight: Font.DemiBold
                                 color: deviceCard.accentColor
                                 elide: Text.ElideRight
@@ -188,7 +189,7 @@ AbstractBackgroundWidget {
                             StyledText {
                                 Layout.fillWidth: true
                                 text: deviceCard.isConnected ? Translation.tr("Connected") : Translation.tr("Discharged")
-                                font.pixelSize: 15
+                                font.pixelSize: Tokens.controlsCrate ? Tokens.fBody : 15
                                 font.weight: Font.Normal
                                 color: ColorUtils.applyAlpha(deviceCard.accentColor, 0.80)
                                 elide: Text.ElideRight

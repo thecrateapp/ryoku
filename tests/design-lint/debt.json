@@ -1408,15 +1408,6 @@
  "ryoku/shell/quickshell/stage/modules/ii/background/widgets/bluetooth/BluetoothEarbudsStemWidget.qml": {
   "pixel-size": 2
  },
- "ryoku/shell/quickshell/stage/modules/ii/background/widgets/bluetooth/BluetoothFillCardsWidget.qml": {
-  "pixel-size": 2
- },
- "ryoku/shell/quickshell/stage/modules/ii/background/widgets/bluetooth/DevicesBatteryList1x1Widget.qml": {
-  "pixel-size": 2
- },
- "ryoku/shell/quickshell/stage/modules/ii/background/widgets/bluetooth/DevicesBatteryListWidget.qml": {
-  "pixel-size": 2
- },
  "ryoku/shell/quickshell/stage/modules/ii/background/widgets/bluetooth/PcBatteryBarsWidget.qml": {
   "hex-colour": 2
  },

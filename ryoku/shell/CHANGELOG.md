@@ -1,6 +1,10 @@
 # Changelog: ryoku/shell/
 
 ## Unreleased
+- **Bluetooth widgets' captions follow the theme's type under crate.** The
+  device names and states on the battery lists and the fill cards take the
+  Tokens type roles. Stock is unchanged
+  (`quickshell/stage/modules/ii/background/widgets/bluetooth/`).
 - **Media widgets seek on the kit's Beam under crate.** The Poster and Deck
   widgets' seek line is the kit Beam (draggable when the player can seek, a
   progress line otherwise) instead of the wavy slider; the Android and Compact
