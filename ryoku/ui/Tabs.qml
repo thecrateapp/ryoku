@@ -9,10 +9,13 @@ import "Singletons"
 // selection fill (themeStyle selectFill: false) draws the live tab as its
 // navigation does instead: the label in the mark colour over a 2 px underline,
 // no plate and no lead.
+// An option is a label, or a {key, label, note} entry when the value differs
+// from what the tab reads (a catalogue id) or carries a count; `current` and
+// chose() then speak the key.
 Row {
     id: tabs
 
-    property var options: []        // list of labels
+    property var options: []        // labels, or {key, label, note} entries
     property string current: ""
     signal chose(string label)
 
@@ -22,8 +25,12 @@ Row {
         model: tabs.options
         Rectangle {
             id: plate
-            required property string modelData
-            readonly property bool on: tabs.current === modelData
+            required property var modelData
+            readonly property bool entry: modelData !== null && typeof modelData === "object"
+            readonly property string key: entry ? String(modelData.key !== undefined ? modelData.key : modelData.label) : String(modelData)
+            readonly property string label: entry ? String(modelData.label !== undefined ? modelData.label : modelData.key) : String(modelData)
+            readonly property string note: entry && modelData.note !== undefined ? String(modelData.note) : ""
+            readonly property bool on: tabs.current === key
 
             // the lead slot is in the row on every plate, so the width is the
             // same whether the plate is inked or not
@@ -54,7 +61,7 @@ Row {
                 Text {
                     // translate the display, emit the original value on tap so the
                     // tab key still matches for filtering/selection.
-                    text: I18n.tr(plate.modelData).toUpperCase()
+                    text: I18n.tr(plate.label).toUpperCase()
                     color: plate.on ? (Tokens.selectFill ? Tokens.inkOnBone : Tokens.mark)
                         : (th.hovered && Tokens.accentMarks ? Tokens.hoverInk : (Tokens.controlsCrate ? Tokens.inkSubtle : Tokens.inkDim))
                     font.family: Tokens.navCaps ? Tokens.navFont : Tokens.ui
@@ -63,6 +70,15 @@ Row {
                     font.letterSpacing: Tokens.navCaps ? Tokens.trackNav : Tokens.trackLabel
                     anchors.verticalCenter: parent.verticalCenter
                     Behavior on color { ColorAnimation { duration: Tokens.snap } }
+                }
+                Text {
+                    visible: plate.note !== ""
+                    text: plate.note
+                    color: plate.on && Tokens.selectFill ? Tokens.inkOnBoneDim : Tokens.inkMuted
+                    font.family: Tokens.mono
+                    font.pixelSize: Tokens.fTiny
+                    font.letterSpacing: Tokens.trackLabel
+                    anchors.verticalCenter: parent.verticalCenter
                 }
             }
             // the live tab's underline, for a theme without the selection fill
@@ -76,7 +92,7 @@ Row {
                 color: Tokens.mark
             }
             HoverHandler { id: th; cursorShape: Qt.PointingHandCursor }
-            TapHandler { id: tap; onTapped: tabs.chose(plate.modelData) }
+            TapHandler { id: tap; onTapped: tabs.chose(plate.key) }
         }
     }
 }

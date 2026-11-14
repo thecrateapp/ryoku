@@ -1,6 +1,14 @@
 # Changelog: ryoku/shell/
 
 ## Unreleased
+- **The kit has a PickCard.** A card picked from a grid (an operating system,
+  a product, a machine) speaks the same selection grammar as a PickRow: under
+  crate the picked card takes the pick wash inside a 1 px pick edge and a dot
+  with its halo, hover warms the edge, and the stock look keeps the gallery
+  tile. Tabs also take keyed entries with a count, Field can lead with a glyph,
+  a Beam can fill from the middle of an adjustment, and the Solar catalogue
+  gains the glyphs the apps draw (`ui/PickCard.qml`, `ui/Tabs.qml`,
+  `ui/Field.qml`, `ui/Beam.qml`, `ui/tools/solar-kit.names`).
 - **QS Bar panels reveal faster.** Every panel, the bar's notch and QS Bar
   Settings share one reveal (Theme.panelRevealIn/Out): 90 ms in and 80 ms out,
   down from 160/120 (220/150 for the dashboard).

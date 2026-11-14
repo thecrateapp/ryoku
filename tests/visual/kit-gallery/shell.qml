@@ -6,11 +6,11 @@ import Ryoku.Ui.Singletons
 ShellRoot {
     FloatingWindow {
         implicitWidth: 560
-        implicitHeight: 1060
+        implicitHeight: 1300
         color: Tokens.paper
         Rectangle {
             id: sheet
-            width: 560; height: 1060
+            width: 560; height: 1300
             color: Tokens.popover
             Column {
                 anchors.fill: parent
@@ -34,6 +34,19 @@ ShellRoot {
                 }
                 Section { width: parent.width; title: "Tabs" }
                 Tabs { options: ["Shortcuts", "Apps", "Custom"]; current: "Shortcuts" }
+                Tabs { options: [{ key: "all", label: "All" }, { key: "games", label: "Games", note: "42" }, { key: "audio", label: "Audio", note: "7" }]; current: "games" }
+                Section { width: parent.width; title: "Field / Beam bipolar" }
+                Row { spacing: 12
+                    Field { width: 240; toolbar: true; glyph: "search"; placeholder: "Search the store" }
+                    Beam { width: 240; from: -100; to: 100; value: -40; bipolar: true; interactive: false }
+                }
+                Section { width: parent.width; title: "PickCard" }
+                Row { spacing: 8
+                    PickCard { width: 120; height: 96; glyphFont: "Material Symbols Rounded"; glyph: "monitor"; title: "Arch"; subtitle: "rolling" }
+                    PickCard { width: 120; height: 96; glyphFont: "Material Symbols Rounded"; glyph: "monitor"; title: "Fedora"; subtitle: "41"; picked: true }
+                    PickCard { width: 120; height: 96; glyphFont: "Material Symbols Rounded"; glyph: "memory"; title: "Debian"; subtitle: "trixie"; hotHint: true }
+                    PickCard { width: 120; height: 96; title: "NixOS"; subtitle: "unstable"; enabled: false }
+                }
                 Section { width: parent.width; title: "MeterRow" }
                 Column { width: parent.width
                     MeterRow { width: parent.width; label: "Memory"; valueText: "13.0 / 30.8 GiB"; fraction: 0.42 }

@@ -9,7 +9,8 @@ import "lib/beam.js" as BeamMath
 // (volume boost) and paints the part past the mark as an over segment. Set
 // `interactive: false` for a meter, `indeterminate` for work of unknown length.
 // The value is controlled: the Beam emits moved() while dragging and committed()
-// on release; the owner sets `value`.
+// on release; the owner sets `value`. A `bipolar` range (an adjustment around
+// zero) fills from its middle, marked like the 100 % mark, toward the head.
 Item {
     id: beam
 
@@ -20,6 +21,7 @@ Item {
     property real stepSize: 0
     property bool interactive: true
     property bool indeterminate: false
+    property bool bipolar: false
     // show the thumb while an owner that handles input itself (a QQC.Slider
     // drawing through a Beam) is hovered, pressed or focused
     property bool hotHint: false
@@ -33,6 +35,10 @@ Item {
     readonly property real overFrac: BeamMath.overFraction(beam.range, beam.value)
     readonly property real markFrac: BeamMath.markFraction(beam.range)
     readonly property bool extended: beam.limit > beam.to
+    readonly property real fillFrom: beam.bipolar ? Math.min(0.5, beam.frac) : 0
+    readonly property real fillTo: beam.bipolar ? Math.max(0.5, beam.frac) : beam.mainFrac
+    // a bipolar fill below the middle runs right to left, so it brightens toward its head
+    readonly property bool mirrored: beam.bipolar && beam.frac < 0.5
     readonly property real cy: Math.round(height / 2)
     readonly property real headX: Math.round(width * beam.frac)
     readonly property bool hot: beam.hotHint || (beam.interactive && (area.containsMouse || area.pressed || beam.activeFocus))
@@ -58,11 +64,13 @@ Item {
 
     // Soft trail behind the one-pixel fill.
     Rectangle {
-        visible: !beam.indeterminate && beam.mainFrac > 0
-        x: 0
+        id: trail
+        visible: !beam.indeterminate && beam.fillTo > beam.fillFrom
+        x: Math.round(beam.width * beam.fillFrom)
         y: beam.cy + 0.5 - height / 2
-        width: Math.round(beam.width * beam.mainFrac)
+        width: Math.round(beam.width * (beam.fillTo - beam.fillFrom))
         height: 6
+        transform: Scale { origin.x: trail.width / 2; xScale: beam.mirrored ? -1 : 1 }
         radius: height / 2
         opacity: 0.65
         gradient: Gradient {
@@ -85,10 +93,13 @@ Item {
 
     // fill up to the 100 % mark
     Rectangle {
+        id: fill
         visible: !beam.indeterminate
+        x: Math.round(beam.width * beam.fillFrom)
         y: beam.cy
-        width: Math.round(beam.width * beam.mainFrac)
+        width: Math.round(beam.width * (beam.fillTo - beam.fillFrom))
         height: 1
+        transform: Scale { origin.x: fill.width / 2; xScale: beam.mirrored ? -1 : 1 }
         gradient: Gradient {
             orientation: Gradient.Horizontal
             GradientStop { position: 0.0; color: Qt.rgba(Tokens.sun.r, Tokens.sun.g, Tokens.sun.b, 0.14) }
@@ -111,8 +122,8 @@ Item {
         color: Tokens.alert
     }
     Rectangle {
-        visible: beam.extended
-        x: Math.round(beam.width * beam.markFrac)
+        visible: beam.extended || beam.bipolar
+        x: Math.round(beam.width * (beam.bipolar ? 0.5 : beam.markFrac))
         y: beam.cy + 0.5 - height / 2
         width: 1
         height: 7

@@ -14,6 +14,8 @@ Rectangle {
     property bool readOnly: false     // shows a value the screen does not own
     property bool secret: false       // masked, for a password
     property bool clearOnEscape: true
+    property string glyph: ""          // a leading catalogue glyph, "search" for a search field
+    property alias inputObjectName: input.objectName
     readonly property bool focused: input.activeFocus
     signal committed(string value)
     signal edited(string value)
@@ -31,11 +33,24 @@ Rectangle {
     function grabFocus() { input.forceActiveFocus() }
 
     HoverHandler { id: hh; cursorShape: Qt.IBeamCursor }
+    // the glyph sits outside the input: a tap there still focuses it
+    TapHandler { enabled: lead.visible && !input.activeFocus; onTapped: input.forceActiveFocus() }
+
+    Glyph {
+        id: lead
+        visible: field.glyph.length > 0
+        anchors.left: parent.left
+        anchors.leftMargin: 10
+        anchors.verticalCenter: parent.verticalCenter
+        name: field.glyph
+        color: Tokens.inkDim
+        size: 14
+    }
 
     TextInput {
         id: input
         anchors.fill: parent
-        anchors.leftMargin: 9
+        anchors.leftMargin: lead.visible ? 10 + lead.size + 8 : 9
         anchors.rightMargin: 9
         verticalAlignment: Text.AlignVCenter
         color: Tokens.ink
