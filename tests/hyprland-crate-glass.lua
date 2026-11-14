@@ -91,6 +91,9 @@ local namespaces = {
     ["ryoku-media-browser"] = "qsbar/panels/MediaBrowserPanelView.qml",
     ["ryoku-media-browser-hs"] = "qsbar/panels/MediaBrowserHearthstoneView.qml",
     ["ryoku-media-carousel"] = "qsbar/panels/MediaBrowserCarouselView.qml",
+    -- the Shima dock lives in inir, outside the shell tree: IrisDockSurface maps
+    -- the layer and IrisDock draws the glass (body, name label, menu)
+    ["ryoku-dock-shima"] = "inir/modules/iris/dock/IrisDock.qml",
 }
 for path in listing:lines() do
     local file = assert(io.open(path))

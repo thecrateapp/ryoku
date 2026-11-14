@@ -16,6 +16,7 @@ import inir.modules.iris.components
 import inir.modules.iris.pieces
 import shell.services as Ryoku
 import stage as StageEditor
+import Ryoku.Ui as Kit
 import Ryoku.Ui.Singletons as Ui
 
 Item {
@@ -25,6 +26,16 @@ Item {
     // The Stage Editor frames this monitor: the dock holds revealed and
     // publishes the edge it occupies for layouts that keep clear of it.
     property bool stageEditing: false
+    // The Shima chassis (the iRiS bar style) paints this dock's body and menu in
+    // its own field. Without it the dock stands alone, and under crate it draws
+    // itself on the kit: one glass, the mark for its running and focused apps.
+    property bool chassisPaints: false
+    readonly property bool crate: Ui.Tokens.controlsCrate && !root.chassisPaints
+    // A running app's marks under crate: the focused window's lead and the
+    // focused app in the mark, another running app in the mark at 40 %.
+    function crateDot(urgent: bool, lead: bool, appFocused: bool): color {
+        return urgent ? Ui.Tokens.alert : lead || appFocused ? Ui.Tokens.mark : Ui.Tokens.markHover
+    }
     anchors.fill: parent
     readonly property bool showLauncher: Ryoku.Dock.designCfg("shima", "launcher", true)
     readonly property var options: {
@@ -311,8 +322,9 @@ Item {
             readonly property bool menuOpen: window.menuApp !== null
             readonly property real dockHeight: root.iconSize + 18 * root.d
             // Notch: the body rests on the band's inner line and melts into it.
-            // Plain: it floats, keeping its own air above the band.
-            readonly property real bodyAir: (root.notch ? 0 : 10 * root.d) + root.extraEdgeGap
+            // Plain: it floats, keeping its own air above the band. Under crate
+            // there is no band to melt into: the glass floats, as the Ryoku dock does.
+            readonly property real bodyAir: (root.crate ? Ui.Tokens.s2 : root.notch ? 0 : 10 * root.d) + root.extraEdgeGap
             readonly property real edgeGap: Math.max(0, IrisFrame.band + window.bodyAir)
             readonly property real headroom: root.magnify ? root.iconSize * root.magnifyGain + 30 * root.d : 30 * root.d
             readonly property string material: {
@@ -561,10 +573,23 @@ Item {
                 y: root.vertical ? Math.round((window.height - height) / 2)
                     : root.atTop ? window.edgeOffset : window.height - height - window.edgeOffset
                 readonly property real thickness: root.vertical ? width : height
-                radius: IrisStyle.profileRadius(IrisStyle.bodyProfile(root.shape === "auto" ? IrisStyle.dockShape : root.shape, root.notch), dock.thickness)
+                radius: root.crate ? Ui.Tokens.radius
+                    : IrisStyle.profileRadius(IrisStyle.bodyProfile(root.shape === "auto" ? IrisStyle.dockShape : root.shape, root.notch), dock.thickness)
                 quiet: true
                 opacity: window.revealed || window.edgeOffset > -window.dockHeight ? 1 : 0
 
+                // crate: the body is the one glass (blurred by the ryoku-dock-shima
+                // layer rule) with a 1 px line, where the chassis would paint it.
+                Rectangle {
+                    objectName: "shimaDockGlass"
+                    visible: root.crate
+                    anchors.fill: parent
+                    z: -1
+                    radius: dock.radius
+                    color: Ui.Tokens.glass
+                    border.width: 1
+                    border.color: Ui.Tokens.line
+                }
 
                 Grid {
                     id: appRow
@@ -634,7 +659,7 @@ Item {
                                 Grid {
                                     id: launcherDots
                                     anchors.centerIn: parent
-                                    visible: !window.spotlightHere
+                                    visible: !window.spotlightHere && !root.crate
                                     readonly property real dot: Math.max(3, Math.round(launcherGlyph.width * 0.11))
                                     columns: 3
                                     spacing: Math.round(launcherGlyph.width * 0.1)
@@ -651,10 +676,18 @@ Item {
                                 }
                                 MaterialSymbol {
                                     anchors.centerIn: parent
-                                    visible: window.spotlightHere
+                                    visible: window.spotlightHere && !root.crate
                                     text: "close"
                                     iconSize: launcherGlyph.width * 0.5
                                     color: IrisStyle.text
+                                }
+                                Kit.Glyph {
+                                    objectName: "shimaLauncherGlyph"
+                                    anchors.centerIn: parent
+                                    visible: root.crate
+                                    name: window.spotlightHere ? "close" : "widget"
+                                    size: Math.round(launcherGlyph.width * 0.6)
+                                    color: launcherArea.containsMouse || window.spotlightHere ? Ui.Tokens.mark : Ui.Tokens.inkSecondary
                                 }
                             }
                         }
@@ -718,7 +751,8 @@ Item {
                                 width: root.vertical ? Math.round(root.iconSize * 0.56) : Math.max(1, Math.round(IrisStyle.density))
                                 height: root.vertical ? Math.max(1, Math.round(IrisStyle.density)) : Math.round(root.iconSize * 0.56)
                                 radius: width / 2
-                                color: IrisStyle.borderStrong
+                                objectName: "shimaSeparator"
+                                color: root.crate ? Ui.Tokens.line : IrisStyle.borderStrong
                             }
 
                             Slot {
@@ -882,8 +916,10 @@ Item {
                                     }
                                 }
                                 IrisBadge {
+                                    id: badge
                                     count: root.badgeCount([entry.modelData.appId, appSlot.appName,
                                         String(appSlot.desktopEntry?.id ?? "").replace(/\.desktop$/, "")])
+                                    visible: badge.count > 0 && !root.crate
                                     parent: appButton
                                     z: 2
                                     readonly property point corner: {
@@ -894,6 +930,29 @@ Item {
                                     y: Math.round(corner.y - height * 0.3)
                                     size: 2 * Math.round(9 * root.d * appSlot.iconScale)
                                     opacity: appIcon.opacity
+                                }
+                                // crate: the count filled with the mark in canvas ink, mono
+                                // figures, the shared corner instead of the pill.
+                                Rectangle {
+                                    objectName: "shimaCrateBadge"
+                                    parent: appButton
+                                    z: 2
+                                    visible: root.crate && badge.count > 0
+                                    height: badge.size
+                                    width: Math.max(badge.size, crateCount.implicitWidth + badge.size * 0.6)
+                                    x: Math.round(badge.corner.x - width * 0.7)
+                                    y: Math.round(badge.corner.y - height * 0.3)
+                                    radius: Math.min(Ui.Tokens.radius, height / 2)
+                                    color: Ui.Tokens.mark
+                                    opacity: appIcon.opacity
+                                    Text {
+                                        id: crateCount
+                                        anchors.centerIn: parent
+                                        text: badge.count > 99 ? "99+" : badge.count
+                                        color: Ui.Tokens.paper
+                                        font.family: Ui.Tokens.mono
+                                        font.pixelSize: Math.max(Ui.Tokens.px(9), Math.round(badge.size * 0.62))
+                                    }
                                 }
                                 Grid {
                                     id: indicators
@@ -925,11 +984,13 @@ Item {
                                             height: root.vertical ? Math.round(indicator.along) : indicator.dot
                                             width: root.vertical ? indicator.dot : Math.round(indicator.along)
                                             radius: Math.min(width, height) / 2
+                                            objectName: "shimaRunMark"
                                             color: indicators.minimizedOnly ? "transparent"
+                                                : root.crate ? root.crateDot(indicators.urgent, indicator.lead, appSlot.focused)
                                                 : indicators.urgent ? IrisStyle.secondaryAccent
                                                 : indicator.lead ? IrisStyle.text : (appSlot.focused ? IrisStyle.textSecondary : IrisStyle.textTertiary)
                                             borderWidth: indicators.minimizedOnly ? Math.max(1, Math.round(1.2 * root.d)) : 0
-                                            borderColor: IrisStyle.textSecondary
+                                            borderColor: root.crate ? Ui.Tokens.inkSubtle : IrisStyle.textSecondary
                                             Behavior on along { NumberAnimation { duration: IrisStyle.morphDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: IrisStyle.morphCurve } }
                                             Behavior on color { ColorAnimation { duration: IrisStyle.duration(140); easing.type: IrisStyle.feedbackEasing } }
                                             pulsing: indicators.urgent
@@ -950,7 +1011,7 @@ Item {
                             width: root.vertical ? Math.round(root.iconSize * 0.56) : Math.max(1, Math.round(IrisStyle.density))
                             height: root.vertical ? Math.max(1, Math.round(IrisStyle.density)) : Math.round(root.iconSize * 0.56)
                             radius: Math.min(width, height) / 2
-                            color: IrisStyle.borderStrong
+                            color: root.crate ? Ui.Tokens.line : IrisStyle.borderStrong
                         }
                     }
 
@@ -1056,7 +1117,19 @@ Item {
                 Behavior on opacity { NumberAnimation { duration: IrisStyle.duration(120); easing.type: IrisStyle.feedbackEasing } }
                 width: labelText.implicitWidth + 22 * root.d
                 height: Math.round(28 * root.d)
-                radius: height / 2
+                radius: root.crate ? Ui.Tokens.radius : height / 2
+                quiet: root.crate
+                // crate: the tooltip as the QS Bar's, the one glass with a 1 px line.
+                Rectangle {
+                    objectName: "shimaLabelGlass"
+                    visible: root.crate
+                    anchors.fill: parent
+                    z: -1
+                    radius: nameLabel.radius
+                    color: Ui.Tokens.glass
+                    border.width: 1
+                    border.color: Ui.Tokens.line
+                }
                 readonly property real targetLift: root.iconSize * root.magnifyGain * (nameLabel.target?.grow ?? 0)
                 x: root.atLeft ? dock.x + dock.width + 8 * root.d + nameLabel.targetLift
                     : root.atRight ? dock.x - width - 8 * root.d - nameLabel.targetLift
@@ -1070,21 +1143,26 @@ Item {
                     anchors.centerIn: parent
                     spacing: 6 * root.d
                     IrisText {
+                        id: labelName
+                        objectName: "shimaLabelName"
                         anchors.verticalCenter: parent.verticalCenter
                         text: Ui.I18n.tr(nameLabel.label)
                         width: Math.min(implicitWidth, Math.round(260 * root.d))
                         elide: Text.ElideRight
-                        font.pixelSize: IrisStyle.typeLabel
-                        font.weight: IrisStyle.weight(Font.DemiBold)
+                        color: root.crate ? Ui.Tokens.ink : IrisStyle.text
+                        font.family: root.crate ? Ui.Tokens.mono : labelName.defaultFont
+                        font.pixelSize: root.crate ? Ui.Tokens.fSmall : IrisStyle.typeLabel
+                        font.weight: root.crate ? Font.Normal : IrisStyle.weight(Font.DemiBold)
                     }
                     IrisText {
+                        objectName: "shimaLabelCount"
                         anchors.verticalCenter: parent.verticalCenter
                         visible: nameLabel.windowCount > 1
                         text: nameLabel.windowCount
-                        color: IrisStyle.secondaryAccent
-                        font.pixelSize: IrisStyle.typeMeta
-                        font.weight: IrisStyle.weight(Font.Bold)
-                        font.family: IrisStyle.fontNumbers
+                        color: root.crate ? Ui.Tokens.mark : IrisStyle.secondaryAccent
+                        font.pixelSize: root.crate ? Ui.Tokens.fSmall : IrisStyle.typeMeta
+                        font.weight: root.crate ? Font.Normal : IrisStyle.weight(Font.Bold)
+                        font.family: root.crate ? Ui.Tokens.mono : IrisStyle.fontNumbers
                         font.features: ({ "tnum": 1 })
                     }
                 }
@@ -1092,17 +1170,22 @@ Item {
 
             IrisMorphSurface {
                 id: menu
+                objectName: "shimaMenu"
                 z: -1
                 open: window.menuOpen
                 motionSurface: "menus"
                 origin: window.menuOriginRect
-                light: menu.mode === "windows" ? "transparent" : IrisStyle.surfaceLight("menus", IrisStyle.wallpaperLight)
+                light: menu.mode === "windows" || root.crate ? "transparent" : IrisStyle.surfaceLight("menus", IrisStyle.wallpaperLight)
                 lightFrom: root.edge
                 readonly property Item activeContent: menu.mode === "windows" ? windowsContent : menuContent
                 contentReady: menu.activeContent.implicitHeight > 0
-                radius: IrisStyle.surfaceRadius("menus", menu.mode === "windows" ? IrisStyle.radiusSheet : IrisStyle.radiusCard)
-                color: IrisStyle.bodySurface
-                fieldBacked: true
+                radius: root.crate ? Ui.Tokens.radius
+                    : IrisStyle.surfaceRadius("menus", menu.mode === "windows" ? IrisStyle.radiusSheet : IrisStyle.radiusCard)
+                // crate: no chassis paints it, so the menu draws its own body: the
+                // one glass, solid in its window (the layer rule blurs behind it).
+                color: root.crate ? Ui.Tokens.glass : IrisStyle.bodySurface
+                fieldBacked: !root.crate
+                glass: !root.crate
                 animationDuration: IrisStyle.morphDuration
                 width: menu.mode === "windows"
                     ? Math.round(Math.min(window.width - 24, windowsContent.implicitWidth + 20 * root.d))
@@ -1113,8 +1196,11 @@ Item {
                 x: Math.round(root.atLeft ? dock.x + dock.width + 8 * root.d
                     : root.atRight ? dock.x - width - 8 * root.d
                     : Math.max(window.menuLeftClear, Math.min(window.width - width - window.menuRightClear, window.menuAnchor.x - width / 2)))
+                // crate: its own glass, clear of the dock's by the kit's gap
+                // rather than fused to the icon it opened from.
                 y: Math.round(root.vertical
                     ? Math.max(menu.topClear, Math.min(window.height - height - menu.bottomClear, window.menuAnchor.y - height / 2))
+                    : root.crate ? (root.atTop ? dock.y + dock.height + Ui.Tokens.s2 : dock.y - height - Ui.Tokens.s2)
                     : root.atTop ? window.menuAnchor.y + 8 * root.d : window.menuAnchor.y - height - 8 * root.d)
                 visible: progress > 0
                 onClosed: {
@@ -1180,26 +1266,54 @@ Item {
                             fallback: "application-x-executable"
                             iconSize: Math.round(18 * root.d)
                         }
+                        readonly property string appName: AppSearch.lookupDesktopEntry(menu.app?.appId ?? "")?.name ?? (menu.app?.appId ?? "")
+                        readonly property string countText: menu.windows.length === 1 ? Translation.tr("1 window") : Translation.tr("%1 windows").arg(menu.windows.length)
+                        function newWindow(): void {
+                            const e = AppSearch.lookupDesktopEntry(menu.app?.appId ?? "")
+                            if (e) AppSearch.launchEntry(e)
+                            window.menuApp = null
+                        }
                         IrisText {
+                            visible: !root.crate
                             Layout.fillWidth: true
-                            text: AppSearch.lookupDesktopEntry(menu.app?.appId ?? "")?.name ?? (menu.app?.appId ?? "")
+                            text: parent.appName
                             elide: Text.ElideRight
                             font.pixelSize: IrisStyle.typeLabel
                             font.weight: IrisStyle.weight(Font.DemiBold)
                         }
                         IrisText {
-                            text: menu.windows.length === 1 ? Translation.tr("1 window") : Translation.tr("%1 windows").arg(menu.windows.length)
+                            visible: !root.crate
+                            text: parent.countText
                             color: IrisStyle.muted
                             font.pixelSize: IrisStyle.typeMeta
                         }
                         IrisIconButton {
+                            visible: !root.crate
                             materialIcon: "add"
                             Accessible.name: Translation.tr("New window")
-                            onClicked: {
-                                const e = AppSearch.lookupDesktopEntry(menu.app?.appId ?? "")
-                                if (e) AppSearch.launchEntry(e)
-                                window.menuApp = null
-                            }
+                            onClicked: parent.newWindow()
+                        }
+                        Kit.TrackLabel {
+                            objectName: "shimaSheetTitle"
+                            visible: root.crate
+                            Layout.fillWidth: true
+                            text: parent.appName
+                            tone: "accent"
+                        }
+                        Kit.TrackLabel {
+                            visible: root.crate
+                            text: parent.countText
+                        }
+                        Kit.IconButton {
+                            objectName: "shimaSheetAdd"
+                            visible: root.crate
+                            Layout.preferredWidth: Math.round(28 * root.d)
+                            Layout.preferredHeight: Math.round(28 * root.d)
+                            iconSize: Math.round(16 * root.d)
+                            glyph: "add"
+                            Accessible.role: Accessible.Button
+                            Accessible.name: Translation.tr("New window")
+                            onClicked: parent.newWindow()
                         }
                     }
 
@@ -1247,14 +1361,22 @@ Item {
                                     window.menuApp = null
                                 }
 
+                                // crate: a list line, the pick wash and the 1 px pick edge on
+                                // the focused window instead of the 2 px accent ring.
                                 Rectangle {
                                     id: plate
+                                    objectName: "shimaCardPlate"
                                     width: windowsContent.cardWidth
                                     height: windowsContent.cardHeight
-                                    radius: Math.max(IrisStyle.radiusMicro, menu.radius - Math.round(10 * root.d))
-                                    color: card.pressed ? IrisStyle.fillActive : card.containsMouse ? IrisStyle.fillHover : IrisStyle.fillQuiet
-                                    border.width: card.focusedWindow ? Math.max(2, Math.round(2 * root.d)) : 0
-                                    border.color: IrisStyle.accent
+                                    radius: root.crate ? Ui.Tokens.radius : Math.max(IrisStyle.radiusMicro, menu.radius - Math.round(10 * root.d))
+                                    color: root.crate
+                                        ? (card.focusedWindow ? Ui.Tokens.pickFill : card.pressed ? Ui.Tokens.tint10
+                                            : card.containsMouse ? Ui.Tokens.tint5 : ColorUtils.applyAlpha(Ui.Tokens.ink, 0))
+                                        : card.pressed ? IrisStyle.fillActive : card.containsMouse ? IrisStyle.fillHover : IrisStyle.fillQuiet
+                                    border.width: root.crate ? 1 : card.focusedWindow ? Math.max(2, Math.round(2 * root.d)) : 0
+                                    border.color: root.crate ? (card.focusedWindow ? Ui.Tokens.pickEdge
+                                            : card.containsMouse ? Ui.Tokens.markHover : Ui.Tokens.line)
+                                        : IrisStyle.accent
                                     scale: card.pressed ? IrisStyle.pressScale(0.97) : 1
                                     Behavior on color { ColorAnimation { duration: IrisStyle.duration(120); easing.type: IrisStyle.feedbackEasing } }
                                     Behavior on scale { NumberAnimation { duration: IrisStyle.duration(110); easing.type: IrisStyle.feedbackEasing } }
@@ -1277,9 +1399,10 @@ Item {
                                         anchors.centerIn: parent
                                         width: Math.round(silhouette.fitWidth)
                                         height: Math.round(silhouette.fitWidth / plate.aspect)
-                                        radius: IrisStyle.radiusChip
+                                        objectName: "shimaCardWindow"
+                                        radius: root.crate ? Ui.Tokens.radius : IrisStyle.radiusChip
                                         clip: true
-                                        color: IrisStyle.surfaceHigh
+                                        color: root.crate ? Ui.Tokens.paperLift : IrisStyle.surfaceHigh
                                         opacity: card.minimized ? 0.55 : 1
                                         scale: card.containsMouse ? 1.03 : 1
                                         Behavior on scale { NumberAnimation { duration: IrisStyle.duration(140); easing.type: IrisStyle.feedbackEasing } }
@@ -1288,7 +1411,7 @@ Item {
                                             anchors.right: parent.right
                                             anchors.top: parent.top
                                             height: Math.round(10 * root.d)
-                                            color: IrisStyle.fill
+                                            color: root.crate ? Ui.Tokens.tint10 : IrisStyle.fill
                                         }
                                         Row {
                                             x: Math.round(6 * root.d)
@@ -1300,7 +1423,7 @@ Item {
                                                     width: Math.max(3, Math.round(3 * root.d))
                                                     height: width
                                                     radius: width / 2
-                                                    color: IrisStyle.textTertiary
+                                                    color: root.crate ? Ui.Tokens.inkFaint : IrisStyle.textTertiary
                                                 }
                                             }
                                         }
@@ -1319,11 +1442,18 @@ Item {
                                         y: Math.round(plate.height - plate.room / 2 - height / 2)
                                         spacing: Math.round(3 * root.d)
                                         MaterialSymbol {
-                                            visible: card.tiledWindow?.is_floating ?? false
+                                            visible: !root.crate && (card.tiledWindow?.is_floating ?? false)
                                             anchors.verticalCenter: parent.verticalCenter
                                             text: "picture_in_picture"
                                             iconSize: Math.round(11 * root.d)
                                             color: IrisStyle.subtext
+                                        }
+                                        Kit.Glyph {
+                                            visible: root.crate && (card.tiledWindow?.is_floating ?? false)
+                                            anchors.verticalCenter: parent.verticalCenter
+                                            name: "picture_in_picture"
+                                            size: Math.round(12 * root.d)
+                                            color: Ui.Tokens.inkSubtle
                                         }
                                         Repeater {
                                             model: card.tiledWindow?.is_floating ? 0 : Math.min(9, card.columns)
@@ -1334,7 +1464,8 @@ Item {
                                                 width: Math.round((own ? 10 : 5) * root.d)
                                                 height: Math.max(3, Math.round(4 * root.d))
                                                 radius: height / 2
-                                                color: own ? (card.focusedWindow ? IrisStyle.accent : IrisStyle.text) : IrisStyle.fillActive
+                                                color: root.crate ? (own ? (card.focusedWindow ? Ui.Tokens.mark : Ui.Tokens.ink) : Ui.Tokens.lineStrong)
+                                                    : own ? (card.focusedWindow ? IrisStyle.accent : IrisStyle.text) : IrisStyle.fillActive
                                             }
                                         }
                                         Rectangle {
@@ -1343,7 +1474,7 @@ Item {
                                             width: Math.round(6 * root.d)
                                             height: width
                                             radius: width / 2
-                                            color: IrisStyle.secondaryAccent
+                                            color: root.crate ? Ui.Tokens.alert : IrisStyle.secondaryAccent
                                         }
                                     }
                                     Rectangle {
@@ -1353,7 +1484,7 @@ Item {
                                         height: width
                                         radius: width / 2
                                         color: closeHover.hovered ? IrisStyle.danger : IrisStyle.veilHeavy
-                                        opacity: card.containsMouse && card.win?.nativeWindowId !== undefined ? 1 : 0
+                                        opacity: !root.crate && card.containsMouse && card.win?.nativeWindowId !== undefined ? 1 : 0
                                         visible: opacity > 0
                                         Behavior on opacity { NumberAnimation { duration: IrisStyle.duration(120); easing.type: IrisStyle.feedbackEasing } }
                                         MaterialSymbol {
@@ -1369,6 +1500,23 @@ Item {
                                             }
                                         }
                                     }
+                                    Kit.IconButton {
+                                        objectName: "shimaCardClose"
+                                        x: plate.width - width - Math.round(2 * root.d)
+                                        y: Math.round(2 * root.d)
+                                        width: Math.round(28 * root.d)
+                                        height: width
+                                        iconSize: Math.round(14 * root.d)
+                                        glyph: "close"
+                                        opacity: root.crate && card.containsMouse && card.win?.nativeWindowId !== undefined ? 1 : 0
+                                        visible: opacity > 0
+                                        Behavior on opacity { NumberAnimation { duration: Ui.Tokens.snap } }
+                                        Accessible.role: Accessible.Button
+                                        Accessible.name: Translation.tr("Close window")
+                                        onClicked: {
+                                            if (card.win?.nativeWindowId !== undefined) WorkspaceService.closeWindow(card.win.nativeWindowId)
+                                        }
+                                    }
                                 }
                                 Column {
                                     id: caption
@@ -1378,26 +1526,37 @@ Item {
                                     anchors.leftMargin: Math.round(4 * root.d)
                                     anchors.rightMargin: Math.round(4 * root.d)
                                     spacing: Math.round(1 * root.d)
+                                    readonly property string place: card.minimized ? Translation.tr("Minimised")
+                                        : !card.workspace ? ""
+                                        : (card.workspace.name || Translation.tr("Workspace %1").arg(card.workspace.idx))
+                                            + (card.columns > 1 && card.column > 0 ? " · " + Translation.tr("%1 of %2").arg(card.column).arg(card.columns) : "")
                                     IrisText {
+                                        id: cardTitle
+                                        objectName: "shimaCardTitle"
                                         width: parent.width
                                         text: String(card.win?.title ?? "")
                                         elide: Text.ElideRight
                                         horizontalAlignment: Text.AlignHCenter
-                                        color: card.focusedWindow ? IrisStyle.text : IrisStyle.subtext
-                                        font.pixelSize: IrisStyle.typeMeta
+                                        color: root.crate ? (card.focusedWindow ? Ui.Tokens.ink : Ui.Tokens.inkSecondary)
+                                            : card.focusedWindow ? IrisStyle.text : IrisStyle.subtext
+                                        font.family: root.crate ? Ui.Tokens.ui : cardTitle.defaultFont
+                                        font.pixelSize: root.crate ? Ui.Tokens.fSmall : IrisStyle.typeMeta
                                         font.weight: card.focusedWindow ? Font.DemiBold : Font.Medium
                                     }
                                     IrisText {
                                         width: parent.width
-                                        visible: text.length > 0
-                                        text: card.minimized ? Translation.tr("Minimised")
-                                            : !card.workspace ? ""
-                                            : (card.workspace.name || Translation.tr("Workspace %1").arg(card.workspace.idx))
-                                                + (card.columns > 1 && card.column > 0 ? " · " + Translation.tr("%1 of %2").arg(card.column).arg(card.columns) : "")
+                                        visible: !root.crate && text.length > 0
+                                        text: caption.place
                                         elide: Text.ElideRight
                                         horizontalAlignment: Text.AlignHCenter
                                         color: IrisStyle.muted
                                         font.pixelSize: IrisStyle.typeFootnote
+                                    }
+                                    Kit.TrackLabel {
+                                        width: parent.width
+                                        visible: root.crate && text.length > 0
+                                        text: caption.place
+                                        horizontalAlignment: Text.AlignHCenter
                                     }
                                 }
                             }
@@ -1414,35 +1573,62 @@ Item {
                     anchors.margins: 6 * root.d
                     spacing: 0
 
+                    // crate: the tray menu's rows (32 px, a 5 % ink wash on hover, mono
+                    // labels in secondary ink, Solar glyphs) and the pick wash and edge
+                    // on the focused window.
                     component MenuRow: IrisButton {
                         id: menuRow
                         property string glyph: ""
                         property string label: ""
+                        property bool picked: false
+                        objectName: "shimaMenuRow"
                         Layout.fillWidth: true
                         quiet: true
-                        implicitHeight: Math.round(30 * root.d)
+                        implicitHeight: Math.round((root.crate ? 32 : 30) * root.d)
                         implicitWidth: menuRowLabel.implicitWidth + 52 * root.d
-                        buttonRadius: IrisStyle.radiusChip
+                        buttonRadius: root.crate ? Ui.Tokens.radius : IrisStyle.radiusChip
                         pressScaleEnabled: false
-                        colBackgroundHover: IrisStyle.tintFill(IrisStyle.accent)
+                        colBackgroundHover: root.crate ? Ui.Tokens.tint5 : IrisStyle.tintFill(IrisStyle.accent)
                         Accessible.name: menuRow.label
+                        Rectangle {
+                            objectName: "shimaMenuPick"
+                            visible: root.crate && menuRow.picked
+                            anchors.fill: parent
+                            radius: Ui.Tokens.radius
+                            color: Ui.Tokens.pickFill
+                            border.width: 1
+                            border.color: Ui.Tokens.pickEdge
+                        }
                         RowLayout {
                             anchors.fill: parent
                             anchors.leftMargin: 8 * root.d
                             anchors.rightMargin: 10 * root.d
                             spacing: 8 * root.d
                             MaterialSymbol {
+                                visible: !root.crate
                                 text: menuRow.glyph
                                 iconSize: Math.round(15 * root.d)
                                 color: menuRow.danger ? IrisStyle.danger : IrisStyle.subtext
                             }
+                            Kit.Glyph {
+                                objectName: "shimaMenuGlyph"
+                                visible: root.crate
+                                name: menuRow.glyph
+                                size: Math.round(16 * root.d)
+                                color: menuRow.danger ? Ui.Tokens.alert
+                                    : menuRow.picked || menuRow.hovered ? Ui.Tokens.mark : Ui.Tokens.inkSecondary
+                            }
                             IrisText {
                                 id: menuRowLabel
+                                objectName: "shimaMenuLabel"
                                 Layout.fillWidth: true
                                 text: Ui.I18n.tr(menuRow.label)
                                 elide: Text.ElideRight
-                                color: menuRow.danger ? IrisStyle.danger : IrisStyle.text
-                                font.pixelSize: IrisStyle.typeLabel
+                                color: root.crate ? (menuRow.danger ? Ui.Tokens.alert
+                                        : menuRow.picked || menuRow.hovered ? Ui.Tokens.ink : Ui.Tokens.inkSecondary)
+                                    : menuRow.danger ? IrisStyle.danger : IrisStyle.text
+                                font.family: root.crate ? Ui.Tokens.mono : menuRowLabel.defaultFont
+                                font.pixelSize: root.crate ? Ui.Tokens.fSmall : IrisStyle.typeLabel
                             }
                         }
                     }
@@ -1454,25 +1640,42 @@ Item {
                         Layout.topMargin: 4 * root.d
                         Layout.bottomMargin: 4 * root.d
                         spacing: 12 * root.d
+                        readonly property string appName: AppSearch.lookupDesktopEntry(menu.app?.appId ?? "")?.name ?? (menu.app?.appId ?? "")
+                        readonly property string countText: (menu.windows?.length ?? 0) === 0 ? Translation.tr("Not running")
+                            : (menu.windows.length === 1 ? Translation.tr("1 window") : Translation.tr("%1 windows").arg(menu.windows.length))
                         IrisText {
+                            visible: !root.crate
                             Layout.fillWidth: true
-                            text: AppSearch.lookupDesktopEntry(menu.app?.appId ?? "")?.name ?? (menu.app?.appId ?? "")
+                            text: parent.appName
                             elide: Text.ElideRight
                             font.pixelSize: IrisStyle.typeLabel
                             font.weight: IrisStyle.weight(Font.DemiBold)
                         }
                         IrisText {
-                            text: (menu.windows?.length ?? 0) === 0 ? Translation.tr("Not running")
-                                : (menu.windows.length === 1 ? Translation.tr("1 window") : Translation.tr("%1 windows").arg(menu.windows.length))
+                            visible: !root.crate
+                            text: parent.countText
                             color: IrisStyle.muted
                             font.pixelSize: IrisStyle.typeMeta
+                        }
+                        Kit.TrackLabel {
+                            objectName: "shimaMenuTitle"
+                            visible: root.crate
+                            Layout.fillWidth: true
+                            text: parent.appName
+                            tone: "accent"
+                        }
+                        Kit.TrackLabel {
+                            objectName: "shimaMenuCount"
+                            visible: root.crate
+                            text: parent.countText
                         }
                     }
                     Repeater {
                         model: menu.windows
                         MenuRow {
                             required property var modelData
-                            glyph: modelData.activated ? "radio_button_checked" : "select_window"
+                            glyph: root.crate ? "select_window" : modelData.activated ? "radio_button_checked" : "select_window"
+                            picked: modelData.activated ?? false
                             label: String(modelData.title ?? "")
                             onClicked: {
                                 if (root.windowWorkspaceMap && modelData.nativeWindowId !== undefined) WorkspaceService.focusWindow(modelData.nativeWindowId)
@@ -1481,7 +1684,7 @@ Item {
                             }
                         }
                     }
-                    Rectangle { Layout.fillWidth: true; Layout.leftMargin: 10 * root.d; Layout.rightMargin: 10 * root.d; Layout.topMargin: 4 * root.d; Layout.bottomMargin: 4 * root.d; implicitHeight: 1; color: IrisStyle.hairlineStrong }
+                    Rectangle { Layout.fillWidth: true; Layout.leftMargin: 10 * root.d; Layout.rightMargin: 10 * root.d; Layout.topMargin: 4 * root.d; Layout.bottomMargin: 4 * root.d; implicitHeight: 1; color: root.crate ? Ui.Tokens.lineSoft : IrisStyle.hairlineStrong }
                     MenuRow {
                         visible: (menu.app?.toplevels?.length ?? 0) > 1
                         glyph: "view_carousel"
@@ -1525,6 +1728,22 @@ Item {
                     }
                 }
             }
+
+            // crate: the menu's 1 px line, on the body as it morphs.
+            Rectangle {
+                objectName: "shimaMenuEdge"
+                z: -1
+                visible: root.crate && menu.visible && menu.progress > 0.01
+                x: menu.bodyRect.x
+                y: menu.bodyRect.y
+                width: menu.bodyRect.width
+                height: menu.bodyRect.height
+                radius: menu.bodyRect.radius
+                opacity: Math.min(1, menu.progress)
+                color: "transparent"
+                border.width: 1
+                border.color: Ui.Tokens.line
+            }
         }
 
     // A slot's hover plate: a rounded square around the icon, the same radius on every corner, 4·d from the lane's
@@ -1533,13 +1752,15 @@ Item {
         id: hoverPlate
         property real lift: 0
         property bool lit: false
+        objectName: "shimaHoverPlate"
         visible: !root.magnify
         width: root.plateSize
         height: hoverPlate.width
-        radius: IrisStyle.iconRadius(hoverPlate.width)
+        radius: root.crate ? Ui.Tokens.radius : IrisStyle.iconRadius(hoverPlate.width)
         x: root.edgeX(parent.width, hoverPlate.width, 4 * root.d + hoverPlate.lift)
         y: root.edgeY(parent.height, hoverPlate.height, 4 * root.d + hoverPlate.lift)
-        color: hoverPlate.lit ? IrisStyle.fill : ColorUtils.applyAlpha(IrisStyle.text, 0)
+        color: root.crate ? (hoverPlate.lit ? Ui.Tokens.tint10 : ColorUtils.applyAlpha(Ui.Tokens.ink, 0))
+            : hoverPlate.lit ? IrisStyle.fill : ColorUtils.applyAlpha(IrisStyle.text, 0)
         Behavior on color { ColorAnimation { duration: IrisStyle.duration(120); easing.type: IrisStyle.feedbackEasing } }
     }
 }
