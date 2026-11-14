@@ -6,6 +6,7 @@ import Ryoku.Ui.Singletons
 import stage
 import stage.services
 import stage.modules.common
+import stage.modules.common.widgets
 import stage.modules.ii.editMode
 import stage.modules.ii.background.widgets
 
@@ -182,6 +183,11 @@ ShellRoot {
                 Layout.fillWidth: true
                 currentValue: "ryoku"
             }
+            ColorPreviewButton {
+                id: schemeCard
+                Layout.preferredWidth: 120
+                colorScheme: MaterialThemeLoader.schemeType
+            }
             EditAlignBar {
                 id: alignBar
                 count: 3
@@ -286,6 +292,9 @@ ShellRoot {
             && same(chosen.border.color, crate ? Tokens.pickEdge : Appearance.colors.colSecondary)
             && same(other.border.color, crate ? Tokens.line : Appearance.colors.colOutlineVariant),
             "the dock design cards");
+        check(schemeCard.toggled === true, "the scheme card for the live scheme is chosen");
+        check(same(schemeCard.colBackground, crate ? Tokens.pickFill : Tokens.bone)
+            && same(schemeCard.borderColor, crate ? Tokens.pickEdge : Tokens.bone), "the chosen colour scheme card");
         const strip = get(alignBar, "alignBarPlate");
         check(same(strip.colBackground, crate ? Tokens.popover : Appearance.colors.colLayer0)
             && same(strip.borderColor, crate ? Tokens.line : Appearance.colors.colOutline), "the align strip's plate");

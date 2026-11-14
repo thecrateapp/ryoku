@@ -3,6 +3,7 @@ import QtQuick.Layouts
 import stage.services
 import stage.modules.common
 import stage.modules.common.widgets
+import Ryoku.Ui as Ui
 import Ryoku.Ui.Singletons
 
 RippleButton {
@@ -24,6 +25,11 @@ RippleButton {
         : MaterialThemeLoader.followsWallpaper
             && MaterialThemeLoader.schemeType === root.colorScheme
 
+    // Under crate the chosen scheme is a pick card: the pick wash in the 1 px
+    // pickEdge, its ring and name in the pick ink, its glyph Solar's.
+    readonly property bool crate: Tokens.controlsCrate
+    readonly property color onInk: root.crate ? Tokens.pickInk : Tokens.inkOnBone
+
     property color primaryColor: "transparent"
     property color secondaryColor: "transparent"
     property color tertiaryColor: "transparent"
@@ -36,11 +42,14 @@ RippleButton {
     opacity: enabled ? 1 : 0.55
     buttonRadius: Tokens.radius
     borderWidth: Tokens.border
-    colBackground: root.toggled ? Tokens.bone : Tokens.paperLift
-    colBackgroundHover: root.toggled ? Tokens.bone : Tokens.tint10
-    colBackgroundActive: root.toggled ? Tokens.bone : Tokens.tint16
-    colRipple: root.toggled ? Tokens.lineOnBone : Tokens.tint16
-    borderColor: root.toggled ? Tokens.bone : Tokens.line
+    colBackground: root.crate ? (root.toggled ? Tokens.pickFill : "transparent")
+        : root.toggled ? Tokens.bone : Tokens.paperLift
+    colBackgroundHover: root.crate ? (root.toggled ? Tokens.pickFill : Tokens.tint5)
+        : root.toggled ? Tokens.bone : Tokens.tint10
+    colBackgroundActive: root.crate ? Tokens.tint10 : root.toggled ? Tokens.bone : Tokens.tint16
+    colRipple: root.crate ? Tokens.tint10 : root.toggled ? Tokens.lineOnBone : Tokens.tint16
+    borderColor: root.crate ? (root.toggled ? Tokens.pickEdge : Tokens.line)
+        : root.toggled ? Tokens.bone : Tokens.line
     scale: down ? 0.98 : 1
 
     Behavior on opacity {
@@ -155,7 +164,7 @@ RippleButton {
             radius: width / 2
             color: "transparent"
             border.width: Tokens.border * 2
-            border.color: root.toggled ? Tokens.inkOnBone : Tokens.ink
+            border.color: root.toggled ? root.onInk : Tokens.ink
             opacity: root.toggled && root.loaded ? 1 : 0
             visible: opacity > 0
 
@@ -204,12 +213,22 @@ RippleButton {
             }
         }
 
+        Ui.Glyph {
+            anchors.horizontalCenter: parent.horizontalCenter
+            anchors.top: parent.top
+            width: Tokens.ctlH
+            height: Tokens.ctlH
+            visible: root.crate && !root.loaded
+            name: root.namedTheme ? "palette" : "hourglass_top"
+            size: Tokens.s4
+            color: root.toggled ? root.onInk : Tokens.inkMuted
+        }
         MaterialSymbol {
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.top: parent.top
             width: Tokens.ctlH
             height: Tokens.ctlH
-            visible: !root.loaded
+            visible: !root.crate && !root.loaded
             text: root.namedTheme ? "palette" : "hourglass_top"
             iconSize: Tokens.s4
             color: root.toggled ? Tokens.inkOnBone : Tokens.inkMuted
@@ -223,7 +242,7 @@ RippleButton {
             anchors.bottom: parent.bottom
             height: Tokens.fSmall + Tokens.s1
             text: root.colorSchemeDisplayName
-            color: root.toggled ? Tokens.inkOnBone : Tokens.inkDim
+            color: root.toggled ? root.onInk : Tokens.inkDim
             font.family: Tokens.ui
             font.pixelSize: Tokens.fTiny
             font.weight: root.toggled ? Font.DemiBold : Font.Medium

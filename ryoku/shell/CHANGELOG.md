@@ -1,6 +1,10 @@
 # Changelog: ryoku/shell/
 
 ## Unreleased
+- **The editor's colour schemes are pick cards under crate.** The chosen scheme
+  takes the pick wash in the 1 px pick edge and the pick ink, the others a
+  hairline over the glass, and a scheme still loading shows a Solar glyph.
+  Stock is unchanged (`quickshell/stage/modules/common/widgets/ColorPreviewButton.qml`).
 - **The editor's wallpaper pages use the kit under crate.** The picture grid's
   tiles take the 6 px corner and the applied one the 1 px pick edge and a check
   tag; the current picture's tags and its change button are popover tags with
