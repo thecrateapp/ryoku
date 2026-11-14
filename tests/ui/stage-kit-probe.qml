@@ -9,6 +9,7 @@ import stage.modules.common
 import stage.modules.common.widgets
 import stage.modules.ii.editMode
 import stage.modules.ii.background.widgets
+import stage.modules.common.draw
 
 // The Stage editor's chrome in both looks. Under crate: the toolbar, the
 // catalogue panel, the widget and bar menus and the guide card are the one
@@ -62,6 +63,23 @@ ShellRoot {
             width: 420
             height: 300
             screenName: "probe"
+        }
+
+        // The sketch editor's draw tray and one of its tools (the note pane
+        // itself reads the notes store, which an isolated session has none of).
+        DrawToolButton {
+            id: drawTool
+            x: 600
+            y: 640
+            symbol: "undo"
+        }
+        DrawToolbar {
+            id: drawTray
+            x: 320
+            y: 640
+            palette: ["#111111", "#e2342a"]
+            currentColor: "#111111"
+            strokeWidth: 4
         }
 
         EditWidgetMenu {
@@ -285,6 +303,14 @@ ShellRoot {
             check(same(plate.color, crate ? Tokens.popover : Tokens.paper), name + "'s fill");
         }
         check(get(framing, "framingDock").radius === (crate ? Tokens.radius : Tokens.radius * 2), "the framing plate's corner");
+        // the sketch tray
+        const tray = get(drawTray, "drawTray");
+        check(same(tray.color, crate ? Tokens.popover : Appearance.m3colors.m3surfaceContainer)
+            && tray.border.width === (crate ? Tokens.border : 0), "the draw tray's plate");
+        check(get(drawTray, "drawWidthBeam").visible === crate, "the thickness is the kit Beam under crate");
+        check(get(drawTool, "drawToolGlyph").visible === crate, "a draw tool's icon is a Solar Glyph under crate");
+        check(same(drawTool.colBackground, crate ? "transparent" : Appearance.m3colors.m3surfaceContainerHigh),
+            "a draw tool has no plate under crate");
         // the dock design cards and the selection's align strip
         const chosen = get(designPicker, "dockDesign-ryoku");
         const other = get(designPicker, "dockDesign-python");
@@ -347,7 +373,8 @@ ShellRoot {
         // and the pages that read the dock or the window manager
         "../../editMode/EditModeDrawer.qml", "../../editMode/EditWallpaperRootPage.qml",
         "../../editMode/EditWallpaperScreenMap.qml", "../../editMode/EditWallpaperFramingOverlay.qml",
-        "../../editMode/EditWallpaperPage.qml", "../../editMode/EditStylePresets.qml"
+        "../../editMode/EditWallpaperPage.qml", "../../editMode/EditStylePresets.qml",
+        "../../overlay/notes/NotesContent.qml", "../../overlay/notes/NotesSketchEditor.qml"
     ]
     // A player that can seek, for the media seek line.
     QtObject {

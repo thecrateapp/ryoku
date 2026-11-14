@@ -2,6 +2,8 @@ import QtQuick
 
 import stage.modules.common
 import stage.modules.common.widgets
+import Ryoku.Ui as Ui
+import Ryoku.Ui.Singletons
 /**
  * One round control in a drawing toolbar, at a size a pen tip can hit without aiming.
  *
@@ -31,6 +33,13 @@ RippleButton {
 
     signal triggered
 
+    // Under crate the button is drawn as the kit's icon button: no plate, the
+    // Solar glyph in secondary ink, the mark when on, hovered or emphasised,
+    // at the shared corner, with no plate or edge. It stays this ripple button underneath, because
+    // the pen's taps arrive through its TapHandler (see below).
+    readonly property bool crate: Tokens.controlsCrate
+    readonly property color crateInk: root.active || root.emphasised || root.hovered ? Tokens.mark : Tokens.inkSecondary
+
     implicitWidth: root.size
     implicitHeight: root.size
     // A click must not move keyboard focus off the drawing surface, or the next Space or
@@ -38,16 +47,21 @@ RippleButton {
     focusPolicy: Qt.NoFocus
     // Round at rest, a rounded square while on: the shape is the state (Material 3
     // Expressive toggle buttons), so a lit tool reads as lit without a second cue.
-    buttonRadius: root.active ? Appearance.rounding.normal : Appearance.rounding.full
+    buttonRadius: root.crate ? Tokens.radius : root.active ? Appearance.rounding.normal : Appearance.rounding.full
     // Opaque tones: the tray floats over applications on a layer nothing blurs. See
     // DrawToolbar.
-    colBackground: root.active
+    borderWidth: root.crate ? 0 : 1
+    borderColor: root.usesInvertedPlate ? Appearance.colors.colSecondary : Appearance.colors.colOutlineVariant
+    colBackground: root.crate ? "transparent"
+        : root.active
         ? Appearance.colors.colPrimary
         : (root.emphasised ? Appearance.colors.colSecondaryContainer : Appearance.m3colors.m3surfaceContainerHigh)
-    colBackgroundHover: root.active
+    colBackgroundHover: root.crate ? Tokens.tint5
+        : root.active
         ? Appearance.colors.colPrimaryHover
         : (root.emphasised ? Appearance.colors.colSecondaryContainerHover : Appearance.colors.colSurfaceContainerHighestHover)
-    colRipple: root.active ? Appearance.colors.colPrimaryActive : Appearance.colors.colSurfaceContainerHighestActive
+    colRipple: root.crate ? Tokens.tint10
+        : root.active ? Appearance.colors.colPrimaryActive : Appearance.colors.colSurfaceContainerHighestActive
 
     Behavior on buttonRadius {
         animation: Appearance.animation.elementMoveFast.numberAnimation.createObject(this)
@@ -74,16 +88,30 @@ RippleButton {
         onTapped: root.triggered()
     }
 
-    contentItem: MaterialSymbol {
-        anchors.centerIn: parent
-        text: root.symbol
-        iconSize: Appearance.font.pixelSize.larger
-        fill: root.active ? 1 : 0
-        color: root.active
-            ? Appearance.m3colors.m3onPrimary
-            : (root.emphasised ? Appearance.colors.colOnSecondaryContainer
-                               : Appearance.colors.colOnSurface)
-        opacity: root.enabled ? 1 : 0.4
+    // One content item for both looks: a control hides an old content item
+    // it is handed a new one for, which would break a live theme switch.
+    contentItem: Item {
+        Ui.Glyph {
+            objectName: "drawToolGlyph"
+            visible: root.crate
+            anchors.centerIn: parent
+            name: root.symbol
+            color: root.crateInk
+            opacity: root.enabled ? 1 : 0.4
+        }
+
+        MaterialSymbol {
+            visible: !root.crate
+            anchors.centerIn: parent
+            text: root.symbol
+            iconSize: Appearance.font.pixelSize.larger
+            fill: root.active ? 1 : 0
+            color: root.active
+                ? Appearance.m3colors.m3onPrimary
+                : (root.emphasised ? Appearance.colors.colOnSecondaryContainer
+                                   : Appearance.colors.colOnSurface)
+            opacity: root.enabled ? 1 : 0.4
+        }
     }
 
     // Shown on hover over every surface this button lives on: the drawing layer has no

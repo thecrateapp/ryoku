@@ -1,6 +1,15 @@
 # Changelog: ryoku/shell/
 
 ## Unreleased
+- **The notes widget and its sketch editor use the kit under crate.** The
+  note's tabs are the kit Tabs, its hint and copy buttons Solar glyphs, its
+  pane and drawing frame a hairline at the 6 px corner. The sketch editor is an
+  opaque popover surface; its draw tray an opaque popover plate whose tools
+  are drawn as kit icon buttons (Solar glyphs, the mark when on, no plate),
+  the thickness the kit Beam with a mono readout, and the status a popover
+  tag. The pen's fallback inks stay data colours. Stock is unchanged
+  (`quickshell/stage/modules/ii/overlay/notes/`,
+  `quickshell/stage/modules/common/draw/`; `tests/ui/stage-kit-probe.sh`).
 - **The editor's colour schemes are pick cards under crate.** The chosen scheme
   takes the pick wash in the 1 px pick edge and the pick ink, the others a
   hairline over the glass, and a scheme still loading shows a Solar glyph.
