@@ -67,10 +67,12 @@ end
 -- glass fills and maps its own layer namespace.
 local glass_marker = [[Tokens\.glass|ConnectedPanelSurface|AiPanelSurface|cc\.plateFill|color: root\.bg$]]
 local listing = assert(io.popen("grep -rlE '" .. glass_marker .. "' " .. shell_root .. " --include='*.qml'"))
--- the first-boot Kit hint is its own config (keys-hint), outside the shell tree
+-- the first-boot Kit hint and the pins are their own configs (keys-hint, ryopin),
+-- outside the shell tree; a pin's glass is its action strip
 local namespaces = {
     ["ryoku-sidebar-left"] = "SidebarFrame (Super+Esc)",
     ["ryoku-keys-hint"] = "keys-hint/HintCards.qml",
+    ["ryopin"] = "ryopin/PinCard.qml",
 }
 for path in listing:lines() do
     local file = assert(io.open(path))

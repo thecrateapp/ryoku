@@ -55,6 +55,25 @@ ShellRoot {
         else relist();
     }
 
+    // The pins run in their own process: read the shell's blur preference so the
+    // crate glass of a pin's action strip turns opaque when blur is off, as it
+    // does in the shell.
+    Binding {
+        target: Tokens
+        property: "glassBlur"
+        value: !effects.lowPowerMode && !effects.disableBlur
+        when: Tokens.controlsCrate
+    }
+    FileView {
+        path: (Quickshell.env("XDG_CONFIG_HOME") || Quickshell.env("HOME") + "/.config") + "/ryoku/performance.json"
+        printErrors: false
+        JsonAdapter {
+            id: effects
+            property bool lowPowerMode: false
+            property bool disableBlur: false
+        }
+    }
+
     Process {
         id: lister
         command: ["sh", "-c", "ls -1 \"$1\"/pin-*.png 2>/dev/null || true", "sh", root.pinsDir]

@@ -1,6 +1,15 @@
 # Changelog: ryoku/shell/
 
 ## Unreleased
+- **Pinned shots draw with the shared kit under crate.** A pin's image sits on
+  an opaque card with the shared 6 px corner and a 1 px line, without the drop
+  shadow. Its actions (edit, copy, copy path, close) are the kit's icon buttons
+  with Solar glyphs on a glass strip that appears above the card's top right on
+  hover, frosted by the crate-glass rule on the `ryopin` layer, so they no
+  longer cover the image; with blur off the strip turns opaque. The stock look
+  is unchanged (`quickshell/ryopin/`, `hyprland/modules/decoration.lua`;
+  `tests/ui/ryopin-kit-probe.sh`, `tests/hyprland-crate-glass.lua`,
+  `tests/visual/surfaces/scenes/ryopin.qml`).
 - **A rice that names no launcher mark gets Ryoku's own.** The bar keeps its
   wordmark and glyph in shell.json and its widget cache, so switching from a
   rice that set them (the Crate rice's CRATE) to one that did not, or restoring

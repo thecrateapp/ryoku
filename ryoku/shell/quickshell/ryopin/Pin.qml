@@ -1,5 +1,4 @@
 import QtQuick
-import QtQuick.Effects
 import Quickshell
 import Quickshell.Wayland
 import Ryoku.Ui.Singletons
@@ -24,8 +23,8 @@ PanelWindow {
     readonly property int screenW: screen ? screen.width : 0
     readonly property int screenH: screen ? screen.height : 0
 
-    readonly property int natW: shot.sourceSize.width
-    readonly property int natH: shot.sourceSize.height
+    readonly property int natW: body.natW
+    readonly property int natH: body.natH
     // Image.status reaches Ready a frame before sourceSize is populated, so the
     // dimensions themselves are the seeding trigger.
     readonly property bool measured: natW > 0 && natH > 0
@@ -38,8 +37,11 @@ PanelWindow {
     onMeasuredChanged: if (measured && !seeded) seedSlot()
     Component.onCompleted: if (measured && !seeded) seedSlot()
 
-    // Transparent room around the card for the drop shadow to spill into.
-    readonly property int gutter: 28
+    // Transparent room around the card: the drop shadow spills into it in stock,
+    // the action strip sits in it under crate.
+    readonly property int gutter: Theme.gutter
+    // a live theme switch changes the gutter: hold the card inside the new one
+    onGutterChanged: if (seeded) reclamp()
 
     property int slotX: 0
     property int slotY: 0
@@ -68,7 +70,7 @@ PanelWindow {
         seeded = true;
     }
 
-    // The surface carries a transparent gutter for the shadow, so the card is
+    // The surface carries a transparent gutter around the card, so the card is
     // held one gutter inside the output or the compositor clips the far edge.
     function onScreen(x, y) {
         return PinLayout.clamp({ x: x, y: y }, { w: pin.frameW, h: pin.frameH },
@@ -99,97 +101,30 @@ PanelWindow {
 
         Keys.onEscapePressed: pin.closeSelf()
 
-        Item {
+        PinCard {
             id: body
             x: pin.gutter
             y: pin.gutter
             width: pin.frameW
             height: pin.frameH
+            path: pin.entry.path || ""
 
-            HoverHandler { id: hoverH }
-
-            MultiEffect {
-                id: shadowFx
-                anchors.fill: frame
-                source: frame
-                shadowEnabled: true
-                shadowColor: Theme.shadow
-                shadowBlur: 1.0
-                shadowVerticalOffset: 8
-                blurMax: 32
-                autoPaddingEnabled: true
+            onGrabbed: pin.forceActiveFocus()
+            onDragged: (dx, dy) => {
+                var c = pin.onScreen(pin.slotX + dx, pin.slotY + dy);
+                pin.slotX = c.x;
+                pin.slotY = c.y;
             }
-
-            Rectangle {
-                id: frame
-                anchors.fill: parent
-                radius: Theme.radius
-                color: Theme.panelSolid
-                border.color: Theme.hair
-                border.width: 1
-
-                Image {
-                    id: shot
-                    anchors.fill: parent
-                    anchors.margins: 6
-                    source: "file://" + pin.entry.path
-                    fillMode: Image.PreserveAspectFit
-                    smooth: true
-                    mipmap: true
-                    onStatusChanged: if (status === Image.Error) console.error("ryopin: cannot load " + pin.entry.path)
-                }
+            onZoomed: (f) => {
+                var s = PinLayout.fitSize(pin.frameW * f, pin.frameH * f, pin.screenW, pin.screenH);
+                pin.frameW = s.w;
+                pin.frameH = s.h;
+                pin.reclamp();
             }
-
-            MouseArea {
-                id: drag
-                anchors.fill: frame
-                hoverEnabled: true
-                acceptedButtons: Qt.LeftButton | Qt.MiddleButton
-                cursorShape: dragging ? Qt.ClosedHandCursor : Qt.OpenHandCursor
-
-                property bool dragging: false
-                property real px: 0
-                property real py: 0
-
-                onPressed: (m) => {
-                    pin.forceActiveFocus();
-                    if (m.button === Qt.MiddleButton) { pin.closeSelf(); return; }
-                    dragging = true;
-                    px = m.x;
-                    py = m.y;
-                }
-                onReleased: dragging = false
-                onPositionChanged: (m) => {
-                    if (!dragging) return;
-                    var c = pin.onScreen(pin.slotX + (m.x - px), pin.slotY + (m.y - py));
-                    pin.slotX = c.x;
-                    pin.slotY = c.y;
-                }
-                onWheel: (w) => {
-                    var f = w.angleDelta.y > 0 ? 1.1 : 0.9;
-                    var s = PinLayout.fitSize(pin.frameW * f, pin.frameH * f, pin.screenW, pin.screenH);
-                    pin.frameW = s.w;
-                    pin.frameH = s.h;
-                    pin.reclamp();
-                }
-            }
-
-            Row {
-                id: strip
-                anchors.top: frame.top
-                anchors.right: frame.right
-                anchors.margins: 8
-                spacing: 4
-                opacity: hoverH.hovered ? 1 : 0
-                visible: opacity > 0.01
-
-                Behavior on opacity { NumberAnimation { duration: Theme.snap } }
-
-                PinButton { glyph: "\u270E"; onClicked: pin.editShot() }
-                PinButton { glyph: "\u29C9"; onClicked: pin.copyShot() }
-                PinButton { glyph: "\u26D3"; onClicked: pin.copyLink() }
-                PinButton { glyph: "\u2715"; onClicked: pin.closeSelf() }
-            }
+            onEditRequested: pin.editShot()
+            onCopyRequested: pin.copyShot()
+            onLinkRequested: pin.copyLink()
+            onCloseRequested: pin.closeSelf()
         }
 
         FrameAnimation {

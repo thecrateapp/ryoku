@@ -24,6 +24,16 @@ Singleton {
     readonly property string ui: Tokens.ui
     readonly property string mono: Tokens.mono
 
-    readonly property int radius: Tokens.radius * 2
+    // a card's corner: twice the token in stock, the shared 6 px under crate
+    readonly property int radius: Tokens.controlsCrate ? Tokens.radius : Tokens.radius * 2
     readonly property int snap: Tokens.snap
+
+    // Under crate the action strip is a glass plate in the gutter above the card:
+    // its buttons, the plate's padding and the gap down to the card.
+    readonly property int actionSize: Tokens.s6
+    readonly property int stripPad: 2
+    readonly property int stripGap: Tokens.s1
+    // the transparent room around the card: the drop shadow's spill in stock,
+    // the strip plus a gap from the output's edge under crate
+    readonly property int gutter: Tokens.controlsCrate ? actionSize + stripPad * 2 + stripGap * 2 : 28
 }
