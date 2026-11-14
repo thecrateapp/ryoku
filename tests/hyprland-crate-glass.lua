@@ -92,7 +92,7 @@ local namespaces = {
     ["ryoku-media-browser-hs"] = "qsbar/panels/MediaBrowserHearthstoneView.qml",
     ["ryoku-media-carousel"] = "qsbar/panels/MediaBrowserCarouselView.qml",
     -- the Shima dock lives in inir, outside the shell tree: IrisDockSurface maps
-    -- the layer and IrisDock draws the glass (its name label and app menu)
+    -- the layer and IrisDock draws the glass (body, name label, app menu)
     ["ryoku-dock-shima"] = "inir/modules/iris/dock/IrisDock.qml",
     -- the Stage editor's chrome is a stage config layer, outside the shell tree;
     -- its glass is drawn in EditModeChromeContent, EditDrawerPlate and the menus
@@ -127,18 +127,17 @@ for _, rule in ipairs(crate) do
     end
 end
 
--- The Shima dock has no panel under crate: its icons' soft shadow (under 45 %)
--- must not frost, its label and menu glass (68 %) must.
-local dock_rule = false
+-- The Shima dock's body, name label and menu are the glass in one full-output
+-- layer: its own rule must frost them with the glass recipe (ignore_alpha of
+-- the shared rule), which keeps the frost off the clear area around them.
+local shared, dock_alpha
 for _, rule in ipairs(crate) do
-    if rule.name and rule.name:match("^crate%-glass") and rule.blur
-        and matches(rule.match.namespace, "ryoku-dock-shima") then
-        dock_rule = true
-        assert(rule.ignore_alpha >= 0.45 and rule.ignore_alpha < 0.68,
-            rule.name .. " frosts the Shima dock's empty area or icon shadows (ignore_alpha " .. rule.ignore_alpha .. ")")
-    end
+    if rule.name == "crate-glass-blur" then shared = rule.ignore_alpha end
+    if rule.name == "crate-glass-blur-dock-shima" and rule.blur then dock_alpha = rule.ignore_alpha end
 end
-assert(dock_rule, "no crate-glass rule frosts the Shima dock's label and menu")
+assert(dock_alpha, "no crate-glass rule of its own frosts the Shima dock")
+assert(dock_alpha == shared,
+    "the Shima dock's frost must follow the glass recipe (ignore_alpha " .. dock_alpha .. ", glass " .. shared .. ")")
 
 -- Blur off (power saver, disableBlur): the rules stay but never frost, and the
 -- shell turns the glass opaque to match.

@@ -185,17 +185,15 @@ if crate_glass() then
     blur         = not no_blur,
     ignore_alpha = 0.05,
   })
-  -- The Shima dock's full-output layer (ryoku-dock-shima) has no panel under
-  -- crate: its icons float with a soft shadow that peaks under 45 %, and only
-  -- its name label and app menu are the glass (68 %). ignore_alpha between the
-  -- two frosts the label and the menu and never the empty dock area or a halo
-  -- around an icon (the icons themselves are opaque, so blur under them is never
-  -- seen).
+  -- The Shima dock's full-output layer (ryoku-dock-shima): under crate its
+  -- body, name label and app menu are the glass, the rest of the output clear.
+  -- The glass recipe's ignore_alpha frosts each where it draws and never the
+  -- clear area around them.
   hl.layer_rule({
     name         = "crate-glass-blur-dock-shima",
     match        = { namespace = "^ryoku-dock-shima$" },
     blur         = not no_blur,
-    ignore_alpha = 0.5,
+    ignore_alpha = 0.05,
   })
   -- The Game Bar is one full-output overlay over a game: its strip and cards are
   -- the glass, and while the bar is open a black scrim dims the rest (Hub ->

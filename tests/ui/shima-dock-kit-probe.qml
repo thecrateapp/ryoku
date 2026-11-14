@@ -7,10 +7,11 @@ import inir.modules.iris.style
 import inir.modules.iris.dock as ShimaDock
 
 // The Shima dock, standing alone as it does under the QS Bar, in both looks.
-// Under crate the dock itself has no panel: no body fill or line, no plate
-// behind an icon (lit or not) and no separator line, only the app icons (with a
-// soft shadow for any wallpaper) and their running marks in the mark. Its name
-// label and its menu are the one glass with a 1 px line at the shared corner,
+// Under crate the dock is a minimal glass: the body is the one glass at the
+// shared corner with no edge, tight around the icons, with no plate behind an
+// icon (lit or not), no separator line and no icon shadow; the running marks
+// carry the mark. Its name label and its menu are the one glass with a 1 px
+// line at the shared corner,
 // and the app menu and the windows sheet draw kit captions, Solar glyphs, kit
 // IconButtons and the pick wash and edge on the focused window. Stock keeps
 // every iRiS role it had: its hover plates and separator, the body left to a
@@ -43,12 +44,13 @@ ShellRoot {
         for (const child of item.children) all(child, name, out);
         return out;
     }
-    // Everything under the dock body that paints a fill or a line, except the
-    // running marks and the badge (which carry the mark): under crate, nothing.
+    // Everything under the dock body that paints a fill or a line, except its
+    // glass, the running marks and the badge (which carry the mark): under
+    // crate, nothing else.
     function paint(item, out) {
         if (!item || !item.visible || item.width <= 0 || item.height <= 0) return out;
         const name = item.objectName;
-        if (name === "shimaRunMark" || name === "shimaCrateBadge") return out;
+        if (name === "shimaRunMark" || name === "shimaCrateBadge" || name === "shimaDockGlass") return out;
         const fills = item.color !== undefined && item.border !== undefined
             && (item.color.a > 0.001 || (item.border.width > 0 && item.border.color.a > 0.001));
         if (fills) out.push((name || String(item)) + " " + item.color);
@@ -101,9 +103,14 @@ ShellRoot {
         check(dock.crate === crate, "the dock's crate switch follows the theme");
         const body = find(dock, "shimaDockBody");
         check(body !== null, "the dock body is found");
+        const glass = find(dock, "shimaDockGlass");
+        check(glass !== null && glass.visible === crate, "the dock draws its own glass only under crate");
         if (crate) {
+            check(same(glass.color, Tokens.glass), "the dock body is the one glass");
+            check(glass.border.width === 0, "the dock body has no edge, got " + glass.border.width);
+            check(glass.radius === Tokens.radius, "the dock body's corner, got " + glass.radius);
             const fills = paint(body, []);
-            check(fills.length === 0, "nothing fills or lines the dock under crate: " + fills.join(", "));
+            check(fills.length === 0, "nothing but the glass fills or lines the dock under crate: " + fills.join(", "));
         }
 
         const plates = all(dock, "shimaHoverPlate");
@@ -122,11 +129,19 @@ ShellRoot {
 
         const icons = all(dock, "shimaAppIcon");
         check(icons.length >= 3, "an icon per pinned app, got " + icons.length);
-        const shaders = dock.GraphicsInfo.api !== GraphicsInfo.Software;
-        check(dock.floatShadows === (crate && shaders), "the float shadow follows crate and a shader-capable scene graph");
         for (const icon of icons)
-            check(icon.layer.enabled === dock.floatShadows, "an app icon casts its soft shadow only under crate");
-        check(dock.iconShadow.a <= 0.45, "the icon shadow stays under the blur rule's ignore_alpha");
+            check(!icon.layer.enabled, "an app icon casts no shadow on the glass");
+        if (crate) {
+            // tight: the kit's 8 px gap between every icon and the glass's edge
+            const at = icons[0].mapToItem(body, 0, 0);
+            const across = body.height - icons[0].height;
+            check(Math.abs(at.y - Tokens.s2) <= 1 && Math.abs(across - 2 * Tokens.s2) <= 1,
+                "the glass holds the icons 8 px from its long edges (top " + at.y + ", across " + across + ")");
+            // the first slot (the launcher here) centres an icon-sized glyph
+            const slot = all(dock, "shimaHoverPlate").map(p => p.parent).filter(shown)[0];
+            const first = slot.mapToItem(body, slot.width / 2, 0).x - icons[0].width / 2;
+            check(Math.abs(first - Tokens.s2) <= 1, "the glass holds the icons 8 px from its ends (" + first + ")");
+        }
 
         const marks = all(dock, "shimaRunMark").filter(shown);
         check(marks.length === 3, "a mark per running window, got " + marks.length);

@@ -1,6 +1,16 @@
 # Changelog: ryoku/shell/
 
 ## Unreleased
+- **The Shima dock sits on a minimal glass under crate.** Floating with no
+  panel, its white line icons were lost over a light wallpaper or window. The
+  dock's body is the one glass again, frosted by its own `ryoku-dock-shima`
+  rule with the glass recipe (it frosts the body, the name label and the menu,
+  never the clear area around them), but minimal: no edge, the 6 px corner, and
+  8 px between the glass and the icons. Icons still have no plate and the
+  separator no line; hover lifts an icon 3 px. The icon shadow is gone, the
+  glass makes it unnecessary. The stock look and the iRiS bar are unchanged
+  (`inir/modules/iris/dock/IrisDock.qml`, `hyprland/modules/decoration.lua`;
+  `tests/ui/shima-dock-kit-probe.sh`, `tests/hyprland-crate-glass.lua`).
 - **The media panel's output glyph matches the bar's audio icon.** Under
   crate the now-playing card drew headphones or a speaker from Audio.nodeIcon,
   so a laptop speaker, an HDMI monitor or Bluetooth headphones could read

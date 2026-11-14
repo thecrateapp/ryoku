@@ -1,7 +1,6 @@
 pragma ComponentBehavior: Bound
 
 import QtQuick
-import QtQuick.Effects
 import QtQuick.Layouts
 import Quickshell
 import Quickshell.Wayland
@@ -37,29 +36,10 @@ Item {
     function crateDot(urgent: bool, lead: bool, appFocused: bool): color {
         return urgent ? Ui.Tokens.alert : lead || appFocused ? Ui.Tokens.mark : Ui.Tokens.markHover
     }
-    // Under crate the dock has no panel: its icons, the launcher glyph and the
-    // running marks float on the wallpaper with a soft shadow in the darker of
-    // the palette's ink and paper. It peaks under 45 %, below the 0.5 alpha the
-    // ryoku-dock-shima blur rule ignores, so only the glass of the label and the
-    // menu is frosted, never a halo around an icon.
-    // The shadow is a MultiEffect, a shader: a software scene graph draws no
-    // shader at all, and would lose the icons with it, so there they go bare.
-    readonly property bool floatShadows: root.crate && root.GraphicsInfo.api !== GraphicsInfo.Software
-    readonly property color iconShadow: {
-        const dark = Ui.Tokens.light ? Ui.Tokens.ink : Ui.Tokens.paper
-        return Qt.rgba(dark.r, dark.g, dark.b, 0.44)
-    }
-    Component {
-        id: floatShadow
-        MultiEffect {
-            shadowEnabled: true
-            shadowColor: root.iconShadow
-            shadowBlur: 0.6
-            shadowVerticalOffset: 1
-            blurMax: 12
-            autoPaddingEnabled: true
-        }
-    }
+    // Under crate the dock is a minimal glass: the one glass, no edge, held the
+    // kit's gap (Tokens.s2) from every icon. An icon sits 7 d inside its slot
+    // across the dock and 5 d along it, so the slots start that much closer.
+    readonly property real crateInset: Ui.Tokens.s2
     anchors.fill: parent
     readonly property bool showLauncher: Ryoku.Dock.designCfg("shima", "launcher", true)
     readonly property var options: {
@@ -344,7 +324,7 @@ Item {
                 }
             }
             readonly property bool menuOpen: window.menuApp !== null
-            readonly property real dockHeight: root.iconSize + 18 * root.d
+            readonly property real dockHeight: root.iconSize + (root.crate ? 2 * root.crateInset : 18 * root.d)
             // Notch: the body rests on the band's inner line and melts into it.
             // Plain: it floats, keeping its own air above the band. Under crate
             // there is no band to melt into: the glass floats, as the Ryoku dock does.
@@ -586,8 +566,10 @@ Item {
                 id: dock
                 // The ends give the first and last hover plate room to sit concentric with the Dock's end curve:
                 // a plate of radius r starts R − r from an end of radius R (nothing changes on a tight Dock).
-                readonly property real padding: Math.max(8 * root.d,
-                    dock.radius - IrisStyle.iconRadius(root.plateSize) - (root.slotWidth - root.plateSize) / 2)
+                readonly property real padding: root.crate ? root.crateInset - (root.slotWidth - root.iconSize) / 2
+                    : Math.max(8 * root.d, dock.radius - IrisStyle.iconRadius(root.plateSize) - (root.slotWidth - root.plateSize) / 2)
+                // across the dock: the slots' inset, so an icon (7 d inside its slot) sits crateInset from the edge
+                readonly property real across: root.crate ? root.crateInset - 7 * root.d : Math.round(4 * root.d)
                 readonly property real baseWidth: (window.baseCenters.length > 0
                     ? window.baseCenters[window.baseCenters.length - 1] + root.slotWidth / 2 : 0) + dock.padding * 2
                 width: root.vertical ? window.dockHeight : Math.min(window.width - 32, appRow.implicitWidth + dock.padding * 2)
@@ -602,17 +584,26 @@ Item {
                 quiet: true
                 opacity: window.revealed || window.edgeOffset > -window.dockHeight ? 1 : 0
 
-                // crate: no panel of its own (no fill, no line); the icons and
-                // their marks float where the chassis would paint a body.
                 objectName: "shimaDockBody"
+                // crate: the body is the one glass (frosted by the ryoku-dock-shima
+                // rule), with no edge, where the chassis would paint it.
+                Rectangle {
+                    objectName: "shimaDockGlass"
+                    visible: root.crate
+                    anchors.fill: parent
+                    z: -1
+                    radius: dock.radius
+                    color: Ui.Tokens.glass
+                    border.width: 0
+                }
 
                 Grid {
                     id: appRow
                     columns: root.vertical ? 1 : Math.max(1, root.entries.length + (root.showLauncher ? 1 : 0)
                         + (root.pieces.length > 0 ? root.pieces.length + 1 : 0))
                     flow: root.vertical ? Grid.TopToBottom : Grid.LeftToRight
-                    x: root.vertical ? (root.atLeft ? Math.round(4 * root.d) : parent.width - width - Math.round(4 * root.d)) : dock.padding
-                    y: root.vertical ? dock.padding : (root.atTop ? Math.round(4 * root.d) : parent.height - height - Math.round(4 * root.d))
+                    x: root.vertical ? (root.atLeft ? dock.across : parent.width - width - dock.across) : dock.padding
+                    y: root.vertical ? dock.padding : (root.atTop ? dock.across : parent.height - height - dock.across)
                     spacing: root.slotSpacing
                     move: Transition {
                         enabled: root.slideApp.length > 0 && IrisStyle.motionEnabled
@@ -667,8 +658,6 @@ Item {
                             onContainsMouseChanged: nameLabel.present(containsMouse ? launcherSlot : null, Translation.tr("Applications"))
                             Item {
                                 id: launcherGlyph
-                                layer.enabled: root.floatShadows
-                                layer.effect: floatShadow
                                 x: root.edgeX(parent.width, width, 7 * root.d + (root.iconSize - root.iconSize * 0.9) / 2)
                                 y: root.edgeY(parent.height, height, 7 * root.d + (root.iconSize - root.iconSize * 0.9) / 2)
                                 width: Math.round(root.iconSize * 0.9 * launcherSlot.iconScale * (launcherArea.pressed ? IrisStyle.pressScale(0.92) : 1))
@@ -879,8 +868,6 @@ Item {
                                         objectName: "shimaAppIcon"
                                         // crate: no hover plate, so the icon lifts a little further
                                         property real hoverLift: !root.magnify && appButton.hovered ? (root.crate ? 3 : 2) * root.d : 0
-                                        layer.enabled: root.floatShadows
-                                        layer.effect: floatShadow
                                         Behavior on hoverLift { NumberAnimation { duration: IrisStyle.duration(120); easing.type: IrisStyle.feedbackEasing } }
                                         width: iconSize
                                         height: iconSize
@@ -911,7 +898,6 @@ Item {
                                         layer.enabled: root.magnify
                                         layer.smooth: true
                                         layer.mipmap: true
-                                        layer.effect: root.floatShadows ? floatShadow : null
                                         opacity: appIcon.opacity
                                     }
                                     IrisBubbleGrip {
@@ -978,8 +964,6 @@ Item {
                                 }
                                 Grid {
                                     id: indicators
-                                    layer.enabled: root.floatShadows
-                                    layer.effect: floatShadow
                                     columns: root.vertical ? 1 : Math.max(1, indicators.windows)
                                     readonly property int windows: Math.min(3, entry.app.toplevels?.length ?? 0)
                                     readonly property int focusedIndex: {
