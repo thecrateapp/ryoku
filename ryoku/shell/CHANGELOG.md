@@ -1,6 +1,14 @@
 # Changelog: ryoku/shell/
 
 ## Unreleased
+- **The desktop visualiser draws in the mark under crate.** An unpinned look
+  is one active signal, the kit's mark on every band instead of a
+  wallpaper-lit sweep, and the edge field runs from the accent to the mark
+  through the Beam's tail, the way crate-mark's equalizer draws its curve. A
+  pinned colour or gradient still paints exactly as chosen. The Stage
+  Editor's size and turn handles are popover knobs with a 1 px mark edge,
+  filled with the mark while held, on a hairline stem. The colour fallbacks
+  behind a pinned colour are theme roles (`modules/visualizer`).
 - **A rice that names no launcher mark gets Ryoku's own.** The bar keeps its
   wordmark and glyph in shell.json and its widget cache, so switching from a
   rice that set them (the Crate rice's CRATE) to one that did not, or restoring

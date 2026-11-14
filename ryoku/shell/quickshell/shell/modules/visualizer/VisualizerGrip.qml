@@ -157,6 +157,16 @@ Item {
     readonly property string customInk: String(win.value("color", ""))
     readonly property color guide: /^#[0-9a-fA-F]{6}$/.test(win.customInk)
         ? win.customInk : Ui.Tokens.sun
+    // Under crate the handles are kit chrome rather than the look's ink: popover
+    // knobs with a 1 px mark edge, filled with the mark while held or hovered,
+    // on a hairline stem, as crate-mark draws its equalizer handles.
+    readonly property bool crate: Ui.Tokens.controlsCrate
+    function knob(lit) {
+        if (win.crate)
+            return lit ? Ui.Tokens.mark : Ui.Tokens.popover;
+        return lit ? win.guide : Qt.alpha(win.guide, 0.45);
+    }
+    readonly property color knobEdge: win.crate ? Ui.Tokens.mark : win.guide
 
     property string gesture: ""
     property real tx: 0
@@ -336,12 +346,13 @@ Item {
         // the grip sits on the box's own corner, so it is always beside what it sizes
         Rectangle {
             id: grip
+            objectName: "vizGripSize"
             width: win.handle
             height: win.handle
             radius: Ui.Tokens.radius
-            color: (grab.mode === "size" || grab.over === "size") ? win.guide : Qt.alpha(win.guide, 0.45)
+            color: win.knob(grab.mode === "size" || grab.over === "size")
             border.width: Ui.Tokens.border
-            border.color: win.guide
+            border.color: win.knobEdge
             x: parent.width - width / 2
             y: parent.height - height / 2
         }
@@ -349,20 +360,22 @@ Item {
         // the turn handle stands off the top edge on a stem, so it reads as a lever
         // rather than another corner
         Rectangle {
+            objectName: "vizGripStem"
             width: Ui.Tokens.border
             height: win.handle * 1.6
-            color: Qt.alpha(win.guide, 0.55)
+            color: win.crate ? Ui.Tokens.lineStrong : Qt.alpha(win.guide, 0.55)
             x: parent.width / 2
             y: -height
         }
         Rectangle {
             id: spinner
+            objectName: "vizGripTurn"
             width: win.handle
             height: win.handle
             radius: width / 2
-            color: (grab.mode === "turn" || grab.over === "turn") ? win.guide : Qt.alpha(win.guide, 0.45)
+            color: win.knob(grab.mode === "turn" || grab.over === "turn")
             border.width: Ui.Tokens.border
-            border.color: win.guide
+            border.color: win.knobEdge
             x: parent.width / 2 - width / 2
             y: -win.handle * 1.6 - height / 2
         }

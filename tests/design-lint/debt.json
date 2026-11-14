@@ -1356,9 +1356,6 @@
  "ryoku/shell/quickshell/shell/modules/visualizer/Singletons/Scheme.qml": {
   "hex-colour": 1
  },
- "ryoku/shell/quickshell/shell/modules/visualizer/Singletons/VizItem.qml": {
-  "hex-colour": 4
- },
  "ryoku/shell/quickshell/shell/services/Scheme.qml": {
   "hex-colour": 33
  },

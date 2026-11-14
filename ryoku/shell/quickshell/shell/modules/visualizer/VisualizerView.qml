@@ -1,6 +1,7 @@
 pragma ComponentBehavior: Bound
 import QtQuick
 import Ryoku.Ui
+import Ryoku.Ui.Singletons as Ui
 import "Singletons"
 
 // The desktop spectrum: geometry and colour only. Motion (or AuraMotion for the
@@ -10,6 +11,8 @@ import "Singletons"
 // the look covers, so a spectrum crossing a bright sky and a dark tree stays
 // legible along its whole width. The aura look instead paints a wallpaper-lit
 // triad through AuraField, which has its own palette rather than a ramp.
+// Under crate an unpinned look is one active signal in the kit's mark, the way
+// crate-mark's equalizer draws its curve, rather than a wallpaper-lit sweep.
 Item {
     id: root
 
@@ -102,6 +105,14 @@ Item {
             }
             return pinned;
         }
+        // Crate draws one active signal: the mark on every stop, no bass->treble
+        // walk and no relight against the picture.
+        if (Ui.Tokens.controlsCrate) {
+            var marked = [];
+            for (var m = 0; m < 8; m++)
+                marked.push(Ui.Tokens.mark);
+            return marked;
+        }
         var out = [];
         for (var i = 0; i < 8; i++) {
             var t = i / 7;
@@ -156,6 +167,10 @@ Item {
             var base = root.cfg.customColor;
             return [Qt.darker(base, 1.25), base, Qt.lighter(base, 1.25)];
         }
+        // Crate walks the field from the accent to the mark through the Beam's
+        // own tail, so the edge glows in the one signal colour.
+        if (Ui.Tokens.controlsCrate)
+            return [Ui.Tokens.sun, Ui.Tokens.beamTail, Ui.Tokens.mark];
         var l = root.fieldLstar;
         return [Scheme.colorAt(0.12, l, root.fieldSide),
                 Scheme.colorAt(0.50, l, root.fieldSide),

@@ -1,5 +1,6 @@
 pragma ComponentBehavior: Bound
 import QtQuick
+import Ryoku.Ui.Singletons as Ui
 
 // One visualiser's settings, normalised. A plain JSON object goes in as `data`
 // (the primary's flat keys, or one entry of the extras list); reactive,
@@ -66,8 +67,10 @@ QtObject {
     readonly property string rawColor2: "" + item.val("color2", "")
     readonly property bool hasCustomColor: /^#[0-9a-fA-F]{6}$/.test(item.rawColor)
     readonly property bool hasColor2: /^#[0-9a-fA-F]{6}$/.test(item.rawColor2)
-    readonly property color customColor: item.hasCustomColor ? item.rawColor : "#a7c080"
-    readonly property color color2Value: item.hasColor2 ? item.rawColor2 : "#7fae52"
+    // The fallbacks are theme roles; every reader checks the has* flag first,
+    // so they only stand in for a value that is never painted.
+    readonly property color customColor: item.hasCustomColor ? item.rawColor : Ui.Tokens.sun
+    readonly property color color2Value: item.hasColor2 ? item.rawColor2 : Ui.Tokens.sunHi
     readonly property bool gradient: item.val("gradient", false) === true
         && item.hasCustomColor && item.hasColor2
 
@@ -122,6 +125,6 @@ QtObject {
     readonly property bool hasAuraTriad: /^#[0-9a-fA-F]{6}$/.test(item.rawColor)
         && /^#[0-9a-fA-F]{6}$/.test(item.rawAuraColor2)
         && /^#[0-9a-fA-F]{6}$/.test(item.rawAuraColor3)
-    readonly property color auraColor2: /^#[0-9a-fA-F]{6}$/.test(item.rawAuraColor2) ? item.rawAuraColor2 : "#64dbcf"
-    readonly property color auraColor3: /^#[0-9a-fA-F]{6}$/.test(item.rawAuraColor3) ? item.rawAuraColor3 : "#ffb2cf"
+    readonly property color auraColor2: /^#[0-9a-fA-F]{6}$/.test(item.rawAuraColor2) ? item.rawAuraColor2 : Ui.Tokens.beamTail
+    readonly property color auraColor3: /^#[0-9a-fA-F]{6}$/.test(item.rawAuraColor3) ? item.rawAuraColor3 : Ui.Tokens.sunHi
 }
