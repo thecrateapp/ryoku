@@ -80,6 +80,14 @@ local namespaces = {
     -- the hero launcher's layers host the glass drawn in LauncherCard and WindowTile
     ["launcher"] = "modules/launcher/variants/hero/LauncherCard.qml",
     ["launcher-window-rail"] = "modules/launcher/variants/hero/WindowTile.qml",
+    -- the QS Bar's pickers host their glass in a view (ImageCarousel*View,
+    -- MediaBrowser*View), one layer per pickerStyle
+    ["ryoku-image-carousel"] = "qsbar/panels/ImageCarouselPanelView.qml",
+    ["ryoku-image-carousel-hs"] = "qsbar/panels/ImageCarouselHearthstoneView.qml",
+    ["ryoku-image-carousel-cr"] = "qsbar/panels/ImageCarouselCarouselView.qml",
+    ["ryoku-media-browser"] = "qsbar/panels/MediaBrowserPanelView.qml",
+    ["ryoku-media-browser-hs"] = "qsbar/panels/MediaBrowserHearthstoneView.qml",
+    ["ryoku-media-carousel"] = "qsbar/panels/MediaBrowserCarouselView.qml",
 }
 for path in listing:lines() do
     local file = assert(io.open(path))

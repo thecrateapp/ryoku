@@ -1,6 +1,23 @@
 # Changelog: ryoku/shell/
 
 ## Unreleased
+- **The QS Bar's image and media pickers draw with the kit under crate.** In
+  every pickerStyle (tanzaku, hearthstone, carousel) the theme/wallpaper and
+  screenshot/video pickers keep their layout (the strips, the fanned cards, the
+  skewed slices) and take their chrome from Tokens and the kit: the tanzaku and
+  hearthstone scrims are the one glass, frosted by the crate-glass rule on the
+  six picker layers; the carousel keeps no scrim and sets its caption on a glass
+  plate; strips, cards and slices sit in popover at the 6 px corner in a
+  hairline, the focused one in the 1 px pick edge, the theme in use marked with
+  the kit's picked dot; the sumi-e brush stroke under the focus does not show.
+  One caption (CratePickerCaption) serves all six: the name, the theme's
+  swatches, a Current label and an outlined "by author" Btn, the typed filter
+  as a read-only kit Field with the search glyph, and the key hint or the
+  delete prompt as tracked labels. Each picker's drawing moves into a view Item
+  its layer window hosts, so `tests/ui/qsbar-pickers-probe.sh` and the
+  qsbar-pickers scene load it offscreen. The stock look is unchanged
+  (`modules/bar/barstyles/qsbar/panels/`, `hyprland/modules/decoration.lua`;
+  `tests/hyprland-crate-glass.lua`).
 - **Pinned shots draw with the shared kit under crate.** A pin's image sits on
   an opaque card with the shared 6 px corner and a 1 px line, without the drop
   shadow. Its actions (edit, copy, copy path, close) are the kit's icon buttons
