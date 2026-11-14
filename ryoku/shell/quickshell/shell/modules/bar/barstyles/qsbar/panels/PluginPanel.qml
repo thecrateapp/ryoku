@@ -63,7 +63,9 @@ PanelWindow {
         color: "transparent"
         border.color: root.panelBorder
         border.width: 0
-        clip: true
+        // no clip here: the surface draws its caret above the card's top edge
+        // (below it on a bottom bar), so a clipped card shows the notch in the
+        // outline without the caret. Only the plugin's content is clipped.
         PillShadow { theme: root }
         ConnectedPanelSurface {
             root: pp.root
@@ -87,23 +89,30 @@ PanelWindow {
         }
         MouseArea { anchors.fill: parent; onClicked: {} }
 
-        // the plugin's panel, at full density, as wide as the card's inside.
-        PluginObjectSlot {
-            id: content
-            fill: true
-            anchors.left: parent.left
-            anchors.right: parent.right
-            anchors.top: parent.top
-            anchors.margins: card.inset
-            height: item ? item.implicitHeight : 0
-            source: (pp.entry && pp.panelRel !== "")
-                ? "file://" + pp.entry.dir + "/" + pp.panelRel + pp.versionQuery : ""
-            configure: (c) => {
-                c.pluginApi = Qt.binding(() => pp.shownApi)
-                if ("density" in c) c.density = "full"
-                if ("s" in c) c.s = 1
-                if ("widthBudget" in c) c.widthBudget = pp.cardW - 24
-                if ("active" in c) c.active = true
+        // the plugin's panel, at full density, as wide as the card's inside;
+        // clipped to the card when it is taller than the screen allows.
+        Item {
+            objectName: "pluginPanelContentClip"
+            anchors.fill: parent
+            clip: true
+
+            PluginObjectSlot {
+                id: content
+                fill: true
+                anchors.left: parent.left
+                anchors.right: parent.right
+                anchors.top: parent.top
+                anchors.margins: card.inset
+                height: item ? item.implicitHeight : 0
+                source: (pp.entry && pp.panelRel !== "")
+                    ? "file://" + pp.entry.dir + "/" + pp.panelRel + pp.versionQuery : ""
+                configure: (c) => {
+                    c.pluginApi = Qt.binding(() => pp.shownApi)
+                    if ("density" in c) c.density = "full"
+                    if ("s" in c) c.s = 1
+                    if ("widthBudget" in c) c.widthBudget = pp.cardW - 24
+                    if ("active" in c) c.active = true
+                }
             }
         }
     }

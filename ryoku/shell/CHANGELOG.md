@@ -1,6 +1,12 @@
 # Changelog: ryoku/shell/
 
 ## Unreleased
+- **A bar plugin's panel shows its caret.** The plugin panel clipped its card,
+  which cut off the caret the connected surface draws outside the card and left
+  only the notch in the outline; only the plugin's content is clipped now. A
+  new check (`tests/ui/panel-caret-clip.sh`) fails when any QS Bar panel puts
+  the connected surface inside a clipping card
+  (`modules/bar/barstyles/qsbar/panels/PluginPanel.qml`).
 - **Plugins draw with the shared kit.** Ryoku.PluginKit re-exports the kit's
   Beam, Chip, IconButton and TrackLabel, so a plugin (which may import only the
   plugin kit) uses the shell's own controls. Under crate the plugin Theme takes
