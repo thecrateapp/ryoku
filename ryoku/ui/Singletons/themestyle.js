@@ -14,6 +14,7 @@ function readStyle(st) {
         compact: false,
         controlsCrate: false,
         mono: "",
+        coverMark: "",
         flags: { navCaps: false, accentMarks: false, focusAccent: false, labelAccent: false, selectFill: true }
     };
     if (!s.styled)
@@ -32,6 +33,10 @@ function readStyle(st) {
     s.controlsCrate = st.controls === "crate";
     if (typeof st.mono === "string" && st.mono.length)
         s.mono = st.mono;
+    // the reload cover's mark: an absolute path the shell resolved inside the
+    // theme's own directory; anything else is ignored
+    if (typeof st.coverMark === "string" && st.coverMark.startsWith("/"))
+        s.coverMark = st.coverMark;
     for (const k in s.flags)
         if (typeof st[k] === "boolean")
             s.flags[k] = st[k];

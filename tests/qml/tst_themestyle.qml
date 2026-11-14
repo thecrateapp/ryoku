@@ -58,6 +58,14 @@ TestCase {
         compare(ThemeStyle.readStyle({ mono: 7 }).mono, "")
     }
 
+    function test_cover_mark_is_an_absolute_path_only() {
+        compare(ThemeStyle.readStyle(undefined).coverMark, "")
+        compare(ThemeStyle.readStyle({ coverMark: "/data/ryoku/themes/crate/cover-mark.svg" }).coverMark,
+                "/data/ryoku/themes/crate/cover-mark.svg")
+        compare(ThemeStyle.readStyle({ coverMark: "cover-mark.svg" }).coverMark, "")
+        compare(ThemeStyle.readStyle({ coverMark: 5 }).coverMark, "")
+    }
+
     function test_out_of_range_line_alpha_is_ignored() {
         compare(ThemeStyle.readStyle({ lineAlpha: 0 }).lineAlpha, 0.26)
         compare(ThemeStyle.readStyle({ lineAlpha: 3 }).lineAlpha, 0.26)

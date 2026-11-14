@@ -475,3 +475,63 @@ func TestThemeStyleValuesKeepsMonoFace(t *testing.T) {
 		}
 	}
 }
+
+// coverMark names an image inside the theme's own directory; the theme style
+// carries it as an absolute path the reload cover can load, and anything that
+// is not a plain .svg or .png file in that directory sets nothing.
+func TestUserThemeCoverMarkResolvesInsideTheThemeDir(t *testing.T) {
+	data := t.TempDir()
+	t.Setenv("XDG_DATA_HOME", data)
+	t.Setenv("XDG_CONFIG_HOME", t.TempDir())
+	dir := filepath.Join(data, "ryoku", "themes", "crate")
+	if err := os.MkdirAll(filepath.Join(dir, "sub", "folder.svg"), 0o755); err != nil {
+		t.Fatal(err)
+	}
+	for _, name := range []string{"cover-mark.svg", "mark.png", ".hidden.svg", "notes.txt", filepath.Join("sub", "inner.svg")} {
+		if err := os.WriteFile(filepath.Join(dir, name), []byte("<svg/>"), 0o644); err != nil {
+			t.Fatal(err)
+		}
+	}
+	if err := os.WriteFile(filepath.Join(data, "outside.svg"), []byte("<svg/>"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	style := func(mark string) map[string]any {
+		t.Helper()
+		mb, _ := json.Marshal(mark)
+		scheme := `{"dark": {"mPrimary": "#06b6d4", "mSurface": "#0a0a0f", "mOnSurface": "#f1f5f9",
+			"style": {"controls": "crate", "coverMark": ` + string(mb) + `}}}`
+		if err := os.WriteFile(filepath.Join(dir, "scheme.json"), []byte(scheme), 0o644); err != nil {
+			t.Fatal(err)
+		}
+		full := map[string]any{}
+		resolveThemePalette(full, "crate")
+		s, _ := full["themeStyle"].(map[string]any)
+		return s
+	}
+	for mark, want := range map[string]string{
+		"cover-mark.svg":                   filepath.Join(dir, "cover-mark.svg"),
+		" mark.png ":                       filepath.Join(dir, "mark.png"),
+		"missing.svg":                      "",
+		".hidden.svg":                      "",
+		"notes.txt":                        "",
+		"sub/inner.svg":                    "",
+		"sub/folder.svg":                   "",
+		"../../outside.svg":                "",
+		filepath.Join(data, "outside.svg"): "",
+		"":                                 "",
+	} {
+		got, has := style(mark)["coverMark"]
+		if want == "" {
+			if has {
+				t.Errorf("coverMark %q must set nothing, got %v", mark, got)
+			}
+			continue
+		}
+		if got != want {
+			t.Errorf("coverMark %q = %v, want %s", mark, got, want)
+		}
+	}
+	if s := style("cover-mark.svg"); s["controls"] != "crate" {
+		t.Fatalf("coverMark dropped the rest of the style: %v", s)
+	}
+}

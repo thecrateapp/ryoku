@@ -126,6 +126,7 @@ type themeStyleSpec struct {
 	Density       string   `json:"density"`
 	Controls      string   `json:"controls"`
 	Mono          string   `json:"mono"`
+	CoverMark     string   `json:"coverMark"`
 	DisplayWeight *int     `json:"displayWeight"`
 	NavCaps       *bool    `json:"navCaps"`
 	AccentMarks   *bool    `json:"accentMarks"`
@@ -210,6 +211,32 @@ func themeStyleValues(spec *themeStyleSpec) map[string]any {
 	return out
 }
 
+// maxCoverMarkBytes caps the reload-cover mark a theme may ship.
+const maxCoverMarkBytes = 1 << 20
+
+// themeCoverMark resolves a style's coverMark, an image the theme ships for the
+// reload cover, to an absolute path inside the theme's own directory. Only a
+// plain, visible .svg or .png file directly in dir qualifies; a path, a hidden
+// name, another type, a directory, a missing or an oversized file gives "".
+func themeCoverMark(dir string, spec *themeStyleSpec) string {
+	if spec == nil {
+		return ""
+	}
+	name := strings.TrimSpace(spec.CoverMark)
+	if name == "" || strings.HasPrefix(name, ".") || filepath.Base(name) != name || strings.ContainsAny(name, "/\\") {
+		return ""
+	}
+	if ext := strings.ToLower(filepath.Ext(name)); ext != ".svg" && ext != ".png" {
+		return ""
+	}
+	path := filepath.Join(dir, name)
+	info, err := os.Lstat(path)
+	if err != nil || !info.Mode().IsRegular() || info.Size() > maxCoverMarkBytes {
+		return ""
+	}
+	return path
+}
+
 // noctaliaScheme is the on-disk scheme.json: a dark and/or light block.
 type noctaliaScheme struct {
 	Dark  *noctaliaColors `json:"dark"`
@@ -280,7 +307,14 @@ func userThemes() []userTheme {
 		if label == "" {
 			label = id
 		}
-		out = append(out, userTheme{ID: id, Label: label, Provider: meta.Provider, Palette: pal, Style: themeStyleValues(block.Style), Terminal: terminalValues(block.Terminal)})
+		style := themeStyleValues(block.Style)
+		if mark := themeCoverMark(dir, block.Style); mark != "" {
+			if style == nil {
+				style = map[string]any{}
+			}
+			style["coverMark"] = mark
+		}
+		out = append(out, userTheme{ID: id, Label: label, Provider: meta.Provider, Palette: pal, Style: style, Terminal: terminalValues(block.Terminal)})
 	}
 	sort.Slice(out, func(i, j int) bool { return out[i].ID < out[j].ID })
 	return out

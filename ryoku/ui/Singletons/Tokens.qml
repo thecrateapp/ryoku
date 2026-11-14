@@ -178,6 +178,9 @@ Singleton {
     // a theme style's controls "crate": the crate-mark geometry for the kit
     // (straight chips, the Beam slider, plateless icon buttons, mono labels)
     property bool controlsCrate: false
+    // the theme's reload-cover mark (themeStyle.coverMark), an absolute image
+    // path inside the theme directory; "" keeps the stock cover logo
+    property string coverMark: ""
     readonly property int fValue: px(compact ? 22 : 26)    // a cell's value
     readonly property int fRow: px(compact ? 13 : 15)      // a row name
     readonly property int fBody: px(compact ? 12 : 14)
@@ -389,6 +392,7 @@ Singleton {
         t.displayWeightSet = style.displayWeightSet;
         t.compact = style.compact;
         t.controlsCrate = style.controlsCrate;
+        t.coverMark = style.coverMark;
         t.navCaps = style.flags.navCaps;
         t.accentMarks = style.flags.accentMarks;
         t.focusAccent = style.flags.focusAccent;
