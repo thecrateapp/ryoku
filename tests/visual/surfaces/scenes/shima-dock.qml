@@ -26,6 +26,9 @@ ShellRoot {
             Rectangle { x: 120; y: 120; width: 320; height: 420; color: Tokens.sun; opacity: 0.55 }
             Rectangle { x: 520; y: 260; width: 360; height: 300; color: Tokens.ink; opacity: 0.35 }
             Rectangle { x: 0; y: 470; width: 1000; height: 8; color: Tokens.sunHi; opacity: 0.6 }
+            // a light patch under the dock's right end: the floating icons and
+            // their marks must read on a light wallpaper as well as a dark one
+            Rectangle { x: 560; y: 500; width: 440; height: 100; color: Tokens.ink; opacity: 0.85 }
 
             ShimaDock.IrisDock {
                 id: dock

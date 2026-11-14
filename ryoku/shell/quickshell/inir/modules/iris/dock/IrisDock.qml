@@ -1,6 +1,7 @@
 pragma ComponentBehavior: Bound
 
 import QtQuick
+import QtQuick.Effects
 import QtQuick.Layouts
 import Quickshell
 import Quickshell.Wayland
@@ -35,6 +36,29 @@ Item {
     // focused app in the mark, another running app in the mark at 40 %.
     function crateDot(urgent: bool, lead: bool, appFocused: bool): color {
         return urgent ? Ui.Tokens.alert : lead || appFocused ? Ui.Tokens.mark : Ui.Tokens.markHover
+    }
+    // Under crate the dock has no panel: its icons, the launcher glyph and the
+    // running marks float on the wallpaper with a soft shadow in the darker of
+    // the palette's ink and paper. It peaks under 45 %, below the 0.5 alpha the
+    // ryoku-dock-shima blur rule ignores, so only the glass of the label and the
+    // menu is frosted, never a halo around an icon.
+    // The shadow is a MultiEffect, a shader: a software scene graph draws no
+    // shader at all, and would lose the icons with it, so there they go bare.
+    readonly property bool floatShadows: root.crate && root.GraphicsInfo.api !== GraphicsInfo.Software
+    readonly property color iconShadow: {
+        const dark = Ui.Tokens.light ? Ui.Tokens.ink : Ui.Tokens.paper
+        return Qt.rgba(dark.r, dark.g, dark.b, 0.44)
+    }
+    Component {
+        id: floatShadow
+        MultiEffect {
+            shadowEnabled: true
+            shadowColor: root.iconShadow
+            shadowBlur: 0.6
+            shadowVerticalOffset: 1
+            blurMax: 12
+            autoPaddingEnabled: true
+        }
     }
     anchors.fill: parent
     readonly property bool showLauncher: Ryoku.Dock.designCfg("shima", "launcher", true)
@@ -578,18 +602,9 @@ Item {
                 quiet: true
                 opacity: window.revealed || window.edgeOffset > -window.dockHeight ? 1 : 0
 
-                // crate: the body is the one glass (blurred by the ryoku-dock-shima
-                // layer rule) with a 1 px line, where the chassis would paint it.
-                Rectangle {
-                    objectName: "shimaDockGlass"
-                    visible: root.crate
-                    anchors.fill: parent
-                    z: -1
-                    radius: dock.radius
-                    color: Ui.Tokens.glass
-                    border.width: 1
-                    border.color: Ui.Tokens.line
-                }
+                // crate: no panel of its own (no fill, no line); the icons and
+                // their marks float where the chassis would paint a body.
+                objectName: "shimaDockBody"
 
                 Grid {
                     id: appRow
@@ -652,6 +667,8 @@ Item {
                             onContainsMouseChanged: nameLabel.present(containsMouse ? launcherSlot : null, Translation.tr("Applications"))
                             Item {
                                 id: launcherGlyph
+                                layer.enabled: root.floatShadows
+                                layer.effect: floatShadow
                                 x: root.edgeX(parent.width, width, 7 * root.d + (root.iconSize - root.iconSize * 0.9) / 2)
                                 y: root.edgeY(parent.height, height, 7 * root.d + (root.iconSize - root.iconSize * 0.9) / 2)
                                 width: Math.round(root.iconSize * 0.9 * launcherSlot.iconScale * (launcherArea.pressed ? IrisStyle.pressScale(0.92) : 1))
@@ -746,13 +763,13 @@ Item {
                             }
 
                             Rectangle {
-                                visible: entry.separator
+                                visible: entry.separator && !root.crate
                                 anchors.centerIn: parent
                                 width: root.vertical ? Math.round(root.iconSize * 0.56) : Math.max(1, Math.round(IrisStyle.density))
                                 height: root.vertical ? Math.max(1, Math.round(IrisStyle.density)) : Math.round(root.iconSize * 0.56)
                                 radius: width / 2
                                 objectName: "shimaSeparator"
-                                color: root.crate ? Ui.Tokens.line : IrisStyle.borderStrong
+                                color: IrisStyle.borderStrong
                             }
 
                             Slot {
@@ -859,7 +876,11 @@ Item {
                                     }
                                     SmartAppIcon {
                                         id: appIcon
-                                        property real hoverLift: !root.magnify && appButton.hovered ? 2 * root.d : 0
+                                        objectName: "shimaAppIcon"
+                                        // crate: no hover plate, so the icon lifts a little further
+                                        property real hoverLift: !root.magnify && appButton.hovered ? (root.crate ? 3 : 2) * root.d : 0
+                                        layer.enabled: root.floatShadows
+                                        layer.effect: floatShadow
                                         Behavior on hoverLift { NumberAnimation { duration: IrisStyle.duration(120); easing.type: IrisStyle.feedbackEasing } }
                                         width: iconSize
                                         height: iconSize
@@ -890,6 +911,7 @@ Item {
                                         layer.enabled: root.magnify
                                         layer.smooth: true
                                         layer.mipmap: true
+                                        layer.effect: root.floatShadows ? floatShadow : null
                                         opacity: appIcon.opacity
                                     }
                                     IrisBubbleGrip {
@@ -956,6 +978,8 @@ Item {
                                 }
                                 Grid {
                                     id: indicators
+                                    layer.enabled: root.floatShadows
+                                    layer.effect: floatShadow
                                     columns: root.vertical ? 1 : Math.max(1, indicators.windows)
                                     readonly property int windows: Math.min(3, entry.app.toplevels?.length ?? 0)
                                     readonly property int focusedIndex: {
@@ -1011,7 +1035,8 @@ Item {
                             width: root.vertical ? Math.round(root.iconSize * 0.56) : Math.max(1, Math.round(IrisStyle.density))
                             height: root.vertical ? Math.max(1, Math.round(IrisStyle.density)) : Math.round(root.iconSize * 0.56)
                             radius: Math.min(width, height) / 2
-                            color: root.crate ? Ui.Tokens.line : IrisStyle.borderStrong
+                            visible: !root.crate
+                            color: IrisStyle.borderStrong
                         }
                     }
 
@@ -1753,14 +1778,14 @@ Item {
         property real lift: 0
         property bool lit: false
         objectName: "shimaHoverPlate"
-        visible: !root.magnify
+        // crate: no plate behind an icon; the icon's lift and press scale answer.
+        visible: !root.magnify && !root.crate
         width: root.plateSize
         height: hoverPlate.width
-        radius: root.crate ? Ui.Tokens.radius : IrisStyle.iconRadius(hoverPlate.width)
+        radius: IrisStyle.iconRadius(hoverPlate.width)
         x: root.edgeX(parent.width, hoverPlate.width, 4 * root.d + hoverPlate.lift)
         y: root.edgeY(parent.height, hoverPlate.height, 4 * root.d + hoverPlate.lift)
-        color: root.crate ? (hoverPlate.lit ? Ui.Tokens.tint10 : ColorUtils.applyAlpha(Ui.Tokens.ink, 0))
-            : hoverPlate.lit ? IrisStyle.fill : ColorUtils.applyAlpha(IrisStyle.text, 0)
+        color: hoverPlate.lit ? IrisStyle.fill : ColorUtils.applyAlpha(IrisStyle.text, 0)
         Behavior on color { ColorAnimation { duration: IrisStyle.duration(120); easing.type: IrisStyle.feedbackEasing } }
     }
 }
