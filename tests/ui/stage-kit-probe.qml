@@ -162,6 +162,11 @@ ShellRoot {
                 id: notice
                 text: "Locked by the theme."
             }
+            Row {
+                spacing: 8
+                EditAddBadge { id: addBadge }
+                EditRemoveBadge { id: removeBadge }
+            }
             EditMenuPageHeader {
                 id: pageHeader
                 title: "Desktop"
@@ -246,6 +251,9 @@ ShellRoot {
             && same(sectionLabel.color, crate ? (Tokens.labelAccent ? Tokens.caption : Tokens.inkSubtle)
                                               : Appearance.colors.colSubtext), "the section caption");
         check(same(notice.color, crate ? Tokens.tint5 : Appearance.colors.colSecondaryContainer), "the notice's fill");
+        check(same(addBadge.color, crate ? Tokens.mark : Appearance.colors.colPrimary)
+            && same(removeBadge.color, crate ? Tokens.alert : Appearance.m3colors.m3error)
+            && addBadge.radius === (crate ? Tokens.radius : 8), "the add and remove badges");
         check(get(pageHeader, "editMenuKitBack").visible === crate
             && get(pageHeader, "editMenuKitAction").visible === crate, "the menu header's ways out are kit IconButtons");
     }
@@ -289,7 +297,9 @@ ShellRoot {
         "bluetooth/DevicesBatteryList1x1Widget.qml", "bluetooth/DevicesBatteryListWidget.qml",
         "bluetooth/BluetoothFillCardsWidget.qml",
         "utility/CpuPillWidget.qml", "utility/DiskPillWidget.qml", "utility/RamPillWidget.qml",
-        "utility/ResourceFillCardsWidget.qml", "utility/ResourceColumnsWidget.qml"
+        "utility/ResourceFillCardsWidget.qml", "utility/ResourceColumnsWidget.qml",
+        // the catalogue panel itself (its plate and header are loaded above)
+        "../../editMode/EditModeDrawer.qml"
     ]
     // A player that can seek, for the media seek line.
     QtObject {

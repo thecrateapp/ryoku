@@ -1,6 +1,11 @@
 # Changelog: ryoku/shell/
 
 ## Unreleased
+- **Edit Mode's badges and catalogue search use the kit under crate.** The add
+  and remove badges on the bar's widgets and the dock's apps take the shared
+  corner, the mark and alert roles and Solar glyphs; the catalogue search's
+  mark is a Solar glyph and its clear the kit IconButton. Stock is unchanged
+  (`quickshell/stage/modules/ii/editMode/`).
 - **Resource widgets' captions follow the theme's type under crate.** The CPU,
   RAM and disk pills and the resource fill cards and columns label their
   readings in the Tokens type roles. Stock is unchanged

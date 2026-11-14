@@ -923,10 +923,21 @@ Item {
                     }
                 }
 
+                // Under crate the field's search mark is the kit's Solar
+                // glyph and its clear the kit's IconButton.
+                Glyph {
+                    anchors.left: parent.left
+                    anchors.leftMargin: Appearance.sizes.space3
+                    anchors.verticalCenter: parent.verticalCenter
+                    visible: root.crate
+                    name: "search"
+                    color: Tokens.inkSubtle
+                }
                 MaterialSymbol {
                     anchors.left: parent.left
                     anchors.leftMargin: Appearance.sizes.space3
                     anchors.verticalCenter: parent.verticalCenter
+                    visible: !root.crate
                     text: "search"
                     iconSize: 18
                     color: Appearance.colors.colSubtext
@@ -937,7 +948,23 @@ Item {
                     anchors.rightMargin: Appearance.sizes.space1
                     anchors.verticalCenter: parent.verticalCenter
                     shown: searchField.text !== ""
-                    sourceComponent: RippleButton {
+                    sourceComponent: root.crate ? kitClear : stockClear
+                }
+                Component {
+                    id: kitClear
+                    IconButton {
+                        implicitWidth: 32
+                        implicitHeight: 32
+                        glyph: "close"
+                        onClicked: {
+                            searchField.text = "";
+                            searchField.forceActiveFocus();
+                        }
+                    }
+                }
+                Component {
+                    id: stockClear
+                    RippleButton {
                         implicitWidth: 26
                         implicitHeight: 26
                         buttonRadius: Appearance.rounding.small
