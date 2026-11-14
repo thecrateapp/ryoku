@@ -144,6 +144,12 @@ const alias = {
   zoom_in: "magnifier-zoom-in", zoom_out_map: "maximize",
   // the wallpaper framing coach and its snap marker
   pan_tool: "move", face: "face-scan-circle", center_focus_weak: "target",
+  // the EasyEffects widget's effect chips
+  auto_fix_high: "magic-wand", compress: "minimize-square", diamond: "stars-minimalistic", door_front: "exit",
+  equalizer: "slider-vertical", expand: "maximize", filter_alt: "filter", grain: "circle-dot-dashed",
+  monitoring: "graph-up", noise_control_off: "soundwave-circle", piano: "music-library",
+  record_voice_over: "microphone-large", spatial_audio: "headphones-round-sound", surround_sound: "speaker",
+  voice_over_off: "microphone-2-off", voice_selection_off: "microphone-2-off",
   // the icons the widget faces draw
   animation: "clapperboard-play", battery_std: "battery-half", bolt: "bolt", bookmark_add: "bookmark-plus",
   calendar_view_week: "calendar-minimalistic", check_box_outline_blank: "stop",

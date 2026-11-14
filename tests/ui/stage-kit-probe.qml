@@ -10,6 +10,7 @@ import stage.modules.common.widgets
 import stage.modules.ii.editMode
 import stage.modules.ii.background.widgets
 import stage.modules.common.draw
+import stage.modules.ii.easyEffects.components
 
 // The Stage editor's chrome in both looks. Under crate: the toolbar, the
 // catalogue panel, the widget and bar menus and the guide card are the one
@@ -72,6 +73,14 @@ ShellRoot {
             x: 600
             y: 640
             symbol: "undo"
+        }
+        // An EasyEffects widget action.
+        EasyEffectsButton {
+            id: eeButton
+            x: 700
+            y: 640
+            symbol: "tune"
+            label: "Edit"
         }
         DrawToolbar {
             id: drawTray
@@ -303,6 +312,11 @@ ShellRoot {
             check(same(plate.color, crate ? Tokens.popover : Tokens.paper), name + "'s fill");
         }
         check(get(framing, "framingDock").radius === (crate ? Tokens.radius : Tokens.radius * 2), "the framing plate's corner");
+        // the EasyEffects widget: one shared corner, Solar glyphs
+        check(EasyEffectsStyle.radiusCard === (crate ? Tokens.radius : Appearance.rounding.verylarge)
+            && EasyEffectsStyle.radiusFull === (crate ? Tokens.radius : Appearance.rounding.full),
+            "the EasyEffects shapes");
+        check(get(eeButton, "easyEffectsButtonGlyph").visible === crate, "an EasyEffects action's glyph is Solar's under crate");
         // the sketch tray
         const tray = get(drawTray, "drawTray");
         check(same(tray.color, crate ? Tokens.popover : Appearance.m3colors.m3surfaceContainer)
@@ -374,7 +388,9 @@ ShellRoot {
         "../../editMode/EditModeDrawer.qml", "../../editMode/EditWallpaperRootPage.qml",
         "../../editMode/EditWallpaperScreenMap.qml", "../../editMode/EditWallpaperFramingOverlay.qml",
         "../../editMode/EditWallpaperPage.qml", "../../editMode/EditStylePresets.qml",
-        "../../overlay/notes/NotesContent.qml", "../../overlay/notes/NotesSketchEditor.qml"
+        "../../overlay/notes/NotesContent.qml", "../../overlay/notes/NotesSketchEditor.qml",
+        "system/EasyEffectsPresetWidget.qml", "../../easyEffects/EasyEffectsEditor.qml",
+        "../../easyEffects/tabs/PresetHero.qml", "../../easyEffects/components/EasyEffectsPill.qml"
     ]
     // A player that can seek, for the media seek line.
     QtObject {

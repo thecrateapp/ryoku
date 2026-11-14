@@ -1,6 +1,12 @@
 # Changelog: ryoku/shell/
 
 ## Unreleased
+- **The EasyEffects widget takes the shared corner and Solar glyphs under
+  crate.** Its panes, cards, rows, fields, chips and pills use the 6 px
+  corner instead of the expressive ladder and the full pill, and its actions
+  and effect chips draw Solar glyphs; the kit gains the stand-ins its effect
+  icons name. Stock is unchanged (`quickshell/stage/modules/ii/easyEffects/`,
+  `ui/tools/`).
 - **The notes widget and its sketch editor use the kit under crate.** The
   note's tabs are the kit Tabs, its hint and copy buttons Solar glyphs, its
   pane and drawing frame a hairline at the 6 px corner. The sketch editor is an
