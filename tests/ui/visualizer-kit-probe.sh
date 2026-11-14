@@ -4,7 +4,8 @@
 # placement grip, on Tokens roles under crate and as before in the stock look.
 # The visualiser's layer window needs a compositor, so the probe loads the Items
 # it hosts (VisualizerView, VisualizerGrip), offscreen, in an isolated session
-# with a cyan palette, so the accent and its highlight differ.
+# with a cyan palette, so the accent and its highlight differ, over a bright
+# wallpaper, so the crate mark has to be re-lit to keep its contrast.
 set -euo pipefail
 here="$(cd "$(dirname "$0")" && pwd)"
 repo="$(cd "$here/../.." && pwd)"
@@ -21,6 +22,8 @@ chmod 700 "$work/runtime"
 echo '{"language":"en"}' >"$work/config/ryoku/shell.json"
 mkdir -p "$work/cache/ryoku"
 echo '{"primary":"#06b6d4","secondary":"#67e8f9","surface":"#0a0a0f","onSurface":"#f1f5f9"}' >"$work/cache/ryoku/colors.json"
+# a bright picture (L* 86, the mark's own lightness), so the relight has to act
+echo '{"lstar":86}' >"$work/cache/ryoku/wallpaper-tone.json"
 ln -s "$repo/ryoku/ui" "$work/mods/Ryoku/Ui"
 ln -s "$build/qml/Ryoku/Blobs" "$work/mods/Ryoku/Blobs"
 for entry in "$repo/ryoku/shell/quickshell/shell"/*; do

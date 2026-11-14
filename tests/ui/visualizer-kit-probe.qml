@@ -8,7 +8,9 @@ import "modules/visualizer/Singletons" as Viz
 // The desktop spectrum's colours and its placement grip in both looks. Under
 // crate the spectrum is one active signal in the mark, as crate-mark's
 // equalizer draws it: the bars ramp holds the mark across every stop and the
-// edge field walks the accent to the mark (sun, beamTail, mark); a pinned
+// edge field walks the accent to the mark (sun, beamTail, mark), each stop
+// re-lit on its own hue against the wallpaper behind it (the fixture's is
+// bright, as light as the mark itself, so the relight has to act); a pinned
 // colour or gradient is still painted exactly as chosen. The grip's handles are
 // popover knobs with a 1 px mark edge, filled with the mark while held, on a
 // hairline stem. The fallbacks behind a pinned colour are Tokens roles in both
@@ -106,17 +108,47 @@ ShellRoot {
             check(same(a[i], b[i]), what + " stop " + i + ": " + Qt.color(a[i]) + ", want " + Qt.color(b[i]));
     }
 
+    // Each stop is its role re-lit: the same hue, moved off the picture's L*
+    // by the relight's separation when the role sat too close to it.
+    function relitList(got, roles, bgL, what) {
+        check(got.length === roles.length, what + ": " + got.length + " stops, want " + roles.length);
+        for (let i = 0; i < roles.length; i++) {
+            const c = Qt.color(got[i]);
+            const r = Qt.color(roles[i]);
+            const clear = Math.abs(Ink.lstar(r) - bgL) >= 18;
+            if (clear) {
+                check(same(c, r), what + " stop " + i + " stands clear and stays " + r + ", got " + c);
+                continue;
+            }
+            check(!same(c, r), what + " stop " + i + " is re-lit off " + r);
+            check(Math.abs(c.hslHue - r.hslHue) < 0.01, what + " stop " + i + " keeps its hue");
+            check(Math.abs(Ink.lstar(c) - bgL) >= 17, what + " stop " + i + " stands clear of the picture, L* "
+                + Ink.lstar(c).toFixed(1) + " on " + bgL);
+        }
+    }
+
     function verify(crate) {
         check(!same(Tokens.sun, Tokens.mark), "the fixture palette keeps the accent and the mark apart");
-        // the bars: one mark signal under crate, the wallpaper-lit sweep in stock
-        const want = crate ? [0, 1, 2, 3, 4, 5, 6, 7].map(() => Tokens.mark) : probe.stockRamp(bars);
-        probe.sameList(bars.ramp, want, "the bars ramp");
-        // the edge field: sun, beamTail, mark under crate; lit from the wallpaper in stock
+        // the bars: one mark signal under crate, re-lit on its own hue so it
+        // stands clear of the bright picture; the wallpaper-lit sweep in stock
         const l = aura.fieldLstar;
         const side = aura.fieldSide;
-        probe.sameList(aura.auraTriad, crate ? [Tokens.sun, Tokens.beamTail, Tokens.mark]
-            : [Viz.Scheme.colorAt(0.12, l, side), Viz.Scheme.colorAt(0.50, l, side), Viz.Scheme.colorAt(0.88, l, side)],
-            "the edge field's triad");
+        check(Math.abs(l - 86) < 0.5 && Math.abs(Ink.lstar(Tokens.mark) - l) < 18,
+            "the fixture wallpaper is bright enough to swallow the mark (L* " + l + ")");
+        if (crate) {
+            probe.relitList(bars.ramp, [0, 1, 2, 3, 4, 5, 6, 7].map(() => Tokens.mark), l, "the bars ramp");
+            for (let i = 1; i < 8; i++)
+                check(same(bars.ramp[i], bars.ramp[0]), "the bars ramp is one colour, stop " + i);
+        } else {
+            probe.sameList(bars.ramp, probe.stockRamp(bars), "the bars ramp");
+        }
+        // the edge field: sun, beamTail, mark under crate, each re-lit; lit
+        // from the wallpaper in stock
+        if (crate)
+            probe.relitList(aura.auraTriad, [Tokens.sun, Tokens.beamTail, Tokens.mark], l, "the edge field's triad");
+        else
+            probe.sameList(aura.auraTriad, [Viz.Scheme.colorAt(0.12, l, side), Viz.Scheme.colorAt(0.50, l, side),
+                Viz.Scheme.colorAt(0.88, l, side)], "the edge field's triad");
         // a pinned colour is the user's: painted exactly as chosen in both looks
         probe.sameList(pinned.ramp, probe.pinnedRamp(Qt.color("#ff8800")), "the pinned ramp");
         const base = Qt.color("#ff8800");

@@ -106,13 +106,9 @@ Item {
             return pinned;
         }
         // Crate draws one active signal: the mark on every stop, no bass->treble
-        // walk and no relight against the picture.
-        if (Ui.Tokens.controlsCrate) {
-            var marked = [];
-            for (var m = 0; m < 8; m++)
-                marked.push(Ui.Tokens.mark);
-            return marked;
-        }
+        // walk, each stop still re-lit against the picture behind its slice so
+        // it keeps its contrast over a bright wallpaper.
+        var crate = Ui.Tokens.controlsCrate;
         var out = [];
         for (var i = 0; i < 8; i++) {
             var t = i / 7;
@@ -120,7 +116,8 @@ Item {
             var l = root.polar ? root.fieldLstar
                 : (field.vertical ? Scheme.lstarAt(root.nx, root.ny + t * root.nh * 0.875, root.nw, root.nh / 8)
                                   : Scheme.lstarAt(root.nx + t * root.nw * 0.875, root.ny, root.nw / 8, root.nh));
-            out.push(Scheme.colorAt(t, l, root.fieldSide));
+            out.push(crate ? Scheme.relit(Ui.Tokens.mark, l, root.fieldSide)
+                           : Scheme.colorAt(t, l, root.fieldSide));
         }
         return out;
     }
@@ -168,10 +165,13 @@ Item {
             return [Qt.darker(base, 1.25), base, Qt.lighter(base, 1.25)];
         }
         // Crate walks the field from the accent to the mark through the Beam's
-        // own tail, so the edge glows in the one signal colour.
-        if (Ui.Tokens.controlsCrate)
-            return [Ui.Tokens.sun, Ui.Tokens.beamTail, Ui.Tokens.mark];
+        // own tail, so the edge glows in the one signal colour, each stop re-lit
+        // against the picture like the bars.
         var l = root.fieldLstar;
+        if (Ui.Tokens.controlsCrate)
+            return [Scheme.relit(Ui.Tokens.sun, l, root.fieldSide),
+                    Scheme.relit(Ui.Tokens.beamTail, l, root.fieldSide),
+                    Scheme.relit(Ui.Tokens.mark, l, root.fieldSide)];
         return [Scheme.colorAt(0.12, l, root.fieldSide),
                 Scheme.colorAt(0.50, l, root.fieldSide),
                 Scheme.colorAt(0.88, l, root.fieldSide)];

@@ -71,6 +71,26 @@ Singleton {
                          Math.max(26, Math.min(90, bgL + dir * root.minSep)));
     }
 
+    // Any one colour re-lit the same way, for the crate look's mark: kept as is
+    // while it stands clear of the picture behind, else moved to the L* that
+    // does on its own hue and saturation. The daemon's tonal ramps follow the
+    // wallpaper, not a named theme, so they would pull the mark off its hue;
+    // HSL lightness is not perceptual, so the L* target is found by bisection.
+    function relit(c, bgL, dir) {
+        if (Math.abs(Ui.Ink.lstar(c) - bgL) >= root.minSep)
+            return c;
+        var want = Math.max(26, Math.min(90, bgL + dir * root.minSep));
+        var lo = 0, hi = 1;
+        for (var k = 0; k < 16; k++) {
+            var mid = (lo + hi) / 2;
+            if (Ui.Ink.lstar(Qt.hsla(c.hslHue, c.hslSaturation, mid, 1)) < want)
+                lo = mid;
+            else
+                hi = mid;
+        }
+        return Qt.hsla(c.hslHue, c.hslSaturation, (lo + hi) / 2, 1);
+    }
+
     // A narrow walk either side of that colour: bass sits deeper than treble
     // without the sweep leaving the hue.
     function colorAt(t, bgL, dir) {
