@@ -120,7 +120,9 @@ PanelWindow {
         active: cover.backingWindowVisible
         forceDefault: cover.phase === "failed"
         themeMark: Tokens.controlsCrate ? Tokens.coverMark : ""
-        markTint: Tokens.ink
+        markEffects: Tokens.controlsCrate
+        markMotion: !Tokens.reduceMotion
+        markGlow: Tokens.sunHi
         opacity: cover.mediaOpacity
         scale: opacity < 1 ? 0.94 + opacity * 0.06 : 1
     }

@@ -4,14 +4,18 @@ import Ryoku.Ui.Singletons
 import "reload-cover" as Reload
 
 // The reload cover in both looks. Under a theme with controls "crate" and a
-// coverMark, the media draws the theme's mark at emblem size (96 px) in the
-// theme's ink, in place of Ryoku's wordmark, failure included; the status is
+// coverMark, the media draws the theme's mark as shipped (its own colours) at
+// emblem size (96 px), in place of Ryoku's wordmark, failure included, with
+// the Crate site's treatment: a breathing glow in the theme's accentHi, a sheen
+// sweep and a soft aura; under reduced motion the glow holds still and the
+// sheen goes. The status is
 // the kit's tracked label with its Japanese gloss (再読込, 起動中, 失敗), an
 // indeterminate Beam only while the cover holds, and the failure line in the
 // theme's error role. Without the style the cover is Ryoku's, as before.
 ShellRoot {
     id: probe
-    readonly property bool wantCrate: Quickshell.env("PROBE_LOOK") === "crate"
+    readonly property string look: Quickshell.env("PROBE_LOOK")
+    readonly property bool wantCrate: look === "crate" || look === "crate-still"
     readonly property string fixture: Quickshell.env("PROBE_MARK")
 
     Item {
@@ -22,7 +26,9 @@ ShellRoot {
             anchors.fill: parent
             descriptor: ({ path: "", name: "", kind: "default", bytes: 0 })
             themeMark: Tokens.controlsCrate ? Tokens.coverMark : ""
-            markTint: Tokens.ink
+            markEffects: Tokens.controlsCrate
+            markMotion: !Tokens.reduceMotion
+            markGlow: Tokens.sunHi
         }
         Reload.CoverStatus { id: reload; anchors.fill: parent; mode: "reload"; phase: "hold"; logoHeight: media.defaultLogoHeight }
         Reload.CoverStatus { id: closing; anchors.fill: parent; mode: "reload"; phase: "closing"; logoHeight: media.defaultLogoHeight }
@@ -51,6 +57,16 @@ ShellRoot {
         if (!mark || mark.status !== Image.Ready || !mark.parent.visible) return fail("theme mark not shown");
         if (mark.height !== 96 || Math.abs(mark.width - 80) > 1) return fail("theme mark " + mark.width + "x" + mark.height + ", want 80x96");
         if (part(media, "wordmark").visible) return fail("Ryoku wordmark still shown");
+        if (part(media, "markTint")) return fail("the theme's mark is tinted, not drawn as shipped");
+        const glow = part(media, "markGlow");
+        if (!glow || !glow.shadowEnabled || !Qt.colorEqual(Qt.rgba(glow.shadowColor.r, glow.shadowColor.g, glow.shadowColor.b, 1), Tokens.sunHi))
+            return fail("no glow in accentHi");
+        if (!part(media, "markAura")) return fail("no aura");
+        const still = probe.look === "crate-still";
+        if (!Tokens.reduceMotion !== !still) return fail("reduceMotion " + Tokens.reduceMotion);
+        if (part(media, "markBox").pulsing === still) return fail("glow pulse running=" + part(media, "markBox").pulsing);
+        const sheen = part(media, "markSheen");
+        if (still ? !!sheen : !(sheen && sheen.visible)) return fail("sheen " + (sheen ? sheen.visible : "absent"));
         media.forceDefault = true;
         if (!mark.parent.visible) return fail("a failure brings Ryoku's wordmark back");
         media.forceDefault = false;
@@ -74,6 +90,7 @@ ShellRoot {
     function checkStock() {
         if (Tokens.controlsCrate) return fail("stock run reads a crate style");
         if (part(media, "themeMark")) return fail("stock cover draws a theme mark");
+        if (part(media, "markGlow") || part(media, "markSheen")) return fail("stock cover has the crate treatment");
         if (!part(media, "wordmark").visible) return fail("stock wordmark hidden");
         const label = part(reload, "coverLabel");
         if (!Qt.colorEqual(label.color, "#d8e8f5") || label.font.family !== "JetBrainsMono Nerd Font" || label.font.pixelSize !== 11)
@@ -90,7 +107,7 @@ ShellRoot {
         running: true
         onTriggered: {
             if (probe.wantCrate ? checkCrate() : checkStock())
-                console.log("RELOAD-COVER-PROBE-PASS " + (probe.wantCrate ? "crate" : "stock"));
+                console.log("RELOAD-COVER-PROBE-PASS " + probe.look);
             Qt.quit();
         }
     }

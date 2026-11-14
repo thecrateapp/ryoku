@@ -15,8 +15,10 @@ run() {
     ln -s "$repo/ryoku/shell/quickshell/reload-cover" "$work/shell/reload-cover"
     cp "$here/reload-cover-probe.qml" "$work/shell/shell.qml"
     local mark="$here/fixtures/cover-mark.svg"
-    if [ "$look" = crate ]; then
-        printf '{"themeStyle":{"controls":"crate","mono":"JetBrainsMono Nerd Font","coverMark":"%s"}}\n' "$mark" >"$work/config/ryoku/shell.json"
+    if [ "$look" != stock ]; then
+        local reduce=false
+        [ "$look" = crate-still ] && reduce=true
+        printf '{"theme":{"motion":{"reduce":%s}},"themeStyle":{"controls":"crate","mono":"JetBrainsMono Nerd Font","coverMark":"%s"}}\n' "$reduce" "$mark" >"$work/config/ryoku/shell.json"
     else
         echo '{}' >"$work/config/ryoku/shell.json"
     fi
@@ -33,4 +35,5 @@ run() {
 
 run stock
 run crate
-echo "reload-cover-probe: the theme's mark, glosses and Beam under crate; Ryoku's cover unchanged otherwise"
+run crate-still
+echo "reload-cover-probe: the theme's mark with its glow, glosses and Beam under crate (still under reduced motion); Ryoku's cover unchanged otherwise"

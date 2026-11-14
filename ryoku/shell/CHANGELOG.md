@@ -6,7 +6,9 @@
   which the shell resolves inside that theme's directory (anything else sets
   nothing) and Ryoku.Ui reads as `Tokens.coverMark`. Under crate the reload and
   boot cover's curtain is the theme's paper, the mark replaces Ryoku's wordmark
-  at 96 px in the theme's ink (failure included), and the status is the tracked
+  at 96 px as the theme ships it (failure included), with a breathing accent
+  glow, a sheen sweep and a faint aura (still, without the sheen, under reduced
+  motion), and the status is the tracked
   label with its Japanese gloss (再読込, 起動中, 失敗), an indeterminate Beam
   while the cover holds and the failure in the error role. Ryoku's cover is
   unchanged and a user's own reload cover still wins

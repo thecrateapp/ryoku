@@ -1,5 +1,6 @@
 import QtQuick
 import Quickshell
+import QtQuick.Effects
 import Qt5Compat.GraphicalEffects
 
 Item {
@@ -9,10 +10,14 @@ Item {
     property bool active: true
     property bool forceDefault: false
     // a theme's own cover mark (Tokens.coverMark under controls "crate"): drawn
-    // emblem-sized in markTint in place of Ryoku's wordmark, failure included;
-    // "" keeps the wordmark
+    // emblem-sized as shipped, in its own colours, in place of Ryoku's wordmark,
+    // failure included; "" keeps the wordmark. markEffects gives it the Crate
+    // site's treatment (a breathing glow in markGlow, a sheen sweep, a soft
+    // aura); without markMotion the glow holds still and the sheen goes.
     property string themeMark: ""
-    property color markTint: "white"
+    property bool markEffects: false
+    property bool markMotion: true
+    property color markGlow: "#67e8f9"
     readonly property bool themed: themeMark !== ""
     readonly property int themeMarkHeight: 96
     onMediaPathChanged: {
@@ -116,21 +121,112 @@ Item {
         active: root.themed
         visible: root.showingDefault
         sourceComponent: Item {
+            id: markBox
+            objectName: "markBox"
+            readonly property bool pulsing: pulseAnim.running
             implicitWidth: themeMarkImage.implicitWidth
             implicitHeight: themeMarkImage.implicitHeight
+
+            // 0..1, breathing over 3.2 s like the site's solid-pulse; held at
+            // the midpoint without motion
+            property real pulse: 0.5
+            SequentialAnimation on pulse {
+                id: pulseAnim
+                running: root.markEffects && root.markMotion && root.active && markBox.visible
+                loops: Animation.Infinite
+                NumberAnimation { from: 0; to: 1; duration: 1600; easing.type: Easing.InOutSine }
+                NumberAnimation { from: 1; to: 0; duration: 1600; easing.type: Easing.InOutSine }
+            }
+
+            // the site's solid-aura: a faint accent disc behind the mark
+            Loader {
+                active: root.markEffects
+                anchors.centerIn: parent
+                width: parent.width * 1.24
+                height: parent.height * 1.24
+                sourceComponent: RadialGradient {
+                    objectName: "markAura"
+                    // a disc that fades out at 65 % of the half-width, so the
+                    // square it is drawn in never shows
+                    horizontalRadius: width * 0.5 * 0.65
+                    verticalRadius: horizontalRadius
+                    gradient: Gradient {
+                        GradientStop { position: 0; color: Qt.alpha(root.markGlow, 0.08) }
+                        GradientStop { position: 1; color: Qt.alpha(root.markGlow, 0) }
+                    }
+                }
+            }
 
             Image {
                 id: themeMarkImage
                 objectName: "themeMark"
-                visible: false
+                visible: !root.markEffects
                 source: "file://" + root.themeMark
                 sourceSize.height: root.themeMarkHeight
                 fillMode: Image.PreserveAspectFit
             }
-            ColorOverlay {
-                anchors.fill: parent
-                source: themeMarkImage
-                color: root.markTint
+
+            // the site's solid-pulse: a 4 to 8 px accent glow and a touch of
+            // brightness, breathing with pulse
+            Loader {
+                active: root.markEffects
+                anchors.fill: themeMarkImage
+                sourceComponent: MultiEffect {
+                    objectName: "markGlow"
+                    source: themeMarkImage
+                    shadowEnabled: true
+                    shadowColor: Qt.alpha(root.markGlow, 0.25 + 0.15 * markBox.pulse)
+                    shadowHorizontalOffset: 0
+                    shadowVerticalOffset: 0
+                    blurMax: 16
+                    shadowBlur: 0.25 + 0.25 * markBox.pulse
+                    brightness: 0.08 * markBox.pulse
+                }
+            }
+
+            // the site's solid-sheen: a pale diagonal light crossing the mark,
+            // masked to its shape, every 3.6 s
+            Loader {
+                active: root.markEffects && root.markMotion
+                anchors.fill: themeMarkImage
+                sourceComponent: Item {
+                    objectName: "markSheen"
+                    Item {
+                        id: sheenBand
+                        anchors.fill: parent
+                        visible: false
+                        Rectangle {
+                            id: sheenStripe
+                            width: parent.width * 0.6
+                            height: parent.height * 2
+                            y: -parent.height / 2
+                            rotation: 25
+                            gradient: Gradient {
+                                orientation: Gradient.Horizontal
+                                GradientStop { position: 0; color: "transparent" }
+                                GradientStop { position: 0.42; color: Qt.rgba(0.925, 0.996, 1, 0.5) }
+                                GradientStop { position: 0.58; color: Qt.alpha(root.markGlow, 0.25) }
+                                GradientStop { position: 1; color: "transparent" }
+                            }
+                            SequentialAnimation on x {
+                                running: root.active && sheenBand.parent.visible
+                                loops: Animation.Infinite
+                                NumberAnimation {
+                                    from: sheenBand.width * 1.2
+                                    to: -sheenStripe.width * 1.2
+                                    duration: 2160
+                                    easing.type: Easing.InOutQuad
+                                }
+                                PauseAnimation { duration: 1440 }
+                            }
+                        }
+                    }
+                    OpacityMask {
+                        anchors.fill: parent
+                        source: sheenBand
+                        maskSource: themeMarkImage
+                    }
+                }
             }
         }
     }
