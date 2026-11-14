@@ -53,14 +53,14 @@ Item {
                 border.width: Tokens.border
                 border.color: Tokens.lineSoft
 
-                Text {
+                Caption {
                     id: tagText
                     anchors.centerIn: parent
                     text: I18n.tr("not here")
-                    color: Tokens.inkFaint
-                    font.family: Tokens.ui
-                    font.pixelSize: Tokens.fTiny
-                    font.letterSpacing: Tokens.trackLabel
+                    stockColor: Tokens.inkFaint
+                    stockFamily: Tokens.ui
+                    stockSize: Tokens.fTiny
+                    stockSpacing: Tokens.trackLabel
                 }
 
                 HoverHandler {

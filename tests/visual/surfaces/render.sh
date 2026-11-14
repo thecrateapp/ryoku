@@ -10,7 +10,8 @@
 # root: a scene imports "modules/<name>" as the shell does.
 # The Hub renders every routed page into hub-LOOK-SECTION.png; an app-* scene
 # renders one of the Wave 4 apps through app-scene.sh; a ryogami scene renders the
-# picker through ryogami-scene.sh (BENCH_OPEN picks the open surface).
+# picker through ryogami-scene.sh (BENCH_OPEN picks the open surface); the keys
+# scene renders Kit and its hint through keys-scene.sh.
 set -euo pipefail
 here=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 repo=$(cd "$here/../../.." && pwd)
@@ -22,6 +23,7 @@ case $scene in
   shell-states) exec "$here/shell-states.sh" "$out" ;;
   app-*) exec "$here/app-scene.sh" "$scene" "$out" ;;
   ryogami*) exec "$here/ryogami-scene.sh" "$scene" "$out" ;;
+  keys) exec "$here/keys-scene.sh" "$scene" "$out" ;;
   hub|hub-states|hub-dialogs)
     case $scene in
       hub) marker=HUB-CAPTURE-DONE ;;

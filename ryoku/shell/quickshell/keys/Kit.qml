@@ -5,8 +5,16 @@ import QtQuick.Controls
 import Ryoku.Ui
 import Ryoku.Ui.Singletons
 
+// Kit's card: a masthead, the search, the tab strip, a rail and the tab's pane.
+// Kit is a large working window, so under crate the card is opaque panel grey
+// on the shared corner, its head is the kit's PageHeader, its tabs the kit's
+// Tabs, its close the kit's icon button, its captions TrackLabels, and the live
+// rail entry takes the 1 px pick edge; the masthead's lead rule, seal and
+// marginalia stay in the stock look only.
 Item {
     id: kitCard
+
+    readonly property bool crate: Tokens.controlsCrate
 
     property var categories: []
     property bool loaded: false
@@ -340,8 +348,10 @@ Item {
         anchors.centerIn: parent
         width: Math.max(1, Math.min(1340, parent.width - 2 * Tokens.s4))
         height: Math.max(1, Math.min(860, parent.height - 2 * Tokens.s4))
-        radius: Tokens.radius * 1.5
-        color: Tokens.paperLift
+        objectName: "kitCard"
+        radius: kitCard.crate ? Tokens.radius : Tokens.radius * 1.5
+        // a working window: opaque panel grey under crate, no glass
+        color: kitCard.crate ? Tokens.popover : Tokens.paperLift
         border.width: Tokens.border
         border.color: Tokens.line
         opacity: kitCard.appear
@@ -352,8 +362,26 @@ Item {
 
         MouseArea { anchors.fill: parent }
 
+        // under crate the head every Crate page shares; the kanji gloss stays,
+        // shown after the gloss setting
+        PageHeader {
+            id: kitHead
+            objectName: "kitPageHeader"
+            visible: kitCard.crate
+            anchors.top: parent.top
+            anchors.left: parent.left
+            anchors.right: closeButton.left
+            anchors.topMargin: card.pad
+            anchors.leftMargin: card.pad
+            anchors.rightMargin: Tokens.s3
+            title: I18n.tr("Kit")
+            gloss: "\u9053\u5177"
+        }
+
         Column {
             id: masthead
+            objectName: "kitMasthead"
+            visible: !kitCard.crate
             anchors.top: parent.top
             anchors.left: parent.left
             anchors.topMargin: card.pad
@@ -396,6 +424,7 @@ Item {
         }
 
         Marginalia {
+            objectName: "kitMarginalia"
             anchors.right: closeButton.left
             anchors.rightMargin: Tokens.s3
             anchors.verticalCenter: closeButton.verticalCenter
@@ -404,17 +433,31 @@ Item {
             label: kitCard.tabLabels[kitCard.tabs[kitCard.currentIndex].id].toUpperCase()
             glyph: "meander"
             glyph2: "torii"
-            visible: card.width >= 720
+            visible: !kitCard.crate && card.width >= 720
+        }
+
+        IconButton {
+            id: crateClose
+            objectName: "kitClose"
+            visible: kitCard.crate
+            anchors.centerIn: closeButton
+            glyph: "close"
+            Accessible.name: I18n.tr("Close")
+            onClicked: kitCard.requestClose()
         }
 
         Rectangle {
             id: closeButton
+            objectName: "kitCloseStock"
             anchors.top: parent.top
             anchors.right: parent.right
             anchors.topMargin: card.pad
             anchors.rightMargin: card.pad
             width: 30
             height: 30
+            // under crate it only holds the kit button's place
+            opacity: kitCard.crate ? 0 : 1
+            enabled: !kitCard.crate
             radius: Tokens.radius
             color: closeTap.pressed ? Tokens.tint16
                 : (closeHover.hovered ? Tokens.tint10 : "transparent")
@@ -447,7 +490,8 @@ Item {
 
         Rectangle {
             id: search
-            anchors.top: masthead.bottom
+            objectName: "kitSearch"
+            anchors.top: kitCard.crate ? kitHead.bottom : masthead.bottom
             anchors.left: parent.left
             anchors.right: parent.right
             anchors.topMargin: Tokens.s4
@@ -455,7 +499,7 @@ Item {
             anchors.rightMargin: card.pad
             height: 40
             radius: Tokens.radius
-            color: Tokens.paper
+            color: kitCard.crate ? "transparent" : Tokens.paper
             border.width: searchInput.activeFocus ? 2 : Tokens.border
             border.color: searchInput.activeFocus ? Tokens.focus : Tokens.line
             Behavior on border.color {
@@ -463,8 +507,18 @@ Item {
                 ColorAnimation { duration: Tokens.snap }
             }
 
+            Glyph {
+                objectName: "kitSearchGlyph"
+                visible: kitCard.crate
+                anchors.centerIn: searchGlyph
+                name: "search"
+                size: 16
+                color: searchInput.activeFocus ? Tokens.inkSecondary : Tokens.inkSubtle
+            }
             Text {
                 id: searchGlyph
+                objectName: "kitSearchGlyphStock"
+                opacity: kitCard.crate ? 0 : 1
                 anchors.left: parent.left
                 anchors.leftMargin: Tokens.s4
                 anchors.verticalCenter: parent.verticalCenter
@@ -511,7 +565,32 @@ Item {
             anchors.rightMargin: card.pad
             height: 34
 
+            // under crate the kit's Tabs; a tab's match count rides as its note
+            Tabs {
+                objectName: "kitTabs"
+                visible: kitCard.crate
+                anchors.left: parent.left
+                anchors.verticalCenter: parent.verticalCenter
+                current: kitCard.tabs[kitCard.currentIndex].id
+                options: {
+                    const observed = kitCard.tabRevision;
+                    const searching = kitCard.normalizedQuery.length > 0;
+                    return kitCard.tabs.map((tab, i) => {
+                        const loader = kitCard.loaderAt(i);
+                        const count = loader && loader.item ? loader.item.matches : -1;
+                        return {
+                            key: tab.id,
+                            label: kitCard.tabLabels[tab.id],
+                            note: searching && count >= 0 ? String(count) : ""
+                        };
+                    });
+                }
+                onChose: key => kitCard.switchTab(kitCard.tabIndex(key))
+            }
+
             Row {
+                objectName: "kitTabRow"
+                visible: !kitCard.crate
                 anchors.fill: parent
                 spacing: Tokens.s2
 
@@ -655,6 +734,7 @@ Item {
                             model: kitCard.currentRail
                             delegate: Rectangle {
                                 id: railItem
+                                objectName: "kitRailItem"
                                 required property var modelData
                                 required property int index
                                 readonly property bool header: modelData.header === true
@@ -668,6 +748,9 @@ Item {
                                 color: selected ? (Tokens.selectFill ? Tokens.tint10 : "transparent")
                                     : (!header && railTap.pressed ? Tokens.tint16
                                     : (!header && railHover.hovered ? Tokens.tint5 : "transparent"))
+                                // under crate the live entry takes the 1 px pick edge
+                                border.width: kitCard.crate && selected ? Tokens.border : 0
+                                border.color: Tokens.pickEdge
                                 scale: !header && railTap.pressed ? 0.985 : 1
                                 opacity: entryProgress
                                 transform: Translate {
@@ -699,7 +782,8 @@ Item {
                                         railEntry.start();
                                 }
 
-                                Text {
+                                Caption {
+                                    objectName: "kitRailHead"
                                     visible: railItem.header
                                     anchors.left: parent.left
                                     anchors.leftMargin: Tokens.s4
@@ -708,21 +792,23 @@ Item {
                                     anchors.bottom: parent.bottom
                                     anchors.bottomMargin: Tokens.s1
                                     text: I18n.tr(railItem.modelData.label).toUpperCase()
-                                    color: Tokens.caption
-                                    font.family: Tokens.ui
-                                    font.pixelSize: Tokens.fTiny
-                                    font.weight: Font.Medium
-                                    font.letterSpacing: Tokens.trackMark
+                                    tone: "accent"
+                                    stockColor: Tokens.caption
+                                    stockFamily: Tokens.ui
+                                    stockWeight: Font.Medium
+                                    stockSpacing: Tokens.trackMark
                                     elide: Text.ElideRight
                                 }
+                                // the stock live mark; under crate the pick edge instead
                                 Rectangle {
+                                    objectName: "kitRailBar"
                                     anchors.left: parent.left
                                     anchors.verticalCenter: parent.verticalCenter
                                     width: 2
                                     height: parent.height - Tokens.s4
                                     radius: 1
                                     color: Tokens.mark
-                                    visible: railItem.selected
+                                    visible: railItem.selected && !kitCard.crate
                                 }
                                 Text {
                                     visible: !railItem.header
@@ -858,18 +944,17 @@ Item {
             }
         }
 
-        Text {
+        Caption {
             id: footer
+            objectName: "kitFooter"
             anchors.bottom: parent.bottom
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.bottomMargin: Tokens.s4
             text: I18n.tr("Ctrl+Tab switch") + "   \u00b7   "
                 + I18n.tr("Ctrl+1-5 tabs") + "   \u00b7   "
                 + I18n.tr("Esc back, clear, close")
-            color: Tokens.inkFaint
-            font.family: Tokens.ui
-            font.pixelSize: Tokens.fMicro
-            font.letterSpacing: Tokens.trackLabel
+            stockFamily: Tokens.ui
+            stockSize: Tokens.fMicro
         }
     }
 }

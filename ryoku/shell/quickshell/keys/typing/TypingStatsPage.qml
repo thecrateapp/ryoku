@@ -4,6 +4,7 @@ import QtQuick
 import QtQuick.Layouts
 import Ryoku.Ui
 import Ryoku.Ui.Singletons
+import ".."
 
 Item {
     id: stats
@@ -72,12 +73,12 @@ Item {
                     }
                 }
                 Item { Layout.fillWidth: true }
-                Text {
+                Caption {
                     text: I18n.tr("%1 TESTS").arg(String(stats.ranged.length))
-                    color: Tokens.inkMuted
-                    font.family: Tokens.mono
-                    font.pixelSize: Tokens.fTiny
-                    font.letterSpacing: Tokens.trackLabel
+                    stockColor: Tokens.inkMuted
+                    stockFamily: Tokens.mono
+                    stockSize: Tokens.fTiny
+                    stockSpacing: Tokens.trackLabel
                 }
             }
 
@@ -125,20 +126,21 @@ Item {
                         Column {
                             anchors.centerIn: parent
                             spacing: Tokens.s1
-                            Text { anchors.horizontalCenter: parent.horizontalCenter; text: parent.parent.modelData.label; color: Tokens.inkMuted; font.family: Tokens.mono; font.pixelSize: Tokens.fTiny; font.letterSpacing: Tokens.trackLabel }
+                            Caption { anchors.horizontalCenter: parent.horizontalCenter; text: parent.parent.modelData.label; stockColor: Tokens.inkMuted; stockFamily: Tokens.mono; stockSize: Tokens.fTiny; stockSpacing: Tokens.trackLabel }
                             Text { anchors.horizontalCenter: parent.horizontalCenter; text: String(parent.parent.modelData.value); color: Tokens.ink; font.family: Tokens.mono; font.pixelSize: Tokens.fHero; font.weight: Font.DemiBold }
                         }
                     }
                 }
             }
 
-            Text {
+            Caption {
                 visible: stats.store.results.length > 0
                 text: I18n.tr("PERSONAL BESTS")
-                color: Tokens.inkDim
-                font.family: Tokens.mono
-                font.pixelSize: Tokens.fMicro
-                font.letterSpacing: Tokens.trackLabel
+                tone: "accent"
+                stockColor: Tokens.inkDim
+                stockFamily: Tokens.mono
+                stockSize: Tokens.fMicro
+                stockSpacing: Tokens.trackLabel
             }
 
             GridLayout {
@@ -193,13 +195,14 @@ Item {
                 }
             }
 
-            Text {
+            Caption {
                 visible: stats.store.results.length > 0
                 text: I18n.tr("ACTIVITY · 52 WEEKS")
-                color: Tokens.inkDim
-                font.family: Tokens.mono
-                font.pixelSize: Tokens.fMicro
-                font.letterSpacing: Tokens.trackLabel
+                tone: "accent"
+                stockColor: Tokens.inkDim
+                stockFamily: Tokens.mono
+                stockSize: Tokens.fMicro
+                stockSpacing: Tokens.trackLabel
             }
 
             Grid {
@@ -239,7 +242,7 @@ Item {
                     radius: Tokens.radius
                     border.width: Tokens.border
                     border.color: Tokens.lineSoft
-                    Text { anchors.left: parent.left; anchors.top: parent.top; anchors.margins: Tokens.s3; text: I18n.tr("PACE OVER TIME"); color: Tokens.inkMuted; font.family: Tokens.mono; font.pixelSize: Tokens.fTiny; font.letterSpacing: Tokens.trackLabel }
+                    Caption { anchors.left: parent.left; anchors.top: parent.top; anchors.margins: Tokens.s3; text: I18n.tr("PACE OVER TIME"); stockColor: Tokens.inkMuted; stockFamily: Tokens.mono; stockSize: Tokens.fTiny; stockSpacing: Tokens.trackLabel }
                     Canvas {
                         id: pace
                         anchors.fill: parent
@@ -276,7 +279,7 @@ Item {
                         anchors.fill: parent
                         anchors.margins: Tokens.s4
                         spacing: Tokens.s2
-                        Text { text: I18n.tr("SPEED DISTRIBUTION"); color: Tokens.inkMuted; font.family: Tokens.mono; font.pixelSize: Tokens.fTiny; font.letterSpacing: Tokens.trackLabel }
+                        Caption { text: I18n.tr("SPEED DISTRIBUTION"); stockColor: Tokens.inkMuted; stockFamily: Tokens.mono; stockSize: Tokens.fTiny; stockSpacing: Tokens.trackLabel }
                         Repeater {
                             model: [
                                 { label: "0–29", n: stats.bucket(0, 30) }, { label: "30–59", n: stats.bucket(30, 60) },

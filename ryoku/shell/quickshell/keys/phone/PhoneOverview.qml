@@ -4,6 +4,7 @@ import QtQuick
 import QtQuick.Controls
 import Ryoku.Ui
 import Ryoku.Ui.Singletons
+import ".."
 
 Item {
     id: root
@@ -336,12 +337,11 @@ Item {
                     anchors.fill: parent
                     anchors.margins: Tokens.s4
                     spacing: Tokens.s3
-                    Text {
+                    PhoneGlyph {
                         anchors.verticalCenter: parent.verticalCenter
-                        text: "screen_share"
+                        name: "screen_share"
                         color: Tokens.inkDim
-                        font.family: "Material Symbols Rounded"
-                        font.pixelSize: Tokens.fValue
+                        pixelSize: Tokens.fValue
                     }
                     Column {
                         anchors.verticalCenter: parent.verticalCenter
@@ -386,12 +386,11 @@ Item {
                     anchors.fill: parent
                     anchors.margins: Tokens.s3
                     spacing: Tokens.s3
-                    Text {
+                    PhoneGlyph {
                         anchors.verticalCenter: parent.verticalCenter
-                        text: "alarm"
+                        name: "alarm"
                         color: Tokens.inkDim
-                        font.family: "Material Symbols Rounded"
-                        font.pixelSize: Tokens.fBody
+                        pixelSize: Tokens.fBody
                     }
                     Text {
                         anchors.verticalCenter: parent.verticalCenter
@@ -408,12 +407,13 @@ Item {
                 visible: root.commands.length > 0
                 width: parent.width
                 spacing: Tokens.s2
-                Text {
+                Caption {
                     text: I18n.tr("PHONE COMMANDS")
-                    color: Tokens.inkMuted
-                    font.family: Tokens.mono
-                    font.pixelSize: Tokens.fMicro
-                    font.letterSpacing: Tokens.trackLabel
+                    tone: "accent"
+                    stockColor: Tokens.inkMuted
+                    stockFamily: Tokens.mono
+                    stockSize: Tokens.fMicro
+                    stockSpacing: Tokens.trackLabel
                 }
                 Flow {
                     width: parent.width
@@ -435,13 +435,14 @@ Item {
                 spacing: Tokens.s2
                 Row {
                     width: parent.width
-                    Text {
+                    Caption {
                         width: parent.width - seeAll.width
                         text: I18n.tr("RECENT NOTIFICATIONS")
-                        color: Tokens.inkMuted
-                        font.family: Tokens.mono
-                        font.pixelSize: Tokens.fMicro
-                        font.letterSpacing: Tokens.trackLabel
+                        tone: "accent"
+                        stockColor: Tokens.inkMuted
+                        stockFamily: Tokens.mono
+                        stockSize: Tokens.fMicro
+                        stockSpacing: Tokens.trackLabel
                     }
                     Btn {
                         id: seeAll

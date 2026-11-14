@@ -171,13 +171,15 @@ Item {
                             width: Tokens.s6
                             height: width
                             radius: width / 2
-                            color: root.adb.state === "device" ? Tokens.bone : "transparent"
+                            // under crate a reached step fills with the mark
+                            color: root.adb.state === "device" ? (Tokens.controlsCrate ? Tokens.mark : Tokens.bone) : "transparent"
                             border.width: Tokens.border
-                            border.color: root.adb.state === "device" ? Tokens.bone : Tokens.lineStrong
+                            border.color: root.adb.state === "device" ? (Tokens.controlsCrate ? Tokens.mark : Tokens.bone)
+                                : (Tokens.controlsCrate ? Tokens.line : Tokens.lineStrong)
                             Text {
                                 anchors.centerIn: parent
                                 text: root.adb.state === "device" ? "✓" : "3"
-                                color: root.adb.state === "device" ? Tokens.inkOnBone : Tokens.inkDim
+                                color: root.adb.state === "device" ? (Tokens.controlsCrate ? Tokens.paper : Tokens.inkOnBone) : Tokens.inkDim
                                 font.family: Tokens.mono
                                 font.pixelSize: Tokens.fSmall
                             }
@@ -312,11 +314,10 @@ Item {
                         Row {
                             width: parent.width
                             spacing: Tokens.s3
-                            Text {
-                                text: "screen_share"
+                            PhoneGlyph {
+                                name: "screen_share"
                                 color: Tokens.inkDim
-                                font.family: "Material Symbols Rounded"
-                                font.pixelSize: Tokens.fValue
+                                pixelSize: Tokens.fValue
                             }
                             Column {
                                 width: Math.max(0, parent.width - Tokens.s7)
@@ -402,11 +403,10 @@ Item {
                         Row {
                             width: parent.width
                             spacing: Tokens.s3
-                            Text {
-                                text: "videocam"
+                            PhoneGlyph {
+                                name: "videocam"
                                 color: Tokens.inkDim
-                                font.family: "Material Symbols Rounded"
-                                font.pixelSize: Tokens.fValue
+                                pixelSize: Tokens.fValue
                             }
                             Column {
                                 width: Math.max(0, parent.width - Tokens.s7)
@@ -477,11 +477,10 @@ Item {
                         Row {
                             width: parent.width
                             spacing: Tokens.s3
-                            Text {
-                                text: "mic"
+                            PhoneGlyph {
+                                name: "mic"
                                 color: Tokens.inkDim
-                                font.family: "Material Symbols Rounded"
-                                font.pixelSize: Tokens.fValue
+                                pixelSize: Tokens.fValue
                             }
                             Column {
                                 width: Math.max(0, parent.width - Tokens.s7)

@@ -4,6 +4,7 @@ import QtQuick
 import QtQuick.Controls
 import Ryoku.Ui
 import Ryoku.Ui.Singletons
+import ".."
 
 Item {
     id: root
@@ -60,12 +61,13 @@ Item {
             Column {
                 width: parent.width
                 spacing: Tokens.s2
-                Text {
+                Caption {
                     text: I18n.tr("PHONE")
-                    color: Tokens.inkMuted
-                    font.family: Tokens.mono
-                    font.pixelSize: Tokens.fMicro
-                    font.letterSpacing: Tokens.trackMark
+                    tone: "accent"
+                    stockColor: Tokens.inkMuted
+                    stockFamily: Tokens.mono
+                    stockSize: Tokens.fMicro
+                    stockSpacing: Tokens.trackMark
                 }
                 Text {
                     width: parent.width
@@ -156,13 +158,12 @@ Item {
 
                     Row {
                         spacing: Tokens.s2
-                        Text {
+                        PhoneGlyph {
                             id: spinner
                             visible: root.currentStep === 2 && !root.found
-                            text: "progress_activity"
+                            name: "progress_activity"
                             color: Tokens.inkDim
-                            font.family: "Material Symbols Rounded"
-                            font.pixelSize: Tokens.fBody
+                            pixelSize: Tokens.fBody
                             RotationAnimator on rotation {
                                 running: spinner.visible && !Tokens.reduceMotion
                                 loops: Animation.Infinite
@@ -282,12 +283,11 @@ Item {
                                     anchors.fill: parent
                                     anchors.margins: Tokens.s3
                                     spacing: Tokens.s3
-                                    Text {
+                                    PhoneGlyph {
                                         anchors.verticalCenter: parent.verticalCenter
-                                        text: deviceRow.modelData.type === "tablet" ? "tablet" : "smartphone"
+                                        name: deviceRow.modelData.type === "tablet" ? "tablet" : "smartphone"
                                         color: Tokens.inkDim
-                                        font.family: "Material Symbols Rounded"
-                                        font.pixelSize: Tokens.fBody
+                                        pixelSize: Tokens.fBody
                                     }
                                     Text {
                                         anchors.verticalCenter: parent.verticalCenter

@@ -53,12 +53,11 @@ Column {
                 anchors.margins: Tokens.s3
                 spacing: Tokens.s3
 
-                Text {
+                PhoneGlyph {
                     anchors.verticalCenter: parent.verticalCenter
-                    text: "phonelink_ring"
+                    name: "phonelink_ring"
                     color: Tokens.inkDim
-                    font.family: "Material Symbols Rounded"
-                    font.pixelSize: Tokens.fValue
+                    pixelSize: Tokens.fValue
                 }
 
                 Column {

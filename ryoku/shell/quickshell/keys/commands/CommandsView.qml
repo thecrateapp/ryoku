@@ -7,6 +7,7 @@ import Quickshell
 import Ryoku.Ui
 import Ryoku.Ui.Singletons
 import "."
+import ".."
 
 Item {
     id: root
@@ -156,14 +157,15 @@ Item {
                 Layout.fillWidth: true
                 spacing: Tokens.s1
 
-                Text {
+                Caption {
                     text: root.query.length > 0
                         ? I18n.tr("SEARCH RESULTS")
                         : root.controller.selectionLabel().toUpperCase()
-                    color: Tokens.ink
-                    font.family: Tokens.mono
-                    font.pixelSize: Tokens.fMicro
-                    font.letterSpacing: Tokens.trackMark
+                    tone: "accent"
+                    stockColor: Tokens.ink
+                    stockFamily: Tokens.mono
+                    stockSize: Tokens.fMicro
+                    stockSpacing: Tokens.trackMark
                 }
 
                 Text {
@@ -180,13 +182,13 @@ Item {
                 }
             }
 
-            Text {
+            Caption {
                 visible: root.store.saving || root.store.notice.length > 0
                 text: root.store.notice.length > 0 ? root.store.notice.toUpperCase() : I18n.tr("SAVING")
-                color: Tokens.inkFaint
-                font.family: Tokens.mono
-                font.pixelSize: Tokens.fTiny
-                font.letterSpacing: Tokens.trackLabel
+                stockColor: Tokens.inkFaint
+                stockFamily: Tokens.mono
+                stockSize: Tokens.fTiny
+                stockSpacing: Tokens.trackLabel
             }
 
             Btn {
@@ -271,12 +273,12 @@ Item {
                                 anchors.verticalCenter: parent.verticalCenter
                             }
 
-                            Text {
+                            Caption {
                                 text: rowDelegate.modelData.groupLabel.toUpperCase()
-                                color: Tokens.inkMuted
-                                font.family: Tokens.mono
-                                font.pixelSize: Tokens.fMicro
-                                font.letterSpacing: Tokens.trackLabel
+                                stockColor: Tokens.inkMuted
+                                stockFamily: Tokens.mono
+                                stockSize: Tokens.fMicro
+                                stockSpacing: Tokens.trackLabel
                             }
                         }
 
@@ -364,24 +366,24 @@ Item {
                 }
             }
 
-            Text {
+            Caption {
                 anchors.centerIn: parent
                 visible: !root.controller.ready
                 text: I18n.tr("LOADING COMMANDS")
-                color: Tokens.inkFaint
-                font.family: Tokens.mono
-                font.pixelSize: Tokens.fMicro
-                font.letterSpacing: Tokens.trackLabel
+                stockColor: Tokens.inkFaint
+                stockFamily: Tokens.mono
+                stockSize: Tokens.fMicro
+                stockSpacing: Tokens.trackLabel
             }
         }
 
-        Text {
+        Caption {
             Layout.alignment: Qt.AlignRight
             text: I18n.tr("CTRL + N  NEW    CTRL + I  IMPORT    ↑↓  SELECT    CTRL + ENTER  COPY")
-            color: Tokens.inkFaint
-            font.family: Tokens.mono
-            font.pixelSize: Tokens.fTiny
-            font.letterSpacing: Tokens.trackLabel
+            stockColor: Tokens.inkFaint
+            stockFamily: Tokens.mono
+            stockSize: Tokens.fTiny
+            stockSpacing: Tokens.trackLabel
         }
     }
 

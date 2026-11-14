@@ -4,6 +4,7 @@ import QtQuick
 import QtQuick.Layouts
 import Ryoku.Ui
 import Ryoku.Ui.Singletons
+import ".."
 
 Item {
     id: results
@@ -26,12 +27,12 @@ Item {
             ColumnLayout {
                 Layout.preferredWidth: 210
                 spacing: 0
-                Text {
+                Caption {
                     text: I18n.tr("WPM")
-                    color: Tokens.inkMuted
-                    font.family: Tokens.mono
-                    font.pixelSize: Tokens.fMicro
-                    font.letterSpacing: Tokens.trackLabel
+                    stockColor: Tokens.inkMuted
+                    stockFamily: Tokens.mono
+                    stockSize: Tokens.fMicro
+                    stockSpacing: Tokens.trackLabel
                 }
                 Text {
                     id: wpmValue
@@ -42,15 +43,16 @@ Item {
                     font.pixelSize: 76
                     font.weight: Font.DemiBold
                 }
-                Text {
+                Caption {
                     visible: opacity > 0
                     opacity: results.personalBest ? 1 : 0
                     scale: results.personalBest ? 1 : 0.96
                     text: I18n.tr("PERSONAL BEST")
-                    color: Tokens.ink
-                    font.family: Tokens.mono
-                    font.pixelSize: Tokens.fTiny
-                    font.letterSpacing: Tokens.trackLabel
+                    tone: "active"
+                    stockColor: Tokens.ink
+                    stockFamily: Tokens.mono
+                    stockSize: Tokens.fTiny
+                    stockSpacing: Tokens.trackLabel
                     Behavior on opacity {
                         enabled: !Tokens.reduceMotion
                         NumberAnimation { duration: Tokens.snap; easing.type: Easing.OutCubic }
@@ -61,12 +63,12 @@ Item {
                     }
                 }
                 Item { Layout.preferredHeight: Tokens.s4 }
-                Text {
+                Caption {
                     text: I18n.tr("ACCURACY")
-                    color: Tokens.inkMuted
-                    font.family: Tokens.mono
-                    font.pixelSize: Tokens.fMicro
-                    font.letterSpacing: Tokens.trackLabel
+                    stockColor: Tokens.inkMuted
+                    stockFamily: Tokens.mono
+                    stockSize: Tokens.fMicro
+                    stockSpacing: Tokens.trackLabel
                 }
                 Text {
                     objectName: "typing-results-accuracy"
@@ -149,12 +151,12 @@ Item {
                 delegate: ColumnLayout {
                     required property var modelData
                     spacing: 0
-                    Text {
+                    Caption {
                         text: parent.modelData.label
-                        color: Tokens.inkMuted
-                        font.family: Tokens.mono
-                        font.pixelSize: Tokens.fTiny
-                        font.letterSpacing: Tokens.trackLabel
+                        stockColor: Tokens.inkMuted
+                        stockFamily: Tokens.mono
+                        stockSize: Tokens.fTiny
+                        stockSpacing: Tokens.trackLabel
                     }
                     Text {
                         text: String(parent.modelData.value)

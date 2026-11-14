@@ -5,6 +5,7 @@ import QtQuick.Layouts
 import Ryoku.Ui
 import Ryoku.Ui.Singletons
 import "."
+import ".."
 
 Item {
     id: test
@@ -150,7 +151,18 @@ Item {
             }
         }
 
+        // the way through the test: a read-only Beam under crate
+        Beam {
+            objectName: "typingBeam"
+            visible: Tokens.controlsCrate
+            Layout.fillWidth: true
+            Layout.preferredHeight: 8
+            interactive: false
+            value: testEngine.progress
+        }
+
         Rectangle {
+            visible: !Tokens.controlsCrate
             Layout.fillWidth: true
             Layout.preferredHeight: 1
             color: Tokens.lineSoft
@@ -241,7 +253,7 @@ Item {
                 anchors.centerIn: parent
                 visible: testEngine.state === "loading"
                 spacing: Tokens.s2
-                Text { anchors.horizontalCenter: parent.horizontalCenter; text: I18n.tr("LOADING WORDS"); color: Tokens.inkDim; font.family: Tokens.mono; font.pixelSize: Tokens.fMicro; font.letterSpacing: Tokens.trackLabel }
+                Caption { anchors.horizontalCenter: parent.horizontalCenter; text: I18n.tr("LOADING WORDS"); stockColor: Tokens.inkDim; stockFamily: Tokens.mono; stockSize: Tokens.fMicro; stockSpacing: Tokens.trackLabel }
                 Text { anchors.horizontalCenter: parent.horizontalCenter; visible: test.languages.errorText !== ""; text: test.languages.errorText; color: Tokens.alert; font.family: Tokens.ui; font.pixelSize: Tokens.fSmall }
             }
         }
