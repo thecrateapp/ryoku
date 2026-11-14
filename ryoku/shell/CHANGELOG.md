@@ -1,6 +1,22 @@
 # Changelog: ryoku/shell/
 
 ## Unreleased
+- **The reload cover wears the theme under crate.** A theme may ship its own
+  cover mark: `style.coverMark` names an .svg or .png beside its scheme.json,
+  which the shell resolves inside that theme's directory (anything else sets
+  nothing) and Ryoku.Ui reads as `Tokens.coverMark`. Under crate the reload and
+  boot cover's curtain is the theme's paper, the mark replaces Ryoku's wordmark
+  at 96 px in the theme's ink (failure included), and the status is the tracked
+  label with its Japanese gloss (再読込, 起動中, 失敗), an indeterminate Beam
+  while the cover holds and the failure in the error role. Ryoku's cover is
+  unchanged and a user's own reload cover still wins
+  (`quickshell/reload-cover/`, `ipc/usertheme.go`; `tests/ui/reload-cover-probe.sh`).
+- **CRATE and the Crate logo are launcher marks.** QS Bar Settings > Identity
+  offers the CRATE wordmark and the Crate glyph after Ryoku's, in either look.
+  The logo is no font glyph, so LauncherMark draws every mark (wordmark, font
+  glyph or a drawn glyph) for both the bar and the Identity tiles
+  (`modules/bar/barstyles/qsbar/modules/LauncherMark.qml`;
+  `tests/ui/launcher-mark-probe.sh`).
 - **A bar plugin's panel shows its caret.** The plugin panel clipped its card,
   which cut off the caret the connected surface draws outside the card and left
   only the notch in the outline; only the plugin's content is clipped now. A
