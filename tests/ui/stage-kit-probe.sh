@@ -36,6 +36,7 @@ env -u WAYLAND_DISPLAY -u DISPLAY -u DBUS_SESSION_BUS_ADDRESS -u HYPRLAND_INSTAN
     XDG_CACHE_HOME="$work/cache" XDG_RUNTIME_DIR="$work/runtime" \
     XDG_STATE_HOME="$work/state" XDG_DATA_HOME="$work/data" \
     RYOKU_I18N_DIR="$repo/ryoku/i18n/catalog" \
+    STAGE_WIDGETS="$repo/ryoku/shell/quickshell/stage/modules/ii/background/widgets" \
     QML_IMPORT_PATH="$work/mods:$repo/ryoku/shell/quickshell" QML2_IMPORT_PATH="$work/mods" \
     timeout 40 qs -p "$work/root/shell.qml" >"$work/log" 2>&1 || true
 if ! grep -q STAGE-KIT-PROBE-PASS "$work/log" || grep -Eq 'TypeError|ReferenceError|STAGE-KIT-PROBE-FAIL' "$work/log"; then

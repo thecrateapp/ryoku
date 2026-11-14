@@ -1,6 +1,14 @@
 # Changelog: ryoku/shell/
 
 ## Unreleased
+- **Clock widgets read their type and reflections from the theme under crate.**
+  The small captions on the Nothing wheel and digital clocks and the WearOS
+  dial take the Tokens type roles, and the glass reflection on the analog faces
+  (circle pointer, concentric, month, scallop, triple ring, WearOS) is the
+  palette's light end instead of white; each face names its reflection once.
+  The display numerals stay the faces' own. Stock is unchanged
+  (`quickshell/stage/modules/ii/background/widgets/clock/`;
+  `tests/ui/stage-kit-probe.sh` compiles each migrated face).
 - **Desktop widgets wear the kit's edit chrome under crate.** In Edit Mode a
   selected widget's halo is the pick wash in the 1 px pick edge, its size
   readout a mono tag on the popover ground, and its resize and menu grips

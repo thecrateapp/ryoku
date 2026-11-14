@@ -1421,10 +1421,10 @@
   "hex-colour": 2
  },
  "ryoku/shell/quickshell/stage/modules/ii/background/widgets/clock/CirclePointerClockWidget.qml": {
-  "hex-colour": 4
+  "hex-colour": 1
  },
  "ryoku/shell/quickshell/stage/modules/ii/background/widgets/clock/ConcentricClockWidget.qml": {
-  "hex-colour": 4
+  "hex-colour": 1
  },
  "ryoku/shell/quickshell/stage/modules/ii/background/widgets/clock/DuoClockWidget.qml": {
   "pixel-size": 1
@@ -1433,29 +1433,25 @@
   "pixel-size": 3
  },
  "ryoku/shell/quickshell/stage/modules/ii/background/widgets/clock/MonthClockWidget.qml": {
-  "hex-colour": 4
- },
- "ryoku/shell/quickshell/stage/modules/ii/background/widgets/clock/NothingDigitalClockWidget.qml": {
-  "pixel-size": 3
+  "hex-colour": 1
  },
  "ryoku/shell/quickshell/stage/modules/ii/background/widgets/clock/NothingWheelClockWidget.qml": {
-  "pixel-size": 10
+  "pixel-size": 4
  },
  "ryoku/shell/quickshell/stage/modules/ii/background/widgets/clock/ScallopDotClockWidget.qml": {
-  "hex-colour": 4
+  "hex-colour": 1
  },
  "ryoku/shell/quickshell/stage/modules/ii/background/widgets/clock/ScallopNumberClockWidget.qml": {
-  "hex-colour": 4
+  "hex-colour": 1
  },
  "ryoku/shell/quickshell/stage/modules/ii/background/widgets/clock/TripleRingClockWidget.qml": {
-  "hex-colour": 4
+  "hex-colour": 1
  },
  "ryoku/shell/quickshell/stage/modules/ii/background/widgets/clock/WearOSArcClock.qml": {
-  "hex-colour": 8
+  "hex-colour": 5
  },
  "ryoku/shell/quickshell/stage/modules/ii/background/widgets/clock/WearOSClockWidget.qml": {
-  "hex-colour": 6,
-  "pixel-size": 2
+  "hex-colour": 3
  },
  "ryoku/shell/quickshell/stage/modules/ii/background/widgets/media/AndroidMediaWidget.qml": {
   "pixel-size": 6

@@ -6,6 +6,7 @@ import stage.services
 import stage.modules.common
 import stage.modules.common.widgets
 import stage.modules.ii.background.widgets
+import Ryoku.Ui.Singletons
 AbstractBackgroundWidget {
     id: root
 
@@ -89,7 +90,7 @@ AbstractBackgroundWidget {
                     anchors.centerIn: parent
                     text: root.amPmString
                     font.family: ndotFont.name
-                    font.pixelSize: 12
+                    font.pixelSize: Tokens.controlsCrate ? Tokens.fSmall : 12
                     color: root.textColorOnPillFill
                     renderType: Text.QtRendering
                 }
@@ -100,7 +101,7 @@ AbstractBackgroundWidget {
                 visible: root.showTopLabel && (root.use24h || !root.showAmPmChip)
                 text: "TIME"
                 font.family: ndotFont.name
-                font.pixelSize: 14
+                font.pixelSize: Tokens.controlsCrate ? Tokens.fBody : 14
                 color: root.subtextColorOnBg
                 renderType: Text.QtRendering
             }
@@ -186,7 +187,7 @@ AbstractBackgroundWidget {
             anchors.bottomMargin: 16
             text: root.dateString
             font.family: ndotFont.name
-            font.pixelSize: 14
+            font.pixelSize: Tokens.controlsCrate ? Tokens.fBody : 14
             color: root.subtextColorOnBg
             renderType: Text.QtRendering
         }

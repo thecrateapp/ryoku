@@ -9,8 +9,12 @@ import stage.modules.common
 import stage.modules.common.functions
 import stage.modules.common.widgets
 import stage.modules.ii.background.widgets
+import Ryoku.Ui.Singletons
 AbstractBackgroundWidget {
     id: root
+    // The glass reflection over the face: white in stock; under crate the
+    // palette's light end (paper on a light theme, ink on a dark one).
+    readonly property color sheenInk: Tokens.controlsCrate ? (Tokens.light ? Tokens.paper : Tokens.ink) : "#FFFFFF"
 
     configEntryName: "scallop_dot_clock"
 
@@ -148,8 +152,8 @@ AbstractBackgroundWidget {
                     cached: true
                     gradient: Gradient {
                         GradientStop { position: 0.0; color: "transparent" }
-                        GradientStop { position: 0.3; color: ColorUtils.applyAlpha("#FFFFFF", 0.42) }
-                        GradientStop { position: 0.7; color: ColorUtils.applyAlpha("#FFFFFF", 0.42) }
+                        GradientStop { position: 0.3; color: ColorUtils.applyAlpha(root.sheenInk, 0.42) }
+                        GradientStop { position: 0.7; color: ColorUtils.applyAlpha(root.sheenInk, 0.42) }
                         GradientStop { position: 1.0; color: "transparent" }
                     }
                     layer.enabled: true
@@ -197,8 +201,8 @@ AbstractBackgroundWidget {
                     cached: true
                     gradient: Gradient {
                         GradientStop { position: 0.0; color: "transparent" }
-                        GradientStop { position: 0.3; color: ColorUtils.applyAlpha("#FFFFFF", 0.28) }
-                        GradientStop { position: 0.7; color: ColorUtils.applyAlpha("#FFFFFF", 0.28) }
+                        GradientStop { position: 0.3; color: ColorUtils.applyAlpha(root.sheenInk, 0.28) }
+                        GradientStop { position: 0.7; color: ColorUtils.applyAlpha(root.sheenInk, 0.28) }
                         GradientStop { position: 1.0; color: "transparent" }
                     }
                     layer.enabled: true

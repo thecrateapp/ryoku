@@ -5,6 +5,7 @@ import stage.modules.common
 import stage.modules.common.widgets
 import stage.modules.ii.background.widgets
 import stage.services
+import Ryoku.Ui.Singletons
 AbstractBackgroundWidget {
     id: root
 
@@ -89,14 +90,14 @@ AbstractBackgroundWidget {
 
                 StyledText {
                     text: root.formatDateNum(root.todayDate)
-                    font.pixelSize: 14
+                    font.pixelSize: Tokens.controlsCrate ? Tokens.fBody : 14
                     font.weight: Font.Bold
                     color: root.textColorOnBg
                 }
 
                 StyledText {
                     text: root.formatDateDay(root.todayDate)
-                    font.pixelSize: 13
+                    font.pixelSize: Tokens.controlsCrate ? Tokens.fSmall : 13
                     font.weight: Font.Bold
                     color: root.textColorOnBg
                 }
@@ -110,14 +111,14 @@ AbstractBackgroundWidget {
 
                 StyledText {
                     text: root.formatDateNum(root.tomorrowDate)
-                    font.pixelSize: 14
+                    font.pixelSize: Tokens.controlsCrate ? Tokens.fBody : 14
                     color: root.subtextColorOnBg
                     opacity: 0.65
                 }
 
                 StyledText {
                     text: root.formatDateDay(root.tomorrowDate)
-                    font.pixelSize: 13
+                    font.pixelSize: Tokens.controlsCrate ? Tokens.fSmall : 13
                     color: root.subtextColorOnBg
                     opacity: 0.65
                 }
@@ -131,14 +132,14 @@ AbstractBackgroundWidget {
 
                 StyledText {
                     text: root.formatDateNum(root.afterTomorrowDate)
-                    font.pixelSize: 14
+                    font.pixelSize: Tokens.controlsCrate ? Tokens.fBody : 14
                     color: root.subtextColorOnBg
                     opacity: 0.65
                 }
 
                 StyledText {
                     text: root.formatDateDay(root.afterTomorrowDate)
-                    font.pixelSize: 13
+                    font.pixelSize: Tokens.controlsCrate ? Tokens.fSmall : 13
                     color: root.subtextColorOnBg
                     opacity: 0.65
                 }

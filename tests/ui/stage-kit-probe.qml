@@ -275,6 +275,24 @@ ShellRoot {
             && same(placeholder.warnInk, crate ? Tokens.alert : "#ffaaaa"), "the missing-widget placeholder");
     }
 
+    // The widget faces migrated family by family: a whole widget cannot be
+    // created without a compositor, so each is compiled (its imports, types
+    // and bindings resolved) rather than instantiated.
+    readonly property var faces: [
+        "clock/CirclePointerClockWidget.qml", "clock/ConcentricClockWidget.qml",
+        "clock/MonthClockWidget.qml", "clock/NothingDigitalClockWidget.qml",
+        "clock/NothingWheelClockWidget.qml", "clock/ScallopDotClockWidget.qml",
+        "clock/ScallopNumberClockWidget.qml", "clock/TripleRingClockWidget.qml",
+        "clock/WearOSArcClock.qml", "clock/WearOSClockWidget.qml"
+    ]
+    function verifyFaces() {
+        const base = "file://" + Quickshell.env("STAGE_WIDGETS") + "/";
+        for (const face of probe.faces) {
+            const component = Qt.createComponent(base + face, Component.PreferSynchronous);
+            check(component.status === Component.Ready, face + " compiles: " + component.errorString());
+        }
+    }
+
     Timer {
         id: crateCheck
         interval: 800
@@ -300,6 +318,7 @@ ShellRoot {
             try {
                 probe.verify(false);
                 probe.verifyWidgets(false);
+                probe.verifyFaces();
                 console.log("STAGE-KIT-PROBE-PASS");
             } catch (e) {
                 console.log("STAGE-KIT-PROBE-FAIL " + e.message);
