@@ -34,11 +34,15 @@ Item {
         anchors.centerIn: parent
         spacing: 4
 
+        // the output's glyph when the kit has it (an older kit lacks the newer
+        // ones), else the plain speaker
+        Kit.Glyph { id: outputKnown; visible: false; name: AudioOutput.outputGlyph(rootMod.outputKind) }
+
         Kit.Glyph {
             objectName: "audioGlyph"
             visible: Tokens.controlsCrate
             anchors.verticalCenter: parent.verticalCenter
-            name: AudioOutput.outputGlyph(rootMod.outputKind)
+            name: outputKnown.drawn ? outputKnown.name : "speaker"
             size: 18
             color: rootMod.muted
                 ? Qt.rgba(rootMod.contentColor.r, rootMod.contentColor.g, rootMod.contentColor.b, 0.35)

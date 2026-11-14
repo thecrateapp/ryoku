@@ -33,15 +33,18 @@ ShellRoot {
         running: true
         onTriggered: {
             let err = "";
+            const oldKit = Quickshell.env("PROBE_KIT") === "old";
             const a = part(audioWidget, "audioGlyph");
             const b = part(btWidget, "bluetoothGlyph");
             if (!Tokens.controlsCrate) err = "crate style not read";
             else if (!a || !a.visible || !a.drawn) err = "audio glyph not drawn: " + (a && a.name);
             else if (["speaker", "laptop", "monitor", "headphones-round", "headphones-round-sound", "speaker-minimalistic"].indexOf(a.name) < 0)
                 err = "audio glyph " + a.name;
-            else if (!b || !b.drawn || ["bluetooth-square", "bluetooth-square-off"].indexOf(b.name) < 0)
-                err = "bluetooth glyph " + (b && b.name) + " drawn=" + (b && b.drawn);
-            for (let i = 0; i < names.count && !err; i++)
+            else if (!b || !b.drawn)
+                err = "bluetooth glyph not drawn: " + (b && b.name);
+            else if (!oldKit && ["bluetooth-square", "bluetooth-square-off"].indexOf(b.name) < 0)
+                err = "bluetooth glyph " + b.name;
+            for (let i = 0; i < names.count && !err && !oldKit; i++)
                 if (!names.itemAt(i).drawn) err = "kit lacks " + names.itemAt(i).name;
             console.log(err ? "BAR-DEVICE-GLYPHS-PROBE-FAIL " + err : "BAR-DEVICE-GLYPHS-PROBE-PASS");
             Qt.quit();

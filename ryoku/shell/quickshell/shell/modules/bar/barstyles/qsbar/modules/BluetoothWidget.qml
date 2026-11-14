@@ -50,13 +50,17 @@ Item {
         anchors.centerIn: parent
         spacing: 4
 
+        Kit.Glyph { id: squareKnown; visible: false; name: "bluetooth-square" }
+
         // crate-mark: the kit catalogue's Solar glyph at 18 px, in the widget's colour;
         // the squared rune, struck through while the radio is off
         Kit.Glyph {
             objectName: "bluetoothGlyph"
             visible: Tokens.controlsCrate
             anchors.verticalCenter: parent.verticalCenter
-            name: rootMod.btOn ? "bluetooth-square" : "bluetooth-square-off"
+            // a kit from before the squared rune falls back to its own glyph,
+            // never a missing name drawn as text
+            name: squareKnown.drawn ? (rootMod.btOn ? "bluetooth-square" : "bluetooth-square-off") : rootMod.iconN
             size: 18
             color: rootMod.connected
                 ? (root.widgetHasFill("G15") ? rootMod.contentColor : root.seal)
