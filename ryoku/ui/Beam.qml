@@ -21,6 +21,9 @@ Item {
     property real stepSize: 0
     property bool interactive: true
     property bool indeterminate: false
+    // retired: every indeterminate Beam scans both ways now; kept so a shell
+    // built before that (the reload cover set it) still loads against this kit
+    property bool bounce: true
     property bool bipolar: false
     // show the thumb while an owner that handles input itself (a QQC.Slider
     // drawing through a Beam) is hovered, pressed or focused
