@@ -30,7 +30,12 @@ Item {
     function activateDiscover() { routeRequested("discover", ""); }
     function activateCategory(id) { routeRequested("discover", id); }
     function activateLibrary() { routeRequested("library", ""); }
-    function focusSearch() { searchField.forceActiveFocus(); }
+    function focusSearch() {
+        if (Tokens.controlsCrate)
+            kitSearch.grabFocus();
+        else
+            searchField.forceActiveFocus();
+    }
     function sealFor(id) {
         const seals = {
             "lockscreens": "施錠",
@@ -211,9 +216,35 @@ Item {
             }
         }
 
+        // under crate the kit's Field with the search glyph; stock keeps its box
+        Field {
+            id: kitSearch
+            objectName: Tokens.controlsCrate ? "ryostore-header-search" : ""
+            visible: Tokens.controlsCrate
+            width: parent.width
+            toolbar: true
+            glyph: "search"
+            inputObjectName: Tokens.controlsCrate ? "ryostore-header-search-field" : ""
+            placeholder: header.offline ? I18n.tr("Search offline") : I18n.tr("Search the store")
+            clearOnEscape: false
+            Component.onCompleted: text = header.query
+            onEdited: value => header.queryEdited(value)
+            onFocusedChanged: if (focused) header.searchActivated()
+            onEscaped: header.searchEscaped()
+
+            Connections {
+                target: header
+                function onQueryChanged() {
+                    if (kitSearch.text !== header.query)
+                        kitSearch.text = header.query;
+                }
+            }
+        }
+
         Rectangle {
             id: searchBox
-            objectName: "ryostore-header-search"
+            objectName: Tokens.controlsCrate ? "" : "ryostore-header-search"
+            visible: !Tokens.controlsCrate
             width: parent.width
             height: 36
             radius: Tokens.radius
@@ -232,7 +263,7 @@ Item {
 
             TextInput {
                 id: searchField
-                objectName: "ryostore-header-search-field"
+                objectName: Tokens.controlsCrate ? "" : "ryostore-header-search-field"
                 anchors {
                     left: searchGlyph.right; leftMargin: Tokens.s2
                     right: parent.right; rightMargin: Tokens.s3
@@ -369,12 +400,15 @@ Item {
             width: navColumn.width
             height: Tokens.rowH
             radius: Tokens.radius
-            // a theme that drops the selection fill slides a mark bar instead
+            // a theme that drops the selection fill slides a mark bar instead;
+            // under crate the current row takes the 1 px pick edge, as every rail does
             color: Tokens.selectFill ? Tokens.bone : "transparent"
+            border.width: Tokens.controlsCrate ? Tokens.border : 0
+            border.color: Tokens.pickEdge
             opacity: navScroll.hasSelection ? 1 : 0
 
             Rectangle {
-                visible: !Tokens.selectFill
+                visible: !Tokens.selectFill && !Tokens.controlsCrate
                 anchors.left: parent.left
                 anchors.verticalCenter: parent.verticalCenter
                 width: 2; height: parent.height - Tokens.s4; radius: 1

@@ -6,7 +6,8 @@ import Ryoku.Ui.Singletons
 // per provider; the Decor category switches between its picture catalogues.
 // Entries are plain names, or {key, label} pairs when the label and the value
 // differ. The leading All plate and the trailing plate are optional, so a strip
-// can be just its entries.
+// can be just its entries. Under crate the strip is the kit's Tabs, the same
+// entries as keyed tabs.
 Item {
     id: tabs
 
@@ -22,6 +23,24 @@ Item {
     signal picked(string filter)
     signal installAll()
     implicitHeight: 44
+
+    function entryKey(entry) {
+        return (entry && entry.key !== undefined) ? String(entry.key) : String(entry);
+    }
+    // the strip's entries as keyed tabs: the All plate, the providers, the trailing plate
+    readonly property var tabEntries: {
+        const out = [];
+        if (tabs.allLabel !== "")
+            out.push({ key: "", label: tabs.allLabel });
+        for (const entry of tabs.providers) {
+            const label = (entry && entry.label !== undefined) ? String(entry.label) : String(entry);
+            out.push({ key: tabs.entryKey(entry), label: label,
+                       note: entry && entry.note !== undefined ? String(entry.note) : "" });
+        }
+        if (tabs.trailingLabel !== "")
+            out.push({ key: tabs.trailingKey, label: tabs.trailingLabel });
+        return out;
+    }
 
     component Plate: Rectangle {
         id: plate
@@ -98,15 +117,25 @@ Item {
             right: installAllBtn.left; rightMargin: Tokens.s4
             verticalCenter: parent.verticalCenter
         }
-        height: 30
-        contentWidth: plateRow.width
+        height: Tokens.controlsCrate ? 34 : 30
+        contentWidth: Tokens.controlsCrate ? kitTabs.width : plateRow.width
         contentHeight: height
         clip: true
         flickableDirection: Flickable.HorizontalFlick
         boundsBehavior: Flickable.StopAtBounds
 
+        Tabs {
+            id: kitTabs
+            objectName: "ryostore-provider-kit-tabs"
+            visible: Tokens.controlsCrate
+            options: tabs.tabEntries
+            current: tabs.active
+            onChose: key => tabs.picked(key)
+        }
+
         Row {
             id: plateRow
+            visible: !Tokens.controlsCrate
             height: parent.height
             spacing: Tokens.s2
 

@@ -12,7 +12,7 @@ Rectangle {
 
     implicitWidth: 1180
     implicitHeight: 760
-    color: Tokens.paper
+    color: Tokens.controlsCrate ? Tokens.popover : Tokens.paper
     focus: true
 
     property string view: "discover"
@@ -952,7 +952,7 @@ Rectangle {
                         ? parent.width - iconSize - Tokens.s3 * 3 : parent.width * 0.52
                 width: productGrid.cellW
                 height: productGrid.cellH
-                color: Tokens.paper
+                color: Tokens.controlsCrate ? Tokens.popover : Tokens.paper
                 border.width: Tokens.border
                 border.color: Tokens.line
 

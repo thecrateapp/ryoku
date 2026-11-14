@@ -15,7 +15,8 @@ ShellRoot {
         readonly property bool cramped: win.fitW < 1180 || win.fitH < 760
         minimumSize: Qt.size(Math.min(980, win.fitW), Math.min(640, win.fitH))
         maximumSize: win.cramped ? Qt.size(win.fitW, win.fitH) : Qt.size(16777215, 16777215)
-        color: Tokens.paper
+        // a large working window is opaque: the panel grey under crate, no blur
+        color: Tokens.controlsCrate ? Tokens.popover : Tokens.paper
         onClosed: app.requestQuit()
 
         App {

@@ -1,5 +1,6 @@
 import QtQuick
 import Ryoku.Ui
+import Ryoku.Ui as Kit
 import Ryoku.Ui.Singletons
 import "lib/store.js" as StoreLogic
 
@@ -33,11 +34,31 @@ Item {
     Accessible.name: [title, summary].filter(Boolean).join(", ")
     Accessible.onPressAction: hero.activated(hero.current)
 
-    component Chip: Text {
-        color: Tokens.inkMuted
-        font.family: Tokens.mono
-        font.pixelSize: Tokens.fTiny
-        font.letterSpacing: Tokens.trackLabel
+    // a tag on the featured app: a tracked mono word in stock, the kit's chip
+    // (read only) under crate
+    component HeroTag: Item {
+        id: tag
+        property string text: ""
+        property color color: Tokens.inkMuted
+        implicitWidth: Tokens.controlsCrate ? kitTag.implicitWidth : stockTag.implicitWidth
+        implicitHeight: Tokens.controlsCrate ? kitTag.implicitHeight : stockTag.implicitHeight
+        Text {
+            id: stockTag
+            visible: !Tokens.controlsCrate
+            text: tag.text
+            color: tag.color
+            font.family: Tokens.mono
+            font.pixelSize: Tokens.fTiny
+            font.letterSpacing: Tokens.trackLabel
+        }
+        Kit.Chip {
+            id: kitTag
+            objectName: "ryostore-hero-tag"
+            visible: Tokens.controlsCrate
+            interactive: false
+            text: tag.text
+            labelInk: Qt.colorEqual(tag.color, Tokens.inkMuted) ? Tokens.inkSecondary : tag.color
+        }
     }
 
     function step(delta) {
@@ -143,17 +164,17 @@ Item {
                 }
 
                 Row {
-                    spacing: Tokens.s3
+                    spacing: Tokens.controlsCrate ? Tokens.s2 : Tokens.s3
 
-                    Chip {
+                    HeroTag {
                         text: hero.categoryTag
                         visible: text !== ""
                     }
-                    Chip {
+                    HeroTag {
                         text: I18n.tr("VERIFIED")
                         visible: hero.verified
                     }
-                    Chip {
+                    HeroTag {
                         text: hero.statusTag === "" ? "" : I18n.tr(hero.statusTag)
                         visible: text !== ""
                         color: StoreLogic.isUnavailable(hero.current) ? Tokens.alert : Tokens.ink

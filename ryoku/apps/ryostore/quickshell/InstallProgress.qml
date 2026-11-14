@@ -1,4 +1,5 @@
 import QtQuick
+import Ryoku.Ui
 import Ryoku.Ui.Singletons
 
 Item {
@@ -148,11 +149,22 @@ Item {
             }
         }
 
+        // under crate the kit Beam: the fill for a known total, its sweep otherwise
+        Beam {
+            objectName: "ryostore-install-beam"
+            width: parent.width
+            height: 8
+            visible: Tokens.controlsCrate && root.showingProgress
+            interactive: false
+            value: root.fraction
+            indeterminate: !root.determinate
+        }
+
         Rectangle {
             id: track
             width: parent.width
             height: Math.max(3, Tokens.border * 3)
-            visible: root.showingProgress
+            visible: !Tokens.controlsCrate && root.showingProgress
             color: Tokens.lineSoft
             clip: true
 
@@ -201,6 +213,6 @@ Item {
         duration: 1100
         easing.type: Easing.InOutSine
         loops: Animation.Infinite
-        running: root.showingProgress && !root.determinate && !root.reducedMotion && root.visible
+        running: !Tokens.controlsCrate && root.showingProgress && !root.determinate && !root.reducedMotion && root.visible
     }
 }

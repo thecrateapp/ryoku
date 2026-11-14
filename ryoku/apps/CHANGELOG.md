@@ -2,6 +2,16 @@
 
 ## Unreleased
 
+### Changed
+- `ryostore/`: **Crate Ryostore uses the shared kit.** Under crate the window is
+  the opaque panel grey; install progress is a Beam (a sweep when the size is
+  unknown); provider, category and sort strips are the kit's tabs with their
+  counts; product cards and app tiles mark the picked one with the pick edge
+  and its dot; the featured app's tags are chips; the search fields are the kit
+  field with the search glyph; a product's links are plain icon buttons; the
+  rail marks its current section with the pick edge. The stock look is
+  unchanged (`ryostore/quickshell/`).
+
 ### Added
 - `ryovm/`, `ryostore/`: **Ryoport and Ryostore follow the theme style.**
   Their rails, group captions, selected rows and cards, focus edges and

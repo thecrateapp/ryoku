@@ -8,7 +8,8 @@
 # runs from a scratch config root that links every entry of the shell's root but
 # its shell.qml, since Quickshell refuses relative imports outside the config
 # root: a scene imports "modules/<name>" as the shell does.
-# The Hub renders every routed page into hub-LOOK-SECTION.png.
+# The Hub renders every routed page into hub-LOOK-SECTION.png; an app-* scene
+# renders one of the Wave 4 apps through app-scene.sh.
 set -euo pipefail
 here=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 repo=$(cd "$here/../../.." && pwd)
@@ -18,6 +19,7 @@ out=${2:?usage: render.sh SCENE OUT_DIR}
 mkdir -p "$out"
 case $scene in
   shell-states) exec "$here/shell-states.sh" "$out" ;;
+  app-*) exec "$here/app-scene.sh" "$scene" "$out" ;;
   hub|hub-states|hub-dialogs)
     case $scene in
       hub) marker=HUB-CAPTURE-DONE ;;

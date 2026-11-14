@@ -1,4 +1,5 @@
 import QtQuick
+import Ryoku.Ui
 import Ryoku.Ui.Singletons
 import "lib/store.js" as StoreLogic
 
@@ -23,15 +24,31 @@ Item {
     readonly property string statusTag: StoreLogic.statusTag(item)
     readonly property color fallbackSurface: item && item.surface ? item.surface : Tokens.paperLift
     readonly property string initials: StoreLogic.initials(item, title)
+    readonly property bool crate: Tokens.controlsCrate
 
     Accessible.role: Accessible.Button
     Accessible.name: [title, summary, status.map(s => I18n.tr(s)).join(", ")].filter(Boolean).join(", ")
     Accessible.onPressAction: card.activated()
 
+    // under crate the kit PickCard draws the plate and its pick; the row of
+    // icon and text moves into it, below its corner mark
+    PickCard {
+        id: plate
+        objectName: "ryostore-tile-pick"
+        anchors.fill: parent
+        anchors.margins: Tokens.s2
+        visible: card.crate
+        interactive: false
+        hotHint: card.hovered
+        picked: card.selected
+        focusVisible: card.focusVisible
+    }
+
     Rectangle {
         id: frame
         anchors.fill: parent
         anchors.margins: Tokens.s2
+        visible: !card.crate
         radius: Tokens.radius
         color: card.selected ? Tokens.tint5
               : (card.pressed ? Tokens.tint16 : (card.hovered ? Tokens.tint5 : Tokens.paper))
@@ -54,6 +71,7 @@ Item {
         }
 
         Row {
+            parent: card.crate ? plate : frame
             anchors.fill: parent
             anchors.margins: Tokens.s3
             spacing: Tokens.s3
@@ -88,7 +106,7 @@ Item {
                             verticalCenter: parent.verticalCenter
                         }
                         text: card.title
-                        color: Tokens.ink
+                        color: card.crate ? plate.titleInk : Tokens.ink
                         font.family: Tokens.display
                         font.pixelSize: Tokens.fRow
                         font.weight: Tokens.displayWeightSet ? Tokens.displayWeight : Font.Medium
@@ -125,7 +143,7 @@ Item {
                     width: parent.width
                     text: card.summary
                     visible: text !== ""
-                    color: Tokens.inkDim
+                    color: card.crate ? plate.subInk : Tokens.inkDim
                     font.family: Tokens.ui
                     font.pixelSize: Tokens.fSmall
                     maximumLineCount: 2

@@ -1,8 +1,10 @@
 import QtQuick
+import Ryoku.Ui
 import Ryoku.Ui.Singletons
 
 // A local category filter. Typing narrows the loaded category in place; the
-// header search still reaches the whole store or Flathub.
+// header search still reaches the whole store or Flathub. Under crate it is the
+// kit's Field with the search glyph.
 Item {
     id: field
 
@@ -16,10 +18,33 @@ Item {
 
     implicitHeight: 36
 
-    onValueChanged: if (input.text !== value) input.text = value
+    onValueChanged: {
+        if (input.text !== value)
+            input.text = value;
+        if (kitField.text !== value)
+            kitField.text = value;
+    }
+
+    Field {
+        id: kitField
+        anchors.fill: parent
+        visible: Tokens.controlsCrate
+        toolbar: true
+        glyph: "search"
+        placeholder: field.placeholder
+        inputObjectName: Tokens.controlsCrate ? field.fieldObjectName : ""
+        clearOnEscape: false
+        onEdited: value => field.edited(value)
+        onAccepted: field.accepted()
+        onEscaped: {
+            kitField.text = "";
+            field.cleared();
+        }
+    }
 
     Rectangle {
         anchors.fill: parent
+        visible: !Tokens.controlsCrate
         radius: Tokens.radius
         color: input.activeFocus ? Tokens.tint5 : Tokens.paper
         border.width: Tokens.border
@@ -36,7 +61,7 @@ Item {
 
         TextInput {
             id: input
-            objectName: field.fieldObjectName
+            objectName: Tokens.controlsCrate ? "" : field.fieldObjectName
             anchors {
                 left: glyph.right; leftMargin: Tokens.s2
                 right: parent.right; rightMargin: Tokens.s3
@@ -74,6 +99,6 @@ Item {
         }
     }
 
-    HoverHandler { cursorShape: Qt.IBeamCursor }
-    TapHandler { onTapped: input.forceActiveFocus() }
+    HoverHandler { enabled: !Tokens.controlsCrate; cursorShape: Qt.IBeamCursor }
+    TapHandler { enabled: !Tokens.controlsCrate; onTapped: input.forceActiveFocus() }
 }

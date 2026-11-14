@@ -253,40 +253,57 @@ FocusScope {
         NumberAnimation { duration: Tokens.swap; easing.type: Tokens.ease }
     }
 
-    // A provenance link as a small icon action: a Nerd Font glyph in a hairline
-    // chip that opens the URL in the user's browser. Hidden when the product
-    // names no such link. Mirrors the header's account-action affordance.
-    component LinkChip: Rectangle {
+    // A provenance link as a small icon action that opens the URL in the user's
+    // browser. Hidden when the product names no such link. Stock draws a Nerd
+    // Font glyph in a hairline chip, mirroring the header's account action;
+    // under crate it is the kit's plateless IconButton with a Solar glyph.
+    component LinkChip: Item {
+        id: link
         property string glyph: ""
+        property string kitGlyph: ""
         property string url: ""
         property string label: ""
-        implicitWidth: 30
-        implicitHeight: 26
-        radius: Tokens.radius
-        color: activeFocus || linkHover.hovered ? Tokens.tint10 : "transparent"
-        border.width: Tokens.border
-        border.color: activeFocus ? Tokens.bone : (linkHover.hovered ? Tokens.lineStrong : Tokens.line)
-        activeFocusOnTab: visible
-        Behavior on color { ColorAnimation { duration: Tokens.snap } }
+        implicitWidth: Tokens.controlsCrate ? 32 : 30
+        implicitHeight: Tokens.controlsCrate ? 32 : 26
         Accessible.role: Accessible.Button
         Accessible.name: label
         Accessible.onPressAction: openLink()
         function openLink() { if (url !== "") Qt.openUrlExternally(url); }
-        Keys.onPressed: event => {
-            if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter || event.key === Qt.Key_Space) {
-                openLink();
-                event.accepted = true;
+
+        IconButton {
+            objectName: "ryostore-link-button"
+            anchors.fill: parent
+            visible: Tokens.controlsCrate
+            enabled: link.visible
+            glyph: link.kitGlyph
+            onClicked: link.openLink()
+        }
+
+        Rectangle {
+            anchors.fill: parent
+            visible: !Tokens.controlsCrate
+            radius: Tokens.radius
+            color: activeFocus || linkHover.hovered ? Tokens.tint10 : "transparent"
+            border.width: Tokens.border
+            border.color: activeFocus ? Tokens.bone : (linkHover.hovered ? Tokens.lineStrong : Tokens.line)
+            activeFocusOnTab: visible && link.visible
+            Behavior on color { ColorAnimation { duration: Tokens.snap } }
+            Keys.onPressed: event => {
+                if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter || event.key === Qt.Key_Space) {
+                    link.openLink();
+                    event.accepted = true;
+                }
             }
+            Text {
+                anchors.centerIn: parent
+                text: link.glyph
+                color: parent.activeFocus ? Tokens.focus : Tokens.inkDim
+                font.family: Tokens.mono
+                font.pixelSize: Tokens.fBody
+            }
+            HoverHandler { id: linkHover; cursorShape: Qt.PointingHandCursor }
+            TapHandler { onTapped: link.openLink() }
         }
-        Text {
-            anchors.centerIn: parent
-            text: glyph
-            color: parent.activeFocus ? Tokens.focus : Tokens.inkDim
-            font.family: Tokens.mono
-            font.pixelSize: Tokens.fBody
-        }
-        HoverHandler { id: linkHover; cursorShape: Qt.PointingHandCursor }
-        TapHandler { onTapped: openLink() }
     }
 
     // Modal input sink: swallow every pointer event that misses an interactive
@@ -303,7 +320,7 @@ FocusScope {
 
     Rectangle {
         anchors.fill: parent
-        color: Tokens.paper
+        color: Tokens.controlsCrate ? Tokens.popover : Tokens.paper
         opacity: detail.transitionProgress
     }
 
@@ -332,7 +349,7 @@ FocusScope {
         height: detail.filmstripHeight
         visible: detail.filmstripHeight > 0
         opacity: detail.transitionProgress
-        color: Tokens.paper
+        color: Tokens.controlsCrate ? Tokens.popover : Tokens.paper
         border.width: Tokens.border
         border.color: Tokens.line
 
@@ -664,6 +681,7 @@ FocusScope {
                 LinkChip {
                     objectName: "ryostore-detail-upstream"
                     glyph: "\uf09b"
+                    kitGlyph: "link-round"
                     url: parent.upstreamUrl
                     visible: url !== ""
                     label: I18n.tr("Open the project page")
@@ -672,6 +690,7 @@ FocusScope {
                 LinkChip {
                     objectName: "ryostore-detail-discord"
                     glyph: "\uf1ff"
+                    kitGlyph: "chat-round-dots"
                     url: parent.discordUrl
                     visible: url !== ""
                     label: I18n.tr("Open the Discord community")
@@ -1023,7 +1042,7 @@ FocusScope {
         Rectangle {
             id: lightboxBackdrop
             anchors.fill: parent
-            color: Tokens.paper
+            color: Tokens.controlsCrate ? Tokens.popover : Tokens.paper
             MouseArea {
                 anchors.fill: parent
                 function hits(item, x, y) {
