@@ -1478,17 +1478,16 @@ AbstractWidget {
     // Selected-but-not-dragging feedback (WidgetCanvas marquee), distinct from
     // the drag lift. Lives on the widget so it rides a group move with no
     // coordinate mapping.
-    Rectangle {
+    // The halo, the readout and the two grips are drawn by their own Items
+    // (WidgetSelectionHalo, WidgetSizeReadout, WidgetEditGrip), which take the
+    // kit's drawing under crate and load offscreen without a compositor.
+    WidgetSelectionHalo {
         id: selectionHalo
         z: 97
         visible: opacity > 0.001
         opacity: root.selected ? 1 : 0
         anchors.fill: parent
         anchors.margins: -8
-        radius: Appearance.rounding.large
-        color: Qt.alpha(Appearance.colors.colPrimary, 0.08)
-        border.color: Appearance.colors.colPrimary
-        border.width: 2
         Behavior on opacity {
             animation: Appearance.animation.elementMoveFast.numberAnimation.createObject(selectionHalo)
         }
@@ -1498,27 +1497,16 @@ AbstractWidget {
     // The widget itself is the preview now, so there is no outline — only the
     // number, which is the one thing the widget cannot tell you on its own.
     // Counter-scaled so it stays legible however far the widget has been taken.
-    Rectangle {
+    WidgetSizeReadout {
         id: resizeReadout
         z: 98
         visible: root.resizePreviewActive
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.bottom: parent.top
         anchors.bottomMargin: 10 / Math.max(0.001, root.effectiveScale)
-        implicitWidth: readoutText.implicitWidth + 18
-        implicitHeight: readoutText.implicitHeight + 8
-        radius: Appearance.rounding.full
-        color: Appearance.colors.colPrimary
+        text: root.resizePreviewPercent + "%"
         scale: 1 / Math.max(0.001, root.effectiveScale)
         transformOrigin: Item.Bottom
-
-        StyledText {
-            id: readoutText
-            anchors.centerIn: parent
-            text: root.resizePreviewPercent + "%"
-            font.pixelSize: Appearance.font.pixelSize.smaller
-            color: Appearance.colors.colOnPrimary
-        }
     }
 
     // ── Resize grip ──────────────────────────────────────────────────────────
@@ -1547,30 +1535,14 @@ AbstractWidget {
         height: 40
         z: 99
 
-        Rectangle {
+        WidgetEditGrip {
             id: grip
             anchors.centerIn: parent
             anchors.horizontalCenterOffset: -3
             anchors.verticalCenterOffset: -3
-            width: 22
-            height: 22
-            radius: 7
-            color: resizeDragArea.dragging || resizeDragArea.containsMouse
-                ? Appearance.colors.colPrimary
-                : Appearance.colors.colSecondaryContainer
-
-            Behavior on color {
-                animation: Appearance.animation.elementMoveFast.colorAnimation.createObject(grip)
-            }
-
-            MaterialSymbol {
-                anchors.centerIn: parent
-                text: "open_in_full"
-                iconSize: 13
-                color: resizeDragArea.dragging || resizeDragArea.containsMouse
-                    ? Appearance.colors.colOnPrimary
-                    : Appearance.colors.colOnSecondaryContainer
-            }
+            symbol: "open_in_full"
+            symbolSize: 13
+            hot: resizeDragArea.dragging || resizeDragArea.containsMouse
         }
 
         MouseArea {
@@ -1616,30 +1588,14 @@ AbstractWidget {
         height: 40
         z: 99
 
-        Rectangle {
+        WidgetEditGrip {
             id: menuGrip
             anchors.centerIn: parent
             anchors.horizontalCenterOffset: -3
             anchors.verticalCenterOffset: 3
-            width: 22
-            height: 22
-            radius: 7
-            color: menuDragArea.containsMouse
-                ? Appearance.colors.colPrimary
-                : Appearance.colors.colSecondaryContainer
-
-            Behavior on color {
-                animation: Appearance.animation.elementMoveFast.colorAnimation.createObject(menuGrip)
-            }
-
-            MaterialSymbol {
-                anchors.centerIn: parent
-                text: "more_horiz"
-                iconSize: 15
-                color: menuDragArea.containsMouse
-                    ? Appearance.colors.colOnPrimary
-                    : Appearance.colors.colOnSecondaryContainer
-            }
+            symbol: "more_horiz"
+            symbolSize: 15
+            hot: menuDragArea.containsMouse
         }
 
         MouseArea {

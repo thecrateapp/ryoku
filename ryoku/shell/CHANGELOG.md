@@ -1,6 +1,18 @@
 # Changelog: ryoku/shell/
 
 ## Unreleased
+- **Desktop widgets wear the kit's edit chrome under crate.** In Edit Mode a
+  selected widget's halo is the pick wash in the 1 px pick edge, its size
+  readout a mono tag on the popover ground, and its resize and menu grips
+  popover knobs in a hairline with Solar glyphs, warming to the mark. The card
+  the utility widgets sit on keeps the scheme's fill as desktop content, takes
+  the 6 px corner and a hairline, and drops its filled shadow; widget buttons
+  draw Solar glyphs; the missing-widget placeholder is a glass card edged in
+  the alert role. The halo, readout, grips and card move into
+  WidgetSelectionHalo, WidgetSizeReadout, WidgetEditGrip and WidgetCard, so the
+  probe and the stage scene load them without a compositor. The stock look is
+  unchanged (`quickshell/stage/modules/ii/background/widgets/`;
+  `tests/ui/stage-kit-probe.sh`, `tests/visual/surfaces/scenes/stage.qml`).
 - **The Stage editor draws with the shared kit under crate.** The edit toolbar,
   the catalogue panel, the widget and bar menus, the widget options card and
   the guide card are the one glass (Tokens.glass in a 1 px line at the 6 px

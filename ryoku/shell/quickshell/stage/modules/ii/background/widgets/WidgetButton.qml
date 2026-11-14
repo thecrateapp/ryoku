@@ -2,6 +2,8 @@ import QtQuick
 import stage.modules.common
 import stage.modules.common.widgets
 import stage.modules.common.functions
+import Ryoku.Ui as Ui
+import Ryoku.Ui.Singletons
 /*
  * A button on a desktop widget's card: a fill with an icon and/or a label.
  * Hover and press tint the fill with its own content colour (8 % / 16 %), the
@@ -22,6 +24,9 @@ RippleButton {
     property var labelAxes: ({ "wght": 600, "wdth": 100, "ROND": 100 })
     property real restRadius: Math.min(width, height) / 2
     property real contentSpacing: 6
+    // Under crate the symbol is the kit's Solar glyph (the font's where the
+    // catalogue has none) and the label the kit's face.
+    readonly property bool crate: Tokens.controlsCrate
 
     opacity: 1
     colBackground: root.colFill
@@ -37,9 +42,18 @@ RippleButton {
             anchors.centerIn: parent
             spacing: root.contentSpacing
 
+            Ui.Glyph {
+                objectName: "widgetButtonGlyph"
+                anchors.verticalCenter: parent.verticalCenter
+                visible: root.crate && root.symbol !== ""
+                name: root.symbol
+                size: root.symbolSize
+                color: root.colContent
+            }
+
             MaterialSymbol {
                 anchors.verticalCenter: parent.verticalCenter
-                visible: root.symbol !== ""
+                visible: !root.crate && root.symbol !== ""
                 text: root.symbol
                 fill: root.symbolFilled ? 1 : 0
                 iconSize: root.symbolSize
@@ -55,7 +69,7 @@ RippleButton {
                 minimumPixelSize: 9
                 text: root.label
                 color: root.colContent
-                font.family: Appearance.font.family.main
+                font.family: root.crate ? Tokens.ui : Appearance.font.family.main
                 font.pixelSize: root.labelSize
                 font.variableAxes: root.labelAxes
             }

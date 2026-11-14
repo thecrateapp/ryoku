@@ -7,6 +7,7 @@ import stage
 import stage.services
 import stage.modules.common
 import stage.modules.ii.editMode
+import stage.modules.ii.background.widgets
 
 // The Stage editor's chrome in both looks. Under crate: the toolbar, the
 // catalogue panel, the widget and bar menus and the guide card are the one
@@ -61,6 +62,60 @@ ShellRoot {
             id: barMenu
             x: 300
             y: 710
+        }
+
+        // A widget's own edit chrome and the shared card. A whole widget
+        // reads the window manager's workspaces, which needs a compositor, so
+        // the probe loads the Items it draws them with.
+        Item {
+            id: cardWidget
+            x: 1110
+            y: 720
+            width: 200
+            height: 120
+
+            WidgetCard {
+                anchors.fill: parent
+                radius: Tokens.controlsCrate ? Tokens.radius : Appearance.rounding.large
+                color: WidgetColorScheme.cardBgColor
+            }
+            WidgetSelectionHalo {
+                anchors.fill: parent
+                anchors.margins: -8
+            }
+            WidgetSizeReadout {
+                y: -30
+                text: "120%"
+            }
+            WidgetEditGrip {
+                objectName: "widgetResizeGrip"
+                x: 170
+                y: 90
+                symbol: "open_in_full"
+            }
+            WidgetEditGrip {
+                objectName: "widgetMenuGrip"
+                x: 170
+                y: 8
+                symbol: "more_horiz"
+                symbolSize: 15
+            }
+            WidgetButton {
+                id: widgetButton
+                x: 20
+                y: 20
+                width: 80
+                height: 40
+                symbol: "play_arrow"
+                label: "Go"
+            }
+        }
+
+        MissingWidgetPlaceholder {
+            id: placeholder
+            widgetId: "ext:clock"
+            widgetX: 1350
+            widgetY: 720
         }
 
         ColumnLayout {
@@ -195,12 +250,38 @@ ShellRoot {
             && get(pageHeader, "editMenuKitAction").visible === crate, "the menu header's ways out are kit IconButtons");
     }
 
+    function verifyWidgets(crate) {
+        // the shared card: content on the desktop, the scheme's fill kept
+        const card = get(cardWidget, "widgetCard");
+        check(card.border.width === (crate ? Tokens.border : 0)
+            && (!crate || same(card.border.color, Tokens.line)), "the card's hairline under crate only");
+        // the edit chrome every widget carries
+        const halo = get(cardWidget, "widgetSelectionHalo");
+        check(same(halo.color, crate ? Tokens.pickFill : Qt.alpha(Appearance.colors.colPrimary, 0.08))
+            && same(halo.border.color, crate ? Tokens.pickEdge : Appearance.colors.colPrimary)
+            && halo.border.width === (crate ? Tokens.border : 2), "the selection halo");
+        for (const name of ["widgetResizeGrip", "widgetMenuGrip"]) {
+            const grip = get(cardWidget, name);
+            check(same(grip.color, crate ? Tokens.popover : Appearance.colors.colSecondaryContainer)
+                && grip.border.width === (crate ? Tokens.border : 0)
+                && grip.radius === (crate ? Tokens.radius : 7), name + " is a popover knob under crate");
+            check(get(grip, "widgetGripGlyph").visible === crate, name + "'s glyph is the kit's under crate");
+        }
+        const readout = get(cardWidget, "widgetResizeReadout");
+        check(same(readout.color, crate ? Tokens.popover : Appearance.colors.colPrimary)
+            && readout.radius === (crate ? Tokens.radius : Appearance.rounding.full), "the size readout");
+        check(get(widgetButton, "widgetButtonGlyph").visible === crate, "a widget button's symbol is a Glyph under crate");
+        check(same(placeholder.color, crate ? Tokens.glass : Qt.rgba(0, 0, 0, 0.55))
+            && same(placeholder.warnInk, crate ? Tokens.alert : "#ffaaaa"), "the missing-widget placeholder");
+    }
+
     Timer {
         id: crateCheck
         interval: 800
         onTriggered: {
             try {
                 probe.verify(true);
+                probe.verifyWidgets(true);
                 Tokens.controlsCrate = false;
                 Tokens.accentMarks = false;
                 Tokens.selectFill = true;
@@ -218,6 +299,7 @@ ShellRoot {
         onTriggered: {
             try {
                 probe.verify(false);
+                probe.verifyWidgets(false);
                 console.log("STAGE-KIT-PROBE-PASS");
             } catch (e) {
                 console.log("STAGE-KIT-PROBE-FAIL " + e.message);

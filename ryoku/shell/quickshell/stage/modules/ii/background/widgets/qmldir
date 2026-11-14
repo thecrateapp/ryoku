@@ -6,4 +6,8 @@ WidgetStateManager 1.0 WidgetStateManager.qml
 singleton WidgetsRegistry 1.0 WidgetsRegistry.qml
 ExpressiveCardWidget 1.0 ExpressiveCardWidget.qml
 WidgetButton 1.0 WidgetButton.qml
+WidgetCard 1.0 WidgetCard.qml
+WidgetEditGrip 1.0 WidgetEditGrip.qml
+WidgetSelectionHalo 1.0 WidgetSelectionHalo.qml
+WidgetSizeReadout 1.0 WidgetSizeReadout.qml
 WidgetTextEntry 1.0 WidgetTextEntry.qml

@@ -6,6 +6,7 @@ import stage
 import stage.services
 import stage.modules.common
 import stage.modules.ii.editMode
+import stage.modules.ii.background.widgets
 
 // The Stage editor over a stand-in wallpaper: the toolbar above the framed
 // desktop, the catalogue panel's plate and header with a page of rows, chips
@@ -40,6 +41,80 @@ ShellRoot {
                 radius: Tokens.radius
                 border.width: 1
                 border.color: Tokens.lineStrong
+            }
+
+            // A selected widget on the desktop, mid-resize: the shared card,
+            // the halo, the size readout and both grips (a whole widget reads
+            // the window manager, so the scene draws its card and chrome).
+            Item {
+                x: 120
+                y: 170
+                width: 260
+                height: 150
+
+                WidgetCard {
+                    anchors.fill: parent
+                    radius: Tokens.controlsCrate ? Tokens.radius : Appearance.rounding.large
+                    color: WidgetColorScheme.tintBackground(WidgetColorScheme.cardBgColor)
+                }
+                Column {
+                    x: 20
+                    y: 18
+                    spacing: 14
+                    Text {
+                        text: "12:40"
+                        color: WidgetColorScheme.textColorOnBg
+                        font.family: Tokens.display
+                        font.pixelSize: Tokens.fTitle
+                    }
+                    Row {
+                        spacing: 8
+                        WidgetButton {
+                            width: 96
+                            height: 40
+                            symbol: "play_arrow"
+                            label: "Start"
+                            colFill: WidgetColorScheme.accentColor
+                            colContent: WidgetColorScheme.onAccentColor
+                        }
+                        WidgetButton {
+                            width: 40
+                            height: 40
+                            symbol: "refresh"
+                            colFill: WidgetColorScheme.pillBgColor
+                            colContent: WidgetColorScheme.textColorOnBg
+                        }
+                    }
+                }
+                WidgetSelectionHalo {
+                    anchors.fill: parent
+                    anchors.margins: -8
+                }
+                WidgetSizeReadout {
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    anchors.bottom: parent.top
+                    anchors.bottomMargin: 10
+                    text: "120%"
+                }
+                WidgetEditGrip {
+                    x: parent.width - 25
+                    y: -3
+                    symbol: "more_horiz"
+                    symbolSize: 15
+                }
+                WidgetEditGrip {
+                    x: parent.width - 25
+                    y: parent.height - 19
+                    symbol: "open_in_full"
+                    hot: true
+                }
+            }
+
+            MissingWidgetPlaceholder {
+                widgetId: "ext:pomodoro"
+                widgetX: 460
+                widgetY: 200
+                visible: true
             }
 
             EditModeChromeContent {

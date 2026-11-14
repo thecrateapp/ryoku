@@ -1403,8 +1403,7 @@
   "pixel-size": 2
  },
  "ryoku/shell/quickshell/stage/modules/ii/background/widgets/MissingWidgetPlaceholder.qml": {
-  "hex-colour": 4,
-  "pixel-size": 2
+  "hex-colour": 2
  },
  "ryoku/shell/quickshell/stage/modules/ii/background/widgets/bluetooth/BluetoothEarbudsStemWidget.qml": {
   "pixel-size": 2

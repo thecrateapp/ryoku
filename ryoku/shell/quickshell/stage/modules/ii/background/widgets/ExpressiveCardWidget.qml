@@ -3,6 +3,7 @@ import stage
 import stage.services
 import stage.modules.common
 import stage.modules.common.widgets
+import Ryoku.Ui.Singletons
 /*
  * The base of the utility widgets that live on a card (To-Do, timers,
  * translator, phone, send, session, water): the lock behaviour every widget
@@ -17,7 +18,11 @@ AbstractBackgroundWidget {
     property real designHeight: 240
     property bool showCard: true
     property color cardColor: WidgetColorScheme.tintBackground(WidgetColorScheme.cardBgColor)
-    property real cardRadius: Appearance.rounding.large
+    // Under crate the card is content on the desktop, not a floating panel:
+    // it keeps the scheme's fill, takes the shared corner and a 1 px
+    // hairline, and lays no filled shadow under itself.
+    readonly property bool crateCard: Tokens.controlsCrate
+    property real cardRadius: root.crateCard ? Tokens.radius : Appearance.rounding.large
     default property alias content: contentBox.data
     readonly property alias contentItem: contentBox
 
@@ -65,19 +70,15 @@ AbstractBackgroundWidget {
 
         StyledRectangularShadow {
             target: card
-            visible: root.showCard && (Config.options.background.widgets.enableShadows ?? true)
+            visible: root.showCard && !root.crateCard && (Config.options.background.widgets.enableShadows ?? true)
         }
 
-        Rectangle {
+        WidgetCard {
             id: card
             anchors.fill: parent
             visible: root.showCard
             radius: root.cardRadius
             color: root.cardColor
-
-            Behavior on color {
-                animation: Appearance.animation.elementMoveFast.colorAnimation.createObject(this)
-            }
         }
 
         Item {
