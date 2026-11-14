@@ -1,6 +1,17 @@
 # Changelog: ryoku/shell/
 
 ## Unreleased
+- **The QS Bar's audio icon is the device picked in the volume panel.** Under
+  crate the bar sorted the default sink into a glyph with AudioOutput.js while
+  the panel's device rows took Audio.nodeIcon, so a laptop speaker read as the
+  laptop in the bar and a speaker in the panel, and Bluetooth headphones drew
+  two different headphones. Both now draw AudioOutput.sinkGlyph for the node
+  the panel shows picked, with the same plain-speaker fallback for a kit that
+  lacks a glyph; the panel's rows move into CrateOutputRows so a probe can load
+  them. The stock look is unchanged (`qsbar/modules/AudioOutput.js`,
+  `AudioWidget.qml`, `AudioData.qml`, `qsbar/panels/CrateOutputRows.qml`,
+  `VolumePanel.qml`; `AudioOutput.test.mjs`,
+  `tests/ui/audio-output-glyph-probe.sh`).
 - **Every QS Bar panel is the one glass under crate.** The panels painted the
   bar's own fill, so with the bar's frost off they took its 94 % opacity and
   read more opaque than Controls (Super+Esc). Under crate a panel's body, its

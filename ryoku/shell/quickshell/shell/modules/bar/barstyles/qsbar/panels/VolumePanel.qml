@@ -220,22 +220,10 @@ PanelWindow {
             Kit.Divider { width: parent.width; quiet: true }
 
             Kit.TrackLabel { text: I18n.tr("Device") }
-            Column {
+            Loader {
                 width: parent.width
-                spacing: 6
-                Repeater {
-                    model: volPanel.crate ? Audio.outputs.filter(Audio.alive) : []
-                    delegate: Kit.PickRow {
-                        required property var modelData
-                        width: parent ? parent.width : 0
-                        title: Audio.nodeLabel(modelData)
-                        sub: Audio.isBluez(modelData) ? I18n.tr("Bluetooth") : ""
-                        glyph: Audio.nodeIcon(modelData)
-                        glyphFont: "Material Symbols Rounded"
-                        picked: !!(Audio.sink && modelData && Audio.sink.name === modelData.name)
-                        onClicked: if (!picked) Audio.setOutput(modelData)
-                    }
-                }
+                active: volPanel.crate
+                sourceComponent: CrateOutputRows {}
             }
 
             Kit.Divider { width: parent.width; quiet: true }

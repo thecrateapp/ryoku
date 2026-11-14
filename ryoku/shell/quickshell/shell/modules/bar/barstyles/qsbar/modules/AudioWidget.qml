@@ -14,9 +14,12 @@ Item {
     readonly property int    volume:   audio.volume
     readonly property bool   muted:    audio.muted
     readonly property string volumeIcon: "graphic_eq"
-    // what the default sink plays through (headphones, a remote speaker, a
-    // monitor, the laptop...), shown as the glyph under crate
-    readonly property string outputKind: AudioOutput.outputKind(audio.sink ? audio.sink.properties : null)
+    // the default sink (a scene may hand it a stand-in) and what it plays
+    // through (headphones, a remote speaker, a monitor, the laptop...), shown
+    // as the glyph under crate: the glyph the volume panel's picked device row
+    // draws, both from AudioOutput.sinkGlyph
+    property var sink: audio.sink
+    readonly property string outputGlyph: AudioOutput.sinkGlyph(rootMod.sink, Kit.GlyphCatalog.has)
     readonly property color contentColor: root.widgetContentColor("G6", root.widgetIconColor)
 
     readonly property string tooltipText: muted
@@ -34,15 +37,11 @@ Item {
         anchors.centerIn: parent
         spacing: 4
 
-        // the output's glyph when the kit has it (an older kit lacks the newer
-        // ones), else the plain speaker
-        Kit.Glyph { id: outputKnown; visible: false; name: AudioOutput.outputGlyph(rootMod.outputKind) }
-
         Kit.Glyph {
             objectName: "audioGlyph"
             visible: Tokens.controlsCrate
             anchors.verticalCenter: parent.verticalCenter
-            name: outputKnown.drawn ? outputKnown.name : "speaker"
+            name: rootMod.outputGlyph
             size: 18
             color: rootMod.muted
                 ? Qt.rgba(rootMod.contentColor.r, rootMod.contentColor.g, rootMod.contentColor.b, 0.35)

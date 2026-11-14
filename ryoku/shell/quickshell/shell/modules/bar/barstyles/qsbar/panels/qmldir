@@ -52,3 +52,4 @@ MediaBrowserCarouselView MediaBrowserCarouselView.qml
 MediaBrowserHearthstoneView MediaBrowserHearthstoneView.qml
 MediaBrowserPanelView MediaBrowserPanelView.qml
 CratePickerCaption CratePickerCaption.qml
+CrateOutputRows CrateOutputRows.qml

@@ -16,8 +16,9 @@ Item {
     property bool poll:     false   // inert (kept for API compat)
     property int  interval: 3000    // inert
 
-    // the system default output; tracked live via PwObjectTracker below
-    readonly property var sink: Pipewire.defaultAudioSink
+    // the system default output, the same node Audio (and so the volume
+    // panel's picked device row) reads; tracked live via PwObjectTracker below
+    readonly property var sink: Audio.sink
 
     readonly property int  volume: (sink && sink.ready && sink.audio)
                                    ? Math.round(Audio.volumeOf(sink) * 100) : 0
