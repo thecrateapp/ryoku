@@ -150,6 +150,8 @@ const alias = {
   monitoring: "graph-up", noise_control_off: "soundwave-circle", piano: "music-library",
   record_voice_over: "microphone-large", spatial_audio: "headphones-round-sound", surround_sound: "speaker",
   voice_over_off: "microphone-2-off", voice_selection_off: "microphone-2-off",
+  // the desktop shortcuts' menus
+  dashboard_customize: "widget-add", file_copy: "copy", folder_open: "folder-open", language: "global", url: "link",
   // the icons the widget faces draw
   animation: "clapperboard-play", battery_std: "battery-half", bolt: "bolt", bookmark_add: "bookmark-plus",
   calendar_view_week: "calendar-minimalistic", check_box_outline_blank: "stop",

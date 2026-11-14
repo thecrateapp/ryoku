@@ -1,6 +1,14 @@
 # Changelog: ryoku/shell/
 
 ## Unreleased
+- **Desktop shortcuts use the kit's selection and Solar glyphs under crate.**
+  Selected icons, done actions and apps already in a folder take the pick
+  wash in the 1 px pick edge with the pick ink instead of the bone plate; the
+  folder's "Take out" is filled with the mark; the menus' and dialogs' icons
+  are Solar glyphs (through ShortcutSymbol) and the way back the kit
+  IconButton. The desktop icons' own plates and label pills, which the user
+  styles, stay. Stock is unchanged
+  (`quickshell/stage/modules/ii/background/shortcuts/`, `ui/tools/`).
 - **The EasyEffects widget takes the shared corner and Solar glyphs under
   crate.** Its panes, cards, rows, fields, chips and pills use the 6 px
   corner instead of the expressive ladder and the full pill, and its actions

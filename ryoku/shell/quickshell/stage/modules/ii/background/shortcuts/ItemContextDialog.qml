@@ -3,6 +3,7 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
+import Ryoku.Ui as Ui
 import Ryoku.Ui.Singletons
 import stage.modules.common
 import stage.modules.common.widgets
@@ -20,6 +21,14 @@ import stage.modules.ii.editMode
  */
 FocusScope {
     id: root
+
+    // Under crate a picked or done row is the kit's selection: the pick wash
+    // in the 1 px pickEdge with the pick ink, not the bone plate.
+    readonly property bool crate: Tokens.controlsCrate
+    readonly property color pickPlate: root.crate ? Tokens.pickFill : Tokens.bone
+    readonly property color pickRim: root.crate ? Tokens.pickEdge : Tokens.bone
+    readonly property color pickOn: root.crate ? Tokens.pickInk : Tokens.inkOnBone
+    readonly property color pickOnDim: root.crate ? Tokens.pickInkDim : Tokens.inkOnBoneDim
     property string title: ""
     property string subtitle: ""
     property url iconSource: ""
@@ -283,7 +292,7 @@ FocusScope {
                         visible: root.iconSymbol === ""
                         fillMode: Image.PreserveAspectFit
                     }
-                    MaterialSymbol {
+                    ShortcutSymbol {
                         anchors.centerIn: parent
                         visible: root.iconSymbol !== ""
                         text: root.iconSymbol
@@ -373,23 +382,24 @@ FocusScope {
                     Layout.fillWidth: true
                     implicitHeight: Tokens.rowH
                     radius: Tokens.radius
-                    color: done ? Tokens.bone
+                    objectName: "itemAction-" + (modelData.id ?? index)
+                    color: done ? root.pickPlate
                         : actionTap.pressed ? Tokens.tint16
                         : actionHover.hovered || activeFocus ? Tokens.tint10 : "transparent"
-                    border.width: activeFocus ? Tokens.border : 0
-                    border.color: Tokens.bone
+                    border.width: done && root.crate ? Tokens.border : activeFocus ? Tokens.border : 0
+                    border.color: root.pickRim
                     opacity: available ? 1 : 0.4
                     activeFocusOnTab: available
                     Behavior on color { ColorAnimation { duration: Tokens.snap } }
 
-                    MaterialSymbol {
+                    ShortcutSymbol {
                         id: actionIcon
                         anchors.left: parent.left
                         anchors.leftMargin: Tokens.s3
                         anchors.verticalCenter: parent.verticalCenter
                         text: actionRow.done ? "check" : (actionRow.modelData.icon ?? "")
                         iconSize: Tokens.s5
-                        color: actionRow.done ? Tokens.inkOnBone
+                        color: actionRow.done ? (root.crate ? Tokens.mark : Tokens.inkOnBone)
                             : actionRow.destructive ? Tokens.alert : Tokens.inkDim
                     }
                     Text {
@@ -399,7 +409,7 @@ FocusScope {
                         anchors.rightMargin: Tokens.s2
                         anchors.verticalCenter: parent.verticalCenter
                         text: actionRow.done ? root.doneText : (actionRow.modelData.text ?? "")
-                        color: actionRow.done ? Tokens.inkOnBone
+                        color: actionRow.done ? root.pickOn
                             : actionRow.destructive ? Tokens.alert : Tokens.ink
                         font.family: Tokens.ui
                         font.pixelSize: Tokens.fBody
@@ -414,7 +424,7 @@ FocusScope {
                         text: actionRow.modelData.submenu === true ? "›"
                             : actionRow.modelData.toggle === true
                                 ? (actionRow.modelData.checked === true ? "●" : "○") : ""
-                        color: actionRow.done ? Tokens.inkOnBoneDim
+                        color: actionRow.done ? root.pickOnDim
                             : actionRow.destructive ? Tokens.alert : Tokens.inkMuted
                         font.family: Tokens.ui
                         font.pixelSize: Tokens.fBody

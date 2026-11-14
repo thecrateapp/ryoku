@@ -11,6 +11,7 @@ import stage.modules.ii.editMode
 import stage.modules.ii.background.widgets
 import stage.modules.common.draw
 import stage.modules.ii.easyEffects.components
+import stage.modules.ii.background.shortcuts
 
 // The Stage editor's chrome in both looks. Under crate: the toolbar, the
 // catalogue panel, the widget and bar menus and the guide card are the one
@@ -74,6 +75,25 @@ ShellRoot {
             y: 640
             symbol: "undo"
         }
+        // A desktop shortcut's menu, its first action just done.
+        ItemContextDialog {
+            id: itemDialog
+            x: 900
+            y: 640
+            title: "Files"
+            actions: [{ "id": "open", "text": "Open", "icon": "open_in_new" },
+                      { "id": "pin", "text": "Pin", "icon": "keep" }]
+            doneId: "open"
+            doneText: "Opened"
+        }
+
+        ShortcutSymbol {
+            id: shortcutIcon
+            x: 880
+            y: 640
+            text: "folder"
+        }
+
         // An EasyEffects widget action.
         EasyEffectsButton {
             id: eeButton
@@ -312,6 +332,12 @@ ShellRoot {
             check(same(plate.color, crate ? Tokens.popover : Tokens.paper), name + "'s fill");
         }
         check(get(framing, "framingDock").radius === (crate ? Tokens.radius : Tokens.radius * 2), "the framing plate's corner");
+        // the desktop shortcuts: a done action is the kit's selection
+        const doneRow = get(itemDialog, "itemAction-open");
+        check(same(doneRow.color, crate ? Tokens.pickFill : Tokens.bone)
+            && (!crate || (doneRow.border.width === Tokens.border && same(doneRow.border.color, Tokens.pickEdge))),
+            "a done shortcut action");
+        check(get(shortcutIcon, "shortcutGlyph").visible === crate, "a shortcut icon is a Solar Glyph under crate");
         // the EasyEffects widget: one shared corner, Solar glyphs
         check(EasyEffectsStyle.radiusCard === (crate ? Tokens.radius : Appearance.rounding.verylarge)
             && EasyEffectsStyle.radiusFull === (crate ? Tokens.radius : Appearance.rounding.full),
@@ -390,7 +416,9 @@ ShellRoot {
         "../../editMode/EditWallpaperPage.qml", "../../editMode/EditStylePresets.qml",
         "../../overlay/notes/NotesContent.qml", "../../overlay/notes/NotesSketchEditor.qml",
         "system/EasyEffectsPresetWidget.qml", "../../easyEffects/EasyEffectsEditor.qml",
-        "../../easyEffects/tabs/PresetHero.qml", "../../easyEffects/components/EasyEffectsPill.qml"
+        "../../easyEffects/tabs/PresetHero.qml", "../../easyEffects/components/EasyEffectsPill.qml",
+        "../shortcuts/DesktopShortcutAppPicker.qml", "../shortcuts/DesktopShortcutGroupPopup.qml",
+        "../shortcuts/DesktopShortcutContextDialog.qml", "../shortcuts/DesktopShortcutsLayer.qml"
     ]
     // A player that can seek, for the media seek line.
     QtObject {
