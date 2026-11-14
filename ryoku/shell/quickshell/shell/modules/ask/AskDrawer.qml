@@ -24,6 +24,11 @@ Rectangle {
     property string emptyText: I18n.tr("Nothing here yet")
     property real maxHeight: 260 * s
     readonly property bool motionAllowed: !Tokens.reduceMotion && !Motion.reduce
+    // Under controls "crate" the drawer is an opaque popover over the glass with
+    // the kit's list rows: the cursor row edged like a hovered one, the active
+    // row (the route or model in use, the open session) in the pick wash and
+    // edge with the pick dot, sections as tracked captions.
+    readonly property bool crate: Tokens.controlsCrate
     property int current: 0
     // The value of the row whose label is being edited, "" when none.
     property string editingValue: ""
@@ -42,9 +47,9 @@ Rectangle {
     scale: open ? 1 : 0.98
     transformOrigin: Item.Top
     radius: Tokens.radius * s
-    color: Tokens.paperLift
+    color: crate ? Tokens.popover : Tokens.paperLift
     border.width: Tokens.border
-    border.color: Tokens.lineStrong
+    border.color: crate ? Tokens.line : Tokens.lineStrong
     clip: true
     z: 20
 
@@ -143,6 +148,7 @@ Rectangle {
                     }
                     readonly property bool selected: !isSection && !isDisabled && ordinal === drawer.current
                     readonly property bool renamable: !isSection && !isDisabled && modelData.renamable === true
+                    readonly property bool active: !isSection && Boolean(modelData.active)
                     readonly property bool editing: renamable && drawer.editingValue.length > 0
                         && String(modelData.value || "") === drawer.editingValue
 
@@ -155,7 +161,13 @@ Rectangle {
                         width: parent.width
                         spacing: Tokens.s1 * drawer.s
                         Item { width: 1; height: row.index === 0 ? 0 : Tokens.s2 * drawer.s }
+                        TrackLabel {
+                            visible: drawer.crate
+                            text: String(row.modelData.section || "")
+                            tone: "accent"
+                        }
                         Text {
+                            visible: !drawer.crate
                             text: String(row.modelData.section)
                             color: Tokens.inkMuted
                             font.family: Tokens.mono
@@ -168,12 +180,20 @@ Rectangle {
                     Rectangle {
                         visible: !row.isSection
                         anchors.fill: parent
+                        objectName: "askDrawerRow"
                         radius: Tokens.radius * drawer.s
-                        color: row.isDisabled ? Tokens.tint5
+                        color: drawer.crate ? (row.active ? Tokens.pickFill : row.isDisabled || row.selected ? Tokens.tint5 : "transparent")
+                            : row.isDisabled ? Tokens.tint5
                             : rowTap.pressed ? Tokens.tint16
                             : row.selected ? Tokens.bone
                             : rowHover.hovered ? Tokens.tint10 : "transparent"
-                        scale: rowTap.pressed && drawer.motionAllowed ? 0.985 : 1
+                        border.width: drawer.crate ? Tokens.border : 0
+                        border.color: !drawer.crate ? "transparent"
+                            : row.active ? Tokens.pickEdge
+                            : row.selected ? Tokens.markHover : "transparent"
+                        Behavior on color { enabled: drawer.crate; ColorAnimation { duration: 150 } }
+                        Behavior on border.color { enabled: drawer.crate; ColorAnimation { duration: 150 } }
+                        scale: rowTap.pressed && drawer.motionAllowed && !drawer.crate ? 0.985 : 1
                         Behavior on scale {
                             enabled: drawer.motionAllowed
                             NumberAnimation { duration: Tokens.snap; easing.type: Tokens.easeSnap }
@@ -187,8 +207,11 @@ Rectangle {
                             spacing: Tokens.s2 * drawer.s
 
                             Column {
-                                width: parent.width - check.width - parent.spacing
-                                    - (editBtn.visible ? editBtn.width + parent.spacing : 0)
+                                width: drawer.crate
+                                    ? parent.width - (pickDot.visible ? pickDot.width + parent.spacing : 0)
+                                        - (editIcon.visible ? editIcon.width + parent.spacing : 0)
+                                    : parent.width - check.width - parent.spacing
+                                        - (editBtn.visible ? editBtn.width + parent.spacing : 0)
                                 anchors.verticalCenter: parent.verticalCenter
                                 spacing: Tokens.s1 * drawer.s / 2
                                 Text {
@@ -196,6 +219,7 @@ Rectangle {
                                     width: parent.width
                                     text: String(row.modelData.label || "")
                                     color: row.isDisabled ? Tokens.inkMuted
+                                        : drawer.crate ? (row.active ? Tokens.pickInk : Tokens.ink)
                                         : row.selected ? Tokens.inkOnBone : Tokens.ink
                                     font.family: Tokens.ui
                                     font.pixelSize: Tokens.fSmall * drawer.s
@@ -206,7 +230,8 @@ Rectangle {
                                     id: renameInput
                                     visible: row.editing
                                     width: parent.width
-                                    color: row.selected ? Tokens.inkOnBone : Tokens.ink
+                                    color: drawer.crate ? (row.active ? Tokens.pickInk : Tokens.ink)
+                                        : row.selected ? Tokens.inkOnBone : Tokens.ink
                                     selectionColor: Tokens.tint16
                                     selectedTextColor: color
                                     font.family: Tokens.ui
@@ -232,16 +257,41 @@ Rectangle {
                                     width: parent.width
                                     text: String(row.modelData.sub || "")
                                     color: row.isDisabled ? Tokens.inkFaint
+                                        : drawer.crate ? (row.active ? Tokens.pickInkDim : Tokens.inkMuted)
                                         : row.selected ? Tokens.inkOnBone : Tokens.inkMuted
                                     font.family: Tokens.ui
                                     font.pixelSize: Tokens.fTiny * drawer.s
                                     elide: Text.ElideRight
                                 }
                             }
+                            IconButton {
+                                id: editIcon
+                                objectName: "askDrawerRename"
+                                anchors.verticalCenter: parent.verticalCenter
+                                visible: drawer.crate && row.renamable && !row.editing
+                                opacity: row.selected || rowHover.hovered ? 1 : 0
+                                width: 28
+                                height: 28
+                                iconSize: 16
+                                glyph: "edit"
+                                Accessible.name: I18n.tr("Rename")
+                                onClicked: drawer.startRename(row.modelData)
+                            }
+                            // the pick dot with its halo, as on the kit's PickRow
+                            Item {
+                                id: pickDot
+                                objectName: "askDrawerPick"
+                                anchors.verticalCenter: parent.verticalCenter
+                                visible: drawer.crate && row.active
+                                width: 12
+                                height: 12
+                                Rectangle { anchors.centerIn: parent; width: 12; height: 12; radius: 6; color: Qt.alpha(Tokens.sun, 0.22) }
+                                Rectangle { anchors.centerIn: parent; width: 6; height: 6; radius: 3; color: Tokens.mark }
+                            }
                             Text {
                                 id: editBtn
                                 anchors.verticalCenter: parent.verticalCenter
-                                visible: row.renamable && !row.editing
+                                visible: !drawer.crate && row.renamable && !row.editing
                                 opacity: row.selected || rowHover.hovered ? 1 : 0
                                 text: "edit"
                                 color: row.selected ? Tokens.inkOnBone : Tokens.inkDim
@@ -253,7 +303,7 @@ Rectangle {
                             Text {
                                 id: check
                                 anchors.verticalCenter: parent.verticalCenter
-                                visible: Boolean(row.modelData.active)
+                                visible: !drawer.crate && Boolean(row.modelData.active)
                                 text: "check"
                                 color: row.selected ? Tokens.inkOnBone : Tokens.inkDim
                                 font.family: "Material Symbols Rounded"
@@ -272,7 +322,8 @@ Rectangle {
                             onTapped: eventPoint => {
                                 drawer.current = row.ordinal;
                                 const p = editBtn.mapFromItem(rowTap.parent, eventPoint.position);
-                                if (editBtn.visible && editBtn.contains(p))
+                                const q = editIcon.mapFromItem(rowTap.parent, eventPoint.position);
+                                if ((editBtn.visible && editBtn.contains(p)) || (editIcon.visible && editIcon.contains(q)))
                                     drawer.startRename(row.modelData);
                                 else
                                     drawer.activated(row.modelData);

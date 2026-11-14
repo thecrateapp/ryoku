@@ -12,7 +12,8 @@
 # renders one of the Wave 4 apps through app-scene.sh; a ryogami scene renders the
 # picker through ryogami-scene.sh (BENCH_OPEN picks the open surface); the keys
 # scene renders Kit and its hint through keys-scene.sh; the ryopin scene renders
-# pinned cards through ryopin-scene.sh.
+# pinned cards through ryopin-scene.sh. A scenes/SCENE.bin directory, when
+# present, leads PATH with fake commands, as it does for the app scenes.
 set -euo pipefail
 here=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 repo=$(cd "$here/../../.." && pwd)
@@ -57,11 +58,13 @@ for entry in "$repo/ryoku/shell/quickshell/shell"/*; do
 done
 cp "$here/scenes/$scene.qml" "$mods/root/shell.qml"
 ln -s "$build/qml/Ryoku/Blobs" "$mods/Ryoku/Blobs"
+path=$PATH
+[ -d "$here/scenes/$scene.bin" ] && path="$here/scenes/$scene.bin:$PATH"
 status=0
 for look in crate stock; do
   png="$out/$scene-$look.png"
   rm -f "$png"
-  BENCH_OUT="$png" BENCH_CRATE=$([ "$look" = crate ] && echo 1 || echo 0) \
+  PATH="$path" BENCH_OUT="$png" BENCH_CRATE=$([ "$look" = crate ] && echo 1 || echo 0) \
     QML_IMPORT_PATH="$mods:$repo/ryoku/shell/quickshell" \
     timeout 60 quickshell -p "$mods/root/shell.qml" >"$out/$scene-$look.log" 2>&1 || true
   if [ -s "$png" ]; then echo "wrote $png"; else

@@ -3,6 +3,7 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import QtQuick.Effects
 import Ryoku.Blobs
+import Ryoku.Ui
 import Ryoku.Ui.Singletons
 import shell.services
 
@@ -22,6 +23,10 @@ Rectangle {
     property alias text: input.text
     property alias inputItem: input
     readonly property bool motionAllowed: !Tokens.reduceMotion && !Motion.reduce
+    // Under controls "crate" the field is a hairline on the glass: the mark edges
+    // it while Rashin works or a link reads, a kit Beam runs along its foot as
+    // the work's progress, and there is no glow or border beam.
+    readonly property bool crate: Tokens.controlsCrate
     readonly property bool workingActive: phase === "working" || (mode === "chat" && chatBusy)
     // Green for a readable link only; ordinary typing is never marked wrong.
     readonly property bool linkOk: mode === "tools"
@@ -41,13 +46,14 @@ Rectangle {
 
     implicitHeight: 72 * s
     radius: Tokens.radius * s
-    color: Tokens.paperLift
-    border.width: workingActive ? 2 * s : input.activeFocus ? 1.5 * s : Tokens.border
+    color: crate ? "transparent" : Tokens.paperLift
+    border.width: crate ? Tokens.border : workingActive ? 2 * s : input.activeFocus ? 1.5 * s : Tokens.border
     // Tertiary follows the wallpaper.
-    border.color: workingActive ? Tokens.bone
+    border.color: crate ? (workingActive || root.linkOk ? Tokens.mark : input.activeFocus ? Tokens.markHover : Tokens.line)
+        : workingActive ? Tokens.bone
         : root.linkOk ? Scheme.tertiary
         : input.activeFocus ? Qt.alpha(Tokens.bone, 0.72) : Tokens.line
-    scale: input.activeFocus && motionAllowed ? 1.006 : 1
+    scale: input.activeFocus && motionAllowed && !crate ? 1.006 : 1
 
     function focusField() {
         Qt.callLater(() => input.forceActiveFocus());
@@ -75,7 +81,7 @@ Rectangle {
         spread: 1.5 * root.s
         color: Qt.alpha(Tokens.bone, 0.26)
         opacity: input.activeFocus ? 1 : 0
-        visible: opacity > 0.001
+        visible: !root.crate && opacity > 0.001
         Behavior on opacity {
             enabled: root.motionAllowed
             NumberAnimation { duration: Tokens.swap; easing.type: Tokens.ease }
@@ -84,6 +90,8 @@ Rectangle {
 
 
     BorderBeam {
+        objectName: "askBorderBeam"
+        visible: !root.crate
         anchors.fill: parent
         z: 0
         mode: "line"
@@ -93,7 +101,20 @@ Rectangle {
         blur: 2.5 * root.s
         strength: 1
         duration: 2.6
-        active: root.workingActive && root.motionAllowed
+        active: !root.crate && root.workingActive && root.motionAllowed
+    }
+
+    Beam {
+        objectName: "askWorkBeam"
+        visible: root.crate && root.workingActive
+        z: 1
+        anchors.left: parent.left
+        anchors.right: parent.right
+        anchors.leftMargin: root.radius
+        anchors.rightMargin: root.radius
+        anchors.verticalCenter: parent.bottom
+        interactive: false
+        indeterminate: true
     }
 
     AskOrb {
@@ -131,8 +152,8 @@ Rectangle {
         anchors.rightMargin: Tokens.s4 * root.s
         anchors.verticalCenter: parent.verticalCenter
         color: Tokens.ink
-        selectionColor: Tokens.bone
-        selectedTextColor: Tokens.inkOnBone
+        selectionColor: root.crate ? Tokens.mark : Tokens.bone
+        selectedTextColor: root.crate ? Tokens.paper : Tokens.inkOnBone
         font.family: Tokens.ui
         font.pixelSize: Tokens.fValue * root.s
         selectByMouse: true
@@ -224,16 +245,16 @@ Rectangle {
         width: enterLabel.implicitWidth + Tokens.s3 * root.s
         height: Tokens.ctlH * root.s
         radius: Tokens.radius * root.s
-        color: Tokens.tint5
+        color: root.crate ? "transparent" : Tokens.tint5
         border.width: Tokens.border
-        border.color: Tokens.lineSoft
+        border.color: root.crate ? Tokens.line : Tokens.lineSoft
         Text {
             id: enterLabel
             anchors.centerIn: parent
             text: I18n.tr("Enter")
-            color: Tokens.inkMuted
+            color: root.crate ? Tokens.inkSubtle : Tokens.inkMuted
             font.family: Tokens.mono
-            font.pixelSize: Tokens.fTiny * root.s
+            font.pixelSize: root.crate ? Tokens.fMicro : Tokens.fTiny * root.s
         }
     }
 

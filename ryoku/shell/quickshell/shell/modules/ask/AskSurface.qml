@@ -19,6 +19,10 @@ Rectangle {
     property string query: ""
     property real maximumHeight: 640 * s
     readonly property bool motionAllowed: !Tokens.reduceMotion && !Motion.reduce
+    // Under controls "crate" the bar is the one glass (the compositor frosts the
+    // ryoku-ask layer behind it) and casts no filled shadow; AskBar reads `casts`.
+    readonly property bool crate: Tokens.controlsCrate
+    readonly property bool casts: !crate
     readonly property real screenHeight: screen && screen.height > 0 ? screen.height : 800
     readonly property real selectedBodyHeight: mode === "chat" ? chat.implicitHeight
         : mode === "tools" ? tools.implicitHeight
@@ -41,6 +45,11 @@ Rectangle {
         : mode === "tools" ? I18n.tr("RASHIN // TOOLS")
         : mode === "web" ? I18n.tr("RASHIN // WEB")
         : I18n.tr("RASHIN // ASK")
+    // The crate head names the mode without the "//" eyebrow.
+    readonly property string modeLabel: mode === "chat" ? I18n.tr("Agent")
+        : mode === "tools" ? I18n.tr("Tools")
+        : mode === "web" ? I18n.tr("Web")
+        : I18n.tr("Ask")
     readonly property string routeLabel: {
         if (session.phase === "done" && session.answerVia.length > 0)
             return session.answerVia;
@@ -69,9 +78,9 @@ Rectangle {
 
     implicitHeight: Math.min(maximumHeight, content.implicitHeight + drawerReserve + Tokens.s4 * s * 2)
     radius: Tokens.radius * s
-    color: Tokens.paper
+    color: crate ? Tokens.glass : Tokens.paper
     border.width: Tokens.border
-    border.color: Tokens.lineStrong
+    border.color: crate ? Tokens.line : Tokens.lineStrong
     clip: true
 
     Behavior on implicitHeight {
@@ -338,6 +347,7 @@ Rectangle {
             }
 
             Text {
+                visible: !root.crate
                 anchors.left: seal.right
                 anchors.leftMargin: Tokens.s2 * root.s
                 anchors.verticalCenter: parent.verticalCenter
@@ -346,6 +356,16 @@ Rectangle {
                 font.family: Tokens.mono
                 font.pixelSize: Tokens.fMicro * root.s
                 font.letterSpacing: Tokens.trackMark
+            }
+
+            TrackLabel {
+                objectName: "askHead"
+                visible: root.crate
+                anchors.left: seal.right
+                anchors.leftMargin: Tokens.s2 * root.s
+                anchors.verticalCenter: parent.verticalCenter
+                text: I18n.tr("Rashin") + " · " + root.modeLabel
+                tone: "accent"
             }
 
             // The two header buttons ride the right edge: the conversation
@@ -357,9 +377,31 @@ Rectangle {
 
                 spacing: Tokens.s1 * root.s
 
+                IconButton {
+                    objectName: "askHistoryButton"
+                    visible: root.crate && (root.mode === "ask" || root.mode === "chat")
+                    anchors.verticalCenter: parent.verticalCenter
+                    width: 36
+                    height: 36
+                    glyph: "history"
+                    on: root.historyOpen
+                    onClicked: root.toggleHistory()
+                }
+
+                IconButton {
+                    objectName: "askModelButton"
+                    visible: root.crate && (root.mode === "ask" || root.mode === "chat")
+                    anchors.verticalCenter: parent.verticalCenter
+                    width: 36
+                    height: 36
+                    glyph: "tune"
+                    on: root.modelOpen
+                    onClicked: root.toggleModel()
+                }
+
                 Rectangle {
                     id: historyBtn
-                    visible: root.mode === "ask" || root.mode === "chat"
+                    visible: !root.crate && (root.mode === "ask" || root.mode === "chat")
                     width: 30 * root.s
                     height: width
                     radius: Tokens.radius * root.s
@@ -391,7 +433,7 @@ Rectangle {
 
                 Rectangle {
                     id: modelBtn
-                    visible: root.mode === "ask" || root.mode === "chat"
+                    visible: !root.crate && (root.mode === "ask" || root.mode === "chat")
                     width: 30 * root.s
                     height: width
                     radius: Tokens.radius * root.s
@@ -475,11 +517,14 @@ Rectangle {
             height: 28 * root.s
             visible: root.mode === "ask"
             radius: Tokens.radius * root.s
-            color: routeTap.pressed ? Tokens.tint16
+            color: root.crate ? "transparent"
+                : routeTap.pressed ? Tokens.tint16
                 : routeHover.hovered ? Tokens.tint10 : Tokens.tint5
             border.width: Tokens.border
-            border.color: root.modelOpen ? Tokens.bone : Tokens.lineSoft
-            scale: routeTap.pressed && root.motionAllowed ? 0.94
+            border.color: root.crate ? (root.modelOpen ? Tokens.pickEdge : routeHover.hovered ? Tokens.markHover : Tokens.line)
+                : root.modelOpen ? Tokens.bone : Tokens.lineSoft
+            scale: root.crate ? 1
+                : routeTap.pressed && root.motionAllowed ? 0.94
                 : routeHover.hovered && root.motionAllowed ? 1.025 : 1
             Row {
                 anchors.left: parent.left
@@ -488,18 +533,28 @@ Rectangle {
                 anchors.leftMargin: Tokens.s3 * root.s
                 anchors.rightMargin: Tokens.s3 * root.s
                 spacing: Tokens.s2 * root.s
+                Glyph {
+                    objectName: "askRouteGlyph"
+                    visible: root.crate
+                    anchors.verticalCenter: parent.verticalCenter
+                    name: "route"
+                    size: 16
+                    color: root.modelOpen ? Tokens.mark : Tokens.inkSecondary
+                }
                 Text {
+                    visible: !root.crate
                     text: "route"
                     color: Tokens.inkMuted
                     font.family: "Material Symbols Rounded"
                     font.pixelSize: Tokens.fSmall * root.s
                 }
                 Text {
+                    anchors.verticalCenter: root.crate ? parent.verticalCenter : undefined
                     width: parent.width - Tokens.s6 * root.s
                     text: root.routeLabel
-                    color: Tokens.inkDim
-                    font.family: Tokens.ui
-                    font.pixelSize: Tokens.fTiny * root.s
+                    color: root.crate ? Tokens.inkSecondary : Tokens.inkDim
+                    font.family: root.crate ? Tokens.mono : Tokens.ui
+                    font.pixelSize: root.crate ? Tokens.fMicro : Tokens.fTiny * root.s
                     elide: Text.ElideRight
                 }
             }

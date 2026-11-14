@@ -19,6 +19,10 @@ Rectangle {
     readonly property string home: Quickshell.env("HOME") || ""
     readonly property int selectedCount: Object.keys(selected).length
     readonly property bool motionAllowed: !Tokens.reduceMotion && !Motion.reduce
+    // Under controls "crate" the picker is a hairline frame on the glass: files
+    // are kit pick rows (picked when chosen), the actions kit buttons, the count
+    // a tracked caption.
+    readonly property bool crate: Tokens.controlsCrate
 
     signal cancelled()
     signal confirmed(var paths)
@@ -26,9 +30,9 @@ Rectangle {
     implicitHeight: open ? 360 * s : 0
     visible: open && height > 0
     radius: Tokens.radius * s
-    color: Tokens.paperLift
+    color: crate ? "transparent" : Tokens.paperLift
     border.width: Tokens.border
-    border.color: Tokens.lineStrong
+    border.color: crate ? Tokens.line : Tokens.lineStrong
     clip: true
 
     Behavior on implicitHeight {
@@ -122,7 +126,16 @@ Rectangle {
                 font.pixelSize: Tokens.fRow * root.s
                 font.weight: Font.DemiBold
             }
+            TrackLabel {
+                objectName: "askPickerCount"
+                visible: root.crate
+                anchors.right: parent.right
+                anchors.verticalCenter: parent.verticalCenter
+                text: root.selectedCount === 0 ? I18n.tr("None selected") : I18n.tr("%1 selected").arg(root.selectedCount)
+                tone: root.selectedCount > 0 ? "active" : "subtle"
+            }
             Text {
+                visible: !root.crate
                 anchors.right: parent.right
                 anchors.verticalCenter: parent.verticalCenter
                 text: root.selectedCount === 0 ? I18n.tr("None selected") : I18n.tr("%1 selected").arg(root.selectedCount)
@@ -136,10 +149,21 @@ Rectangle {
             width: parent.width
             height: 32 * root.s
             radius: Tokens.radius * root.s
-            color: folderTap.pressed ? Tokens.tint16 : folderHover.hovered ? Tokens.tint10 : Tokens.tint5
+            color: root.crate ? "transparent"
+                : folderTap.pressed ? Tokens.tint16 : folderHover.hovered ? Tokens.tint10 : Tokens.tint5
             border.width: Tokens.border
-            border.color: Tokens.lineSoft
+            border.color: root.crate ? (folderHover.hovered ? Tokens.markHover : Tokens.line) : Tokens.lineSoft
+            Glyph {
+                visible: root.crate
+                anchors.left: parent.left
+                anchors.leftMargin: Tokens.s3 * root.s
+                anchors.verticalCenter: parent.verticalCenter
+                name: "arrow_upward"
+                size: 16
+                color: folderHover.hovered ? Tokens.mark : Tokens.inkSecondary
+            }
             Text {
+                visible: !root.crate
                 anchors.left: parent.left
                 anchors.leftMargin: Tokens.s3 * root.s
                 anchors.verticalCenter: parent.verticalCenter
@@ -167,7 +191,7 @@ Rectangle {
         ListView {
             id: list
             width: parent.width
-            height: parent.height - y - footer.height - parent.spacing
+            height: parent.height - y - (root.crate ? crateFooter.height : footer.height) - parent.spacing
             clip: true
             model: files
             spacing: Tokens.s1 * root.s
@@ -180,12 +204,24 @@ Rectangle {
                 required property bool fileIsDir
                 readonly property bool chosen: !fileIsDir && root.selected[filePath] === true
                 width: ListView.view ? ListView.view.width : 0
-                height: 38 * root.s
+                height: root.crate ? 40 : 38 * root.s
                 radius: Tokens.radius * root.s
-                color: chosen ? Tokens.bone : fileTap.pressed ? Tokens.tint16 : fileHover.hovered ? Tokens.tint10 : "transparent"
-                border.width: Tokens.border
+                color: root.crate ? "transparent"
+                    : chosen ? Tokens.bone : fileTap.pressed ? Tokens.tint16 : fileHover.hovered ? Tokens.tint10 : "transparent"
+                border.width: root.crate ? 0 : Tokens.border
                 border.color: chosen ? Tokens.bone : Tokens.lineSoft
+                PickRow {
+                    objectName: "askPickerRow"
+                    visible: root.crate
+                    anchors.fill: parent
+                    glyph: fileRow.fileIsDir ? "folder" : root.mode === "install" ? "deployed_code" : "draft"
+                    glyphFont: "Material Symbols Rounded"
+                    title: fileRow.fileName
+                    picked: fileRow.chosen
+                    onClicked: fileRow.fileIsDir ? (root.folder = "file://" + fileRow.filePath) : root.toggle(fileRow.filePath)
+                }
                 Text {
+                    visible: !root.crate
                     anchors.left: parent.left
                     anchors.leftMargin: Tokens.s3 * root.s
                     anchors.verticalCenter: parent.verticalCenter
@@ -195,6 +231,7 @@ Rectangle {
                     font.pixelSize: Tokens.fBody * root.s
                 }
                 Text {
+                    visible: !root.crate
                     anchors.left: parent.left
                     anchors.right: parent.right
                     anchors.leftMargin: 42 * root.s
@@ -207,6 +244,7 @@ Rectangle {
                     elide: Text.ElideMiddle
                 }
                 Text {
+                    visible: !root.crate
                     anchors.right: parent.right
                     anchors.rightMargin: Tokens.s3 * root.s
                     anchors.verticalCenter: parent.verticalCenter
@@ -216,12 +254,37 @@ Rectangle {
                     font.pixelSize: Tokens.fBody * root.s
                 }
                 HoverHandler { id: fileHover; cursorShape: Qt.PointingHandCursor }
-                TapHandler { id: fileTap; onTapped: fileRow.fileIsDir ? (root.folder = "file://" + fileRow.filePath) : root.toggle(fileRow.filePath) }
+                TapHandler { id: fileTap; enabled: !root.crate; onTapped: fileRow.fileIsDir ? (root.folder = "file://" + fileRow.filePath) : root.toggle(fileRow.filePath) }
+            }
+        }
+
+        Item {
+            id: crateFooter
+            visible: root.crate
+            width: parent.width
+            height: cancelBtn.implicitHeight
+            Btn {
+                id: cancelBtn
+                objectName: "askPickerCancel"
+                anchors.left: parent.left
+                compact: true
+                text: I18n.tr("Cancel")
+                onAct: root.cancelled()
+            }
+            Btn {
+                objectName: "askPickerConfirm"
+                anchors.right: parent.right
+                compact: true
+                primary: true
+                armed: root.selectedCount > 0
+                text: root.mode === "install" ? I18n.tr("Install") : I18n.tr("Compress")
+                onAct: root.confirmed(Object.keys(root.selected))
             }
         }
 
         Row {
             id: footer
+            visible: !root.crate
             width: parent.width
             spacing: Tokens.s2 * root.s
             Rectangle {

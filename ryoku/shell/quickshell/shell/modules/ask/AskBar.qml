@@ -115,13 +115,15 @@ Scope {
                 onPressed: event => event.accepted = true
             }
 
+            // Under crate the bar is the one glass, frosted by the compositor,
+            // with no filled shadow under it.
             RectangularShadow {
                 anchors.fill: surface
                 radius: surface.radius
                 blur: 28 * root.s
                 spread: 4 * root.s
                 color: Qt.rgba(Tokens.keycapDark.r, Tokens.keycapDark.g, Tokens.keycapDark.b, 0.42)
-                visible: root.active
+                visible: root.active && surface.casts
             }
 
             AskSurface {

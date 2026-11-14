@@ -1,6 +1,7 @@
 pragma ComponentBehavior: Bound
 
 import QtQuick
+import Ryoku.Ui
 import Ryoku.Ui.Singletons
 import shell.services
 
@@ -17,12 +18,32 @@ Item {
         { id: "web", label: I18n.tr("Web"), hint: "?" }
     ]
     readonly property int currentIndex: Math.max(0, modes.findIndex(item => item.id === mode))
+    // Under controls "crate" the modes are the kit's Seg: the picked mode fills
+    // with the mark, each label carrying its prefix key.
+    readonly property bool crate: Tokens.controlsCrate
+    readonly property var crateLabels: {
+        const out = {};
+        for (const item of modes)
+            out[item.id] = item.hint.length > 0 ? item.label + "  " + item.hint : item.label;
+        return out;
+    }
 
     signal modeRequested(string mode)
 
-    implicitHeight: 38 * s
+    implicitHeight: crate ? seg.implicitHeight : 38 * s
+
+    Seg {
+        id: seg
+        objectName: "askModeSeg"
+        visible: root.crate
+        options: root.modes.map(item => item.id)
+        labels: root.crateLabels
+        current: root.mode
+        onChose: key => root.modeRequested(key)
+    }
 
     Rectangle {
+        visible: !root.crate
         anchors.fill: parent
         radius: Tokens.radius * root.s
         color: Tokens.paperLift
@@ -32,6 +53,7 @@ Item {
 
     Rectangle {
         id: selection
+        visible: !root.crate
         x: root.currentIndex * root.width / root.modes.length
         width: root.width / root.modes.length
         height: parent.height
@@ -44,6 +66,7 @@ Item {
     }
 
     Row {
+        visible: !root.crate
         anchors.fill: parent
         Repeater {
             model: root.modes

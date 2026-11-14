@@ -73,6 +73,10 @@ local namespaces = {
     ["ryoku-sidebar-left"] = "SidebarFrame (Super+Esc)",
     ["ryoku-keys-hint"] = "keys-hint/HintCards.qml",
     ["ryopin"] = "ryopin/PinCard.qml",
+    -- the Ask bar and bubble draw their glass in child files (AskSurface,
+    -- AskBubbleCard/Disc), not the file that maps the layer
+    ["ryoku-ask"] = "AskBar (AskSurface)",
+    ["ryoku-ask-bubble"] = "AskBubble (AskBubbleCard, AskBubbleDisc)",
 }
 for path in listing:lines() do
     local file = assert(io.open(path))
@@ -83,7 +87,8 @@ for path in listing:lines() do
 end
 listing:close()
 
-for _, required in ipairs({ "ryoku-volume", "ryoku-control", "ryoku-dashboard", "ryoku-traymenu" }) do
+for _, required in ipairs({ "ryoku-volume", "ryoku-control", "ryoku-dashboard", "ryoku-traymenu",
+                            "ryoku-ask", "ryoku-ask-bubble" }) do
     assert(namespaces[required], "glass discovery missed " .. required)
 end
 

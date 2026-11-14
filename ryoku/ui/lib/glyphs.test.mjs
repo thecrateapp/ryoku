@@ -29,6 +29,16 @@ test("the Controls panel's glyphs are all covered", () => {
     assert.ok(has(name), `${name} has no glyph`);
 });
 
+test("the Ask bar's glyphs are all covered", () => {
+  const used = ["history", "tune", "route", "edit", "check", "north_east", "arrow_upward", "stop",
+    "cognition", "terminal", "search", "description", "build", "public", "folder", "deployed_code",
+    "draft", "download", "folder_zip", "inventory_2", "delete_sweep", "dashboard", "memory",
+    "visibility_off", "volume_off", "check_circle", "error", "close", "refresh", "delete",
+    "expand_more", "expand_less", "chevron_right"];
+  for (const name of used)
+    assert.ok(has(name), `${name} has no glyph`);
+});
+
 test("svg paints Solar's Outline glyph, filled, in the asked colour", () => {
   const out = svg("lock", "#67e8f9");
   assert.ok(out.startsWith("<svg "));

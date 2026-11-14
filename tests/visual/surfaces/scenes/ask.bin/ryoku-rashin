@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+# No Rashin for the Ask capture: two Ask routes, and nothing else to say.
+case "${1:-} ${2:-}" in
+  "backend --json") echo '{"route":"agent","routes":[{"id":"agent","label":"Agent","sub":"the full agent"},{"id":"fast","label":"Fast","sub":"a quick local model"}]}' ;;
+esac
+exit 0

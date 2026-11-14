@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+# No container engine for the Ask capture.
+exit 0

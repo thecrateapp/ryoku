@@ -163,10 +163,12 @@ if crate_glass() then
   -- The QS Bar's panels and its control center each map their own full-output
   -- layer, so the bar's "quickshell" match never reached them: they drew the same
   -- 68 % grey over an unfrosted desktop. Same recipe, ignore_alpha keeping the
-  -- frost on the card and off the clear dismiss area around it.
+  -- frost on the card and off the clear dismiss area around it. The Ask bar
+  -- (ryoku-ask) and its pinned bubble (ryoku-ask-bubble) are full-output layers
+  -- of the same kind.
   hl.layer_rule({
     name         = "crate-glass-blur-panels",
-    match        = { namespace = "^ryoku-(volume|network|bluetooth|battery|brightness|cpu|gpu|memory|thermals|storage|ai-usage|power-profile|workspace|tray|traymenu|tray-menu|mpris|dashboard|plugin-panel|control)$" },
+    match        = { namespace = "^ryoku-(volume|network|bluetooth|battery|brightness|cpu|gpu|memory|thermals|storage|ai-usage|power-profile|workspace|tray|traymenu|tray-menu|mpris|dashboard|plugin-panel|control|ask|ask-bubble)$" },
     blur         = not no_blur,
     ignore_alpha = 0.05,
   })
