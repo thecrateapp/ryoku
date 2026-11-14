@@ -61,6 +61,10 @@ const alias = {
   network_wifi_1_bar: "wi-fi-low", signal_wifi_0_bar: "wi-fi-none", signal_wifi_off: "wi-fi-off", arrow_forward: "alt-arrow-right",
   north_east: "arrow-right-up", display_settings: "display", memory: "cpu", gamepad: "gamepad",
   mouse: "mouse-minimalistic", phone: "smartphone", watch: "watch-round", content_paste: "clipboard-text", refresh: "refresh", add: "add-circle", verified: "shield-check", verified_off: "shield",
+  // Kit's phone tab (KDE Connect)
+  phonelink_ring: "phone-calling-rounded", screen_share: "screen-share", videocam: "videocamera",
+  android: "widget", progress_activity: "refresh", notifications_active: "bell-ring",
+  upload_file: "file-send", folder_shared: "folder-path-connect", vibration: "smartphone-vibration",
   "audio-headphones": "headphones-round", "audio-headset": "headphones-round", "audio-card": "speaker",
   "input-mouse": "mouse-minimalistic", "input-gaming": "gamepad", bluetooth_connected: "bluetooth-wave", next: "skip-next", previous: "skip-previous", prev: "skip-previous",
   // weather (services/lib/weather.js symbolFor, and the dashboard's readouts)

@@ -57,11 +57,10 @@ Rectangle {
         anchors.margins: Tokens.s4
         spacing: Tokens.s2
 
-        Text {
-            text: root.glyph
+        PhoneGlyph {
+            name: root.glyph
             color: Tokens.inkDim
-            font.family: "Material Symbols Rounded"
-            font.pixelSize: Tokens.fValue
+            pixelSize: Tokens.fValue
         }
         Text {
             width: parent.width

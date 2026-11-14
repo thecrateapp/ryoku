@@ -60,12 +60,11 @@ Item {
 
             contentItem: Row {
                 spacing: Tokens.s3
-                Text {
+                PhoneGlyph {
                     anchors.verticalCenter: parent.verticalCenter
-                    text: root.device && root.device.type === "tablet" ? "tablet" : "smartphone"
+                    name: root.device && root.device.type === "tablet" ? "tablet" : "smartphone"
                     color: root.device && root.device.reachable === true ? Tokens.ink : Tokens.inkMuted
-                    font.family: "Material Symbols Rounded"
-                    font.pixelSize: Tokens.fValue
+                    pixelSize: Tokens.fValue
                 }
                 Column {
                     anchors.verticalCenter: parent.verticalCenter
@@ -89,13 +88,12 @@ Item {
                         elide: Text.ElideRight
                     }
                 }
-                Text {
+                PhoneGlyph {
                     visible: root.paired.length > 1
                     anchors.verticalCenter: parent.verticalCenter
-                    text: root.menuOpen ? "expand_less" : "expand_more"
+                    name: root.menuOpen ? "expand_less" : "expand_more"
                     color: Tokens.inkMuted
-                    font.family: "Material Symbols Rounded"
-                    font.pixelSize: Tokens.fBody
+                    pixelSize: Tokens.fBody
                 }
             }
         }
@@ -186,12 +184,11 @@ Item {
                     }
                     contentItem: Row {
                         spacing: Tokens.s2
-                        Text {
+                        PhoneGlyph {
                             anchors.verticalCenter: parent.verticalCenter
-                            text: choice.modelData.type === "tablet" ? "tablet" : "smartphone"
+                            name: choice.modelData.type === "tablet" ? "tablet" : "smartphone"
                             color: choice.picked ? (Tokens.controlsCrate ? Tokens.pickInkDim : Tokens.inkOnBone) : Tokens.inkDim
-                            font.family: "Material Symbols Rounded"
-                            font.pixelSize: Tokens.fBody
+                            pixelSize: Tokens.fBody
                         }
                         Column {
                             anchors.verticalCenter: parent.verticalCenter

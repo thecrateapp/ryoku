@@ -337,12 +337,11 @@ Item {
                     anchors.fill: parent
                     anchors.margins: Tokens.s4
                     spacing: Tokens.s3
-                    Text {
+                    PhoneGlyph {
                         anchors.verticalCenter: parent.verticalCenter
-                        text: "screen_share"
+                        name: "screen_share"
                         color: Tokens.inkDim
-                        font.family: "Material Symbols Rounded"
-                        font.pixelSize: Tokens.fValue
+                        pixelSize: Tokens.fValue
                     }
                     Column {
                         anchors.verticalCenter: parent.verticalCenter
@@ -387,12 +386,11 @@ Item {
                     anchors.fill: parent
                     anchors.margins: Tokens.s3
                     spacing: Tokens.s3
-                    Text {
+                    PhoneGlyph {
                         anchors.verticalCenter: parent.verticalCenter
-                        text: "alarm"
+                        name: "alarm"
                         color: Tokens.inkDim
-                        font.family: "Material Symbols Rounded"
-                        font.pixelSize: Tokens.fBody
+                        pixelSize: Tokens.fBody
                     }
                     Text {
                         anchors.verticalCenter: parent.verticalCenter

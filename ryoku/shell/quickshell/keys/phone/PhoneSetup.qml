@@ -158,13 +158,12 @@ Item {
 
                     Row {
                         spacing: Tokens.s2
-                        Text {
+                        PhoneGlyph {
                             id: spinner
                             visible: root.currentStep === 2 && !root.found
-                            text: "progress_activity"
+                            name: "progress_activity"
                             color: Tokens.inkDim
-                            font.family: "Material Symbols Rounded"
-                            font.pixelSize: Tokens.fBody
+                            pixelSize: Tokens.fBody
                             RotationAnimator on rotation {
                                 running: spinner.visible && !Tokens.reduceMotion
                                 loops: Animation.Infinite
@@ -284,12 +283,11 @@ Item {
                                     anchors.fill: parent
                                     anchors.margins: Tokens.s3
                                     spacing: Tokens.s3
-                                    Text {
+                                    PhoneGlyph {
                                         anchors.verticalCenter: parent.verticalCenter
-                                        text: deviceRow.modelData.type === "tablet" ? "tablet" : "smartphone"
+                                        name: deviceRow.modelData.type === "tablet" ? "tablet" : "smartphone"
                                         color: Tokens.inkDim
-                                        font.family: "Material Symbols Rounded"
-                                        font.pixelSize: Tokens.fBody
+                                        pixelSize: Tokens.fBody
                                     }
                                     Text {
                                         anchors.verticalCenter: parent.verticalCenter

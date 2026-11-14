@@ -189,13 +189,12 @@ Item {
                                     asynchronous: true
                                     fillMode: Image.PreserveAspectFit
                                 }
-                                Text {
+                                PhoneGlyph {
                                     visible: icon.status !== Image.Ready
                                     anchors.centerIn: parent
-                                    text: "android"
+                                    name: "android"
                                     color: Tokens.inkDim
-                                    font.family: "Material Symbols Rounded"
-                                    font.pixelSize: Tokens.fValue
+                                    pixelSize: Tokens.fValue
                                 }
                             }
                             Text {

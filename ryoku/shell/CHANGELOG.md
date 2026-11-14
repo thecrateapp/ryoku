@@ -1,6 +1,13 @@
 # Changelog: ryoku/shell/
 
 ## Unreleased
+- **Kit's phone tab draws Solar glyphs under crate.** Its Material icons
+  (device, tablet, ring, screen share, camera, microphone, alarm, setup spinner,
+  app placeholder and the action tiles) are kit glyphs through the catalogue's
+  aliases; the catalogue gains tablet, phone-calling-rounded, screen-share,
+  alarm, bell-ring, file-send, link, folder-path-connect and
+  smartphone-vibration. The stock look keeps its icons
+  (`quickshell/keys/phone/PhoneGlyph.qml`; `tests/ui/keys-phone-glyphs-probe.sh`).
 - **Crate Kit and its first-boot hint use the shared kit.** Under crate the
   Kit card (Super+K) is opaque panel grey on the shared corner; its head is the
   shared page header with the 道具 gloss, its tabs the shared tabs (a tab's

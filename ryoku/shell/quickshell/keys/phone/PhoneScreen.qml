@@ -314,11 +314,10 @@ Item {
                         Row {
                             width: parent.width
                             spacing: Tokens.s3
-                            Text {
-                                text: "screen_share"
+                            PhoneGlyph {
+                                name: "screen_share"
                                 color: Tokens.inkDim
-                                font.family: "Material Symbols Rounded"
-                                font.pixelSize: Tokens.fValue
+                                pixelSize: Tokens.fValue
                             }
                             Column {
                                 width: Math.max(0, parent.width - Tokens.s7)
@@ -404,11 +403,10 @@ Item {
                         Row {
                             width: parent.width
                             spacing: Tokens.s3
-                            Text {
-                                text: "videocam"
+                            PhoneGlyph {
+                                name: "videocam"
                                 color: Tokens.inkDim
-                                font.family: "Material Symbols Rounded"
-                                font.pixelSize: Tokens.fValue
+                                pixelSize: Tokens.fValue
                             }
                             Column {
                                 width: Math.max(0, parent.width - Tokens.s7)
@@ -479,11 +477,10 @@ Item {
                         Row {
                             width: parent.width
                             spacing: Tokens.s3
-                            Text {
-                                text: "mic"
+                            PhoneGlyph {
+                                name: "mic"
                                 color: Tokens.inkDim
-                                font.family: "Material Symbols Rounded"
-                                font.pixelSize: Tokens.fValue
+                                pixelSize: Tokens.fValue
                             }
                             Column {
                                 width: Math.max(0, parent.width - Tokens.s7)

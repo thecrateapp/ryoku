@@ -11,3 +11,4 @@ PhoneNotifications 1.0 PhoneNotifications.qml
 PhoneScreen 1.0 PhoneScreen.qml
 PhoneContacts 1.0 PhoneContacts.qml
 PhoneApps 1.0 PhoneApps.qml
+PhoneGlyph 1.0 PhoneGlyph.qml
