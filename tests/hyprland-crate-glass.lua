@@ -71,6 +71,9 @@ local listing = assert(io.popen("grep -rlE '" .. glass_marker .. "' " .. shell_r
 local namespaces = {
     ["ryoku-sidebar-left"] = "SidebarFrame (Super+Esc)",
     ["ryoku-keys-hint"] = "keys-hint/HintCards.qml",
+    -- the hero launcher's layers host the glass drawn in LauncherCard and WindowTile
+    ["launcher"] = "modules/launcher/variants/hero/LauncherCard.qml",
+    ["launcher-window-rail"] = "modules/launcher/variants/hero/WindowTile.qml",
 }
 for path in listing:lines() do
     local file = assert(io.open(path))

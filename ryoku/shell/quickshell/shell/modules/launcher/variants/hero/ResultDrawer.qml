@@ -42,6 +42,9 @@ Item {
     signal actionExecuteRequested(string actionId)
     signal askFinished()
 
+    // under crate the card under the drawer is the glass, so the drawer adds
+    // no plate of its own, and its captions are the kit's tracked labels
+    readonly property bool crate: Tokens.controlsCrate
     readonly property real pad: 10 * s
     readonly property bool hasResults: selectedResult !== null && results.length > 0
     readonly property real progressHeight: searching && hasResults ? 18 * s : 0
@@ -139,8 +142,9 @@ Item {
     }
 
     Rectangle {
+        objectName: "drawerBackdrop"
         anchors.fill: parent
-        color: root.frostActive
+        color: root.crate ? "transparent" : root.frostActive
             ? Qt.rgba(Theme.drawer.r, Theme.drawer.g, Theme.drawer.b,
                 Lifecycle.frostBackdropOpacity(root.frostActive))
             : Theme.drawer
@@ -150,8 +154,9 @@ Item {
         anchors.left: parent.left
         anchors.right: parent.right
         anchors.top: parent.top
+        objectName: "drawerRule"
         height: 1
-        color: Theme.frame
+        color: root.crate ? Tokens.line : Theme.frame
         z: 20
     }
 
@@ -288,6 +293,7 @@ Item {
 
                         Text {
                             anchors.verticalCenter: parent.verticalCenter
+                            visible: !root.crate
                             text: I18n.tr("UPDATING")
                             color: Theme.faint
                             font.family: Theme.mono
@@ -295,11 +301,18 @@ Item {
                             font.weight: Font.DemiBold
                             font.letterSpacing: 0.8 * root.s
                         }
+
+                        TrackLabel {
+                            anchors.verticalCenter: parent.verticalCenter
+                            visible: root.crate
+                            text: I18n.tr("UPDATING")
+                        }
                     }
                 }
 
                 HeroVariant.LeadResult {
                     id: lead
+                    objectName: "heroLead"
                     anchors.left: parent.left
                     anchors.right: parent.right
                     anchors.top: parent.top
@@ -360,12 +373,19 @@ Item {
 
                 Text {
                     anchors.verticalCenter: parent.verticalCenter
+                    visible: !root.crate
                     text: root.searching ? I18n.tr("SEARCHING") : root.emptyText
                     color: Theme.faint
                     font.family: Theme.mono
                     font.pixelSize: 9 * root.s
                     font.weight: Font.DemiBold
                     font.letterSpacing: 1.1 * root.s
+                }
+
+                TrackLabel {
+                    anchors.verticalCenter: parent.verticalCenter
+                    visible: root.crate
+                    text: root.searching ? I18n.tr("SEARCHING") : root.emptyText
                 }
             }
         }

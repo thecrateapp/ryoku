@@ -5,7 +5,8 @@ import Quickshell
 import Quickshell.Widgets
 import "../../shared/Singletons"
 import Ryoku.Ui.Singletons
-import shell.services as Svc
+import Ryoku.Ui
+import "." as HeroVariant
 
 Item {
     id: root
@@ -20,6 +21,8 @@ Item {
     property string observedEntryKey: ""
 
     signal focusRequested(string address)
+
+    readonly property bool crate: Tokens.controlsCrate
 
     readonly property var windows: {
         void Wm.windows;
@@ -127,11 +130,21 @@ Item {
             text: root.windows.length === 1
                 ? I18n.tr("OPEN WINDOWS  /  %1 WINDOW").arg(root.windows.length)
                 : I18n.tr("OPEN WINDOWS  /  %1 WINDOWS").arg(root.windows.length)
+            visible: !root.crate
             color: Theme.subtle
             font.family: Theme.mono
             font.pixelSize: 7.5 * root.s
             font.weight: Font.DemiBold
             font.letterSpacing: 0.8 * root.s
+        }
+
+        TrackLabel {
+            anchors.left: parent.left
+            anchors.verticalCenter: parent.verticalCenter
+            visible: root.crate
+            text: root.windows.length === 1
+                ? I18n.tr("OPEN WINDOWS  /  %1 WINDOW").arg(root.windows.length)
+                : I18n.tr("OPEN WINDOWS  /  %1 WINDOWS").arg(root.windows.length)
         }
 
         Text {
@@ -140,10 +153,21 @@ Item {
             text: root.focusActive
                 ? I18n.tr("LEFT / RIGHT  ·  ENTER  SWITCH")
                 : I18n.tr("TAB  ·  FOCUS WINDOWS")
+            visible: !root.crate
             color: root.focusActive ? Theme.bright : Theme.faint
             font.family: Theme.mono
             font.pixelSize: 7 * root.s
             font.letterSpacing: 0.5 * root.s
+        }
+
+        TrackLabel {
+            anchors.right: parent.right
+            anchors.verticalCenter: parent.verticalCenter
+            visible: root.crate
+            tone: root.focusActive ? "active" : "subtle"
+            text: root.focusActive
+                ? I18n.tr("LEFT / RIGHT  ·  ENTER  SWITCH")
+                : I18n.tr("TAB  ·  FOCUS WINDOWS")
         }
     }
 
@@ -161,76 +185,14 @@ Item {
         model: root.windows
         boundsBehavior: Flickable.StopAtBounds
 
-        delegate: Rectangle {
-            id: tile
+        delegate: HeroVariant.WindowTile {
             required property var modelData
-            readonly property bool focused: String(modelData.address)
-                === root.focusedAddress
-            readonly property bool railSelected: focused && root.focusActive
-            width: 184 * root.s
-            height: 64 * root.s
-            radius: Math.max(2, 5 * root.s)
-            color: railSelected ? Theme.leadContainer : Theme.drawerRaised
-            border.width: railSelected ? 2 : 1
-            border.color: railSelected ? Theme.bright : Theme.hair
-
-            Behavior on color {
-                ColorAnimation { duration: Motion.selection; easing.type: Easing.OutCubic }
-            }
-            Behavior on border.color {
-                ColorAnimation { duration: Motion.selection; easing.type: Easing.OutCubic }
-            }
-
-            Rectangle {
-                id: iconPlate
-                anchors.left: parent.left
-                anchors.leftMargin: 7 * root.s
-                anchors.verticalCenter: parent.verticalCenter
-                width: 32 * root.s
-                height: width
-                radius: Math.max(2, 4 * root.s)
-                color: tile.railSelected
-                    ? Qt.rgba(0, 0, 0, 0.18) : Theme.drawerRaised
-
-                IconImage {
-                    anchors.centerIn: parent
-                    implicitSize: 21 * root.s
-                    source: tile.modelData.cls
-                        ? Svc.Icons.path(tile.modelData.cls,
-                            "application-x-executable") : ""
-                }
-            }
-
-            Column {
-                anchors.left: iconPlate.right
-                anchors.leftMargin: 7 * root.s
-                anchors.right: parent.right
-                anchors.rightMargin: 7 * root.s
-                anchors.verticalCenter: parent.verticalCenter
-                spacing: 2 * root.s
-
-                Text {
-                    width: parent.width
-                    text: tile.modelData.title
-                    color: tile.railSelected ? Theme.onLead : Theme.cream
-                    font.family: Theme.font
-                    font.pixelSize: 9.2 * root.s
-                    font.weight: tile.railSelected ? Font.DemiBold : Font.Medium
-                    elide: Text.ElideRight
-                }
-
-                Text {
-                    width: parent.width
-                    text: I18n.tr("OPEN · %1")
-                        .arg(String(tile.modelData.workspace).toUpperCase())
-                    color: Theme.faint
-                    font.family: Theme.mono
-                    font.pixelSize: 6.5 * root.s
-                    font.letterSpacing: 0.5 * root.s
-                    elide: Text.ElideRight
-                }
-            }
-
+            s: root.s
+            title: modelData.title
+            cls: modelData.cls
+            workspace: modelData.workspace
+            picked: String(modelData.address) === root.focusedAddress
+                && root.focusActive
         }
     }
 }

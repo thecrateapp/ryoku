@@ -141,7 +141,8 @@ hl.layer_rule({
 -- Crate for Ryoku's glass: under a theme style with controls "crate", every
 -- floating shell surface (the bar and the panels it grows, Controls, the OSD,
 -- notifications, the clipboard, the frame's prompts and menus, the docks, the
--- desktop menu and the first-boot Kit hint) is the panel grey at 68 %
+-- desktop menu, the first-boot Kit hint, and the hero launcher's card and the
+-- window rail under it) is the panel grey at 68 %
 -- (Tokens.glass); blur what is behind each, and only where it draws
 -- (ignore_alpha), so the glass reads as frosted.
 -- The shell turns the glass opaque when blur is off, so no_blur stays coherent.
@@ -155,7 +156,7 @@ end
 if crate_glass() then
   hl.layer_rule({
     name         = "crate-glass-blur",
-    match        = { namespace = "^(quickshell|ryoku-sidebar-left|ryoku-osd|ryoku-notifications|ryoku-frame|clipboard|qs-dock|dockappmenu|ryoku-dock-menu|ryoku-desktop-menu|ryoku-dialog|ryoku-keys-hint)$" },
+    match        = { namespace = "^(quickshell|ryoku-sidebar-left|ryoku-osd|ryoku-notifications|ryoku-frame|clipboard|qs-dock|dockappmenu|ryoku-dock-menu|ryoku-desktop-menu|ryoku-dialog|ryoku-keys-hint|launcher|launcher-window-rail)$" },
     blur         = not no_blur,
     ignore_alpha = 0.05,
   })

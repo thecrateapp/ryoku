@@ -12,6 +12,11 @@ GridView {
 
     signal resultSelected(string resultKey, int rank)
 
+    // Under crate a row is the kit's list row: the picked one takes the pick
+    // wash in the 1 px pickEdge at Tokens.radius, and the ledger's rank
+    // numerals and grid rules (Ryoku marginalia) do not show.
+    readonly property bool crate: Ui.Tokens.controlsCrate
+
     readonly property var rows: {
         var output = [];
         var source = root.results || [];
@@ -56,6 +61,8 @@ GridView {
         readonly property bool hasPreview: entry
             && String(entry.preview || "").length > 0
         readonly property bool isWeb: entry && String(entry.providerId || "") === "web"
+        readonly property bool picked: entry !== null
+            && entry.resultKey === root.selectedResultKey
 
         objectName: "result-" + (entry ? String(entry.resultKey || "") : "")
         width: root.cellWidth
@@ -83,15 +90,19 @@ GridView {
             anchors.fill: parent
             index: cell.index
         Rectangle {
+            objectName: cell.picked ? "resultPick" : ""
             anchors.fill: parent
-            color: cell.entry && cell.entry.resultKey === root.selectedResultKey
-                ? Theme.pickRow : "transparent"
-            border.width: cell.entry && cell.entry.resultKey
-                === root.selectedResultKey ? 1 : 0
-            border.color: Theme.pickEdge
+            anchors.margins: root.crate ? 2 * root.s : 0
+            radius: root.crate ? Ui.Tokens.radius : 0
+            color: cell.picked
+                ? (root.crate ? Ui.Tokens.pickFill : Theme.pickRow) : "transparent"
+            border.width: cell.picked ? 1 : 0
+            border.color: root.crate ? Ui.Tokens.pickEdge : Theme.pickEdge
         }
 
         Rectangle {
+            objectName: cell.index === 0 ? "resultRule" : ""
+            visible: !root.crate
             anchors.left: parent.left
             anchors.right: parent.right
             anchors.bottom: parent.bottom
@@ -100,6 +111,7 @@ GridView {
         }
 
         Rectangle {
+            visible: !root.crate
             anchors.top: parent.top
             anchors.right: parent.right
             anchors.bottom: parent.bottom
@@ -109,10 +121,12 @@ GridView {
 
         Text {
             id: rank
+            objectName: cell.index === 0 ? "resultRank" : ""
+            visible: !root.crate
             anchors.left: parent.left
             anchors.leftMargin: 9 * root.s
             anchors.verticalCenter: parent.verticalCenter
-            width: 24 * root.s
+            width: root.crate ? 3 * root.s : 24 * root.s
             text: cell.rowData ? String(cell.rowData.rank).padStart(2, "0") : ""
             color: Theme.faint
             font.family: Theme.mono
@@ -126,7 +140,9 @@ GridView {
             anchors.verticalCenter: parent.verticalCenter
             width: cell.hasPreview || cell.hasIcon || cell.isWeb ? 21 * root.s : 0
             height: width
-            color: cell.isWeb ? Theme.onLead : Theme.drawerRaised
+            radius: root.crate ? Ui.Tokens.radius : 0
+            color: root.crate ? (cell.isWeb ? Ui.Tokens.mark : "transparent")
+                : cell.isWeb ? Theme.onLead : Theme.drawerRaised
             border.width: cell.hasPreview ? 1 : 0
             border.color: Theme.hair
             clip: true
@@ -147,27 +163,30 @@ GridView {
                 anchors.centerIn: parent
                 visible: cell.isWeb
                 text: "?"
-                color: Theme.drawer
-                font.family: Theme.mono
-                font.pixelSize: 14 * root.s
+                color: root.crate ? Ui.Tokens.paper : Theme.drawer
+                font.family: root.crate ? Ui.Tokens.mono : Theme.mono
+                font.pixelSize: root.crate ? Ui.Tokens.fBody : 14 * root.s
                 font.weight: Font.DemiBold
             }
         }
 
         Column {
             anchors.left: icon.right
-            anchors.leftMargin: cell.hasIcon ? 9 * root.s : 0
+            anchors.leftMargin: (root.crate ? icon.width > 0 : cell.hasIcon) ? 9 * root.s : 0
             anchors.right: parent.right
             anchors.rightMargin: 10 * root.s
             anchors.verticalCenter: parent.verticalCenter
             spacing: 0
 
             Text {
+                objectName: cell.index === 0 ? "resultTitle" : ""
                 width: parent.width
                 text: cell.entry ? String(cell.entry.title || "") : ""
-                color: cell.entry && cell.entry.disabled ? Theme.faint : Theme.cream
-                font.family: Theme.font
-                font.pixelSize: 11 * root.s
+                color: cell.entry && cell.entry.disabled
+                    ? (root.crate ? Ui.Tokens.inkFaint : Theme.faint)
+                    : root.crate ? (cell.picked ? Ui.Tokens.pickInk : Ui.Tokens.ink) : Theme.cream
+                font.family: root.crate ? Ui.Tokens.ui : Theme.font
+                font.pixelSize: root.crate ? Ui.Tokens.fBody : 11 * root.s
                 font.weight: Font.Medium
                 elide: Text.ElideRight
             }
@@ -177,10 +196,11 @@ GridView {
                 text: cell.entry
                     ? Ui.I18n.tr(String(cell.entry.type || cell.entry.providerId || "")).toUpperCase()
                     : ""
-                color: Theme.faint
-                font.family: Theme.mono
-                font.pixelSize: 7.5 * root.s
-                font.letterSpacing: 0.7 * root.s
+                objectName: cell.index === 0 ? "resultSub" : ""
+                color: root.crate ? Ui.Tokens.inkSubtle : Theme.faint
+                font.family: root.crate ? Ui.Tokens.mono : Theme.mono
+                font.pixelSize: root.crate ? Ui.Tokens.fMicro : 7.5 * root.s
+                font.letterSpacing: root.crate ? Ui.Tokens.trackLabel : 0.7 * root.s
                 elide: Text.ElideRight
             }
         }
