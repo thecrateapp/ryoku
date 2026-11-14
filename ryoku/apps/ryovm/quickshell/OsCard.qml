@@ -1,26 +1,23 @@
 import QtQuick
+import Ryoku.Ui
 import Ryoku.Ui.Singletons
 import "Singletons"
 
 // One operating system in the catalogue: the project's own brand logo (colour:
-// it is the catalogue's data), the name beneath. Hover lifts the border; the
-// picked tile wears the gallery grammar (ink border, tint10 fill, corner dot).
-// The ember tick square dies.
-Rectangle {
+// it is the catalogue's data), the name beneath. The kit's PickCard draws the
+// plate: hover lifts the border; the picked tile wears the gallery grammar (ink
+// border, tint10 fill, corner dot), or the pick edge and its dot under crate.
+PickCard {
     id: cell
 
     property var entry
     property bool active: false
-    signal picked()
+    signal chosen()
 
-    radius: Tokens.radius
-    color: cell.active ? Tokens.tint10 : (ma.containsMouse ? Tokens.tint5 : "transparent")
-    border.width: Tokens.border
-    border.color: cell.active ? Tokens.ink : (ma.containsMouse ? Tokens.lineStrong : Tokens.line)
+    picked: cell.active
     clip: true
-    antialiasing: false
-    Behavior on color { ColorAnimation { duration: Tokens.snap } }
-    Behavior on border.color { ColorAnimation { duration: Tokens.snap } }
+    antialiasing: Tokens.controlsCrate
+    onClicked: cell.chosen()
 
     Column {
         anchors.centerIn: parent
@@ -39,29 +36,10 @@ Rectangle {
             elide: Text.ElideRight
             maximumLineCount: 1
             text: cell.entry ? cell.entry.name : ""
-            color: cell.active ? Tokens.ink : Tokens.inkDim
+            color: cell.active ? cell.titleInk : Tokens.inkDim
             font.family: Tokens.ui
             font.pixelSize: 12
             font.weight: cell.active ? Font.DemiBold : Font.Medium
         }
-    }
-
-    // the gallery grammar's corner dot on the picked tile.
-    Rectangle {
-        visible: cell.active
-        anchors.right: parent.right
-        anchors.top: parent.top
-        anchors.margins: 7
-        width: 5; height: 5
-        radius: 2.5
-        color: Tokens.ink
-    }
-
-    MouseArea {
-        id: ma
-        anchors.fill: parent
-        hoverEnabled: true
-        cursorShape: Qt.PointingHandCursor
-        onClicked: cell.picked()
     }
 }

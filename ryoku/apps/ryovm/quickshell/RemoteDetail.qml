@@ -37,12 +37,11 @@ Item {
         Text { width: fact.width; text: fact.value || "-"; elide: Text.ElideRight; color: Tokens.ink; font.family: Tokens.mono; font.pixelSize: 11 }
     }
 
-    component Head: Text {
+    // a section head: the accent tone under crate
+    component Head: Caption {
         width: parent ? parent.width : 0
-        color: Tokens.ink
-        font.family: Tokens.ui
-        font.pixelSize: 11
-        font.weight: Font.DemiBold
+        tone: "accent"
+        stockColor: Tokens.ink; stockSize: 11; stockWeight: Font.DemiBold; stockSpacing: 0
     }
 
     Item {

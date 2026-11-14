@@ -11,6 +11,14 @@
   field with the search glyph; a product's links are plain icon buttons; the
   rail marks its current section with the pick edge. The stock look is
   unchanged (`ryostore/quickshell/`).
+- `ryovm/`: **Crate Ryoport uses the shared kit.** Under crate the window is the
+  opaque panel grey; page heads are the shared page header; downloads run on a
+  Beam (a sweep while the mirror is found); field labels, sheet labels and
+  detail heads are the kit's tracked captions; operating system cards mark the
+  picked one with the pick edge and its dot; the picked machine, remote and
+  resource rows and the rail's current section take the 1 px pick edge. The
+  unused progress bar is gone. The stock look is unchanged
+  (`ryovm/quickshell/`).
 
 ### Added
 - `ryovm/`, `ryostore/`: **Ryoport and Ryostore follow the theme style.**

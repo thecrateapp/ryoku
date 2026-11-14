@@ -178,12 +178,15 @@ Item {
                                 radius: Tokens.radius
                                 color: navItem.sel ? (Tokens.selectFill ? Tokens.bone : "transparent")
                                     : (nh.hovered && !Tokens.accentMarks ? Tokens.tint10 : "transparent")
+                                // under crate the live section takes the 1 px pick edge
+                                border.width: Tokens.controlsCrate && navItem.sel ? Tokens.border : 0
+                                border.color: Tokens.pickEdge
                                 Behavior on color { ColorAnimation { duration: Tokens.snap } }
                             }
                             // a theme that drops the selection fill marks the
                             // live section with a bar instead
                             Rectangle {
-                                visible: navItem.sel && !Tokens.selectFill
+                                visible: navItem.sel && !Tokens.selectFill && !Tokens.controlsCrate
                                 anchors.left: parent.left
                                 anchors.verticalCenter: parent.verticalCenter
                                 width: 2; height: parent.height - Tokens.s4; radius: 1

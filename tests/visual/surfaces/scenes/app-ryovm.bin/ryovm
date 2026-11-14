@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+# A fixed fleet and catalogue for the Ryovm capture.
+set -euo pipefail
+case "${1:-}" in
+list)
+    echo '[{"name":"arch-dev","os":"archlinux","running":true,"cores":4,"ram":"8G","display":"spice","diskUsed":12884901888},
+           {"name":"fedora-41","os":"fedora","running":false,"cores":"auto","ram":"4G","display":"gtk","diskUsed":5368709120},
+           {"name":"debian-lab","os":"debian","running":false,"cores":2,"ram":"2G","display":"none","diskUsed":0}]' ;;
+get)
+    echo '{"name":"'"${2:-arch-dev}"'","os":"archlinux","running":true,"cores":4,"ram":"8G","display":"spice","diskUsed":12884901888,"disk":"64G","snapshots":[],"installed":true,"sshReady":true,"conf":"~/vms/arch-dev.conf","dir":"~/vms/arch-dev"}' ;;
+catalog)
+    echo '[{"OS":"archlinux","Display Name":"Arch Linux","Release":"latest","Option":""},
+           {"OS":"debian","Display Name":"Debian","Release":"13","Option":"standard"},
+           {"OS":"fedora","Display Name":"Fedora","Release":"41","Option":"Workstation"},
+           {"OS":"nixos","Display Name":"NixOS","Release":"25.05","Option":"gnome"},
+           {"OS":"ubuntu","Display Name":"Ubuntu","Release":"24.04","Option":""},
+           {"OS":"alpine","Display Name":"Alpine","Release":"3.21","Option":""}]' ;;
+cloud-catalog|lg|usb|portfwd) echo '[]' ;;
+create) sleep 10 ;;
+*) echo '{}' ;;
+esac

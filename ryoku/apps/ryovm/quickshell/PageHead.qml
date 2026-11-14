@@ -1,10 +1,12 @@
 import QtQuick
+import Ryoku.Ui
 import Ryoku.Ui.Singletons
 
 // A page head, sized to its own content: the eyebrow lead (a rule, the 力 seal,
 // a tracked label), the Fraunces title, and an optional blurb. Because it reports
 // its real implicitHeight, the toolbar or content anchored below it can never
 // ride up into the title -- one head grammar, spaced the same on every plate.
+// Under crate it is the kit's PageHeader, the head every Crate page shares.
 Item {
     id: head
 
@@ -13,10 +15,22 @@ Item {
     property string blurb: ""
     property color titleColor: Tokens.ink
 
-    implicitHeight: col.implicitHeight
+    implicitHeight: Tokens.controlsCrate ? kitHead.implicitHeight : col.implicitHeight
+
+    PageHeader {
+        id: kitHead
+        objectName: "ryovmPageHeader"
+        visible: Tokens.controlsCrate
+        anchors { left: parent.left; right: parent.right; top: parent.top }
+        eyebrow: head.eyebrow
+        title: head.title
+        blurb: head.blurb
+        titleColor: head.titleColor
+    }
 
     Column {
         id: col
+        visible: !Tokens.controlsCrate
         anchors { left: parent.left; right: parent.right; top: parent.top }
         spacing: Tokens.s2
 

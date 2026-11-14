@@ -52,6 +52,10 @@ Item {
             width: list.width
             height: 66
             color: Vm.selectedName === slot.modelData.name ? Tokens.pickFill : "transparent"
+            // under crate the live row takes the 1 px pick edge, as every list does
+            radius: Tokens.controlsCrate ? Tokens.radius : 0
+            border.width: Tokens.controlsCrate && Vm.selectedName === slot.modelData.name ? Tokens.border : 0
+            border.color: Tokens.pickEdge
             antialiasing: false
             Rectangle {
                 anchors.bottom: parent.bottom
@@ -62,7 +66,7 @@ Item {
             }
             // with the fill off, the live row is marked by a bar
             Rectangle {
-                visible: Vm.selectedName === slot.modelData.name && !Tokens.selectFill
+                visible: Vm.selectedName === slot.modelData.name && !Tokens.selectFill && !Tokens.controlsCrate
                 width: 2
                 height: parent.height
                 color: Tokens.mark

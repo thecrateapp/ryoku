@@ -87,9 +87,8 @@ Item {
     Keys.onEscapePressed: (e) => { if (sheet.open) { sheet.closed(); e.accepted = true; } }
     focus: open
 
-    component LabelText: Text {
-        color: Tokens.inkMuted
-        font.family: Tokens.mono; font.pixelSize: 9; font.letterSpacing: 1.3
+    component LabelText: Caption {
+        stockFamily: Tokens.mono; stockSize: 9; stockSpacing: 1.3; stockWeight: Font.Normal
     }
 
     // scrim: only an outside click (or Esc) dismisses the sheet

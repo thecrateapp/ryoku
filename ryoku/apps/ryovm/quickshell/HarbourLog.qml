@@ -46,17 +46,18 @@ Item {
     Keys.onEscapePressed: (e) => { if (log.open) { log.closed(); e.accepted = true; } }
     focus: open
 
+    // a section head: the // lead and the label in stock, the accent caption
+    // under crate; the gloss follows showJapaneseGloss in either look
     component SectionMark: Row {
         id: mark
         property string label: ""
         property string glyph: ""
         spacing: Tokens.s2
-        Text { text: "//"; color: Tokens.inkFaint; font.family: Tokens.mono; font.pixelSize: Tokens.fMicro; anchors.verticalCenter: parent.verticalCenter }
-        Text {
+        Text { visible: !Tokens.controlsCrate; text: "//"; color: Tokens.inkFaint; font.family: Tokens.mono; font.pixelSize: Tokens.fMicro; anchors.verticalCenter: parent.verticalCenter }
+        Caption {
             text: mark.label
-            color: Tokens.ink
-            font.family: Tokens.ui; font.pixelSize: Tokens.fMicro
-            font.weight: Font.Medium; font.letterSpacing: Tokens.trackMark
+            tone: "accent"
+            stockColor: Tokens.ink; stockSize: Tokens.fMicro; stockSpacing: Tokens.trackMark
             anchors.verticalCenter: parent.verticalCenter
         }
         Text { text: UiPreferences.text(mark.glyph, ""); color: Tokens.inkFaint; font.family: Tokens.jp; font.pixelSize: 12; anchors.verticalCenter: parent.verticalCenter }

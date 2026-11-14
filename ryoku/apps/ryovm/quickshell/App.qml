@@ -15,7 +15,7 @@ Rectangle {
 
     implicitWidth: 1180
     implicitHeight: 760
-    color: Tokens.paper
+    color: Tokens.controlsCrate ? Tokens.popover : Tokens.paper
 
     property string section: "dashboard"     // dashboard | machines | remotes | passthrough | consoles
     property bool settingsOpen: false

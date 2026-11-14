@@ -20,6 +20,10 @@ Rectangle {
 
     implicitHeight: 68
     color: selected ? Tokens.pickFill : "transparent"
+    // under crate the live row takes the 1 px pick edge, as every list does
+    radius: Tokens.controlsCrate ? Tokens.radius : 0
+    border.width: Tokens.controlsCrate && row.selected ? Tokens.border : 0
+    border.color: Tokens.pickEdge
     antialiasing: false
 
     Rectangle {
@@ -31,7 +35,7 @@ Rectangle {
     }
     // with the fill off, the live row is marked by a bar
     Rectangle {
-        visible: row.selected && !Tokens.selectFill
+        visible: row.selected && !Tokens.selectFill && !Tokens.controlsCrate
         width: 2
         height: parent.height
         color: Tokens.mark

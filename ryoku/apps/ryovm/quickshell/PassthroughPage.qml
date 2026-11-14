@@ -696,13 +696,8 @@ Item {
         }
     }
 
-    component FieldLabel: Text {
-        color: Tokens.inkMuted
-        font.family: Tokens.ui
-        font.pixelSize: 10
-        font.weight: Font.Medium
-        font.letterSpacing: Tokens.trackLabel
-        font.capitalization: Font.AllUppercase
+    component FieldLabel: Caption {
+        stockCaps: Font.AllUppercase
     }
 
     // the same zenity/kdialog picker the ISO lane uses, verbatim.

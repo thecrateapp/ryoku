@@ -50,7 +50,7 @@ Item {
                         anchors.margins: g.gap / 2
                         entry: parent.modelData
                         active: g.selected && g.selected.os === parent.modelData.os
-                        onPicked: g.picked(parent.modelData)
+                        onChosen: g.picked(parent.modelData)
                     }
                 }
             }

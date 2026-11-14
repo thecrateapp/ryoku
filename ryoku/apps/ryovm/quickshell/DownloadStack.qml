@@ -18,7 +18,7 @@ Column {
             id: dlRow
             required property var model
             width: stack.width
-            height: 48
+            height: Tokens.controlsCrate ? 66 : 48
             radius: Tokens.radius
             color: "transparent"
             border.width: Tokens.border
@@ -62,10 +62,19 @@ Column {
                     }
                 }
 
+                Beam {
+                    objectName: "ryovmDownloadBeam"
+                    width: parent.width
+                    height: 8
+                    visible: Tokens.controlsCrate
+                    interactive: false
+                    value: Math.max(0, Math.min(1, dlRow.model.progress))
+                    indeterminate: dlRow.model.indet
+                }
                 Item {
                     width: parent.width
                     height: 3
-                    visible: !dlRow.model.indet
+                    visible: !Tokens.controlsCrate && !dlRow.model.indet
                     Rectangle { anchors.fill: parent; color: "transparent"; border.width: Tokens.border; border.color: Tokens.line; antialiasing: false }
                     Rectangle {
                         width: parent.width * Math.max(0, Math.min(1, dlRow.model.progress))

@@ -11,10 +11,12 @@ Text {
     property string tone: "subtle"
 
     readonly property bool crate: Tokens.controlsCrate
-
-    color: lbl.tone === "active" ? Tokens.mark
+    // the tone's ink, for a caption that overrides its colour in one look only
+    readonly property color toneInk: lbl.tone === "active" ? Tokens.mark
         : lbl.tone === "accent" && Tokens.labelAccent ? Tokens.caption
         : lbl.crate ? Tokens.inkSubtle : Tokens.inkFaint
+
+    color: lbl.toneInk
     font.family: lbl.crate ? Tokens.mono : Tokens.ui
     font.pixelSize: Tokens.fMicro
     font.weight: lbl.crate ? Font.Normal : Font.Medium

@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+# No remotes for the Ryovm capture.
+case "${1:-}" in list|keys) echo "[]" ;; console) echo "[]" ;; *) echo "{}" ;; esac

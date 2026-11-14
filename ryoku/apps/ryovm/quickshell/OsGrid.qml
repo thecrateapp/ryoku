@@ -130,7 +130,7 @@ Item {
                         anchors.margins: g.gap / 2
                         entry: parent.modelData
                         active: Vm.selectedOs && Vm.selectedOs.os === parent.modelData.os
-                        onPicked: Vm.selectOs(parent.modelData)
+                        onChosen: Vm.selectOs(parent.modelData)
                     }
                 }
             }

@@ -164,13 +164,8 @@ Item {
         }
     }
 
-    component FieldLabel: Text {
-        color: Tokens.inkMuted
-        font.family: Tokens.ui
-        font.pixelSize: 10
-        font.weight: Font.Medium
-        font.letterSpacing: Tokens.trackLabel
-        font.capitalization: Font.AllUppercase
+    component FieldLabel: Caption {
+        stockCaps: Font.AllUppercase
     }
 
     // the zenity/kdialog file picker survives verbatim.

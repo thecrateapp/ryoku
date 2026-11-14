@@ -306,10 +306,14 @@ Item {
                         : (resourceRow.modelData.kind === "console"
                             ? [] : Remotes.series(resourceRow.modelData.key, "cpu"))
                     color: sel ? Tokens.pickFill : "transparent"
+                    // under crate the live row takes the 1 px pick edge, as every list does
+                    radius: Tokens.controlsCrate ? Tokens.radius : 0
+                    border.width: Tokens.controlsCrate && sel ? Tokens.border : 0
+                    border.color: Tokens.pickEdge
                     antialiasing: false
                     Rectangle { anchors.bottom: parent.bottom; width: parent.width; height: 1; color: sel && Tokens.selectFill ? Tokens.inkOnBone : Tokens.lineSoft; opacity: 0.35 }
                     // with the fill off, the live row is marked by a bar
-                    Rectangle { visible: sel && !Tokens.selectFill; width: 2; height: parent.height; color: Tokens.mark }
+                    Rectangle { visible: sel && !Tokens.selectFill && !Tokens.controlsCrate; width: 2; height: parent.height; color: Tokens.mark }
                     // a one-px ink lead marks a row that needs attention, so
                     // the eye finds it without relying on colour words alone.
                     Rectangle {
