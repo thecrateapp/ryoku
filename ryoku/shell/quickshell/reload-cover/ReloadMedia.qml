@@ -8,6 +8,13 @@ Item {
     property var descriptor: ({ path: "", name: "", kind: "default", bytes: 0, enabled: true })
     property bool active: true
     property bool forceDefault: false
+    // a theme's own cover mark (Tokens.coverMark under controls "crate"): drawn
+    // emblem-sized in markTint in place of Ryoku's wordmark, failure included;
+    // "" keeps the wordmark
+    property string themeMark: ""
+    property color markTint: "white"
+    readonly property bool themed: themeMark !== ""
+    readonly property int themeMarkHeight: 96
     onMediaPathChanged: {
         orientationKnown = false
         imageTall = false
@@ -57,7 +64,7 @@ Item {
         : ""
     readonly property bool showingDefault: forceDefault || !customReady
     readonly property real defaultLogoWidth: Math.min(width * 0.58, 928)
-    readonly property real defaultLogoHeight: defaultLogoWidth * 160 / 928
+    readonly property real defaultLogoHeight: themed ? themeMarkHeight : defaultLogoWidth * 160 / 928
 
     // The bundled wordmark with its loading light sweep: the cue that the
     // cover is working, not frozen. Lost in the ReloadMedia refactor merge;
@@ -67,10 +74,11 @@ Item {
         anchors.centerIn: parent
         width: root.defaultLogoWidth
         height: root.defaultLogoHeight
-        visible: root.showingDefault
+        visible: root.showingDefault && !root.themed
 
         Image {
             id: logo
+            objectName: "wordmark"
             anchors.fill: parent
             source: "assets/logo.png"
             sourceSize.width: Math.round(root.defaultLogoWidth)
@@ -99,6 +107,30 @@ Item {
                 duration: 1200
                 running: defaultLogo.visible && root.active
                 loops: Animation.Infinite
+            }
+        }
+    }
+
+    Loader {
+        anchors.centerIn: parent
+        active: root.themed
+        visible: root.showingDefault
+        sourceComponent: Item {
+            implicitWidth: themeMarkImage.implicitWidth
+            implicitHeight: themeMarkImage.implicitHeight
+
+            Image {
+                id: themeMarkImage
+                objectName: "themeMark"
+                visible: false
+                source: "file://" + root.themeMark
+                sourceSize.height: root.themeMarkHeight
+                fillMode: Image.PreserveAspectFit
+            }
+            ColorOverlay {
+                anchors.fill: parent
+                source: themeMarkImage
+                color: root.markTint
             }
         }
     }

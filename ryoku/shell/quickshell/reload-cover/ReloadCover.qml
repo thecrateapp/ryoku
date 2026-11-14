@@ -29,6 +29,8 @@ PanelWindow {
     property real diagonal: Math.sqrt(width * width + height * height)
     property real iris: diagonal
     property bool mappedReported: false
+    // the curtain: Ryoku's black, or the theme's paper under controls "crate"
+    readonly property color coverFill: Tokens.controlsCrate ? Tokens.paper : "black"
     readonly property real mediaOpacity: {
         if (cover.phase === "closing") return Math.max(0, 1 - cover.iris / (cover.diagonal * 0.38));
         if (cover.phase === "hold" || cover.phase === "failed") return 1;
@@ -81,7 +83,7 @@ PanelWindow {
 
     Rectangle {
         anchors.fill: parent
-        color: "black"
+        color: cover.coverFill
         visible: cover.phase === "hold" || cover.phase === "failed"
     }
     Item {
@@ -93,7 +95,7 @@ PanelWindow {
             preferredRendererType: Shape.CurveRenderer
 
             ShapePath {
-                fillColor: "black"
+                fillColor: cover.coverFill
                 strokeColor: "transparent"
                 fillRule: ShapePath.OddEvenFill
                 PathRectangle { x: 0; y: 0; width: cover.width; height: cover.height }
@@ -117,30 +119,17 @@ PanelWindow {
         descriptor: cover.reloadCover
         active: cover.backingWindowVisible
         forceDefault: cover.phase === "failed"
+        themeMark: Tokens.controlsCrate ? Tokens.coverMark : ""
+        markTint: Tokens.ink
         opacity: cover.mediaOpacity
         scale: opacity < 1 ? 0.94 + opacity * 0.06 : 1
     }
-    Text {
-        anchors.horizontalCenter: parent.horizontalCenter
-        anchors.top: parent.verticalCenter
-        anchors.topMargin: media.defaultLogoHeight / 2 + 18
-        visible: cover.phase !== "failed" && media.showingDefault && cover.mediaOpacity > 0
-        text: cover.mode === "boot" ? I18n.tr("LOADING DESKTOP") : I18n.tr("SHELL RELOADING")
-        color: "#d8e8f5"
-        opacity: cover.mediaOpacity * 0.72
-        font.family: "JetBrainsMono Nerd Font"
-        font.pixelSize: 11
-        font.letterSpacing: 4
-    }
-    Text {
-        anchors.horizontalCenter: parent.horizontalCenter
-        anchors.top: parent.verticalCenter
-        anchors.topMargin: media.defaultLogoHeight / 2 + 28
-        visible: cover.phase === "failed"
-        text: cover.mode === "boot" ? I18n.tr("DESKTOP FAILED TO LOAD") : I18n.tr("RELOAD FAILED")
-        color: "#ff735d"
-        font.family: "JetBrainsMono Nerd Font"
-        font.pixelSize: 14
-        font.letterSpacing: 3
+    CoverStatus {
+        anchors.fill: parent
+        mode: cover.mode
+        phase: cover.phase
+        logoHeight: media.defaultLogoHeight
+        showingDefault: media.showingDefault
+        mediaOpacity: cover.mediaOpacity
     }
 }
