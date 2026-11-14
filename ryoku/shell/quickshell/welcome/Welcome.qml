@@ -10,7 +10,8 @@ import "Singletons"
 Rectangle {
     id: root
 
-    color: Tokens.paper
+    // a large working window is opaque: the panel grey under crate, no blur
+    color: Tokens.controlsCrate ? Tokens.popover : Tokens.paper
     focus: true
     implicitWidth: 1180
     implicitHeight: 760
@@ -28,6 +29,8 @@ Rectangle {
         { label: I18n.tr("Essentials"), next: I18n.tr("Almost done") },
         { label: I18n.tr("Done"), next: I18n.tr("Finish") }
     ]
+    // the step rail as the kit's keyed tabs, under crate
+    readonly property var stepTabs: steps.map((s, i) => ({ key: String(i), label: ("0" + (i + 1)).slice(-2) + "  " + s.label }))
 
     function advance() {
         if (step < lastStep)
@@ -162,7 +165,32 @@ Rectangle {
             }
         }
 
+        // under crate the rail is the kit's Tabs over a Beam of the way through
+        Column {
+            objectName: "welcomeStepRail"
+            visible: Tokens.controlsCrate
+            anchors.right: parent.right
+            anchors.rightMargin: Tokens.s6
+            anchors.verticalCenter: parent.verticalCenter
+            spacing: 0
+
+            Tabs {
+                id: stepTabs
+                options: root.stepTabs
+                current: String(root.step)
+                onChose: key => root.step = Number(key)
+            }
+            Beam {
+                objectName: "welcomeStepBeam"
+                width: stepTabs.width
+                height: 8
+                interactive: false
+                value: root.lastStep > 0 ? root.step / root.lastStep : 1
+            }
+        }
+
         Row {
+            visible: !Tokens.controlsCrate
             anchors.right: parent.right
             anchors.rightMargin: Tokens.s6
             anchors.verticalCenter: parent.verticalCenter

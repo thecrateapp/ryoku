@@ -1,7 +1,10 @@
 import QtQuick
+import Ryoku.Ui
 import Ryoku.Ui.Singletons
 import "Singletons"
 
+// One bar style to pick. Stock fills the picked card with bone and a lead bar;
+// under crate the kit's PickCard draws it: the pick edge and its dot.
 Rectangle {
     id: root
 
@@ -12,14 +15,16 @@ Rectangle {
     property bool recommended: false
     signal chosen(string styleId)
 
+    readonly property bool crate: Tokens.controlsCrate
+
     height: 116
     radius: Tokens.radius
-    color: selected ? Tokens.bone
+    color: root.crate ? "transparent" : selected ? Tokens.bone
         : (tap.pressed ? Tokens.tint16 : (hover.hovered ? Tokens.tint5 : "transparent"))
-    border.width: Tokens.border
+    border.width: root.crate ? 0 : Tokens.border
     border.color: selected ? Tokens.bone
         : (hover.hovered ? Tokens.lineStrong : Tokens.line)
-    scale: selected ? 1.018 : 1
+    scale: selected && !root.crate ? 1.018 : 1
 
     Behavior on color { ColorAnimation { duration: Motion.snap } }
     Behavior on border.color { ColorAnimation { duration: Motion.snap } }
@@ -27,7 +32,18 @@ Rectangle {
         NumberAnimation { duration: Motion.move; easing.type: Tokens.ease }
     }
 
+    PickCard {
+        id: plate
+        objectName: "welcomeBarPick"
+        anchors.fill: parent
+        visible: root.crate
+        interactive: false
+        hotHint: hover.hovered
+        picked: root.selected
+    }
+
     Rectangle {
+        visible: !root.crate
         anchors.left: parent.left
         anchors.top: parent.top
         anchors.bottom: parent.bottom
@@ -39,7 +55,9 @@ Rectangle {
         }
     }
 
+    // the text sits in the pick card under crate, below its corner mark
     Column {
+        parent: root.crate ? plate : root
         anchors.fill: parent
         anchors.margins: Tokens.s3
         spacing: Tokens.s1
@@ -47,7 +65,7 @@ Rectangle {
         Text {
             width: parent.width
             text: root.name
-            color: root.selected ? Tokens.inkOnBone : Tokens.ink
+            color: root.crate ? plate.titleInk : root.selected ? Tokens.inkOnBone : Tokens.ink
             font.family: Tokens.ui
             font.pixelSize: Tokens.fRow
             font.weight: Font.DemiBold
@@ -57,7 +75,7 @@ Rectangle {
         Text {
             width: parent.width
             text: root.description
-            color: root.selected ? Tokens.inkOnBoneDim : Tokens.inkMuted
+            color: root.crate ? plate.subInk : root.selected ? Tokens.inkOnBoneDim : Tokens.inkMuted
             font.family: Tokens.ui
             font.pixelSize: Tokens.fSmall
             wrapMode: Text.WordWrap
@@ -68,7 +86,7 @@ Rectangle {
             visible: root.recommended
             width: parent.width
             text: I18n.tr("RYOKU DEFAULT")
-            color: root.selected ? Tokens.inkOnBoneDim : Tokens.inkFaint
+            color: root.crate ? Tokens.inkSubtle : root.selected ? Tokens.inkOnBoneDim : Tokens.inkFaint
             font.family: Tokens.mono
             font.pixelSize: Tokens.fTiny
             font.letterSpacing: Tokens.trackLabel

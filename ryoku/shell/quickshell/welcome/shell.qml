@@ -20,6 +20,8 @@ ShellRoot {
         maximumSize: win.cramped
             ? Qt.size(win.fitW, win.fitH)
             : Qt.size(16777215, 16777215)
+        // opaque from the first frame; the panel grey under crate, no blur
+        color: Tokens.controlsCrate ? Tokens.popover : Tokens.paper
         onClosed: Qt.quit()
 
         Welcome {
