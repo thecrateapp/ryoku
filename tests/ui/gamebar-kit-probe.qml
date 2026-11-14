@@ -154,6 +154,16 @@ ShellRoot {
         const title = probe.find(capture, "gameBarCardTitle");
         check(title.crate === crate && (!crate || title.font.capitalization === Font.AllUppercase && title.font.family === Tokens.mono),
             "the card head is the kit caption under crate");
+        // the card's 16 px panel padding under crate: the head's glyph and the
+        // body start on the same edge; stock keeps its 6 px head and 14 px body
+        const head = probe.find(capture, "gameBarTitleBar");
+        const body = probe.find(capture, "gameBarBody");
+        const sc = capture.s;
+        const headX = head.mapToItem(capture, 0, 0).x, bodyX = body.mapToItem(capture, 0, 0).x;
+        const edgeX = probe.find(capture, "gameBarCardFrame").mapToItem(capture, 0, 0).x;
+        check(crate ? Math.abs(headX - edgeX - 16 * sc) < 0.5 && Math.abs(bodyX - edgeX - 16 * sc) < 0.5
+                    : Math.abs(headX - edgeX - 6 * sc) < 0.5 && Math.abs(bodyX - edgeX - 14 * sc) < 0.5,
+            "the card's padding (head " + (headX - edgeX) + ", body " + (bodyX - edgeX) + ")");
 
         check(probe.all(performance, "gameBarInfoRow").filter(r => probe.shown(r)).length === (crate ? 3 : 0), "the readings are InfoRows");
         check(probe.all(performance, "gameBarMeterRow").filter(r => probe.shown(r)).length === (crate ? 4 : 0), "the meters are MeterRows");

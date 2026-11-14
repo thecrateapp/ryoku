@@ -27,6 +27,10 @@ Item {
 
     readonly property real grab: root.minimal ? 0 : 8 * root.s
     readonly property real pad: 6 * root.s
+    // under crate the card keeps the panels' 16 px padding: the head's glyph and
+    // the body start on the same edge (stock: a 6 px head over a 14 px body)
+    readonly property real headInset: GameBarLook.crate ? 16 * root.s : root.pad
+    readonly property real bodyInset: GameBarLook.crate ? 8 * root.s : root.pad
     readonly property real barHeight: 30 * root.s
     readonly property real grip: 18 * root.s
 
@@ -75,6 +79,7 @@ Item {
 
     Rectangle {
         id: frame
+        objectName: "gameBarCardFrame"
         anchors.fill: parent
         anchors.margins: root.grab
         radius: root.minimal ? 0 : GameBarLook.radiusWindow * root.s
@@ -84,10 +89,11 @@ Item {
 
         Item {
             id: titleBar
+            objectName: "gameBarTitleBar"
             visible: !root.minimal
-            x: root.pad
+            x: root.headInset
             y: root.pad
-            width: parent.width - root.pad * 2
+            width: parent.width - root.headInset * 2
             height: root.barHeight
 
             Row {
@@ -145,10 +151,10 @@ Item {
 
         Item {
             id: content
-            x: root.minimal ? 0 : root.pad
+            x: root.minimal ? 0 : root.bodyInset
             y: root.minimal ? 0 : titleBar.y + titleBar.height + 1
-            width: parent.width - (root.minimal ? 0 : root.pad * 2)
-            height: parent.height - y - (root.minimal ? 0 : root.pad)
+            width: parent.width - (root.minimal ? 0 : root.bodyInset * 2)
+            height: parent.height - y - (root.minimal ? 0 : root.bodyInset)
 
             Rectangle {
                 id: contentFill
@@ -159,6 +165,7 @@ Item {
 
             Item {
                 id: bodyArea
+                objectName: "gameBarBody"
                 anchors.fill: parent
                 anchors.margins: root.minimal ? 0 : 8 * root.s
             }
