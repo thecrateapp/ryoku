@@ -83,6 +83,14 @@ local namespaces = {
     -- the Game Bar fills with the glass through its look singleton (GameBarLook),
     -- not in GameBar.qml, which maps the layer
     ["ryoku-gamebar"] = "the Game Bar (GameBarLook.panel)",
+    -- the QS Bar's pickers host their glass in a view (ImageCarousel*View,
+    -- MediaBrowser*View), one layer per pickerStyle
+    ["ryoku-image-carousel"] = "qsbar/panels/ImageCarouselPanelView.qml",
+    ["ryoku-image-carousel-hs"] = "qsbar/panels/ImageCarouselHearthstoneView.qml",
+    ["ryoku-image-carousel-cr"] = "qsbar/panels/ImageCarouselCarouselView.qml",
+    ["ryoku-media-browser"] = "qsbar/panels/MediaBrowserPanelView.qml",
+    ["ryoku-media-browser-hs"] = "qsbar/panels/MediaBrowserHearthstoneView.qml",
+    ["ryoku-media-carousel"] = "qsbar/panels/MediaBrowserCarouselView.qml",
 }
 for path in listing:lines() do
     local file = assert(io.open(path))

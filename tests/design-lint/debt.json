@@ -875,25 +875,11 @@
  "ryoku/shell/quickshell/shell/modules/bar/barstyles/qsbar/panels/GpuPanel.qml": {
   "pixel-size": 8
  },
- "ryoku/shell/quickshell/shell/modules/bar/barstyles/qsbar/panels/ImageCarouselCarousel.qml": {
-  "pixel-size": 5
- },
  "ryoku/shell/quickshell/shell/modules/bar/barstyles/qsbar/panels/ImageCarouselHearthstone.qml": {
-  "hex-colour": 2,
-  "pixel-size": 9
- },
- "ryoku/shell/quickshell/shell/modules/bar/barstyles/qsbar/panels/ImageCarouselPanel.qml": {
-  "pixel-size": 9
- },
- "ryoku/shell/quickshell/shell/modules/bar/barstyles/qsbar/panels/MediaBrowserCarousel.qml": {
-  "pixel-size": 6
+  "hex-colour": 2
  },
  "ryoku/shell/quickshell/shell/modules/bar/barstyles/qsbar/panels/MediaBrowserHearthstone.qml": {
-  "hex-colour": 2,
-  "pixel-size": 8
- },
- "ryoku/shell/quickshell/shell/modules/bar/barstyles/qsbar/panels/MediaBrowserPanel.qml": {
-  "pixel-size": 7
+  "hex-colour": 2
  },
  "ryoku/shell/quickshell/shell/modules/bar/barstyles/qsbar/panels/MemoryPanel.qml": {
   "pixel-size": 16

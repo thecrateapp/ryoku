@@ -1,6 +1,4 @@
 import QtQuick
-import QtQuick.Effects
-import QtQuick.Shapes
 import Quickshell
 import Quickshell.Wayland
 import Quickshell.Io
@@ -116,7 +114,7 @@ PanelWindow {
                 Qt.callLater(function() {
                     if (root.imagePickerVisible && panel.active && panel.imagesLoaded) {
                         panel.layoutSettled = true
-                        carousel.forceActiveFocus()
+                        view.focusStage()
                     }
                 })
             }
@@ -299,7 +297,7 @@ PanelWindow {
         Qt.callLater(function() {
             if (root.imagePickerVisible && panel.active && panel.modeKey() === mode && panel.loadedMode === mode) {
                 panel.layoutSettled = true
-                if (panel.imageArray.length > 0) carousel.forceActiveFocus()   // keep Esc-catcher focused when empty
+                if (panel.imageArray.length > 0) view.focusStage()   // keep Esc-catcher focused when empty
                 if (!fromCache) { panel.warmVisible(); warmTimer.restart() }
             }
         })
@@ -474,254 +472,11 @@ PanelWindow {
         return c
     }
 
-    // NO scrim - the carousel floats over the live desktop (no extra background).
-    MouseArea {
+    // the drawing, in an Item of its own so it loads offscreen
+    ImageCarouselCarouselView {
+        id: view
         anchors.fill: parent
-        enabled: panel.visible
-        onClicked: root.imagePickerVisible = false
-        onWheel: function(wheel) {
-            if (!panel.ready) return
-            panel.selectAdjacent(wheel.angleDelta.y < 0 ? 1 : -1)
-        }
-    }
-
-    // ── empty/loading - also catches Esc to close when the carousel isn't focused ──
-    Item {
-        anchors.fill: parent
-        focus: panel.visible && !(panel.ready && panel.imageArray.length > 0)
-        Keys.onPressed: function(event) {
-            if (event.key === Qt.Key_Escape) {
-                if (panel.filterText) panel.filterText = ""
-                else root.imagePickerVisible = false
-                event.accepted = true
-            } else if (event.key === Qt.Key_Backspace) {
-                if (panel.filterText.length > 0) panel.filterText = panel.filterText.slice(0, -1)
-                event.accepted = true
-            } else if (event.text && event.text.length === 1 && event.text.charCodeAt(0) >= 32
-                       && event.text.charCodeAt(0) !== 127
-                       && (event.modifiers === Qt.NoModifier || event.modifiers === Qt.ShiftModifier)) {
-                if (event.text !== " " || (panel.filterText.length > 0 && !panel.filterText.endsWith(" "))) panel.filterText += event.text;
-                event.accepted = true
-            }
-        }
-    }
-    Text {
-        visible: root.imagePickerVisible && panel.active && panel.ready && Model.matchCount(panel.imageArray, panel.filterText) === 0
-        anchors.centerIn: parent
-        horizontalAlignment: Text.AlignHCenter
-        text: I18n.tr("No matches: %1").arg(panel.filterText) + I18n.tr("\n\nBackspace to edit, or Esc to clear")
-        color: root.ink
-        font.family: root.mono; font.pixelSize: 16; font.letterSpacing: 1
-    }
-    Text {
-        visible: root.imagePickerVisible && panel.active && !panel.ready
-        anchors.centerIn: parent
-        horizontalAlignment: Text.AlignHCenter
-        text: panel.scanDone
-              ? (panel.isThemeMode ? I18n.tr("No themes found") : I18n.tr("No wallpapers found")) + I18n.tr("\n\nEsc or click to close")
-              : I18n.tr("Loading…")
-        color: root.ink
-        style: Text.Outline; styleColor: Qt.rgba(0, 0, 0, 0.6)
-        font.family: root.mono; font.pixelSize: 18
-    }
-
-    // ── Carousel ──
-    Item {
-        id: carousel
-        visible: panel.ready && panel.imageArray.length > 0
-        anchors.centerIn: parent
-        anchors.verticalCenterOffset: -40
-        width: panel.expandedW + 13 * (panel.sliceW + panel.sliceGap)
-        height: panel.expandedH
-        focus: panel.ready && panel.imageArray.length > 0
-
-        readonly property real itemStep: panel.sliceW + panel.sliceGap
-        readonly property real previewX: (width - panel.expandedW) / 2
-
-        Keys.priority: Keys.BeforeItem
-        Keys.onPressed: function(event) {
-            if (event.key === Qt.Key_Escape) {
-                if (panel.filterText) panel.filterText = ""
-                else root.imagePickerVisible = false
-                event.accepted = true
-            } else if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter) {
-                panel.applySelected(); event.accepted = true
-            } else if (event.key === Qt.Key_Backspace) {
-                if (panel.filterText.length > 0) { panel.filterText = panel.filterText.slice(0, -1); event.accepted = true }
-            } else if (event.key === Qt.Key_Left || (event.key === Qt.Key_Tab && (event.modifiers & Qt.ShiftModifier)) || event.key === Qt.Key_Backtab) {
-                panel.selectAdjacent(-1); event.accepted = true
-            } else if (event.key === Qt.Key_Right || event.key === Qt.Key_Tab) {
-                panel.selectAdjacent(1); event.accepted = true
-            } else if (event.text && event.text.length === 1 && event.text.charCodeAt(0) >= 32 && event.text.charCodeAt(0) !== 127
-                       && (event.modifiers === Qt.NoModifier || event.modifiers === Qt.ShiftModifier)) {
-                if (event.text !== " " || (panel.filterText.length > 0 && !panel.filterText.endsWith(" "))) panel.filterText += event.text; event.accepted = true
-            }
-        }
-
-        Repeater {
-            model: panel.imageArray.length
-
-            delegate: Item {
-                id: slice
-                required property int index
-
-                readonly property var  imgData:    panel.imageArray[index]
-                readonly property bool matched:    panel.itemMatches(index)
-                readonly property int  relIdx:     panel.filteredPos(index) - panel.selectedFiltPos()
-                readonly property bool selected:   matched && index === panel.selectedIndex
-                readonly property bool nearby:     matched && Math.abs(relIdx) <= 14
-
-                // shared 512px thumbnail cache. The scan/warm worker owns path
-                // resolution so delegates don't spawn per-item shell processes.
-                readonly property string thumbPath: panel.thumbUrlFor(imgData)
-
-                visible: nearby
-                x: selected ? carousel.previewX
-                             : (relIdx < 0 ? carousel.previewX + relIdx * carousel.itemStep
-                                           : carousel.previewX + panel.expandedW + panel.sliceGap + (relIdx - 1) * carousel.itemStep)
-                y: selected ? 0 : (panel.expandedH - panel.sliceH) / 2
-                width:  selected ? panel.expandedW : panel.sliceW
-                height: selected ? panel.expandedH : panel.sliceH
-                z: selected ? 100 : 50 - Math.min(Math.abs(relIdx), 40)
-
-                Behavior on x     { NumberAnimation { duration: 220; easing.type: Easing.OutCubic } }
-                Behavior on y     { NumberAnimation { duration: 220; easing.type: Easing.OutCubic } }
-                Behavior on width { NumberAnimation { duration: 220; easing.type: Easing.OutCubic } }
-
-                readonly property real skAbs:    Math.abs(panel.skew)
-                readonly property real topLeft:  panel.skew >= 0 ? skAbs : 0
-                readonly property real topRight: panel.skew >= 0 ? width : width - skAbs
-                readonly property real botRight: panel.skew >= 0 ? width - skAbs : width
-                readonly property real botLeft:  panel.skew >= 0 ? 0 : skAbs
-
-                Loader {
-                    anchors.fill: parent
-                    active: panel.ready && slice.nearby
-                    sourceComponent: sliceVisualComponent
-                }
-
-                Component {
-                    id: sliceVisualComponent
-
-                    Item {
-                        anchors.fill: parent
-
-                        Item {
-                            id: maskShape; anchors.fill: parent
-                            visible: false; layer.enabled: true
-                            Shape {
-                                anchors.fill: parent; antialiasing: true
-                                preferredRendererType: Shape.CurveRenderer
-                                ShapePath {
-                                    fillColor: "white"; strokeColor: "transparent"
-                                    startX: slice.topLeft; startY: 0
-                                    PathLine { x: slice.topRight; y: 0 }
-                                    PathLine { x: slice.botRight; y: slice.height }
-                                    PathLine { x: slice.botLeft;  y: slice.height }
-                                    PathLine { x: slice.topLeft;  y: 0 }
-                                }
-                            }
-                        }
-
-                        Item {
-                            anchors.fill: parent; layer.enabled: true; layer.smooth: true
-                            layer.effect: MultiEffect {
-                                maskEnabled: true; maskSource: maskShape
-                                maskThresholdMin: 0.3; maskSpreadAtMin: 0.3
-                            }
-                            Image {
-                                id: thumbImage
-                                anchors.fill: parent
-                                readonly property string wantedSource: (panel.ready && slice.nearby && slice.thumbPath) ? slice.thumbPath : ""
-                                source: wantedSource
-                                onWantedSourceChanged: source = wantedSource
-                                Connections {
-                                target: panel
-                                function onThumbEpochChanged() {
-                                    if (thumbImage.wantedSource === panel.readyThumbUrl
-                                            && thumbImage.status !== Image.Ready) {
-                                        var s = thumbImage.wantedSource
-                                            thumbImage.source = ""
-                                            thumbImage.source = s
-                                        }
-                                    }
-                                }
-                                retainWhileLoading: true
-                                fillMode: Image.PreserveAspectCrop; asynchronous: true; cache: true; smooth: true
-                                sourceSize.width:  slice.selected ? panel.expandedW : panel.sliceW
-                                sourceSize.height: slice.selected ? panel.expandedH : panel.sliceH
-                            }
-                            Rectangle {
-                                anchors.fill: parent
-                                color: Qt.rgba(panel.dimColor.r, panel.dimColor.g, panel.dimColor.b, slice.selected ? 0 : 0.42)
-                                Behavior on color { ColorAnimation { duration: 200 } }
-                            }
-                        }
-
-                        Shape {
-                            anchors.fill: parent; antialiasing: true
-                            preferredRendererType: Shape.CurveRenderer
-                            ShapePath {
-                                fillColor: "transparent"
-                                strokeColor: slice.selected ? panel.selBorder : panel.unselBorder
-                                strokeWidth: slice.selected ? 3 : 1
-                                Behavior on strokeColor { ColorAnimation { duration: 150 } }
-                                startX: slice.topLeft; startY: 0
-                                PathLine { x: slice.topRight; y: 0 }
-                                PathLine { x: slice.botRight; y: slice.height }
-                                PathLine { x: slice.botLeft;  y: slice.height }
-                                PathLine { x: slice.topLeft;  y: 0 }
-                            }
-                        }
-
-                        MouseArea {
-                            anchors.fill: parent; cursorShape: Qt.PointingHandCursor
-                            onClicked: slice.selected ? panel.applySelected() : (panel.selectedIndex = index)
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    // ── Label + hint (contrast-stable over any wallpaper) ──
-    Column {
-        visible: panel.ready
-        z: 500
-        anchors.horizontalCenter: parent.horizontalCenter
-        anchors.top: carousel.bottom; anchors.topMargin: 18
-        width: root.evenW(Math.min(panel.expandedW + 96, Math.max(320, parent.width - 48)))
-        spacing: 5
-
-        Text {
-            anchors.horizontalCenter: parent.horizontalCenter
-            width: parent.width
-            text: panel.currentLabel()
-            color: panel.footerText
-            renderType: Text.NativeRendering
-            font.family: root.mono; font.pixelSize: 30; font.weight: Font.DemiBold
-            horizontalAlignment: Text.AlignHCenter; elide: Text.ElideRight
-        }
-
-        Text {
-            visible: panel.filterText.length > 0
-            anchors.horizontalCenter: parent.horizontalCenter
-            width: parent.width
-            text: panel.filterText
-            color: panel.footerText; opacity: 0.95
-            renderType: Text.NativeRendering
-            font.family: root.mono; font.pixelSize: 15
-            horizontalAlignment: Text.AlignHCenter; elide: Text.ElideRight
-        }
-
-        Text {
-            anchors.horizontalCenter: parent.horizontalCenter
-            width: parent.width
-            text: I18n.tr("← → navigate   Enter apply   Esc cancel   type to filter")
-            color: panel.footerDim
-            renderType: Text.NativeRendering
-            font.family: root.mono; font.pixelSize: 11
-            horizontalAlignment: Text.AlignHCenter; elide: Text.ElideRight
-        }
+        picker: panel
+        root: panel.root
     }
 }

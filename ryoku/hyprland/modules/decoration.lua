@@ -166,10 +166,12 @@ if crate_glass() then
   -- 68 % grey over an unfrosted desktop. Same recipe, ignore_alpha keeping the
   -- frost on the card and off the clear dismiss area around it. The Ask bar
   -- (ryoku-ask) and its pinned bubble (ryoku-ask-bubble) are full-output layers
-  -- of the same kind.
+  -- of the same kind, and so are the bar's image and media pickers in each
+  -- pickerStyle: tanzaku and hearthstone frost the desktop under their scrim,
+  -- the carousel only under its caption plate.
   hl.layer_rule({
     name         = "crate-glass-blur-panels",
-    match        = { namespace = "^ryoku-(volume|network|bluetooth|battery|brightness|cpu|gpu|memory|thermals|storage|ai-usage|power-profile|workspace|tray|traymenu|tray-menu|mpris|dashboard|plugin-panel|control|ask|ask-bubble)$" },
+    match        = { namespace = "^ryoku-(volume|network|bluetooth|battery|brightness|cpu|gpu|memory|thermals|storage|ai-usage|power-profile|workspace|tray|traymenu|tray-menu|mpris|dashboard|plugin-panel|control|ask|ask-bubble|image-carousel|image-carousel-hs|image-carousel-cr|media-browser|media-browser-hs|media-carousel)$" },
     blur         = not no_blur,
     ignore_alpha = 0.05,
   })
