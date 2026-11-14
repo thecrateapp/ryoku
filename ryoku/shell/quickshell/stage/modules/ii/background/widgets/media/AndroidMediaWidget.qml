@@ -344,7 +344,7 @@ AbstractBackgroundWidget {
 
                             StyledText {
                                 text: audioPill.activeAudioDeviceName !== "" ? audioPill.activeAudioDeviceName : Translation.tr("Audio")
-                                font.pixelSize: 13
+                                font.pixelSize: Tokens.controlsCrate ? Tokens.fSmall : 13
                                 font.bold: true
                                 color: root.onPillFillColor
                                 Layout.maximumWidth: 160
@@ -477,7 +477,7 @@ AbstractBackgroundWidget {
                             Layout.fillWidth: true
                             visible: root.hasTrack
                             font.family: Appearance.font.family.main
-                            font.pixelSize: 16
+                            font.pixelSize: Tokens.controlsCrate ? Tokens.fBody : 16
                             color: root.artSubtextColor
                             text: root.displayArtist
                             maximumLineCount: 1
@@ -524,7 +524,7 @@ AbstractBackgroundWidget {
                                     StyledText {
                                         Layout.fillWidth: true
                                         font.family: Appearance.font.family.main
-                                        font.pixelSize: 14
+                                        font.pixelSize: Tokens.controlsCrate ? Tokens.fBody : 14
                                         font.weight: Font.Normal
                                         color: root.subtextColorOnBg
                                         text: Translation.tr("Play music or video to start")

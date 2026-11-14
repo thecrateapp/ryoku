@@ -283,8 +283,39 @@ ShellRoot {
         "clock/MonthClockWidget.qml", "clock/NothingDigitalClockWidget.qml",
         "clock/NothingWheelClockWidget.qml", "clock/ScallopDotClockWidget.qml",
         "clock/ScallopNumberClockWidget.qml", "clock/TripleRingClockWidget.qml",
-        "clock/WearOSArcClock.qml", "clock/WearOSClockWidget.qml"
+        "clock/WearOSArcClock.qml", "clock/WearOSClockWidget.qml",
+        "media/AndroidMediaWidget.qml", "media/CircularMediaWidget.qml", "media/CompactMediaWidget.qml",
+        "media/PosterMediaWidget.qml", "media/DeckMediaWidget.qml"
     ]
+    // A player that can seek, for the media seek line.
+    QtObject {
+        id: fakePlayer
+        property var player: ({ "canSeek": true })
+        property color colAccent: Tokens.sun
+        property color colTrack: Tokens.line
+        property bool animate: false
+        property bool isPlaying: true
+        property bool hasLength: true
+        property string positionText: "1:20"
+        property real progress: 0.4
+        property real sought: -1
+        function seek(v) { fakePlayer.sought = v; }
+    }
+    function verifySeek(crate) {
+        const base = "file://" + Quickshell.env("STAGE_WIDGETS") + "/";
+        const component = Qt.createComponent(base + "media/MediaSeekBar.qml", Component.PreferSynchronous);
+        check(component.status === Component.Ready, "the seek line compiles: " + component.errorString());
+        const bar = component.createObject(cardWidget, { "source": fakePlayer, "width": 180 });
+        check(bar !== null, "the seek line loads");
+        const beam = get(bar, "mediaSeekBeam");
+        check(beam.visible === crate, "the seek line is the kit Beam only under crate");
+        if (crate) {
+            check(beam.interactive === true && Math.abs(beam.value - 0.4) < 1e-6, "the Beam follows the track and seeks");
+            beam.moved(0.7);
+            check(Math.abs(fakePlayer.sought - 0.7) < 1e-6, "a Beam drag seeks the player");
+        }
+        bar.destroy();
+    }
     function verifyFaces() {
         const base = "file://" + Quickshell.env("STAGE_WIDGETS") + "/";
         for (const face of probe.faces) {
@@ -300,6 +331,7 @@ ShellRoot {
             try {
                 probe.verify(true);
                 probe.verifyWidgets(true);
+                probe.verifySeek(true);
                 Tokens.controlsCrate = false;
                 Tokens.accentMarks = false;
                 Tokens.selectFill = true;
@@ -318,6 +350,7 @@ ShellRoot {
             try {
                 probe.verify(false);
                 probe.verifyWidgets(false);
+                probe.verifySeek(false);
                 probe.verifyFaces();
                 console.log("STAGE-KIT-PROBE-PASS");
             } catch (e) {

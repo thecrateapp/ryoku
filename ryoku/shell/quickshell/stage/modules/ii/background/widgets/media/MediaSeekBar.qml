@@ -1,10 +1,16 @@
 import QtQuick
 import stage.modules.common
 import stage.modules.common.widgets
+import Ryoku.Ui as Ui
+import Ryoku.Ui.Singletons
 /*
  * The wavy seek line of the Poster and Deck widgets: a draggable StyledSlider
  * when the player can seek, a StyledProgressBar otherwise. Both read the shell's
  * position clock (MprisController.trackProgressOf) through `source`.
+ *
+ * Under crate the line is the kit's Beam: draggable when the player can seek,
+ * a progress line otherwise, the one hairline-and-head recipe every slider
+ * and progress bar in the shell draws.
  */
 Item {
     id: root
@@ -13,12 +19,30 @@ Item {
     property color highlightColor: root.source.colAccent
     property color trackColor: root.source.colTrack
 
-    implicitHeight: Math.max(sliderLoader.implicitHeight, progressLoader.implicitHeight)
+    readonly property bool crate: Tokens.controlsCrate
+    readonly property bool canSeek: root.source.player?.canSeek ?? false
+
+    implicitHeight: root.crate ? kitBeam.implicitHeight
+        : Math.max(sliderLoader.implicitHeight, progressLoader.implicitHeight)
+
+    Ui.Beam {
+        id: kitBeam
+        objectName: "mediaSeekBeam"
+        visible: root.crate
+        anchors {
+            verticalCenter: parent.verticalCenter
+            left: parent.left
+            right: parent.right
+        }
+        value: root.source.progress
+        interactive: root.canSeek && root.source.hasLength
+        onMoved: v => root.source.seek(v)
+    }
 
     Loader {
         id: sliderLoader
         anchors.fill: parent
-        active: root.source.player?.canSeek ?? false
+        active: !root.crate && root.canSeek
         sourceComponent: StyledSlider {
             configuration: StyledSlider.Configuration.Wavy
             animateWave: root.source.animate
@@ -45,7 +69,7 @@ Item {
             left: parent.left
             right: parent.right
         }
-        active: !sliderLoader.active
+        active: !root.crate && !sliderLoader.active
         sourceComponent: StyledProgressBar {
             wavy: root.source.isPlaying
             animateWave: root.source.animate

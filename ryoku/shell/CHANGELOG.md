@@ -1,6 +1,14 @@
 # Changelog: ryoku/shell/
 
 ## Unreleased
+- **Media widgets seek on the kit's Beam under crate.** The Poster and Deck
+  widgets' seek line is the kit Beam (draggable when the player can seek, a
+  progress line otherwise) instead of the wavy slider; the Android and Compact
+  widgets' small captions take the Tokens type roles; the circular widget's
+  reflection, its text tint and its outline shade are the palette's light and
+  dark ends. Stock is unchanged
+  (`quickshell/stage/modules/ii/background/widgets/media/`;
+  `tests/ui/stage-kit-probe.sh`).
 - **Clock widgets read their type and reflections from the theme under crate.**
   The small captions on the Nothing wheel and digital clocks and the WearOS
   dial take the Tokens type roles, and the glass reflection on the analog faces

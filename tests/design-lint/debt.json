@@ -1454,13 +1454,13 @@
   "hex-colour": 3
  },
  "ryoku/shell/quickshell/stage/modules/ii/background/widgets/media/AndroidMediaWidget.qml": {
-  "pixel-size": 6
+  "pixel-size": 3
  },
  "ryoku/shell/quickshell/stage/modules/ii/background/widgets/media/CircularMediaWidget.qml": {
-  "hex-colour": 7
+  "hex-colour": 2
  },
  "ryoku/shell/quickshell/stage/modules/ii/background/widgets/media/CompactMediaWidget.qml": {
-  "pixel-size": 2
+  "pixel-size": 1
  },
  "ryoku/shell/quickshell/stage/modules/ii/background/widgets/media/ExpressiveMediaWidget.qml": {
   "pixel-size": 1
