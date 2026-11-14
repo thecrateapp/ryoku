@@ -3,6 +3,7 @@
 #   1. no em-dash in text files (prose stays plain, not machine-styled)
 #   2. bash syntax on staged shell scripts
 #   3. no low-value filler phrases in added comment lines
+#   (2b. design lint on staged QML outside the Ryoku.Ui kit)
 # vendored ryoku/lockscreen/qylock is exempt. bypass with --no-verify only when
 # you know what you're doing.
 set -euo pipefail
@@ -51,6 +52,15 @@ for f in "${staged[@]}"; do
 		fail "bash syntax error in $f."
 	fi
 done
+
+# 2b. design lint on staged QML outside the kit: no new private controls,
+#     literal type sizes or hex colours (debt in tests/design-lint/debt.json
+#     only shrinks; see bin/ryoku-dev-design-lint).
+mapfile -t staged_qml < <(printf '%s\n' "${staged[@]}" | grep '\.qml$' || true)
+if ((${#staged_qml[@]})); then
+	bin/ryoku-dev-design-lint --files "${staged_qml[@]}" \
+		|| fail "design lint (see above): use a kit primitive or a Tokens role, or record paid-down debt."
+fi
 
 # 3. filler phrases in ADDED comment lines, via the shared scanner (vendored
 #    tree excluded). same check runs in CI (.github/workflows/ai-slop.yml).

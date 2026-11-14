@@ -1,0 +1,133 @@
+#!/usr/bin/env python3
+"""Design lint for Ryoku's QML: outside the Ryoku.Ui kit (ryoku/ui), no new
+private controls and no new literal type sizes or colours.
+
+Rules, counted per file:
+  slider        a QQC.Slider (draw a kit Beam instead)
+  progress      a width bound to `... * value|progress|fraction|ratio` (a hand-made bar)
+  pixel-size    font.pixelSize set to a number (use a Tokens type role)
+  hex-colour    a "#rrggbb" literal (use a Tokens role)
+  control-name  a component file named *Chip, *Slider or *Progress (grow the kit)
+
+Today's debt lives in tests/design-lint/debt.json as {file: {rule: count}} and
+only shrinks: a count above its entry fails, and so does a count below it until
+`--update` records the lower number. `--update` never raises a count or adds a
+file; `--baseline` (re)writes the whole file from today's counts and is for
+establishing the debt once, not for letting new debt in.
+
+usage: ryoku-dev-design-lint [--root DIR] [--update | --baseline | --report] [--files F...]
+"""
+import argparse
+import json
+import os
+import re
+import sys
+
+RULES = {
+    "slider": re.compile(r"\bQQC\.Slider\b"),
+    "progress": re.compile(r"\bwidth:\s*[^\n;]*\*\s*[\w.]*\b(?:value|progress|fraction|ratio)\b"),
+    "pixel-size": re.compile(r"\bfont\.pixelSize:\s*\d"),
+    "hex-colour": re.compile(r"\"#[0-9a-fA-F]{6}(?:[0-9a-fA-F]{2})?\""),
+}
+CONTROL_NAME = re.compile(r"(Chip|Slider|Progress)\.qml$")
+SKIP = re.compile(r"^(ryoku/ui/|ryoku/lockscreen/qylock/|tests/)")
+DEBT = "tests/design-lint/debt.json"
+
+
+def scanned(rel):
+    return rel.endswith(".qml") and rel.startswith("ryoku/") and not SKIP.match(rel)
+
+
+def count(root, rel):
+    try:
+        with open(os.path.join(root, rel), encoding="utf-8", errors="replace") as fh:
+            text = fh.read()
+    except FileNotFoundError:
+        return {}
+    out = {}
+    for rule, rx in RULES.items():
+        n = len(rx.findall(text))
+        if n:
+            out[rule] = n
+    if CONTROL_NAME.search(rel):
+        out["control-name"] = 1
+    return out
+
+
+def every_file(root):
+    base = os.path.join(root, "ryoku")
+    for dp, dn, fn in os.walk(base):
+        dn[:] = [d for d in dn if d not in (".git", "node_modules", "build")]
+        for f in fn:
+            rel = os.path.relpath(os.path.join(dp, f), root)
+            if scanned(rel):
+                yield rel
+
+
+def main(argv):
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--root", default=os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+    mode = ap.add_mutually_exclusive_group()
+    mode.add_argument("--update", action="store_true")
+    mode.add_argument("--report", action="store_true")
+    mode.add_argument("--baseline", action="store_true")
+    ap.add_argument("--files", nargs="*")
+    a = ap.parse_args(argv)
+
+    files = [f for f in a.files if scanned(f)] if a.files is not None else sorted(every_file(a.root))
+    found = {f: c for f in files if (c := count(a.root, f))}
+    path = os.path.join(a.root, DEBT)
+    if a.report:
+        print(json.dumps(found, indent=1, sort_keys=True))
+        return 0
+    if a.baseline:
+        with open(path, "w") as fh:
+            json.dump(found, fh, indent=1, sort_keys=True)
+            fh.write("\n")
+        return 0
+
+    try:
+        with open(path) as fh:
+            debt = json.load(fh)
+    except FileNotFoundError:
+        debt = {}
+
+    grew, shrank = [], []
+    for f in files:
+        have, allowed = found.get(f, {}), debt.get(f, {})
+        for rule in set(have) | set(allowed):
+            h, w = have.get(rule, 0), allowed.get(rule, 0)
+            if h > w:
+                grew.append(f"{f}: {rule} {h} (allowed {w})")
+            elif h < w:
+                shrank.append((f, rule, h))
+
+    if a.update:
+        for f, rule, h in shrank:
+            if h:
+                debt[f][rule] = h
+            else:
+                del debt[f][rule]
+                if not debt[f]:
+                    del debt[f]
+        with open(path, "w") as fh:
+            json.dump(debt, fh, indent=1, sort_keys=True)
+            fh.write("\n")
+        if grew:
+            print("design-lint: --update only lowers counts; these grew:\n  " + "\n  ".join(grew), file=sys.stderr)
+            return 1
+        return 0
+
+    if grew:
+        print("design-lint: new private controls or literal styling outside the kit:\n  " + "\n  ".join(grew)
+              + "\nUse a kit primitive or a Tokens role (see ryoku/ui).", file=sys.stderr)
+        return 1
+    if shrank:
+        print("design-lint: debt went down, record it with bin/ryoku-dev-design-lint --update:\n  "
+              + "\n  ".join(f"{f}: {r} now {h}" for f, r, h in shrank), file=sys.stderr)
+        return 1
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main(sys.argv[1:]))

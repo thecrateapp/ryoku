@@ -1,0 +1,1596 @@
+{
+ "ryoku/apps/ryostore/quickshell/InstallProgress.qml": {
+  "control-name": 1
+ },
+ "ryoku/apps/ryostore/quickshell/ProductDetail.qml": {
+  "pixel-size": 1
+ },
+ "ryoku/apps/ryostore/quickshell/ProviderTabs.qml": {
+  "pixel-size": 1
+ },
+ "ryoku/apps/ryostore/quickshell/ShowroomStage.qml": {
+  "hex-colour": 5
+ },
+ "ryoku/apps/ryostore/quickshell/StoreHeader.qml": {
+  "pixel-size": 1
+ },
+ "ryoku/apps/ryovm/quickshell/AddConsole.qml": {
+  "pixel-size": 6
+ },
+ "ryoku/apps/ryovm/quickshell/AddRemote.qml": {
+  "pixel-size": 3
+ },
+ "ryoku/apps/ryovm/quickshell/Annunciator.qml": {
+  "pixel-size": 1
+ },
+ "ryoku/apps/ryovm/quickshell/CloudGrid.qml": {
+  "pixel-size": 1
+ },
+ "ryoku/apps/ryovm/quickshell/CloudPanel.qml": {
+  "pixel-size": 5
+ },
+ "ryoku/apps/ryovm/quickshell/ConsolesPage.qml": {
+  "pixel-size": 15
+ },
+ "ryoku/apps/ryovm/quickshell/CreatePanel.qml": {
+  "pixel-size": 5
+ },
+ "ryoku/apps/ryovm/quickshell/Dashboard.qml": {
+  "pixel-size": 17
+ },
+ "ryoku/apps/ryovm/quickshell/DownloadStack.qml": {
+  "pixel-size": 3
+ },
+ "ryoku/apps/ryovm/quickshell/GuardSwitch.qml": {
+  "pixel-size": 2
+ },
+ "ryoku/apps/ryovm/quickshell/HarbourLog.qml": {
+  "pixel-size": 9
+ },
+ "ryoku/apps/ryovm/quickshell/IsoPanel.qml": {
+  "pixel-size": 3
+ },
+ "ryoku/apps/ryovm/quickshell/Machines.qml": {
+  "pixel-size": 12
+ },
+ "ryoku/apps/ryovm/quickshell/MetricGraph.qml": {
+  "pixel-size": 3
+ },
+ "ryoku/apps/ryovm/quickshell/OsCard.qml": {
+  "pixel-size": 1
+ },
+ "ryoku/apps/ryovm/quickshell/OsGrid.qml": {
+  "pixel-size": 2
+ },
+ "ryoku/apps/ryovm/quickshell/PageHead.qml": {
+  "pixel-size": 3
+ },
+ "ryoku/apps/ryovm/quickshell/PassthroughPage.qml": {
+  "pixel-size": 21
+ },
+ "ryoku/apps/ryovm/quickshell/Rail.qml": {
+  "pixel-size": 12
+ },
+ "ryoku/apps/ryovm/quickshell/RemoteDetail.qml": {
+  "pixel-size": 28
+ },
+ "ryoku/apps/ryovm/quickshell/RemoteTile.qml": {
+  "pixel-size": 4
+ },
+ "ryoku/apps/ryovm/quickshell/RemotesPage.qml": {
+  "pixel-size": 4
+ },
+ "ryoku/apps/ryovm/quickshell/SettingsPanel.qml": {
+  "pixel-size": 8
+ },
+ "ryoku/apps/ryovm/quickshell/VmDetail.qml": {
+  "pixel-size": 25
+ },
+ "ryoku/apps/ryovm/quickshell/VmGrid.qml": {
+  "pixel-size": 4
+ },
+ "ryoku/apps/ryovm/quickshell/VmStage.qml": {
+  "pixel-size": 4
+ },
+ "ryoku/cli/plugin_template/content/Panel.qml": {
+  "pixel-size": 3
+ },
+ "ryoku/cli/plugin_template/content/Widget.qml": {
+  "pixel-size": 2
+ },
+ "ryoku/hub/quickshell/AppPicker.qml": {
+  "pixel-size": 3
+ },
+ "ryoku/hub/quickshell/AppSetPicker.qml": {
+  "pixel-size": 2
+ },
+ "ryoku/hub/quickshell/ColorField.qml": {
+  "hex-colour": 14,
+  "pixel-size": 3
+ },
+ "ryoku/hub/quickshell/Hub.qml": {
+  "hex-colour": 1,
+  "pixel-size": 33
+ },
+ "ryoku/hub/quickshell/SettingsSheet.qml": {
+  "pixel-size": 6
+ },
+ "ryoku/hub/quickshell/Singletons/Scheme.qml": {
+  "hex-colour": 6
+ },
+ "ryoku/hub/quickshell/barstudio/NacreWidgetChip.qml": {
+  "control-name": 1,
+  "pixel-size": 1
+ },
+ "ryoku/hub/quickshell/pages/AddonBundleCard.qml": {
+  "pixel-size": 1
+ },
+ "ryoku/hub/quickshell/pages/AddonBundleSheet.qml": {
+  "pixel-size": 3
+ },
+ "ryoku/hub/quickshell/pages/AddonOmarchyCard.qml": {
+  "pixel-size": 1
+ },
+ "ryoku/hub/quickshell/pages/AddonPluginCard.qml": {
+  "pixel-size": 1
+ },
+ "ryoku/hub/quickshell/pages/AppOverridesPage.qml": {
+  "pixel-size": 2
+ },
+ "ryoku/hub/quickshell/pages/BarStudioPage.qml": {
+  "pixel-size": 1
+ },
+ "ryoku/hub/quickshell/pages/DictationPage.qml": {
+  "pixel-size": 2
+ },
+ "ryoku/hub/quickshell/pages/FastfetchPage.qml": {
+  "pixel-size": 4
+ },
+ "ryoku/hub/quickshell/pages/GpuPage.qml": {
+  "pixel-size": 2
+ },
+ "ryoku/hub/quickshell/pages/HeroEditor.qml": {
+  "pixel-size": 2
+ },
+ "ryoku/hub/quickshell/pages/ImportPage.qml": {
+  "pixel-size": 2
+ },
+ "ryoku/hub/quickshell/pages/InputPage.qml": {
+  "pixel-size": 3
+ },
+ "ryoku/hub/quickshell/pages/LauncherPage.qml": {
+  "hex-colour": 2,
+  "pixel-size": 4
+ },
+ "ryoku/hub/quickshell/pages/LockscreenPage.qml": {
+  "pixel-size": 2
+ },
+ "ryoku/hub/quickshell/pages/ProfilePage.qml": {
+  "pixel-size": 8
+ },
+ "ryoku/hub/quickshell/pages/ProfileToolbar.qml": {
+  "pixel-size": 2
+ },
+ "ryoku/hub/quickshell/pages/RashinPage.qml": {
+  "pixel-size": 34
+ },
+ "ryoku/hub/quickshell/pages/RecordingPage.qml": {
+  "pixel-size": 1
+ },
+ "ryoku/hub/quickshell/pages/StoreDesignGallery.qml": {
+  "pixel-size": 2
+ },
+ "ryoku/hub/quickshell/pages/users/UserCard.qml": {
+  "pixel-size": 1
+ },
+ "ryoku/shell/quickshell/inir/modules/background/widgets/DesktopWidgetIdentity.qml": {
+  "hex-colour": 26
+ },
+ "ryoku/shell/quickshell/inir/modules/background/widgets/WidgetManagerPanel.qml": {
+  "pixel-size": 1
+ },
+ "ryoku/shell/quickshell/inir/modules/background/widgets/WidgetQuickSlider.qml": {
+  "control-name": 1
+ },
+ "ryoku/shell/quickshell/inir/modules/background/widgets/japaneseTypography/JapaneseTypographyWidget.qml": {
+  "hex-colour": 12
+ },
+ "ryoku/shell/quickshell/inir/modules/common/Appearance.qml": {
+  "hex-colour": 80
+ },
+ "ryoku/shell/quickshell/inir/modules/common/widgets/CircularProgress.qml": {
+  "control-name": 1
+ },
+ "ryoku/shell/quickshell/inir/modules/common/widgets/RoundCorner.qml": {
+  "hex-colour": 1
+ },
+ "ryoku/shell/quickshell/inir/modules/common/widgets/StyledSlider.qml": {
+  "control-name": 1
+ },
+ "ryoku/shell/quickshell/inir/modules/ii/overlay/OverlaySegments.qml": {
+  "pixel-size": 1
+ },
+ "ryoku/shell/quickshell/inir/modules/ii/overlay/crosshair/CrosshairContent.qml": {
+  "hex-colour": 10
+ },
+ "ryoku/shell/quickshell/inir/modules/iris/bar/IrisTools.qml": {
+  "pixel-size": 1
+ },
+ "ryoku/shell/quickshell/inir/modules/iris/bar/island/IslandDesktopPage.qml": {
+  "pixel-size": 1
+ },
+ "ryoku/shell/quickshell/inir/modules/iris/components/IrisBubbleFace.qml": {
+  "pixel-size": 1
+ },
+ "ryoku/shell/quickshell/inir/modules/iris/components/IrisCapsuleSlider.qml": {
+  "control-name": 1
+ },
+ "ryoku/shell/quickshell/inir/modules/iris/components/IrisChip.qml": {
+  "control-name": 1
+ },
+ "ryoku/shell/quickshell/inir/modules/iris/components/IrisSlider.qml": {
+  "control-name": 1
+ },
+ "ryoku/shell/quickshell/inir/modules/iris/polkit/IrisPolkitContent.qml": {
+  "pixel-size": 1
+ },
+ "ryoku/shell/quickshell/inir/modules/iris/preview/IrisGroupPreview.qml": {
+  "pixel-size": 4,
+  "progress": 1
+ },
+ "ryoku/shell/quickshell/inir/modules/iris/preview/IrisTargetPreview.qml": {
+  "pixel-size": 2
+ },
+ "ryoku/shell/quickshell/inir/modules/iris/settings/IrisAboutPage.qml": {
+  "pixel-size": 1
+ },
+ "ryoku/shell/quickshell/inir/modules/iris/settings/IrisSettings.qml": {
+  "pixel-size": 3
+ },
+ "ryoku/shell/quickshell/inir/modules/iris/sidebar/IrisSidebar.qml": {
+  "pixel-size": 1
+ },
+ "ryoku/shell/quickshell/inir/modules/iris/sidebar/IrisSidebarSection.qml": {
+  "pixel-size": 3
+ },
+ "ryoku/shell/quickshell/inir/modules/iris/style/IrisStyle.qml": {
+  "hex-colour": 142
+ },
+ "ryoku/shell/quickshell/inir/modules/iris/wallpaper/WallpaperEmpty.qml": {
+  "pixel-size": 1
+ },
+ "ryoku/shell/quickshell/inir/modules/iris/widgets/IrisDayFace.qml": {
+  "progress": 1
+ },
+ "ryoku/shell/quickshell/inir/modules/iris/widgets/IrisNowPlayingFace.qml": {
+  "progress": 1
+ },
+ "ryoku/shell/quickshell/inir/modules/mediaControls/components/PlayerProgress.qml": {
+  "control-name": 1
+ },
+ "ryoku/shell/quickshell/inir/services/CalendarSync.qml": {
+  "hex-colour": 12
+ },
+ "ryoku/shell/quickshell/keys/devtools/DevToolsRegistry.qml": {
+  "hex-colour": 1
+ },
+ "ryoku/shell/quickshell/keys/typing/TypingResults.qml": {
+  "pixel-size": 1
+ },
+ "ryoku/shell/quickshell/keys/typing/TypingTestView.qml": {
+  "progress": 1
+ },
+ "ryoku/shell/quickshell/plugins/kit/Card.qml": {
+  "pixel-size": 1
+ },
+ "ryoku/shell/quickshell/plugins/kit/Chip.qml": {
+  "control-name": 1
+ },
+ "ryoku/shell/quickshell/plugins/kit/MicroLabel.qml": {
+  "pixel-size": 1
+ },
+ "ryoku/shell/quickshell/plugins/kit/SearchField.qml": {
+  "pixel-size": 3
+ },
+ "ryoku/shell/quickshell/plugins/kit/Singletons/Config.qml": {
+  "hex-colour": 1
+ },
+ "ryoku/shell/quickshell/plugins/kit/Singletons/Scheme.qml": {
+  "hex-colour": 7
+ },
+ "ryoku/shell/quickshell/plugins/kit/Singletons/Theme.qml": {
+  "hex-colour": 17
+ },
+ "ryoku/shell/quickshell/reload-cover/CoverStatus.qml": {
+  "hex-colour": 2
+ },
+ "ryoku/shell/quickshell/reload-cover/ReloadMedia.qml": {
+  "hex-colour": 2
+ },
+ "ryoku/shell/quickshell/ryopin/PinButton.qml": {
+  "pixel-size": 1
+ },
+ "ryoku/shell/quickshell/ryoshot/Beautify.qml": {
+  "hex-colour": 52,
+  "pixel-size": 10
+ },
+ "ryoku/shell/quickshell/ryoshot/ColorPopover.qml": {
+  "pixel-size": 1
+ },
+ "ryoku/shell/quickshell/ryoshot/Dial.qml": {
+  "pixel-size": 1
+ },
+ "ryoku/shell/quickshell/ryoshot/HotkeyRow.qml": {
+  "pixel-size": 2
+ },
+ "ryoku/shell/quickshell/ryoshot/IconButton.qml": {
+  "pixel-size": 1
+ },
+ "ryoku/shell/quickshell/ryoshot/Overlay.qml": {
+  "pixel-size": 1
+ },
+ "ryoku/shell/quickshell/ryoshot/PhonePopover.qml": {
+  "pixel-size": 2
+ },
+ "ryoku/shell/quickshell/ryoshot/RegionBar.qml": {
+  "pixel-size": 2
+ },
+ "ryoku/shell/quickshell/ryoshot/SettingsPanel.qml": {
+  "pixel-size": 6
+ },
+ "ryoku/shell/quickshell/ryoshot/ShortcutSheet.qml": {
+  "pixel-size": 3
+ },
+ "ryoku/shell/quickshell/ryoshot/Singletons/Theme.qml": {
+  "hex-colour": 8
+ },
+ "ryoku/shell/quickshell/ryoshot/Slider.qml": {
+  "control-name": 1,
+  "pixel-size": 1
+ },
+ "ryoku/shell/quickshell/ryoshot/Toolbar.qml": {
+  "pixel-size": 2
+ },
+ "ryoku/shell/quickshell/ryoshot/WidthPopover.qml": {
+  "pixel-size": 3
+ },
+ "ryoku/shell/quickshell/ryoshot/shell.qml": {
+  "hex-colour": 6
+ },
+ "ryoku/shell/quickshell/shell/Commons/Color.qml": {
+  "hex-colour": 5
+ },
+ "ryoku/shell/quickshell/shell/Ui/BarIconButton.qml": {
+  "hex-colour": 2
+ },
+ "ryoku/shell/quickshell/shell/Ui/OpticalGlyph.qml": {
+  "hex-colour": 2
+ },
+ "ryoku/shell/quickshell/shell/Ui/PanelSlider.qml": {
+  "control-name": 1,
+  "hex-colour": 1,
+  "progress": 1
+ },
+ "ryoku/shell/quickshell/shell/Ui/SpeedTestOverlay.qml": {
+  "hex-colour": 1
+ },
+ "ryoku/shell/quickshell/shell/components/AudioAppRow.qml": {
+  "pixel-size": 1
+ },
+ "ryoku/shell/quickshell/shell/components/Calendar.qml": {
+  "pixel-size": 11
+ },
+ "ryoku/shell/quickshell/shell/components/Eyebrow.qml": {
+  "pixel-size": 1
+ },
+ "ryoku/shell/quickshell/shell/components/HFader.qml": {
+  "pixel-size": 1
+ },
+ "ryoku/shell/quickshell/shell/components/MicroLabel.qml": {
+  "pixel-size": 1
+ },
+ "ryoku/shell/quickshell/shell/components/SymbolIcon.qml": {
+  "hex-colour": 1
+ },
+ "ryoku/shell/quickshell/shell/components/SysMonitor.qml": {
+  "pixel-size": 2
+ },
+ "ryoku/shell/quickshell/shell/components/SysRing.qml": {
+  "pixel-size": 2
+ },
+ "ryoku/shell/quickshell/shell/modules/bar/FrameChrome.qml": {
+  "hex-colour": 2
+ },
+ "ryoku/shell/quickshell/shell/modules/bar/KeyringSurface.qml": {
+  "pixel-size": 10
+ },
+ "ryoku/shell/quickshell/shell/modules/bar/PolkitSurface.qml": {
+  "pixel-size": 7
+ },
+ "ryoku/shell/quickshell/shell/modules/bar/RecordIsland.qml": {
+  "pixel-size": 1
+ },
+ "ryoku/shell/quickshell/shell/modules/bar/TrayMenu.qml": {
+  "pixel-size": 1
+ },
+ "ryoku/shell/quickshell/shell/modules/bar/barstyles/kairos/components/BatteryIndicator.qml": {
+  "hex-colour": 1,
+  "pixel-size": 3,
+  "progress": 1
+ },
+ "ryoku/shell/quickshell/shell/modules/bar/barstyles/kairos/components/DateWheel.qml": {
+  "hex-colour": 2,
+  "pixel-size": 3
+ },
+ "ryoku/shell/quickshell/shell/modules/bar/barstyles/kairos/components/Island.qml": {
+  "pixel-size": 2
+ },
+ "ryoku/shell/quickshell/shell/modules/bar/barstyles/kairos/components/MusicSurface.qml": {
+  "hex-colour": 2,
+  "pixel-size": 11
+ },
+ "ryoku/shell/quickshell/shell/modules/bar/barstyles/kairos/components/TrayFlyout.qml": {
+  "pixel-size": 5
+ },
+ "ryoku/shell/quickshell/shell/modules/bar/barstyles/kairos/quicksettings/kit/QsAction.qml": {
+  "pixel-size": 1
+ },
+ "ryoku/shell/quickshell/shell/modules/bar/barstyles/kairos/quicksettings/kit/QsBack.qml": {
+  "pixel-size": 1
+ },
+ "ryoku/shell/quickshell/shell/modules/bar/barstyles/kairos/quicksettings/kit/QsChip.qml": {
+  "control-name": 1,
+  "pixel-size": 1
+ },
+ "ryoku/shell/quickshell/shell/modules/bar/barstyles/kairos/quicksettings/kit/QsFader.qml": {
+  "pixel-size": 1
+ },
+ "ryoku/shell/quickshell/shell/modules/bar/barstyles/kairos/quicksettings/kit/QsTile.qml": {
+  "pixel-size": 4
+ },
+ "ryoku/shell/quickshell/shell/modules/bar/barstyles/kairos/quicksettings/pages/BluetoothPage.qml": {
+  "pixel-size": 8
+ },
+ "ryoku/shell/quickshell/shell/modules/bar/barstyles/kairos/quicksettings/pages/DisplayPage.qml": {
+  "pixel-size": 12
+ },
+ "ryoku/shell/quickshell/shell/modules/bar/barstyles/kairos/quicksettings/pages/HomePage.qml": {
+  "hex-colour": 3,
+  "pixel-size": 13
+ },
+ "ryoku/shell/quickshell/shell/modules/bar/barstyles/kairos/quicksettings/pages/SoundPage.qml": {
+  "pixel-size": 9
+ },
+ "ryoku/shell/quickshell/shell/modules/bar/barstyles/kairos/quicksettings/pages/WifiPage.qml": {
+  "pixel-size": 15
+ },
+ "ryoku/shell/quickshell/shell/modules/bar/barstyles/kairos/settings/SettingsWindow.qml": {
+  "pixel-size": 17
+ },
+ "ryoku/shell/quickshell/shell/modules/bar/barstyles/nomarchy/plugins/panels/clock/Panel.qml": {
+  "pixel-size": 2
+ },
+ "ryoku/shell/quickshell/shell/modules/bar/barstyles/nomarchy/plugins/panels/elsewhen/DaylightStrip.qml": {
+  "hex-colour": 1
+ },
+ "ryoku/shell/quickshell/shell/modules/bar/barstyles/nomarchy/plugins/panels/elsewhen/Panel.qml": {
+  "hex-colour": 1
+ },
+ "ryoku/shell/quickshell/shell/modules/bar/barstyles/nomarchy/plugins/panels/weather/Panel.qml": {
+  "pixel-size": 2
+ },
+ "ryoku/shell/quickshell/shell/modules/bar/barstyles/nomarchy/plugins/panels/wifiqr/Panel.qml": {
+  "hex-colour": 2
+ },
+ "ryoku/shell/quickshell/shell/modules/bar/barstyles/orpheus/kit/Chip.qml": {
+  "control-name": 1
+ },
+ "ryoku/shell/quickshell/shell/modules/bar/barstyles/orpheus/kit/Slider.qml": {
+  "control-name": 1,
+  "progress": 1
+ },
+ "ryoku/shell/quickshell/shell/modules/bar/barstyles/orpheus/settings/SettingsWindow.qml": {
+  "pixel-size": 3
+ },
+ "ryoku/shell/quickshell/shell/modules/bar/barstyles/orpheus/settings/pages/AboutPage.qml": {
+  "pixel-size": 1
+ },
+ "ryoku/shell/quickshell/shell/modules/bar/barstyles/orpheus/settings/pages/LayoutPage.qml": {
+  "pixel-size": 1
+ },
+ "ryoku/shell/quickshell/shell/modules/bar/barstyles/orpheus/settings/pages/PageHead.qml": {
+  "pixel-size": 1
+ },
+ "ryoku/shell/quickshell/shell/modules/bar/barstyles/python/bar/faces/sysmon/SysMonFace.qml": {
+  "hex-colour": 1
+ },
+ "ryoku/shell/quickshell/shell/modules/bar/barstyles/python/bar/faces/workspaces/PacmanFace.qml": {
+  "hex-colour": 5
+ },
+ "ryoku/shell/quickshell/shell/modules/bar/barstyles/python/dock/Dock.qml": {
+  "hex-colour": 2
+ },
+ "ryoku/shell/quickshell/shell/modules/bar/barstyles/python/guide/AboutTab.qml": {
+  "hex-colour": 2
+ },
+ "ryoku/shell/quickshell/shell/modules/bar/barstyles/python/guide/DockTab.qml": {
+  "hex-colour": 2
+ },
+ "ryoku/shell/quickshell/shell/modules/bar/barstyles/python/guide/GuideSearchResults.qml": {
+  "hex-colour": 4
+ },
+ "ryoku/shell/quickshell/shell/modules/bar/barstyles/python/guide/GuideSidebar.qml": {
+  "hex-colour": 2
+ },
+ "ryoku/shell/quickshell/shell/modules/bar/barstyles/python/guide/OnScreenDisplayTab.qml": {
+  "hex-colour": 2
+ },
+ "ryoku/shell/quickshell/shell/modules/bar/barstyles/python/guide/bar/general/BarGeneralState.qml": {
+  "hex-colour": 2
+ },
+ "ryoku/shell/quickshell/shell/modules/bar/barstyles/python/guide/bar/general/BarLayoutEditor.qml": {
+  "hex-colour": 1
+ },
+ "ryoku/shell/quickshell/shell/modules/bar/barstyles/python/guide/bar/modules/BarModuleStyleCard.qml": {
+  "hex-colour": 1
+ },
+ "ryoku/shell/quickshell/shell/modules/bar/barstyles/python/guide/notifications/NotificationPositionRow.qml": {
+  "hex-colour": 2
+ },
+ "ryoku/shell/quickshell/shell/modules/bar/barstyles/python/guide/theme/ThemeEditor.qml": {
+  "hex-colour": 3
+ },
+ "ryoku/shell/quickshell/shell/modules/bar/barstyles/python/guide/theme/ThemePresetTile.qml": {
+  "hex-colour": 1
+ },
+ "ryoku/shell/quickshell/shell/modules/bar/barstyles/python/guide/theme/ThemeWallpaperPreview.qml": {
+  "hex-colour": 1
+ },
+ "ryoku/shell/quickshell/shell/modules/bar/barstyles/python/guide/wellbeing/WellbeingHeader.qml": {
+  "hex-colour": 5
+ },
+ "ryoku/shell/quickshell/shell/modules/bar/barstyles/python/guide/wellbeing/WellbeingLimitOverlay.qml": {
+  "pixel-size": 3
+ },
+ "ryoku/shell/quickshell/shell/modules/bar/barstyles/python/guide/wellbeing/WellbeingMidRow.qml": {
+  "hex-colour": 1
+ },
+ "ryoku/shell/quickshell/shell/modules/bar/barstyles/python/guide/wellbeing/WellbeingState.qml": {
+  "hex-colour": 4
+ },
+ "ryoku/shell/quickshell/shell/modules/bar/barstyles/python/guide/wellbeing/WellbeingStatsRow.qml": {
+  "hex-colour": 1
+ },
+ "ryoku/shell/quickshell/shell/modules/bar/barstyles/python/media/MusicAudioView.qml": {
+  "hex-colour": 24
+ },
+ "ryoku/shell/quickshell/shell/modules/bar/barstyles/python/media/MusicBottomHeader.qml": {
+  "hex-colour": 15
+ },
+ "ryoku/shell/quickshell/shell/modules/bar/barstyles/python/media/MusicCover.qml": {
+  "hex-colour": 14
+ },
+ "ryoku/shell/quickshell/shell/modules/bar/barstyles/python/media/MusicEqView.qml": {
+  "hex-colour": 8
+ },
+ "ryoku/shell/quickshell/shell/modules/bar/barstyles/python/media/MusicEqualizerState.qml": {
+  "hex-colour": 1
+ },
+ "ryoku/shell/quickshell/shell/modules/bar/barstyles/python/media/MusicLyricsView.qml": {
+  "hex-colour": 2
+ },
+ "ryoku/shell/quickshell/shell/modules/bar/barstyles/python/media/MusicPlayerState.qml": {
+  "hex-colour": 11
+ },
+ "ryoku/shell/quickshell/shell/modules/bar/barstyles/python/media/MusicPopup.qml": {
+  "hex-colour": 1
+ },
+ "ryoku/shell/quickshell/shell/modules/bar/barstyles/python/media/MusicPresetButton.qml": {
+  "hex-colour": 4
+ },
+ "ryoku/shell/quickshell/shell/modules/bar/barstyles/python/media/MusicTrackControls.qml": {
+  "hex-colour": 20
+ },
+ "ryoku/shell/quickshell/shell/modules/bar/barstyles/python/network/NetworkCardLayer.qml": {
+  "hex-colour": 1
+ },
+ "ryoku/shell/quickshell/shell/modules/bar/barstyles/python/network/NetworkControls.qml": {
+  "hex-colour": 1
+ },
+ "ryoku/shell/quickshell/shell/modules/bar/barstyles/python/network/NetworkCoreLayer.qml": {
+  "hex-colour": 3
+ },
+ "ryoku/shell/quickshell/shell/modules/bar/barstyles/python/polkit/PythonPolkit.qml": {
+  "pixel-size": 4
+ },
+ "ryoku/shell/quickshell/shell/modules/bar/barstyles/python/quickactions/actions/DrawAction.qml": {
+  "hex-colour": 7
+ },
+ "ryoku/shell/quickshell/shell/modules/bar/barstyles/python/reusables/behavior/Draggable.qml": {
+  "hex-colour": 3,
+  "pixel-size": 1
+ },
+ "ryoku/shell/quickshell/shell/modules/bar/barstyles/python/reusables/buttons/ClickButton.qml": {
+  "hex-colour": 1
+ },
+ "ryoku/shell/quickshell/shell/modules/bar/barstyles/python/reusables/buttons/FillButton.qml": {
+  "hex-colour": 1
+ },
+ "ryoku/shell/quickshell/shell/modules/bar/barstyles/python/reusables/buttons/IconButton.qml": {
+  "hex-colour": 1
+ },
+ "ryoku/shell/quickshell/shell/modules/bar/barstyles/python/reusables/display/FlipIcon.qml": {
+  "hex-colour": 3
+ },
+ "ryoku/shell/quickshell/shell/modules/bar/barstyles/python/reusables/display/ImageBox.qml": {
+  "hex-colour": 1
+ },
+ "ryoku/shell/quickshell/shell/modules/bar/barstyles/python/reusables/display/LoaderIcon.qml": {
+  "hex-colour": 1
+ },
+ "ryoku/shell/quickshell/shell/modules/bar/barstyles/python/reusables/display/MarqueeText.qml": {
+  "pixel-size": 1
+ },
+ "ryoku/shell/quickshell/shell/modules/bar/barstyles/python/reusables/display/MaterialDigitGrid.qml": {
+  "pixel-size": 1
+ },
+ "ryoku/shell/quickshell/shell/modules/bar/barstyles/python/reusables/display/SystemUsageCircle.qml": {
+  "hex-colour": 1
+ },
+ "ryoku/shell/quickshell/shell/modules/bar/barstyles/python/reusables/guide/SettingsGroup.qml": {
+  "hex-colour": 1
+ },
+ "ryoku/shell/quickshell/shell/modules/bar/barstyles/python/reusables/inputs/Dropdown.qml": {
+  "hex-colour": 2
+ },
+ "ryoku/shell/quickshell/shell/modules/bar/barstyles/python/reusables/inputs/Input.qml": {
+  "hex-colour": 2
+ },
+ "ryoku/shell/quickshell/shell/modules/bar/barstyles/python/reusables/inputs/Switch.qml": {
+  "hex-colour": 3
+ },
+ "ryoku/shell/quickshell/shell/modules/bar/barstyles/python/reusables/inputs/TimeSelector.qml": {
+  "hex-colour": 5
+ },
+ "ryoku/shell/quickshell/shell/modules/bar/barstyles/python/reusables/inputs/Toggle.qml": {
+  "hex-colour": 1
+ },
+ "ryoku/shell/quickshell/shell/modules/bar/barstyles/python/reusables/media/LyricsView.qml": {
+  "hex-colour": 2
+ },
+ "ryoku/shell/quickshell/shell/modules/bar/barstyles/python/reusables/media/WavySeekBar.qml": {
+  "hex-colour": 2
+ },
+ "ryoku/shell/quickshell/shell/modules/bar/barstyles/python/singletons/audio/Lyrics.qml": {
+  "hex-colour": 2
+ },
+ "ryoku/shell/quickshell/shell/modules/bar/barstyles/python/singletons/audio/MprisController.qml": {
+  "hex-colour": 4
+ },
+ "ryoku/shell/quickshell/shell/modules/bar/barstyles/python/singletons/environment/Weather.qml": {
+  "hex-colour": 1
+ },
+ "ryoku/shell/quickshell/shell/modules/bar/barstyles/python/singletons/theme/ThemeBackend.qml": {
+  "hex-colour": 3
+ },
+ "ryoku/shell/quickshell/shell/modules/bar/barstyles/python/syspanel/SystemPanelPowerActions.qml": {
+  "hex-colour": 1
+ },
+ "ryoku/shell/quickshell/shell/modules/bar/barstyles/python/syspanel/SystemPanelQuickActions.qml": {
+  "hex-colour": 1
+ },
+ "ryoku/shell/quickshell/shell/modules/bar/barstyles/python/volume/VolumePopup.qml": {
+  "hex-colour": 1
+ },
+ "ryoku/shell/quickshell/shell/modules/bar/barstyles/python/widgets/faces/clock/ClockFaceDigital.qml": {
+  "hex-colour": 1
+ },
+ "ryoku/shell/quickshell/shell/modules/bar/barstyles/python/widgets/faces/clock/ClockFaceMinimal.qml": {
+  "hex-colour": 1
+ },
+ "ryoku/shell/quickshell/shell/modules/bar/barstyles/python/widgets/faces/github/GithubFace.qml": {
+  "hex-colour": 3
+ },
+ "ryoku/shell/quickshell/shell/modules/bar/barstyles/python/widgets/faces/music/MusicFaceLyrics.qml": {
+  "hex-colour": 10
+ },
+ "ryoku/shell/quickshell/shell/modules/bar/barstyles/python/widgets/faces/music/MusicFaceLyricsSimple.qml": {
+  "hex-colour": 5
+ },
+ "ryoku/shell/quickshell/shell/modules/bar/barstyles/python/widgets/faces/music/MusicFaceRound.qml": {
+  "hex-colour": 5
+ },
+ "ryoku/shell/quickshell/shell/modules/bar/barstyles/python/widgets/faces/user/UserFace.qml": {
+  "hex-colour": 1
+ },
+ "ryoku/shell/quickshell/shell/modules/bar/barstyles/qsbar/BarSlot.qml": {
+  "hex-colour": 1,
+  "pixel-size": 3
+ },
+ "ryoku/shell/quickshell/shell/modules/bar/barstyles/qsbar/Theme.qml": {
+  "hex-colour": 11
+ },
+ "ryoku/shell/quickshell/shell/modules/bar/barstyles/qsbar/components/DnsProviderSection.qml": {
+  "pixel-size": 7
+ },
+ "ryoku/shell/quickshell/shell/modules/bar/barstyles/qsbar/controlcenter/CcSearch.qml": {
+  "hex-colour": 17,
+  "pixel-size": 8
+ },
+ "ryoku/shell/quickshell/shell/modules/bar/barstyles/qsbar/controlcenter/kit/BarSilhouette.qml": {
+  "hex-colour": 3
+ },
+ "ryoku/shell/quickshell/shell/modules/bar/barstyles/qsbar/controlcenter/kit/CcSwatchGrid.qml": {
+  "hex-colour": 2
+ },
+ "ryoku/shell/quickshell/shell/modules/bar/barstyles/qsbar/controlcenter/kit/CcWidgetColorPopover.qml": {
+  "hex-colour": 39
+ },
+ "ryoku/shell/quickshell/shell/modules/bar/barstyles/qsbar/controlcenter/kit/CcWorkspacePreview.qml": {
+  "hex-colour": 1,
+  "pixel-size": 1
+ },
+ "ryoku/shell/quickshell/shell/modules/bar/barstyles/qsbar/controlcenter/routes/BarsRoute.qml": {
+  "hex-colour": 2
+ },
+ "ryoku/shell/quickshell/shell/modules/bar/barstyles/qsbar/controlcenter/routes/IdentityRoute.qml": {
+  "hex-colour": 14
+ },
+ "ryoku/shell/quickshell/shell/modules/bar/barstyles/qsbar/modules/AudioWidget.qml": {
+  "pixel-size": 2
+ },
+ "ryoku/shell/quickshell/shell/modules/bar/barstyles/qsbar/modules/BatteryWidget.qml": {
+  "pixel-size": 1,
+  "progress": 1
+ },
+ "ryoku/shell/quickshell/shell/modules/bar/barstyles/qsbar/modules/BluetoothWidget.qml": {
+  "pixel-size": 2
+ },
+ "ryoku/shell/quickshell/shell/modules/bar/barstyles/qsbar/modules/BrightnessWidget.qml": {
+  "pixel-size": 1
+ },
+ "ryoku/shell/quickshell/shell/modules/bar/barstyles/qsbar/modules/ClaudeWidget.qml": {
+  "pixel-size": 2
+ },
+ "ryoku/shell/quickshell/shell/modules/bar/barstyles/qsbar/modules/ClockWidget.qml": {
+  "pixel-size": 1
+ },
+ "ryoku/shell/quickshell/shell/modules/bar/barstyles/qsbar/modules/CpuTemperatureWidget.qml": {
+  "pixel-size": 2
+ },
+ "ryoku/shell/quickshell/shell/modules/bar/barstyles/qsbar/modules/CpuWidget.qml": {
+  "pixel-size": 2
+ },
+ "ryoku/shell/quickshell/shell/modules/bar/barstyles/qsbar/modules/GpuWidget.qml": {
+  "pixel-size": 1
+ },
+ "ryoku/shell/quickshell/shell/modules/bar/barstyles/qsbar/modules/IdleInhibitorWidget.qml": {
+  "pixel-size": 1
+ },
+ "ryoku/shell/quickshell/shell/modules/bar/barstyles/qsbar/modules/IdleWidget.qml": {
+  "pixel-size": 1
+ },
+ "ryoku/shell/quickshell/shell/modules/bar/barstyles/qsbar/modules/LayoutWidget.qml": {
+  "pixel-size": 2
+ },
+ "ryoku/shell/quickshell/shell/modules/bar/barstyles/qsbar/modules/MediaBrowserWidget.qml": {
+  "pixel-size": 1
+ },
+ "ryoku/shell/quickshell/shell/modules/bar/barstyles/qsbar/modules/MemoryWidget.qml": {
+  "pixel-size": 1
+ },
+ "ryoku/shell/quickshell/shell/modules/bar/barstyles/qsbar/modules/MprisWidget.qml": {
+  "pixel-size": 5
+ },
+ "ryoku/shell/quickshell/shell/modules/bar/barstyles/qsbar/modules/NetworkWidget.qml": {
+  "pixel-size": 4
+ },
+ "ryoku/shell/quickshell/shell/modules/bar/barstyles/qsbar/modules/NotificationSilenceWidget.qml": {
+  "pixel-size": 1
+ },
+ "ryoku/shell/quickshell/shell/modules/bar/barstyles/qsbar/modules/NotificationWidget.qml": {
+  "pixel-size": 2
+ },
+ "ryoku/shell/quickshell/shell/modules/bar/barstyles/qsbar/modules/ParticleStream.qml": {
+  "hex-colour": 19
+ },
+ "ryoku/shell/quickshell/shell/modules/bar/barstyles/qsbar/modules/ScreenRecordWidget.qml": {
+  "pixel-size": 2
+ },
+ "ryoku/shell/quickshell/shell/modules/bar/barstyles/qsbar/modules/Sparkline.qml": {
+  "hex-colour": 1
+ },
+ "ryoku/shell/quickshell/shell/modules/bar/barstyles/qsbar/modules/StorageWidget.qml": {
+  "pixel-size": 2
+ },
+ "ryoku/shell/quickshell/shell/modules/bar/barstyles/qsbar/modules/ThemeDisplayWidget.qml": {
+  "pixel-size": 1
+ },
+ "ryoku/shell/quickshell/shell/modules/bar/barstyles/qsbar/modules/TrayWidget.qml": {
+  "pixel-size": 2
+ },
+ "ryoku/shell/quickshell/shell/modules/bar/barstyles/qsbar/modules/UpdateWidget.qml": {
+  "pixel-size": 1
+ },
+ "ryoku/shell/quickshell/shell/modules/bar/barstyles/qsbar/modules/VoxtypeWidget.qml": {
+  "pixel-size": 1
+ },
+ "ryoku/shell/quickshell/shell/modules/bar/barstyles/qsbar/modules/WeatherFX.qml": {
+  "hex-colour": 1
+ },
+ "ryoku/shell/quickshell/shell/modules/bar/barstyles/qsbar/modules/WeatherWidget.qml": {
+  "pixel-size": 1
+ },
+ "ryoku/shell/quickshell/shell/modules/bar/barstyles/qsbar/modules/WorkspaceWidget.qml": {
+  "pixel-size": 2
+ },
+ "ryoku/shell/quickshell/shell/modules/bar/barstyles/qsbar/panels/AiUsagePanel.qml": {
+  "pixel-size": 18
+ },
+ "ryoku/shell/quickshell/shell/modules/bar/barstyles/qsbar/panels/BatteryPanel.qml": {
+  "pixel-size": 16
+ },
+ "ryoku/shell/quickshell/shell/modules/bar/barstyles/qsbar/panels/BluetoothPanel.qml": {
+  "pixel-size": 20
+ },
+ "ryoku/shell/quickshell/shell/modules/bar/barstyles/qsbar/panels/BrightnessPanel.qml": {
+  "pixel-size": 5
+ },
+ "ryoku/shell/quickshell/shell/modules/bar/barstyles/qsbar/panels/CpuPanel.qml": {
+  "pixel-size": 15
+ },
+ "ryoku/shell/quickshell/shell/modules/bar/barstyles/qsbar/panels/CrateAiUsageDetails.qml": {
+  "pixel-size": 11
+ },
+ "ryoku/shell/quickshell/shell/modules/bar/barstyles/qsbar/panels/CrateBluetoothDetails.qml": {
+  "pixel-size": 3
+ },
+ "ryoku/shell/quickshell/shell/modules/bar/barstyles/qsbar/panels/CrateCpuDetails.qml": {
+  "pixel-size": 1
+ },
+ "ryoku/shell/quickshell/shell/modules/bar/barstyles/qsbar/panels/CrateDashboardDetails.qml": {
+  "pixel-size": 6
+ },
+ "ryoku/shell/quickshell/shell/modules/bar/barstyles/qsbar/panels/CrateGpuDetails.qml": {
+  "pixel-size": 1
+ },
+ "ryoku/shell/quickshell/shell/modules/bar/barstyles/qsbar/panels/CrateMediaDetails.qml": {
+  "pixel-size": 7
+ },
+ "ryoku/shell/quickshell/shell/modules/bar/barstyles/qsbar/panels/CrateNetworkDetails.qml": {
+  "pixel-size": 7
+ },
+ "ryoku/shell/quickshell/shell/modules/bar/barstyles/qsbar/panels/CrateNotificationList.qml": {
+  "pixel-size": 3
+ },
+ "ryoku/shell/quickshell/shell/modules/bar/barstyles/qsbar/panels/CrateThermalsDetails.qml": {
+  "pixel-size": 1
+ },
+ "ryoku/shell/quickshell/shell/modules/bar/barstyles/qsbar/panels/CrateTrayMenuBody.qml": {
+  "pixel-size": 1
+ },
+ "ryoku/shell/quickshell/shell/modules/bar/barstyles/qsbar/panels/DashboardPopup.qml": {
+  "pixel-size": 22
+ },
+ "ryoku/shell/quickshell/shell/modules/bar/barstyles/qsbar/panels/GpuPanel.qml": {
+  "pixel-size": 8
+ },
+ "ryoku/shell/quickshell/shell/modules/bar/barstyles/qsbar/panels/ImageCarouselCarousel.qml": {
+  "pixel-size": 5
+ },
+ "ryoku/shell/quickshell/shell/modules/bar/barstyles/qsbar/panels/ImageCarouselHearthstone.qml": {
+  "hex-colour": 2,
+  "pixel-size": 9
+ },
+ "ryoku/shell/quickshell/shell/modules/bar/barstyles/qsbar/panels/ImageCarouselPanel.qml": {
+  "pixel-size": 9
+ },
+ "ryoku/shell/quickshell/shell/modules/bar/barstyles/qsbar/panels/MediaBrowserCarousel.qml": {
+  "pixel-size": 6
+ },
+ "ryoku/shell/quickshell/shell/modules/bar/barstyles/qsbar/panels/MediaBrowserHearthstone.qml": {
+  "hex-colour": 2,
+  "pixel-size": 8
+ },
+ "ryoku/shell/quickshell/shell/modules/bar/barstyles/qsbar/panels/MediaBrowserPanel.qml": {
+  "pixel-size": 7
+ },
+ "ryoku/shell/quickshell/shell/modules/bar/barstyles/qsbar/panels/MemoryPanel.qml": {
+  "pixel-size": 16
+ },
+ "ryoku/shell/quickshell/shell/modules/bar/barstyles/qsbar/panels/MprisPanel.qml": {
+  "pixel-size": 16
+ },
+ "ryoku/shell/quickshell/shell/modules/bar/barstyles/qsbar/panels/NetworkPanel.qml": {
+  "pixel-size": 60
+ },
+ "ryoku/shell/quickshell/shell/modules/bar/barstyles/qsbar/panels/NotificationPanel.qml": {
+  "pixel-size": 8
+ },
+ "ryoku/shell/quickshell/shell/modules/bar/barstyles/qsbar/panels/PowerProfilePanel.qml": {
+  "pixel-size": 6
+ },
+ "ryoku/shell/quickshell/shell/modules/bar/barstyles/qsbar/panels/StoragePanel.qml": {
+  "pixel-size": 17
+ },
+ "ryoku/shell/quickshell/shell/modules/bar/barstyles/qsbar/panels/ThermalsPanel.qml": {
+  "pixel-size": 9
+ },
+ "ryoku/shell/quickshell/shell/modules/bar/barstyles/qsbar/panels/TooltipOverlay.qml": {
+  "pixel-size": 1
+ },
+ "ryoku/shell/quickshell/shell/modules/bar/barstyles/qsbar/panels/TrayMenu.qml": {
+  "pixel-size": 5
+ },
+ "ryoku/shell/quickshell/shell/modules/bar/barstyles/qsbar/panels/TrayPanel.qml": {
+  "pixel-size": 6
+ },
+ "ryoku/shell/quickshell/shell/modules/bar/barstyles/qsbar/panels/VolumePanel.qml": {
+  "pixel-size": 24
+ },
+ "ryoku/shell/quickshell/shell/modules/bar/barstyles/qsbar/panels/WorkspacePanel.qml": {
+  "pixel-size": 4
+ },
+ "ryoku/shell/quickshell/shell/modules/bar/framebars/menus/AudioDevicePicker.qml": {
+  "pixel-size": 1
+ },
+ "ryoku/shell/quickshell/shell/modules/bar/framebars/menus/MenuAudioOutput.qml": {
+  "pixel-size": 1
+ },
+ "ryoku/shell/quickshell/shell/modules/bar/framebars/menus/MenuLayoutSwitcher.qml": {
+  "pixel-size": 1
+ },
+ "ryoku/shell/quickshell/shell/modules/bar/framebars/menus/MenuTheme.qml": {
+  "hex-colour": 70,
+  "pixel-size": 2
+ },
+ "ryoku/shell/quickshell/shell/modules/bar/framebars/menus/MenuWeather.qml": {
+  "pixel-size": 8
+ },
+ "ryoku/shell/quickshell/shell/modules/bar/framebars/menus/QsHoldButton.qml": {
+  "pixel-size": 1
+ },
+ "ryoku/shell/quickshell/shell/modules/bar/framebars/menus/QsIconButton.qml": {
+  "pixel-size": 1
+ },
+ "ryoku/shell/quickshell/shell/modules/bar/framebars/menus/QsNavRow.qml": {
+  "pixel-size": 2
+ },
+ "ryoku/shell/quickshell/shell/modules/bar/framebars/menus/QsSlider.qml": {
+  "control-name": 1,
+  "pixel-size": 1
+ },
+ "ryoku/shell/quickshell/shell/modules/bar/framebars/menus/RevealerRowSlider.qml": {
+  "control-name": 1
+ },
+ "ryoku/shell/quickshell/shell/modules/bar/framebars/menus/WallTile.qml": {
+  "pixel-size": 1
+ },
+ "ryoku/shell/quickshell/shell/modules/bar/popouts/AudioPopout.qml": {
+  "pixel-size": 6
+ },
+ "ryoku/shell/quickshell/shell/modules/bar/popouts/BatteryPopout.qml": {
+  "pixel-size": 6
+ },
+ "ryoku/shell/quickshell/shell/modules/bar/popouts/BluetoothPopout.qml": {
+  "pixel-size": 6
+ },
+ "ryoku/shell/quickshell/shell/modules/bar/popouts/BtHero.qml": {
+  "pixel-size": 4
+ },
+ "ryoku/shell/quickshell/shell/modules/bar/popouts/CapturePopout.qml": {
+  "pixel-size": 7
+ },
+ "ryoku/shell/quickshell/shell/modules/bar/popouts/DockPreviewPopout.qml": {
+  "pixel-size": 3
+ },
+ "ryoku/shell/quickshell/shell/modules/bar/popouts/MusicHoverPopout.qml": {
+  "pixel-size": 6
+ },
+ "ryoku/shell/quickshell/shell/modules/bar/popouts/MusicPopout.qml": {
+  "pixel-size": 3
+ },
+ "ryoku/shell/quickshell/shell/modules/bar/popouts/NetworkPopout.qml": {
+  "pixel-size": 18
+ },
+ "ryoku/shell/quickshell/shell/modules/bar/popouts/PopoutAction.qml": {
+  "pixel-size": 1
+ },
+ "ryoku/shell/quickshell/shell/modules/bar/popouts/PopoutChip.qml": {
+  "control-name": 1,
+  "pixel-size": 1
+ },
+ "ryoku/shell/quickshell/shell/modules/bar/popouts/PopoutDetailRow.qml": {
+  "pixel-size": 2
+ },
+ "ryoku/shell/quickshell/shell/modules/bar/popouts/SysMonitorPopout.qml": {
+  "pixel-size": 1
+ },
+ "ryoku/shell/quickshell/shell/modules/bar/popouts/VoicePopout.qml": {
+  "pixel-size": 4
+ },
+ "ryoku/shell/quickshell/shell/modules/capture/CameraHandles.qml": {
+  "pixel-size": 2
+ },
+ "ryoku/shell/quickshell/shell/modules/capture/KeypressOverlay.qml": {
+  "pixel-size": 1
+ },
+ "ryoku/shell/quickshell/shell/modules/desktop/MenuChip.qml": {
+  "control-name": 1
+ },
+ "ryoku/shell/quickshell/shell/modules/desktop/MenuColorPicker.qml": {
+  "hex-colour": 17
+ },
+ "ryoku/shell/quickshell/shell/modules/desktop/MenuInkPicker.qml": {
+  "hex-colour": 17
+ },
+ "ryoku/shell/quickshell/shell/modules/desktop/MenuRow.qml": {
+  "pixel-size": 3
+ },
+ "ryoku/shell/quickshell/shell/modules/desktop/MenuSection.qml": {
+  "pixel-size": 2
+ },
+ "ryoku/shell/quickshell/shell/modules/desktop/MenuSlider.qml": {
+  "control-name": 1
+ },
+ "ryoku/shell/quickshell/shell/modules/desktop/MusicVideoPicker.qml": {
+  "pixel-size": 7
+ },
+ "ryoku/shell/quickshell/shell/modules/desktop/PluginColorPicker.qml": {
+  "hex-colour": 17
+ },
+ "ryoku/shell/quickshell/shell/modules/desktop/PluginDesktopSlot.qml": {
+  "pixel-size": 1
+ },
+ "ryoku/shell/quickshell/shell/modules/desktop/Singletons/Scheme.qml": {
+  "hex-colour": 8
+ },
+ "ryoku/shell/quickshell/shell/modules/desktop/Singletons/Theme.qml": {
+  "hex-colour": 3
+ },
+ "ryoku/shell/quickshell/shell/modules/desktop/WidgetInspector.qml": {
+  "pixel-size": 2
+ },
+ "ryoku/shell/quickshell/shell/modules/desktop/WidgetMenu.qml": {
+  "pixel-size": 3
+ },
+ "ryoku/shell/quickshell/shell/modules/desktop/WidgetSlot.qml": {
+  "pixel-size": 1
+ },
+ "ryoku/shell/quickshell/shell/modules/desktop/aio/AioWidget.qml": {
+  "hex-colour": 4,
+  "pixel-size": 14
+ },
+ "ryoku/shell/quickshell/shell/modules/desktop/calendar/CalendarDay.qml": {
+  "pixel-size": 1
+ },
+ "ryoku/shell/quickshell/shell/modules/desktop/calendar/CalendarDetails.qml": {
+  "pixel-size": 2
+ },
+ "ryoku/shell/quickshell/shell/modules/desktop/calendar/CalendarGrid.qml": {
+  "pixel-size": 2
+ },
+ "ryoku/shell/quickshell/shell/modules/desktop/calendar/CalendarWidget.qml": {
+  "pixel-size": 2
+ },
+ "ryoku/shell/quickshell/shell/modules/desktop/clock/ClockBigHour.qml": {
+  "hex-colour": 1
+ },
+ "ryoku/shell/quickshell/shell/modules/desktop/clock/ClockGoodNight.qml": {
+  "hex-colour": 1,
+  "pixel-size": 4
+ },
+ "ryoku/shell/quickshell/shell/modules/desktop/clock/ClockMetal.qml": {
+  "hex-colour": 1
+ },
+ "ryoku/shell/quickshell/shell/modules/desktop/clock/ClockOutline.qml": {
+  "hex-colour": 1
+ },
+ "ryoku/shell/quickshell/shell/modules/desktop/music/MusicCover.qml": {
+  "hex-colour": 2
+ },
+ "ryoku/shell/quickshell/shell/modules/desktop/music/MusicTall.qml": {
+  "pixel-size": 4
+ },
+ "ryoku/shell/quickshell/shell/modules/desktop/music/MusicWidget.qml": {
+  "pixel-size": 5
+ },
+ "ryoku/shell/quickshell/shell/modules/desktop/options/IrisJpOptions.qml": {
+  "hex-colour": 6
+ },
+ "ryoku/shell/quickshell/shell/modules/desktop/stats/StatsWidget.qml": {
+  "hex-colour": 11,
+  "pixel-size": 3
+ },
+ "ryoku/shell/quickshell/shell/modules/desktop/weather/WeatherWidget.qml": {
+  "pixel-size": 9
+ },
+ "ryoku/shell/quickshell/shell/modules/dock/DockBand.qml": {
+  "pixel-size": 1
+ },
+ "ryoku/shell/quickshell/shell/modules/dock/DockMedia.qml": {
+  "pixel-size": 2
+ },
+ "ryoku/shell/quickshell/shell/modules/dock/ii/DockWeatherWidget.qml": {
+  "hex-colour": 8
+ },
+ "ryoku/shell/quickshell/shell/modules/dock/ii/alarm/AlarmRingingPopup.qml": {
+  "pixel-size": 1
+ },
+ "ryoku/shell/quickshell/shell/modules/dock/ii/bridge/GlobalStates.qml": {
+  "hex-colour": 1
+ },
+ "ryoku/shell/quickshell/shell/modules/dock/ii/clock/ClockChip.qml": {
+  "control-name": 1
+ },
+ "ryoku/shell/quickshell/shell/modules/dock/ii/clock/ClockFormChip.qml": {
+  "control-name": 1
+ },
+ "ryoku/shell/quickshell/shell/modules/dock/ii/clockapp/reminders/RemindersStyle.qml": {
+  "hex-colour": 12
+ },
+ "ryoku/shell/quickshell/shell/modules/dock/ii/clockapp/tabs/AlarmEditorSheet.qml": {
+  "pixel-size": 2
+ },
+ "ryoku/shell/quickshell/shell/modules/dock/ii/clockapp/tabs/BedtimeTab.qml": {
+  "pixel-size": 1
+ },
+ "ryoku/shell/quickshell/shell/modules/dock/ii/common/FloatingActionButton.qml": {
+  "pixel-size": 1
+ },
+ "ryoku/shell/quickshell/shell/modules/dock/ii/common/RoundCorner.qml": {
+  "hex-colour": 1
+ },
+ "ryoku/shell/quickshell/shell/modules/dock/ii/draw/DrawSurface.qml": {
+  "hex-colour": 1
+ },
+ "ryoku/shell/quickshell/shell/modules/dock/ii/send/LocalSendPopupContent.qml": {
+  "pixel-size": 1
+ },
+ "ryoku/shell/quickshell/shell/modules/dock/ii/services/LiveDraw.qml": {
+  "hex-colour": 3
+ },
+ "ryoku/shell/quickshell/shell/modules/dock/ii/settings/ConfigSlider.qml": {
+  "control-name": 1
+ },
+ "ryoku/shell/quickshell/shell/modules/dock/ii/settings/DashedBorder.qml": {
+  "hex-colour": 1
+ },
+ "ryoku/shell/quickshell/shell/modules/dock/ii/settings/DiskConfig.qml": {
+  "progress": 1
+ },
+ "ryoku/shell/quickshell/shell/modules/dock/ii/settings/StyledSlider.qml": {
+  "control-name": 1
+ },
+ "ryoku/shell/quickshell/shell/modules/dock/ii/settings/WavyLine.qml": {
+  "hex-colour": 1
+ },
+ "ryoku/shell/quickshell/shell/modules/dock/ii/ui/functions/ColorUtils.qml": {
+  "hex-colour": 4
+ },
+ "ryoku/shell/quickshell/shell/modules/dock/ii/ui/widgets/CachedShapeCanvas.qml": {
+  "hex-colour": 1
+ },
+ "ryoku/shell/quickshell/shell/modules/dock/ii/ui/widgets/GroupButton.qml": {
+  "hex-colour": 5
+ },
+ "ryoku/shell/quickshell/shell/modules/dock/ii/ui/widgets/RippleButton.qml": {
+  "hex-colour": 5
+ },
+ "ryoku/shell/quickshell/shell/modules/dock/ii/ui/widgets/StyledSwitch.qml": {
+  "hex-colour": 2
+ },
+ "ryoku/shell/quickshell/shell/modules/dock/ii/ui/widgets/StyledToolTipContent.qml": {
+  "hex-colour": 2
+ },
+ "ryoku/shell/quickshell/shell/modules/dock/ii/utilities/AiUsagePanel.qml": {
+  "pixel-size": 1
+ },
+ "ryoku/shell/quickshell/shell/modules/dock/ii/utilities/BatteryPanel.qml": {
+  "pixel-size": 1
+ },
+ "ryoku/shell/quickshell/shell/modules/dock/ii/utilities/ColorPickerPanel.qml": {
+  "hex-colour": 2,
+  "pixel-size": 1
+ },
+ "ryoku/shell/quickshell/shell/modules/dock/ii/utilities/ConverterPanel.qml": {
+  "pixel-size": 2
+ },
+ "ryoku/shell/quickshell/shell/modules/dock/ii/utilities/PomodoroPanel.qml": {
+  "pixel-size": 1
+ },
+ "ryoku/shell/quickshell/shell/modules/dock/ii/utilities/StopwatchPanel.qml": {
+  "pixel-size": 3
+ },
+ "ryoku/shell/quickshell/shell/modules/dock/ii/utilities/TimerPanel.qml": {
+  "pixel-size": 2
+ },
+ "ryoku/shell/quickshell/shell/modules/dock/ii/utilities/WaterPanel.qml": {
+  "pixel-size": 2
+ },
+ "ryoku/shell/quickshell/shell/modules/dock/ii/widgets/TimePickerPopup.qml": {
+  "pixel-size": 3
+ },
+ "ryoku/shell/quickshell/shell/modules/gamebar/GameBar.qml": {
+  "hex-colour": 1
+ },
+ "ryoku/shell/quickshell/shell/modules/gamebar/GameBarCard.qml": {
+  "pixel-size": 1
+ },
+ "ryoku/shell/quickshell/shell/modules/gamebar/GameBarStrip.qml": {
+  "pixel-size": 3
+ },
+ "ryoku/shell/quickshell/shell/modules/gamebar/discordVoice/ParticipantAvatar.qml": {
+  "pixel-size": 1
+ },
+ "ryoku/shell/quickshell/shell/modules/launcher/shared/Singletons/Config.qml": {
+  "hex-colour": 1
+ },
+ "ryoku/shell/quickshell/shell/modules/launcher/shared/Singletons/LauncherConfig.qml": {
+  "hex-colour": 1
+ },
+ "ryoku/shell/quickshell/shell/modules/launcher/shared/Singletons/Scheme.qml": {
+  "hex-colour": 3
+ },
+ "ryoku/shell/quickshell/shell/modules/launcher/shared/Singletons/Theme.qml": {
+  "hex-colour": 21
+ },
+ "ryoku/shell/quickshell/shell/modules/launcher/variants/hero/ActionShelf.qml": {
+  "pixel-size": 2
+ },
+ "ryoku/shell/quickshell/shell/modules/launcher/variants/hero/HeroShutter.qml": {
+  "pixel-size": 5
+ },
+ "ryoku/shell/quickshell/shell/modules/launcher/variants/hero/LeadResult.qml": {
+  "pixel-size": 6
+ },
+ "ryoku/shell/quickshell/shell/modules/launcher/variants/hero/ModeKey.qml": {
+  "pixel-size": 1
+ },
+ "ryoku/shell/quickshell/shell/modules/launcher/variants/hero/Preview.qml": {
+  "pixel-size": 9
+ },
+ "ryoku/shell/quickshell/shell/modules/launcher/variants/hero/ResultDrawer.qml": {
+  "pixel-size": 2
+ },
+ "ryoku/shell/quickshell/shell/modules/launcher/variants/hero/ResultLedger.qml": {
+  "pixel-size": 4
+ },
+ "ryoku/shell/quickshell/shell/modules/launcher/variants/hero/WindowRail.qml": {
+  "pixel-size": 4
+ },
+ "ryoku/shell/quickshell/shell/modules/launcher/variants/kairos/Main.qml": {
+  "pixel-size": 6
+ },
+ "ryoku/shell/quickshell/shell/modules/launcher/variants/kairos/Preview.qml": {
+  "pixel-size": 6
+ },
+ "ryoku/shell/quickshell/shell/modules/launcher/variants/main/BtConnections.qml": {
+  "hex-colour": 1,
+  "pixel-size": 4
+ },
+ "ryoku/shell/quickshell/shell/modules/launcher/variants/main/Launcher.qml": {
+  "pixel-size": 2
+ },
+ "ryoku/shell/quickshell/shell/modules/launcher/variants/main/MediaSources.qml": {
+  "pixel-size": 1
+ },
+ "ryoku/shell/quickshell/shell/modules/launcher/variants/main/NowPlaying.qml": {
+  "pixel-size": 3
+ },
+ "ryoku/shell/quickshell/shell/modules/launcher/variants/main/RadioAside.qml": {
+  "pixel-size": 2
+ },
+ "ryoku/shell/quickshell/shell/modules/launcher/variants/main/RestDashboard.qml": {
+  "pixel-size": 5
+ },
+ "ryoku/shell/quickshell/shell/modules/launcher/variants/main/ResultList.qml": {
+  "pixel-size": 1
+ },
+ "ryoku/shell/quickshell/shell/modules/launcher/variants/main/SearchRow.qml": {
+  "pixel-size": 3
+ },
+ "ryoku/shell/quickshell/shell/modules/launcher/variants/okshell/Main.qml": {
+  "hex-colour": 5,
+  "pixel-size": 2
+ },
+ "ryoku/shell/quickshell/shell/modules/launcher/variants/python/Preview.qml": {
+  "hex-colour": 7,
+  "pixel-size": 6
+ },
+ "ryoku/shell/quickshell/shell/modules/launcher/variants/spotlight/Preview.qml": {
+  "pixel-size": 6
+ },
+ "ryoku/shell/quickshell/shell/modules/osd/KeyboardOsd.qml": {
+  "pixel-size": 1
+ },
+ "ryoku/shell/quickshell/shell/modules/osd/Osd.qml": {
+  "pixel-size": 1
+ },
+ "ryoku/shell/quickshell/shell/modules/overview/DesktopStrip.qml": {
+  "pixel-size": 1
+ },
+ "ryoku/shell/quickshell/shell/modules/overview/Overview.qml": {
+  "pixel-size": 3
+ },
+ "ryoku/shell/quickshell/shell/modules/overview/Singletons/Scheme.qml": {
+  "hex-colour": 2
+ },
+ "ryoku/shell/quickshell/shell/modules/overview/Singletons/Theme.qml": {
+  "hex-colour": 13
+ },
+ "ryoku/shell/quickshell/shell/modules/overview/WorkspaceCell.qml": {
+  "pixel-size": 5
+ },
+ "ryoku/shell/quickshell/shell/modules/sidebar/ControlsSettingsPopup.qml": {
+  "slider": 3
+ },
+ "ryoku/shell/quickshell/shell/modules/sidebar/CornerButton.qml": {
+  "pixel-size": 1
+ },
+ "ryoku/shell/quickshell/shell/modules/sidebar/HoldButton.qml": {
+  "progress": 2
+ },
+ "ryoku/shell/quickshell/shell/modules/sidebar/LevelSlider.qml": {
+  "control-name": 1,
+  "slider": 2
+ },
+ "ryoku/shell/quickshell/shell/modules/sidebar/MixerDrawer.qml": {
+  "pixel-size": 1
+ },
+ "ryoku/shell/quickshell/shell/modules/sidebar/MixerRow.qml": {
+  "slider": 3
+ },
+ "ryoku/shell/quickshell/shell/modules/sidebar/SidebarButton.qml": {
+  "pixel-size": 1
+ },
+ "ryoku/shell/quickshell/shell/modules/sidebar/SidebarToggle.qml": {
+  "pixel-size": 1
+ },
+ "ryoku/shell/quickshell/shell/modules/sidebar/cards/CrateBluetoothBody.qml": {
+  "pixel-size": 4
+ },
+ "ryoku/shell/quickshell/shell/modules/sidebar/cards/CrateWifiBody.qml": {
+  "pixel-size": 5
+ },
+ "ryoku/shell/quickshell/shell/modules/sidebar/cards/SystemBluetoothPage.qml": {
+  "pixel-size": 2
+ },
+ "ryoku/shell/quickshell/shell/modules/sidebar/cards/SystemWifiPage.qml": {
+  "pixel-size": 2
+ },
+ "ryoku/shell/quickshell/shell/modules/visualizer/Singletons/Scheme.qml": {
+  "hex-colour": 1
+ },
+ "ryoku/shell/quickshell/shell/modules/visualizer/Singletons/VizItem.qml": {
+  "hex-colour": 4
+ },
+ "ryoku/shell/quickshell/shell/services/Scheme.qml": {
+  "hex-colour": 33
+ },
+ "ryoku/shell/quickshell/shell/services/Theme.qml": {
+  "hex-colour": 34
+ },
+ "ryoku/shell/quickshell/stage/modules/common/Config.qml": {
+  "hex-colour": 10
+ },
+ "ryoku/shell/quickshell/stage/modules/common/dashboardWidgets/timer/CountdownTimer.qml": {
+  "pixel-size": 2,
+  "progress": 1
+ },
+ "ryoku/shell/quickshell/stage/modules/common/dashboardWidgets/timer/Stopwatch.qml": {
+  "pixel-size": 2
+ },
+ "ryoku/shell/quickshell/stage/modules/common/draw/DrawSurface.qml": {
+  "hex-colour": 1
+ },
+ "ryoku/shell/quickshell/stage/modules/common/functions/ColorUtils.qml": {
+  "hex-colour": 4
+ },
+ "ryoku/shell/quickshell/stage/modules/common/widgets/CachedShapeCanvas.qml": {
+  "hex-colour": 1
+ },
+ "ryoku/shell/quickshell/stage/modules/common/widgets/CircularProgress.qml": {
+  "control-name": 1
+ },
+ "ryoku/shell/quickshell/stage/modules/common/widgets/ConfigSlider.qml": {
+  "control-name": 1
+ },
+ "ryoku/shell/quickshell/stage/modules/common/widgets/SineCookie.qml": {
+  "hex-colour": 1
+ },
+ "ryoku/shell/quickshell/stage/modules/common/widgets/StyledProgressBar.qml": {
+  "hex-colour": 2
+ },
+ "ryoku/shell/quickshell/stage/modules/common/widgets/StyledSlider.qml": {
+  "control-name": 1
+ },
+ "ryoku/shell/quickshell/stage/modules/common/widgets/StyledToolTipContent.qml": {
+  "hex-colour": 2
+ },
+ "ryoku/shell/quickshell/stage/modules/common/widgets/WavyLine.qml": {
+  "hex-colour": 1
+ },
+ "ryoku/shell/quickshell/stage/modules/ii/background/widgets/DateWidget/DateShapesWidget.qml": {
+  "pixel-size": 1
+ },
+ "ryoku/shell/quickshell/stage/modules/ii/background/widgets/DateWidget/WeekAgendaWidget.qml": {
+  "pixel-size": 2
+ },
+ "ryoku/shell/quickshell/stage/modules/ii/background/widgets/MissingWidgetPlaceholder.qml": {
+  "hex-colour": 4,
+  "pixel-size": 2
+ },
+ "ryoku/shell/quickshell/stage/modules/ii/background/widgets/bluetooth/BluetoothEarbudsStemWidget.qml": {
+  "pixel-size": 2
+ },
+ "ryoku/shell/quickshell/stage/modules/ii/background/widgets/bluetooth/BluetoothFillCardsWidget.qml": {
+  "pixel-size": 2
+ },
+ "ryoku/shell/quickshell/stage/modules/ii/background/widgets/bluetooth/DevicesBatteryList1x1Widget.qml": {
+  "pixel-size": 2
+ },
+ "ryoku/shell/quickshell/stage/modules/ii/background/widgets/bluetooth/DevicesBatteryListWidget.qml": {
+  "pixel-size": 2
+ },
+ "ryoku/shell/quickshell/stage/modules/ii/background/widgets/bluetooth/PcBatteryBarsWidget.qml": {
+  "hex-colour": 2
+ },
+ "ryoku/shell/quickshell/stage/modules/ii/background/widgets/clock/CirclePointerClockWidget.qml": {
+  "hex-colour": 4
+ },
+ "ryoku/shell/quickshell/stage/modules/ii/background/widgets/clock/ConcentricClockWidget.qml": {
+  "hex-colour": 4
+ },
+ "ryoku/shell/quickshell/stage/modules/ii/background/widgets/clock/DuoClockWidget.qml": {
+  "pixel-size": 1
+ },
+ "ryoku/shell/quickshell/stage/modules/ii/background/widgets/clock/GridCardClockWidget.qml": {
+  "pixel-size": 3
+ },
+ "ryoku/shell/quickshell/stage/modules/ii/background/widgets/clock/MonthClockWidget.qml": {
+  "hex-colour": 4
+ },
+ "ryoku/shell/quickshell/stage/modules/ii/background/widgets/clock/NothingDigitalClockWidget.qml": {
+  "pixel-size": 3
+ },
+ "ryoku/shell/quickshell/stage/modules/ii/background/widgets/clock/NothingWheelClockWidget.qml": {
+  "pixel-size": 10
+ },
+ "ryoku/shell/quickshell/stage/modules/ii/background/widgets/clock/ScallopDotClockWidget.qml": {
+  "hex-colour": 4
+ },
+ "ryoku/shell/quickshell/stage/modules/ii/background/widgets/clock/ScallopNumberClockWidget.qml": {
+  "hex-colour": 4
+ },
+ "ryoku/shell/quickshell/stage/modules/ii/background/widgets/clock/TripleRingClockWidget.qml": {
+  "hex-colour": 4
+ },
+ "ryoku/shell/quickshell/stage/modules/ii/background/widgets/clock/WearOSArcClock.qml": {
+  "hex-colour": 8
+ },
+ "ryoku/shell/quickshell/stage/modules/ii/background/widgets/clock/WearOSClockWidget.qml": {
+  "hex-colour": 6,
+  "pixel-size": 2
+ },
+ "ryoku/shell/quickshell/stage/modules/ii/background/widgets/media/AndroidMediaWidget.qml": {
+  "pixel-size": 6
+ },
+ "ryoku/shell/quickshell/stage/modules/ii/background/widgets/media/CircularMediaWidget.qml": {
+  "hex-colour": 7
+ },
+ "ryoku/shell/quickshell/stage/modules/ii/background/widgets/media/CompactMediaWidget.qml": {
+  "pixel-size": 2
+ },
+ "ryoku/shell/quickshell/stage/modules/ii/background/widgets/media/ExpressiveMediaWidget.qml": {
+  "pixel-size": 1
+ },
+ "ryoku/shell/quickshell/stage/modules/ii/background/widgets/phone/PhoneDeckWidget.qml": {
+  "pixel-size": 1
+ },
+ "ryoku/shell/quickshell/stage/modules/ii/background/widgets/phone/PhoneTowerWidget.qml": {
+  "pixel-size": 1
+ },
+ "ryoku/shell/quickshell/stage/modules/ii/background/widgets/productivity/CountdownWidget.qml": {
+  "pixel-size": 1
+ },
+ "ryoku/shell/quickshell/stage/modules/ii/background/widgets/productivity/WaterGlassWidget.qml": {
+  "pixel-size": 1
+ },
+ "ryoku/shell/quickshell/stage/modules/ii/background/widgets/system/BluetoothPillWidget.qml": {
+  "pixel-size": 1
+ },
+ "ryoku/shell/quickshell/stage/modules/ii/background/widgets/system/DarkModePillWidget.qml": {
+  "pixel-size": 1
+ },
+ "ryoku/shell/quickshell/stage/modules/ii/background/widgets/system/EasyEffectsPillWidget.qml": {
+  "pixel-size": 1
+ },
+ "ryoku/shell/quickshell/stage/modules/ii/background/widgets/system/MicPillWidget.qml": {
+  "pixel-size": 1
+ },
+ "ryoku/shell/quickshell/stage/modules/ii/background/widgets/system/ScreenRecordPillWidget.qml": {
+  "pixel-size": 1
+ },
+ "ryoku/shell/quickshell/stage/modules/ii/background/widgets/system/VolumeMutePillWidget.qml": {
+  "pixel-size": 1
+ },
+ "ryoku/shell/quickshell/stage/modules/ii/background/widgets/system/WifiPillWidget.qml": {
+  "pixel-size": 1
+ },
+ "ryoku/shell/quickshell/stage/modules/ii/background/widgets/utility/CpuPillWidget.qml": {
+  "pixel-size": 4
+ },
+ "ryoku/shell/quickshell/stage/modules/ii/background/widgets/utility/DiskPillWidget.qml": {
+  "pixel-size": 4
+ },
+ "ryoku/shell/quickshell/stage/modules/ii/background/widgets/utility/RamPillWidget.qml": {
+  "pixel-size": 4
+ },
+ "ryoku/shell/quickshell/stage/modules/ii/background/widgets/utility/ResourceColumnsWidget.qml": {
+  "pixel-size": 2
+ },
+ "ryoku/shell/quickshell/stage/modules/ii/background/widgets/utility/ResourceFillCardsWidget.qml": {
+  "pixel-size": 2
+ },
+ "ryoku/shell/quickshell/stage/modules/ii/background/widgets/utility/ResourceTilesWidget.qml": {
+  "pixel-size": 1
+ },
+ "ryoku/shell/quickshell/stage/modules/ii/background/widgets/weather/ExpressiveWeatherWidget.qml": {
+  "pixel-size": 1
+ },
+ "ryoku/shell/quickshell/stage/modules/ii/background/widgets/weather/WeatherTypographyWidget.qml": {
+  "pixel-size": 5
+ },
+ "ryoku/shell/quickshell/stage/modules/ii/background/widgets/weather/WeatherWidget.qml": {
+  "pixel-size": 1
+ },
+ "ryoku/shell/quickshell/stage/modules/ii/clock/components/ClockChip.qml": {
+  "control-name": 1
+ },
+ "ryoku/shell/quickshell/stage/modules/ii/overlay/notes/NotesSketchEditor.qml": {
+  "hex-colour": 2
+ },
+ "ryoku/shell/ryogami/picker/qml/browser/BrowserChip.qml": {
+  "control-name": 1
+ },
+ "ryoku/shell/ryogami/picker/qml/browser/BrowserHero.qml": {
+  "pixel-size": 1
+ },
+ "ryoku/shell/ryogami/picker/qml/browser/BrowserSources.qml": {
+  "hex-colour": 1
+ },
+ "ryoku/shell/ryogami/picker/qml/chrome/RiceWorkshop.qml": {
+  "pixel-size": 1
+ },
+ "ryoku/shell/ryogami/picker/qml/chrome/filterbar/TaskChip.qml": {
+  "control-name": 1
+ },
+ "ryoku/shell/ryogami/picker/qml/folio/LightingColorPicker.qml": {
+  "hex-colour": 2
+ },
+ "ryoku/shell/ryogami/picker/qml/folio/LightingDeviceCard.qml": {
+  "hex-colour": 3
+ },
+ "ryoku/shell/ryogami/picker/qml/folio/ResetChip.qml": {
+  "control-name": 1
+ },
+ "ryoku/shell/ryogami/picker/qml/kit/FixedButton.qml": {
+  "pixel-size": 2
+ },
+ "ryoku/shell/ryogami/picker/qml/kit/FolioSlider.qml": {
+  "control-name": 1
+ },
+ "ryoku/shell/ryogami/picker/qml/kit/RiceChip.qml": {
+  "control-name": 1
+ },
+ "ryoku/shell/ryogami/picker/qml/sheets/AudioChannelChip.qml": {
+  "control-name": 1
+ },
+ "ryoku/shell/ryogami/picker/qml/sheets/ThemeDesignerSheet.qml": {
+  "hex-colour": 4
+ },
+ "ryoku/shell/ryogami/picker/qml/theme/Theme.qml": {
+  "hex-colour": 243
+ }
+}
