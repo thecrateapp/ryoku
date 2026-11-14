@@ -67,7 +67,13 @@ end
 -- glass fills and maps its own layer namespace.
 local glass_marker = [[Tokens\.glass|ConnectedPanelSurface|AiPanelSurface|cc\.plateFill|color: root\.bg$]]
 local listing = assert(io.popen("grep -rlE '" .. glass_marker .. "' " .. shell_root .. " --include='*.qml'"))
-local namespaces = { ["ryoku-sidebar-left"] = "SidebarFrame (Super+Esc)" }
+-- Surfaces whose glass is drawn by a child file rather than the one mapping the
+-- layer: Controls, and the Ask bar and bubble (AskSurface, AskBubbleCard/Disc).
+local namespaces = {
+    ["ryoku-sidebar-left"] = "SidebarFrame (Super+Esc)",
+    ["ryoku-ask"] = "AskBar (AskSurface)",
+    ["ryoku-ask-bubble"] = "AskBubble (AskBubbleCard, AskBubbleDisc)",
+}
 for path in listing:lines() do
     local file = assert(io.open(path))
     local body = file:read("a")
@@ -77,7 +83,8 @@ for path in listing:lines() do
 end
 listing:close()
 
-for _, required in ipairs({ "ryoku-volume", "ryoku-control", "ryoku-dashboard", "ryoku-traymenu" }) do
+for _, required in ipairs({ "ryoku-volume", "ryoku-control", "ryoku-dashboard", "ryoku-traymenu",
+                            "ryoku-ask", "ryoku-ask-bubble" }) do
     assert(namespaces[required], "glass discovery missed " .. required)
 end
 

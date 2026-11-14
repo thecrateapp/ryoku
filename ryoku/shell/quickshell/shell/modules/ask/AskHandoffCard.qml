@@ -1,7 +1,9 @@
 pragma ComponentBehavior: Bound
 
 import QtQuick
+import Ryoku.Ui
 import Ryoku.Ui.Singletons
+import shell.services
 
 Rectangle {
     id: root
@@ -13,14 +15,19 @@ Rectangle {
     property bool expanded: false
     readonly property bool hasAnswer: answer.trim().length > 0
     readonly property bool motionAllowed: !Tokens.reduceMotion && !Motion.reduce
+    // Under controls "crate": a hairline card on the glass, edged on hover, with
+    // a tracked caption and the kit's glyph.
+    readonly property bool crate: Tokens.controlsCrate
 
     implicitHeight: cardColumn.implicitHeight + Tokens.s3 * s * 2
     radius: Tokens.radius * s
-    color: cardTap.pressed ? Tokens.tint16
+    color: crate ? "transparent"
+        : cardTap.pressed ? Tokens.tint16
         : cardHover.hovered && hasAnswer ? Tokens.tint10 : Tokens.tint5
     border.width: Tokens.border
-    border.color: Tokens.lineSoft
-    scale: cardTap.pressed && motionAllowed ? 0.96
+    border.color: crate ? (cardHover.hovered && hasAnswer ? Tokens.markHover : Tokens.line) : Tokens.lineSoft
+    scale: crate ? 1
+        : cardTap.pressed && motionAllowed ? 0.96
         : cardHover.hovered && motionAllowed ? 1.02 : 1
 
     Column {
@@ -35,7 +42,24 @@ Rectangle {
             width: parent.width
             spacing: Tokens.s2 * root.s
 
+            Glyph {
+                visible: root.crate
+                anchors.verticalCenter: parent.verticalCenter
+                name: "north_east"
+                size: 14
+                color: Tokens.inkSecondary
+            }
+
+            TrackLabel {
+                objectName: "askHandoffCaption"
+                visible: root.crate
+                anchors.verticalCenter: parent.verticalCenter
+                width: parent.width - toggleLabel.width - Tokens.s6 * root.s
+                text: I18n.tr("From Ask")
+            }
+
             Text {
+                visible: !root.crate
                 text: "north_east"
                 color: Tokens.inkMuted
                 font.family: "Material Symbols Rounded"
@@ -43,6 +67,7 @@ Rectangle {
             }
 
             Text {
+                visible: !root.crate
                 width: parent.width - toggleLabel.width - Tokens.s6 * root.s
                 text: I18n.tr("From Ask")
                 color: Tokens.inkMuted

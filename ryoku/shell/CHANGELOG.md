@@ -1,6 +1,23 @@
 # Changelog: ryoku/shell/
 
 ## Unreleased
+- **The Ask bar and its bubble wear the kit under crate.** Rashin's question
+  bar and the pinned bubble's card and disc fill with the one glass (the
+  compositor frosts their layers) with no shadow under them. The head is a
+  tracked caption without the "//" eyebrow; the header buttons, the composer's
+  send and the job actions are kit IconButtons; the modes and the download mode
+  are Segs; answer actions are Chips (a colour answer shows its swatch, which
+  the kit Chip gains); results, commands, recent asks, models and files are
+  PickRows; the drawers mark the route, model or session in use with the pick
+  wash, edge and dot; buttons are Btns; the engine toggle is a Sw; work in
+  flight (the field, a tool call, reading formats, a download) is a Beam; every
+  icon is a Solar glyph, and the catalogue gains history, routing, check,
+  arrow-up, box, file, brain, code-square, document-text, sledgehammer, stop,
+  global, danger-circle, download-minimalistic, folder-zip, archive, broom and
+  widget-2 with their Material aliases. The stock look is unchanged, and the
+  handoff card no longer throws on a missing Motion import
+  (`modules/ask/`, `ui/Chip.qml`, `ui/tools/`; `tests/ui/ask-kit-probe.sh`,
+  `tests/visual/surfaces/scenes/ask.qml`).
 - **The bar's audio glyph shows what you are listening through.** Under crate
   the audio widget draws a kit glyph for the default sink's device, read from
   its PipeWire properties: Bluetooth headphones, a remote speaker (a Bluetooth

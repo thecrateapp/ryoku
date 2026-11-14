@@ -1,6 +1,7 @@
 pragma ComponentBehavior: Bound
 
 import QtQuick
+import Ryoku.Ui
 import Ryoku.Ui.Singletons
 import shell.services
 import "../launcher/shared/providers/web" as WebProvider
@@ -14,6 +15,9 @@ Item {
     property int selectedIndex: 0
     property var rows: []
     readonly property bool motionAllowed: active && !Tokens.reduceMotion && !Motion.reduce
+    // Under controls "crate" the instant answer is a hairline card on the glass
+    // and each result a kit pick row, the selected one picked.
+    readonly property bool crate: Tokens.controlsCrate
 
     implicitHeight: content.implicitHeight
 
@@ -50,9 +54,9 @@ Item {
             visible: provider.answer.available === true
             implicitHeight: answerColumn.implicitHeight + Tokens.s4 * root.s * 2
             radius: Tokens.radius * root.s
-            color: Tokens.paperLift
+            color: root.crate ? "transparent" : Tokens.paperLift
             border.width: Tokens.border
-            border.color: Tokens.lineStrong
+            border.color: root.crate ? Tokens.line : Tokens.lineStrong
             Column {
                 id: answerColumn
                 anchors.left: parent.left
@@ -111,12 +115,27 @@ Item {
                 height: 52 * root.s
                 radius: Tokens.radius * root.s
                 readonly property bool current: index === root.selectedIndex
-                color: current ? Tokens.bone
+                color: root.crate ? "transparent"
+                    : current ? Tokens.bone
                     : webTap.pressed ? Tokens.tint16
                     : webHover.hovered ? Tokens.tint10 : "transparent"
-                border.width: Tokens.border
+                border.width: root.crate ? 0 : Tokens.border
                 border.color: current ? Tokens.bone : Tokens.lineSoft
+                PickRow {
+                    objectName: "askWebRow"
+                    visible: root.crate
+                    anchors.fill: parent
+                    glyph: "public"
+                    title: webRow.modelData.title || ""
+                    sub: webRow.modelData.subtitle || ""
+                    picked: webRow.current
+                    onClicked: {
+                        root.selectedIndex = webRow.index;
+                        root.activate();
+                    }
+                }
                 Text {
+                    visible: !root.crate
                     anchors.left: parent.left
                     anchors.leftMargin: Tokens.s3 * root.s
                     anchors.verticalCenter: parent.verticalCenter
@@ -126,6 +145,7 @@ Item {
                     font.pixelSize: Tokens.fValue * root.s
                 }
                 Column {
+                    visible: !root.crate
                     anchors.left: parent.left
                     anchors.right: keycap.left
                     anchors.leftMargin: 46 * root.s
@@ -151,6 +171,7 @@ Item {
                 }
                 Text {
                     id: keycap
+                    visible: !root.crate
                     anchors.right: parent.right
                     anchors.rightMargin: Tokens.s3 * root.s
                     anchors.verticalCenter: parent.verticalCenter
@@ -162,6 +183,7 @@ Item {
                 HoverHandler { id: webHover; cursorShape: Qt.PointingHandCursor; onHoveredChanged: if (hovered) root.selectedIndex = webRow.index }
                 TapHandler {
                     id: webTap
+                    enabled: !root.crate
                     onTapped: {
                         root.selectedIndex = webRow.index;
                         root.activate();

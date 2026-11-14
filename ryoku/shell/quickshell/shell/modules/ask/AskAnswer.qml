@@ -18,6 +18,9 @@ Item {
     property string flash: ""
     property int chipEpoch: 0
     readonly property bool motionAllowed: active && !Tokens.reduceMotion && !Motion.reduce
+    // Under controls "crate" the recent asks are kit pick rows and the actions
+    // kit chips, the selected one filled with the mark.
+    readonly property bool crate: Tokens.controlsCrate
     readonly property var chips: {
         if (session.busy)
             return [
@@ -167,8 +170,22 @@ Item {
                 width: ListView.view ? ListView.view.width : 0
                 height: 52 * root.s
                 radius: Tokens.radius * root.s
-                color: recentRow.index === recentList.currentIndex ? Tokens.bone : recentHover.hovered ? Tokens.tint10 : "transparent"
+                color: root.crate ? "transparent"
+                    : recentRow.index === recentList.currentIndex ? Tokens.bone : recentHover.hovered ? Tokens.tint10 : "transparent"
+                PickRow {
+                    objectName: "askRecentRow"
+                    visible: root.crate
+                    anchors.fill: parent
+                    title: String(recentRow.modelData.q || "")
+                    sub: String(recentRow.modelData.a || "").replace(/\n/g, " ")
+                    picked: recentRow.index === recentList.currentIndex
+                    onClicked: {
+                        recentList.currentIndex = recentRow.index;
+                        root.activate();
+                    }
+                }
                 Column {
+                    visible: !root.crate
                     anchors.left: parent.left
                     anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter
@@ -192,6 +209,7 @@ Item {
                 }
                 HoverHandler { cursorShape: Qt.PointingHandCursor; onHoveredChanged: if (hovered) recentList.currentIndex = recentRow.index }
                 TapHandler {
+                    enabled: !root.crate
                     onTapped: {
                         recentList.currentIndex = recentRow.index;
                         root.activate();
@@ -212,8 +230,8 @@ Item {
             wrapMode: TextEdit.Wrap
             readOnly: true
             selectByMouse: true
-            selectionColor: Tokens.bone
-            selectedTextColor: Tokens.inkOnBone
+            selectionColor: root.crate ? Tokens.mark : Tokens.bone
+            selectedTextColor: root.crate ? Tokens.paper : Tokens.inkOnBone
             opacity: shown ? 1 : 0
             transform: Translate {
                 y: answerText.shown ? 0 : Tokens.s2 * root.s
@@ -251,9 +269,9 @@ Item {
                     width: 92 * root.s
                     height: width
                     radius: Tokens.radius * root.s
-                    color: Tokens.tint5
+                    color: root.crate ? "transparent" : Tokens.tint5
                     border.width: Tokens.border
-                    border.color: Tokens.lineSoft
+                    border.color: root.crate ? Tokens.line : Tokens.lineSoft
                     clip: true
                     Image { anchors.fill: parent; source: "file://" + imageFrame.modelData; fillMode: Image.PreserveAspectCrop; asynchronous: true }
                     HoverHandler { cursorShape: Qt.PointingHandCursor }
@@ -296,16 +314,18 @@ Item {
                     property real revealProgress: root.motionAllowed ? 0 : 1
                     property int revealEpoch: root.chipEpoch
                     readonly property bool current: index === root.selectedChip
-                    width: chipContent.implicitWidth + Tokens.s4 * root.s
-                    height: Tokens.ctlH * root.s
+                    width: root.crate ? kitChip.implicitWidth : chipContent.implicitWidth + Tokens.s4 * root.s
+                    height: root.crate ? kitChip.implicitHeight : Tokens.ctlH * root.s
                     radius: Tokens.radius * root.s
-                    color: chipTap.pressed ? Tokens.tint16
+                    color: root.crate ? "transparent"
+                        : chipTap.pressed ? Tokens.tint16
                         : current ? Tokens.bone
                         : chipHover.hovered ? Tokens.tint10 : "transparent"
-                    border.width: Tokens.border
+                    border.width: root.crate ? 0 : Tokens.border
                     border.color: current ? Tokens.bone : Tokens.line
                     opacity: revealProgress
-                    scale: chipTap.pressed && root.motionAllowed ? 0.94
+                    scale: root.crate ? 1
+                        : chipTap.pressed && root.motionAllowed ? 0.94
                         : chipHover.hovered && root.motionAllowed ? 1.025 : 1
                     transform: Translate { y: (1 - chip.revealProgress) * Tokens.s2 * root.s }
                     function restartReveal() {
@@ -331,8 +351,20 @@ Item {
                             easing.type: Tokens.ease
                         }
                     }
+                    Chip {
+                        id: kitChip
+                        objectName: "askActionChip"
+                        visible: root.crate
+                        anchors.fill: parent
+                        text: root.caption(chip.modelData)
+                        on: chip.current
+                        swatch: String(chip.modelData.kind || "") === "color"
+                            ? String(chip.modelData.value || "transparent") : "transparent"
+                        onClicked: root.fire(chip.modelData)
+                    }
                     Row {
                         id: chipContent
+                        visible: !root.crate
                         anchors.centerIn: parent
                         spacing: Tokens.s2 * root.s
                         Rectangle {
@@ -353,7 +385,7 @@ Item {
                         }
                     }
                     HoverHandler { id: chipHover; cursorShape: Qt.PointingHandCursor; onHoveredChanged: if (hovered) root.selectedChip = chip.index }
-                    TapHandler { id: chipTap; onTapped: root.fire(chip.modelData) }
+                    TapHandler { id: chipTap; enabled: !root.crate; onTapped: root.fire(chip.modelData) }
                 }
             }
         }

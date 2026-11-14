@@ -22,6 +22,12 @@ Item {
     property string confirmUninstallId: ""
     property bool engineOpen: false
     readonly property bool motionAllowed: active && !Tokens.reduceMotion && !Motion.reduce
+    // Under controls "crate" the tools draw from the kit on the glass: the
+    // download mode is a Seg, commands are pick rows, actions kit buttons, the
+    // engine a switch, progress and reading a Beam, captions tracked labels,
+    // and every card a hairline with no fill.
+    readonly property bool crate: Tokens.controlsCrate
+    readonly property bool engineOn: Stash.cobaltState === "running" || Stash.cobaltState === "starting"
     // The download has been queued and the link is spent, so the field is
     // cleared rather than left holding a link that has already been taken.
     signal accepted()
@@ -205,13 +211,33 @@ Item {
 
         Rectangle {
             width: parent.width
-            height: 42 * root.s
+            height: root.crate ? modeSeg.height : 42 * root.s
             radius: Tokens.radius * root.s
-            color: Tokens.tint5
-            border.width: Tokens.border
+            color: root.crate ? "transparent" : Tokens.tint5
+            border.width: root.crate ? 0 : Tokens.border
             border.color: Tokens.lineSoft
 
+            Seg {
+                id: modeSeg
+                objectName: "askToolsModeSeg"
+                visible: root.crate
+                anchors.left: parent.left
+                anchors.verticalCenter: parent.verticalCenter
+                options: ["auto", "audio", "mute"]
+                labels: ({ auto: I18n.tr("Auto"), audio: I18n.tr("Audio"), mute: I18n.tr("Mute") })
+                current: Stash.dlMode
+                onChose: key => Stash.dlMode = key
+            }
+
+            TrackLabel {
+                visible: root.crate
+                anchors.right: parent.right
+                anchors.verticalCenter: parent.verticalCenter
+                text: I18n.tr("Download mode")
+            }
+
             Row {
+                visible: !root.crate
                 anchors.left: parent.left
                 anchors.leftMargin: Tokens.s3 * root.s
                 anchors.verticalCenter: parent.verticalCenter
@@ -245,6 +271,7 @@ Item {
                 }
             }
             Text {
+                visible: !root.crate
                 anchors.right: parent.right
                 anchors.rightMargin: Tokens.s3 * root.s
                 anchors.verticalCenter: parent.verticalCenter
@@ -273,13 +300,25 @@ Item {
                     height: 48 * root.s
                     radius: Tokens.radius * root.s
                     readonly property bool current: index === root.selectedIndex
-                    color: current ? Tokens.bone
+                    color: root.crate ? "transparent"
+                        : current ? Tokens.bone
                         : commandTap.pressed ? Tokens.tint16
                         : commandHover.hovered ? Tokens.tint10 : "transparent"
-                    border.width: Tokens.border
+                    border.width: root.crate ? 0 : Tokens.border
                     border.color: current ? Tokens.bone : Tokens.lineSoft
+                    PickRow {
+                        objectName: "askToolsCommand"
+                        visible: root.crate
+                        anchors.fill: parent
+                        glyph: commandRow.modelData.glyph
+                        title: commandRow.modelData.name
+                        sub: commandRow.modelData.hint
+                        picked: commandRow.current
+                        onClicked: root.run(commandRow.modelData.id)
+                    }
                     Text {
                         id: commandGlyph
+                        visible: !root.crate
                         anchors.left: parent.left
                         anchors.leftMargin: Tokens.s3 * root.s
                         anchors.verticalCenter: parent.verticalCenter
@@ -289,6 +328,7 @@ Item {
                         font.pixelSize: Tokens.fBody * root.s
                     }
                     Column {
+                        visible: !root.crate
                         anchors.left: commandGlyph.right
                         anchors.right: keyHint.left
                         anchors.leftMargin: Tokens.s3 * root.s
@@ -315,6 +355,7 @@ Item {
                     }
                     Text {
                         id: keyHint
+                        visible: !root.crate
                         anchors.right: parent.right
                         anchors.rightMargin: Tokens.s3 * root.s
                         anchors.verticalCenter: parent.verticalCenter
@@ -324,7 +365,7 @@ Item {
                         font.pixelSize: Tokens.fTiny * root.s
                     }
                     HoverHandler { id: commandHover; cursorShape: Qt.PointingHandCursor; onHoveredChanged: if (hovered) root.selectedIndex = commandRow.index }
-                    TapHandler { id: commandTap; onTapped: root.run(commandRow.modelData.id) }
+                    TapHandler { id: commandTap; enabled: !root.crate; onTapped: root.run(commandRow.modelData.id) }
                 }
             }
         }
@@ -344,8 +385,17 @@ Item {
             spacing: Tokens.s2 * root.s
             visible: Stash.probeState === "probing"
 
+            Beam {
+                objectName: "askToolsProbeBeam"
+                visible: root.crate
+                anchors.verticalCenter: parent.verticalCenter
+                width: 64
+                interactive: false
+                indeterminate: true
+            }
             Text {
                 id: probeSpinner
+                visible: !root.crate
                 anchors.verticalCenter: parent.verticalCenter
                 text: "progress_activity"
                 color: Tokens.inkMuted
@@ -375,9 +425,9 @@ Item {
             visible: Stash.probeState === "ready" && root.tiers.length > 0
             implicitHeight: readyColumn.implicitHeight + Tokens.s3 * root.s * 2
             radius: Tokens.radius * root.s
-            color: Tokens.tint5
+            color: root.crate ? "transparent" : Tokens.tint5
             border.width: Tokens.border
-            border.color: Tokens.lineSoft
+            border.color: root.crate ? Tokens.line : Tokens.lineSoft
             Column {
                 id: readyColumn
                 anchors.left: parent.left
@@ -406,9 +456,9 @@ Item {
                         width: parent.width
                         implicitHeight: tierColumn.implicitHeight + Tokens.s3 * root.s * 2
                         radius: Tokens.radius * root.s
-                        color: tierHover.hovered ? Tokens.tint10 : "transparent"
+                        color: root.crate ? "transparent" : tierHover.hovered ? Tokens.tint10 : "transparent"
                         border.width: Tokens.border
-                        border.color: Tokens.lineSoft
+                        border.color: root.crate ? (tierHover.hovered ? Tokens.markHover : Tokens.line) : Tokens.lineSoft
                         Behavior on color { enabled: root.motionAllowed; ColorAnimation { duration: Tokens.snap } }
 
                         // Staggered in after the press.
@@ -464,17 +514,29 @@ Item {
                             anchors.right: parent.right
                             anchors.rightMargin: Tokens.s3 * root.s
                             anchors.verticalCenter: parent.verticalCenter
-                            width: downloadLabel.implicitWidth + Tokens.s3 * root.s
-                            height: Tokens.ctlH * root.s
+                            width: root.crate ? downloadBtn.implicitWidth : downloadLabel.implicitWidth + Tokens.s3 * root.s
+                            height: root.crate ? downloadBtn.implicitHeight : Tokens.ctlH * root.s
                             radius: Tokens.radius * root.s
-                            color: downloadTap.pressed ? Tokens.tint16
+                            color: root.crate ? "transparent"
+                                : downloadTap.pressed ? Tokens.tint16
                                 : downloadHover.hovered ? Tokens.tint10 : Tokens.tint5
-                            border.width: Tokens.border
+                            border.width: root.crate ? 0 : Tokens.border
                             border.color: Tokens.lineSoft
+
+                            Btn {
+                                id: downloadBtn
+                                objectName: "askToolsTierDownload"
+                                visible: root.crate
+                                anchors.fill: parent
+                                compact: true
+                                text: I18n.tr("Download")
+                                onAct: root.pick(tierRow.modelData)
+                            }
                             Behavior on color { enabled: root.motionAllowed; ColorAnimation { duration: Tokens.snap } }
 
                             Text {
                                 id: downloadLabel
+                                visible: !root.crate
                                 anchors.centerIn: parent
                                 text: I18n.tr("Download")
                                 color: Tokens.ink
@@ -483,7 +545,7 @@ Item {
                                 font.weight: Font.DemiBold
                             }
                             HoverHandler { id: downloadHover; cursorShape: Qt.PointingHandCursor }
-                            TapHandler { id: downloadTap; onTapped: root.pick(tierRow.modelData) }
+                            TapHandler { id: downloadTap; enabled: !root.crate; onTapped: root.pick(tierRow.modelData) }
                         }
                     }
                 }
@@ -497,7 +559,15 @@ Item {
             spacing: Tokens.s2 * root.s
             visible: Stash.probeState === "ready" && root.tiers.length === 0
 
+            Glyph {
+                visible: root.crate
+                anchors.verticalCenter: parent.verticalCenter
+                name: Stash.dlMode === "audio" ? "volume_off" : "visibility_off"
+                size: 16
+                color: Tokens.inkSecondary
+            }
             Text {
+                visible: !root.crate
                 anchors.verticalCenter: parent.verticalCenter
                 text: Stash.dlMode === "audio" ? "volume_off" : "visibility_off"
                 color: Tokens.inkMuted
@@ -521,9 +591,9 @@ Item {
             visible: Stash.probeState === "error"
             implicitHeight: errorColumn.implicitHeight + Tokens.s3 * root.s * 2
             radius: Tokens.radius * root.s
-            color: Tokens.tint5
+            color: root.crate ? "transparent" : Tokens.tint5
             border.width: Tokens.border
-            border.color: Tokens.lineSoft
+            border.color: root.crate ? Tokens.line : Tokens.lineSoft
             Column {
                 id: errorColumn
                 anchors.left: parent.left
@@ -544,17 +614,28 @@ Item {
                     }
                     Rectangle {
                         anchors.verticalCenter: parent.verticalCenter
-                        width: bestLabel.implicitWidth + Tokens.s3 * root.s
-                        height: Tokens.ctlH * root.s
+                        width: root.crate ? bestBtn.implicitWidth : bestLabel.implicitWidth + Tokens.s3 * root.s
+                        height: root.crate ? bestBtn.implicitHeight : Tokens.ctlH * root.s
                         radius: Tokens.radius * root.s
-                        color: bestTap.pressed ? Tokens.tint16
+                        color: root.crate ? "transparent"
+                            : bestTap.pressed ? Tokens.tint16
                             : bestHover.hovered ? Tokens.tint10 : "transparent"
-                        border.width: Tokens.border
+                        border.width: root.crate ? 0 : Tokens.border
                         border.color: Tokens.lineSoft
+
+                        Btn {
+                            id: bestBtn
+                            visible: root.crate
+                            anchors.fill: parent
+                            compact: true
+                            text: I18n.tr("Download best")
+                            onAct: root.pick(null)
+                        }
                         Behavior on color { enabled: root.motionAllowed; ColorAnimation { duration: Tokens.snap } }
 
                         Text {
                             id: bestLabel
+                            visible: !root.crate
                             anchors.centerIn: parent
                             text: I18n.tr("Download best")
                             color: Tokens.ink
@@ -563,7 +644,7 @@ Item {
                             font.weight: Font.DemiBold
                         }
                         HoverHandler { id: bestHover; cursorShape: Qt.PointingHandCursor }
-                        TapHandler { id: bestTap; onTapped: root.pick(null) }
+                        TapHandler { id: bestTap; enabled: !root.crate; onTapped: root.pick(null) }
                     }
                 }
 
@@ -584,12 +665,25 @@ Item {
 
         Rectangle {
             width: parent.width
+            objectName: "askToolsEngine"
             height: 44 * root.s
             radius: Tokens.radius * root.s
-            color: engineTap.pressed ? Tokens.tint16 : engineHover.hovered ? Tokens.tint10 : Tokens.tint5
+            color: root.crate ? "transparent"
+                : engineTap.pressed ? Tokens.tint16 : engineHover.hovered ? Tokens.tint10 : Tokens.tint5
             border.width: Tokens.border
-            border.color: Stash.cobaltState === "error" ? Tokens.lineStrong : Tokens.lineSoft
+            border.color: root.crate ? (Stash.cobaltState === "error" ? Tokens.alert : engineHover.hovered ? Tokens.markHover : Tokens.line)
+                : Stash.cobaltState === "error" ? Tokens.lineStrong : Tokens.lineSoft
+            Glyph {
+                visible: root.crate
+                anchors.left: parent.left
+                anchors.leftMargin: Tokens.s3 * root.s
+                anchors.verticalCenter: parent.verticalCenter
+                name: "memory"
+                size: 18
+                color: Stash.cobaltState === "error" ? Tokens.alert : root.engineOn ? Tokens.mark : Tokens.inkSecondary
+            }
             Text {
+                visible: !root.crate
                 anchors.left: parent.left
                 anchors.leftMargin: Tokens.s3 * root.s
                 anchors.verticalCenter: parent.verticalCenter
@@ -600,7 +694,7 @@ Item {
             }
             Column {
                 anchors.left: parent.left
-                anchors.right: engineToggle.left
+                anchors.right: root.crate ? engineSwitch.left : engineToggle.left
                 anchors.leftMargin: 42 * root.s
                 anchors.rightMargin: Tokens.s3 * root.s
                 anchors.verticalCenter: parent.verticalCenter
@@ -622,8 +716,21 @@ Item {
                     font.pixelSize: Tokens.fTiny * root.s
                 }
             }
+            // The row owns the press (it opens setup when the engine is not
+            // ready), so the switch only shows the state.
+            Sw {
+                id: engineSwitch
+                objectName: "askToolsEngineSwitch"
+                visible: root.crate
+                enabled: false
+                anchors.right: parent.right
+                anchors.rightMargin: Tokens.s3 * root.s
+                anchors.verticalCenter: parent.verticalCenter
+                on: root.engineOn
+            }
             Rectangle {
                 id: engineToggle
+                visible: !root.crate
                 anchors.right: parent.right
                 anchors.rightMargin: Tokens.s3 * root.s
                 anchors.verticalCenter: parent.verticalCenter
@@ -661,9 +768,9 @@ Item {
             visible: root.engineOpen
             implicitHeight: visible ? engineDetails.implicitHeight + Tokens.s3 * root.s * 2 : 0
             radius: Tokens.radius * root.s
-            color: Tokens.paperLift
+            color: root.crate ? "transparent" : Tokens.paperLift
             border.width: Tokens.border
-            border.color: Tokens.lineSoft
+            border.color: root.crate ? Tokens.line : Tokens.lineSoft
             Column {
                 id: engineDetails
                 anchors.left: parent.left
@@ -689,13 +796,45 @@ Item {
                         required property string stepState
                         required property string msg
                         spacing: Tokens.s2 * root.s
+                        // under crate: the kit glyph once a step settles, a dot
+                        // (the mark, pulsing, while it runs) before that
+                        Glyph {
+                            visible: root.crate && (setupRow.stepState === "done" || setupRow.stepState === "failed")
+                            anchors.verticalCenter: parent.verticalCenter
+                            name: setupRow.stepState === "done" ? "check_circle" : "error"
+                            size: 16
+                            color: setupRow.stepState === "failed" ? Tokens.alert : Tokens.mark
+                        }
+                        Item {
+                            visible: root.crate && setupRow.stepState !== "done" && setupRow.stepState !== "failed"
+                            anchors.verticalCenter: parent.verticalCenter
+                            width: 16
+                            height: 16
+                            Rectangle {
+                                id: stepDot
+                                anchors.centerIn: parent
+                                width: 6
+                                height: 6
+                                radius: 3
+                                color: setupRow.stepState === "running" ? Tokens.mark : Tokens.inkFaint
+                                SequentialAnimation on opacity {
+                                    running: root.motionAllowed && setupRow.stepState === "running"
+                                    loops: Animation.Infinite
+                                    NumberAnimation { from: 1; to: 0.45; duration: Tokens.dur(420); easing.type: Easing.InOutSine }
+                                    NumberAnimation { from: 0.45; to: 1; duration: Tokens.dur(420); easing.type: Easing.InOutSine }
+                                    onStopped: stepDot.opacity = 1
+                                }
+                            }
+                        }
                         Text {
+                            visible: !root.crate
                             text: setupRow.stepState === "done" ? "check_circle" : setupRow.stepState === "failed" ? "error" : setupRow.stepState === "running" ? "progress_activity" : "circle"
                             color: setupRow.stepState === "pending" ? Tokens.inkFaint : Tokens.inkDim
                             font.family: "Material Symbols Rounded"
                             font.pixelSize: Tokens.fBody * root.s
                         }
                         Text {
+                            anchors.verticalCenter: root.crate ? parent.verticalCenter : undefined
                             text: setupRow.msg.length > 0 ? I18n.tr(setupRow.label) + " · " + setupRow.msg : I18n.tr(setupRow.label)
                             color: Tokens.inkDim
                             font.family: Tokens.ui
@@ -703,12 +842,20 @@ Item {
                         }
                     }
                 }
+                Btn {
+                    objectName: "askToolsSetup"
+                    visible: root.crate && Stash.setupState !== "running" && Stash.setupState !== "done"
+                    compact: true
+                    primary: true
+                    text: Stash.setupState === "failed" ? I18n.tr("Retry setup") : I18n.tr("Set up")
+                    onAct: Stash.startSetup()
+                }
                 Rectangle {
                     width: setupLabel.implicitWidth + Tokens.s4 * root.s
                     height: Tokens.ctlH * root.s
                     radius: Tokens.radius * root.s
                     color: Tokens.bone
-                    visible: Stash.setupState !== "running" && Stash.setupState !== "done"
+                    visible: !root.crate && Stash.setupState !== "running" && Stash.setupState !== "done"
                     Text { id: setupLabel; anchors.centerIn: parent; text: Stash.setupState === "failed" ? I18n.tr("Retry setup") : I18n.tr("Set up"); color: Tokens.inkOnBone; font.family: Tokens.ui; font.pixelSize: Tokens.fSmall * root.s }
                     HoverHandler { cursorShape: Qt.PointingHandCursor }
                     TapHandler { onTapped: Stash.startSetup() }
@@ -720,7 +867,12 @@ Item {
             width: parent.width
             visible: Stash.queueModel.count > 0
             spacing: Tokens.s1 * root.s
+            TrackLabel {
+                visible: root.crate
+                text: I18n.tr("ACTIVE JOBS")
+            }
             Text {
+                visible: !root.crate
                 text: I18n.tr("ACTIVE JOBS")
                 color: Tokens.inkMuted
                 font.family: Tokens.mono
@@ -735,10 +887,12 @@ Item {
                     required property int index
                     width: parent.width
                     implicitHeight: queueColumn.implicitHeight + Tokens.s3 * root.s * 2
+                    objectName: "askToolsJob"
                     radius: Tokens.radius * root.s
-                    color: Tokens.tint5
+                    color: root.crate ? "transparent" : Tokens.tint5
                     border.width: Tokens.border
-                    border.color: queueRow.model.state === "error" ? Tokens.lineStrong : Tokens.lineSoft
+                    border.color: root.crate ? (queueRow.model.state === "error" ? Tokens.alert : Tokens.line)
+                        : queueRow.model.state === "error" ? Tokens.lineStrong : Tokens.lineSoft
                     Column {
                         id: queueColumn
                         anchors.left: parent.left
@@ -764,9 +918,37 @@ Item {
                             Row {
                                 id: queueActions
                                 spacing: Tokens.s2 * root.s
+                                IconButton {
+                                    objectName: "askToolsJobCancel"
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    visible: root.crate && (queueRow.model.state === "running" || queueRow.model.state === "queued")
+                                    width: 28
+                                    height: 28
+                                    iconSize: 16
+                                    glyph: "close"
+                                    onClicked: Stash.cancelJob(queueRow.index)
+                                }
+                                IconButton {
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    visible: root.crate && (queueRow.model.state === "error" || queueRow.model.state === "cancelled")
+                                    width: 28
+                                    height: 28
+                                    iconSize: 16
+                                    glyph: "refresh"
+                                    onClicked: Stash.retryJob(queueRow.index)
+                                }
+                                IconButton {
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    visible: root.crate && (queueRow.model.state === "done" || queueRow.model.state === "error" || queueRow.model.state === "cancelled")
+                                    width: 28
+                                    height: 28
+                                    iconSize: 16
+                                    glyph: "close"
+                                    onClicked: Stash.dismissJob(queueRow.index)
+                                }
                                 Text {
                                     anchors.verticalCenter: parent.verticalCenter
-                                    visible: queueRow.model.state === "running" || queueRow.model.state === "queued"
+                                    visible: !root.crate && (queueRow.model.state === "running" || queueRow.model.state === "queued")
                                     text: "close"
                                     color: cancelHover.hovered ? Tokens.ink : Tokens.inkMuted
                                     font.family: "Material Symbols Rounded"
@@ -779,7 +961,7 @@ Item {
                                 // the queue and nothing else.
                                 Text {
                                     anchors.verticalCenter: parent.verticalCenter
-                                    visible: queueRow.model.state === "error" || queueRow.model.state === "cancelled"
+                                    visible: !root.crate && (queueRow.model.state === "error" || queueRow.model.state === "cancelled")
                                     text: "refresh"
                                     color: retryHover.hovered ? Tokens.ink : Tokens.inkMuted
                                     font.family: "Material Symbols Rounded"
@@ -789,7 +971,7 @@ Item {
                                 }
                                 Text {
                                     anchors.verticalCenter: parent.verticalCenter
-                                    visible: queueRow.model.state === "done" || queueRow.model.state === "error" || queueRow.model.state === "cancelled"
+                                    visible: !root.crate && (queueRow.model.state === "done" || queueRow.model.state === "error" || queueRow.model.state === "cancelled")
                                     text: "close"
                                     color: dropHover.hovered ? Tokens.ink : Tokens.inkMuted
                                     font.family: "Material Symbols Rounded"
@@ -799,8 +981,16 @@ Item {
                                 }
                             }
                         }
+                        Beam {
+                            objectName: "askToolsJobBeam"
+                            visible: root.crate && (queueRow.model.state === "running" || queueRow.model.state === "queued")
+                            width: parent.width
+                            interactive: false
+                            indeterminate: queueRow.model.state === "queued"
+                            value: Math.max(0, Math.min(1, Number(queueRow.model.pct || 0) / 100))
+                        }
                         Rectangle {
-                            visible: queueRow.model.state === "running" || queueRow.model.state === "queued"
+                            visible: !root.crate && (queueRow.model.state === "running" || queueRow.model.state === "queued")
                             width: parent.width
                             height: 3 * root.s
                             radius: height / 2
@@ -837,7 +1027,12 @@ Item {
             visible: root.installedOpen
             spacing: Tokens.s1 * root.s
 
+            TrackLabel {
+                visible: root.crate
+                text: I18n.tr("INSTALLED THROUGH STASH")
+            }
             Text {
+                visible: !root.crate
                 text: I18n.tr("INSTALLED THROUGH STASH")
                 color: Tokens.inkMuted
                 font.family: Tokens.mono
@@ -887,13 +1082,13 @@ Item {
                     width: parent.width
                     height: 44 * root.s
                     radius: Tokens.radius * root.s
-                    color: installedHover.hovered ? Tokens.tint10 : "transparent"
+                    color: root.crate ? "transparent" : installedHover.hovered ? Tokens.tint10 : "transparent"
                     border.width: Tokens.border
-                    border.color: Tokens.lineSoft
+                    border.color: root.crate ? (installedHover.hovered ? Tokens.markHover : Tokens.line) : Tokens.lineSoft
 
                     Text {
                         anchors.left: parent.left
-                        anchors.right: uninstallButton.left
+                        anchors.right: root.crate ? uninstallBtn.left : uninstallButton.left
                         anchors.leftMargin: Tokens.s3 * root.s
                         anchors.rightMargin: Tokens.s2 * root.s
                         anchors.verticalCenter: parent.verticalCenter
@@ -904,8 +1099,30 @@ Item {
                         elide: Text.ElideMiddle
                     }
 
+                    Btn {
+                        id: uninstallBtn
+                        objectName: "askToolsUninstall"
+                        visible: root.crate
+                        anchors.right: parent.right
+                        anchors.rightMargin: Tokens.s2 * root.s
+                        anchors.verticalCenter: parent.verticalCenter
+                        compact: true
+                        primary: root.confirmUninstallId === installedRow.appId
+                        armed: Stash.uninstallingId.length === 0
+                        text: uninstallLabel.text
+                        onAct: {
+                            if (root.confirmUninstallId === installedRow.appId) {
+                                root.confirmUninstallId = "";
+                                Stash.uninstallApp(installedRow.appId);
+                            } else {
+                                root.confirmUninstallId = installedRow.appId;
+                            }
+                        }
+                    }
+
                     Rectangle {
                         id: uninstallButton
+                        visible: !root.crate
                         anchors.right: parent.right
                         anchors.rightMargin: Tokens.s2 * root.s
                         anchors.verticalCenter: parent.verticalCenter
@@ -967,10 +1184,13 @@ Item {
                     width: parent.width
                     height: 38 * root.s
                     radius: Tokens.radius * root.s
-                    color: recentTap.pressed ? Tokens.tint16 : recentHover.hovered ? Tokens.tint10 : "transparent"
+                    color: root.crate ? "transparent"
+                        : recentTap.pressed ? Tokens.tint16 : recentHover.hovered ? Tokens.tint10 : "transparent"
+                    border.width: root.crate ? Tokens.border : 0
+                    border.color: recentHover.hovered ? Tokens.markHover : "transparent"
                     Text {
                         anchors.left: parent.left
-                        anchors.right: removeRecent.left
+                        anchors.right: root.crate ? removeRecentIcon.left : removeRecent.left
                         anchors.leftMargin: Tokens.s3 * root.s
                         anchors.rightMargin: Tokens.s2 * root.s
                         anchors.verticalCenter: parent.verticalCenter
@@ -980,8 +1200,21 @@ Item {
                         font.pixelSize: Tokens.fSmall * root.s
                         elide: Text.ElideMiddle
                     }
+                    IconButton {
+                        id: removeRecentIcon
+                        visible: root.crate
+                        anchors.right: parent.right
+                        anchors.rightMargin: Tokens.s1 * root.s
+                        anchors.verticalCenter: parent.verticalCenter
+                        width: 28
+                        height: 28
+                        iconSize: 16
+                        glyph: "close"
+                        onClicked: Stash.removeFile(recentRow.modelData.path)
+                    }
                     Text {
                         id: removeRecent
+                        visible: !root.crate
                         anchors.right: parent.right
                         anchors.rightMargin: Tokens.s3 * root.s
                         anchors.verticalCenter: parent.verticalCenter
@@ -992,7 +1225,15 @@ Item {
                         TapHandler { onTapped: Stash.removeFile(recentRow.modelData.path) }
                     }
                     HoverHandler { id: recentHover; cursorShape: Qt.PointingHandCursor }
-                    TapHandler { id: recentTap; onTapped: Stash.openFile(recentRow.modelData.path) }
+                    TapHandler {
+                        id: recentTap
+                        onTapped: eventPoint => {
+                            // under crate the remove button sits inside the row and keeps its own press
+                            if (root.crate && removeRecentIcon.contains(removeRecentIcon.mapFromItem(recentRow, eventPoint.position)))
+                                return;
+                            Stash.openFile(recentRow.modelData.path);
+                        }
+                    }
                 }
             }
         }

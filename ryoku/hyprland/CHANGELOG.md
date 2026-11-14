@@ -12,6 +12,10 @@
   they resize the tile; niri and Wayfire get the same pair (#797).
 
 ### Changed
+- **The Ask bar and its bubble are frosted under the crate glass.** Their
+  full-output layers (`ryoku-ask`, `ryoku-ask-bubble`) join
+  `crate-glass-blur-panels`, blurred only where the bar, the card and the disc
+  draw (`modules/decoration.lua`; `tests/hyprland-crate-glass.lua`).
 - **Shell panels answer at once.** Controls, the QS Bar panels and control
   center, the OSD and the confirmation dialog reveal themselves in QML, but the
   compositor also played its layer animation (a 400 ms move and a 700 ms fade)

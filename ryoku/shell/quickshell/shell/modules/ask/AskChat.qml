@@ -17,6 +17,10 @@ Item {
     property bool showComposer: true
     property bool agentSurfaceReported: false
     readonly property bool motionAllowed: active && !Tokens.reduceMotion && !Motion.reduce
+    // Under controls "crate" the chat draws from the kit on the glass: hairline
+    // cards with no fills, tracked captions, kit buttons and pick rows, Solar
+    // glyphs, and a Beam wherever work is in flight.
+    readonly property bool crate: Tokens.controlsCrate
 
     signal inputFocusRequested()
 
@@ -38,6 +42,13 @@ Item {
         const options = permission.options.filter(option => String(option.kind || "") !== "reject_always");
         const hasReject = options.some(option => String(option.kind || "").indexOf("reject") >= 0);
         return hasReject ? options : options.concat([{ id: "", name: I18n.tr("Decline"), kind: "reject_once" }]);
+    }
+
+    function startNewChat() {
+        Needle.newChat();
+        draft = "";
+        if (showComposer) composer.forceActiveFocus();
+        else inputFocusRequested();
     }
 
     function send() {
@@ -94,17 +105,43 @@ Item {
                 anchors.rightMargin: Tokens.s2 * root.s
                 anchors.verticalCenter: parent.verticalCenter
                 height: 30 * root.s
+                objectName: "askChatModel"
                 radius: Tokens.radius * root.s
-                color: modelTap.pressed ? Tokens.tint16 : modelHover.hovered ? Tokens.tint10 : Tokens.tint5
+                color: root.crate ? "transparent"
+                    : modelTap.pressed ? Tokens.tint16 : modelHover.hovered ? Tokens.tint10 : Tokens.tint5
                 border.width: Tokens.border
-                border.color: root.modelMenuOpen ? Tokens.bone : Tokens.lineStrong
-                scale: modelTap.pressed && root.motionAllowed ? 0.94
+                border.color: root.crate ? (root.modelMenuOpen ? Tokens.pickEdge : modelHover.hovered ? Tokens.markHover : Tokens.line)
+                    : root.modelMenuOpen ? Tokens.bone : Tokens.lineStrong
+                Behavior on border.color { enabled: root.crate; ColorAnimation { duration: 150 } }
+                scale: root.crate ? 1
+                    : modelTap.pressed && root.motionAllowed ? 0.94
                     : modelHover.hovered && root.motionAllowed ? 1.025 : 1
                 Behavior on scale {
                     enabled: root.motionAllowed
                     NumberAnimation { duration: Tokens.snap; easing.type: Tokens.easeSnap }
                 }
+                Glyph {
+                    visible: root.crate
+                    anchors.left: parent.left
+                    anchors.leftMargin: Tokens.s3 * root.s
+                    anchors.verticalCenter: parent.verticalCenter
+                    name: "cognition"
+                    size: 16
+                    color: Tokens.inkSecondary
+                }
+                Glyph {
+                    visible: root.crate
+                    anchors.right: parent.right
+                    anchors.rightMargin: Tokens.s2 * root.s
+                    anchors.verticalCenter: parent.verticalCenter
+                    name: "expand_more"
+                    size: 16
+                    color: root.modelMenuOpen ? Tokens.mark : Tokens.inkSecondary
+                    rotation: root.modelMenuOpen ? 180 : 0
+                    Behavior on rotation { enabled: root.motionAllowed; NumberAnimation { duration: Tokens.move; easing.type: Tokens.ease } }
+                }
                 Text {
+                    visible: !root.crate
                     anchors.left: parent.left
                     anchors.leftMargin: Tokens.s3 * root.s
                     anchors.verticalCenter: parent.verticalCenter
@@ -119,12 +156,13 @@ Item {
                     width: parent.width - 54 * root.s
                     text: Needle.currentModel.length > 0 ? root.shortModel(Needle.currentModel) : I18n.tr("Choose model")
                     color: Tokens.ink
-                    font.family: Tokens.ui
-                    font.pixelSize: Tokens.fSmall * root.s
+                    font.family: root.crate ? Tokens.mono : Tokens.ui
+                    font.pixelSize: root.crate ? Tokens.fSmall : Tokens.fSmall * root.s
                     elide: Text.ElideMiddle
                     horizontalAlignment: Text.AlignHCenter
                 }
                 Text {
+                    visible: !root.crate
                     anchors.right: parent.right
                     anchors.rightMargin: Tokens.s2 * root.s
                     anchors.verticalCenter: parent.verticalCenter
@@ -145,7 +183,24 @@ Item {
                 anchors.verticalCenter: parent.verticalCenter
                 spacing: Tokens.s1 * root.s
 
+                Btn {
+                    objectName: "askChatTerminal"
+                    visible: root.crate
+                    compact: true
+                    text: I18n.tr("Open in terminal")
+                    onAct: Needle.openInTerminal()
+                }
+
+                Btn {
+                    objectName: "askChatNew"
+                    visible: root.crate
+                    compact: true
+                    text: I18n.tr("New chat")
+                    onAct: root.startNewChat()
+                }
+
                 Rectangle {
+                    visible: !root.crate
                     width: terminalText.implicitWidth + Tokens.s4 * root.s
                     height: 30 * root.s
                     radius: Tokens.radius * root.s
@@ -172,6 +227,7 @@ Item {
                 }
 
                 Rectangle {
+                    visible: !root.crate
                     width: newChatText.implicitWidth + Tokens.s4 * root.s
                     height: 30 * root.s
                     radius: Tokens.radius * root.s
@@ -195,12 +251,7 @@ Item {
                     HoverHandler { id: newHover; cursorShape: Qt.PointingHandCursor }
                     TapHandler {
                         id: newTap
-                        onTapped: {
-                            Needle.newChat();
-                            root.draft = "";
-                            if (root.showComposer) composer.forceActiveFocus();
-                            else root.inputFocusRequested();
-                        }
+                        onTapped: root.startNewChat()
                     }
                 }
             }
@@ -226,9 +277,9 @@ Item {
             scale: root.modelMenuOpen ? 1 : 0.98
             transformOrigin: Item.Top
             radius: Tokens.radius * root.s
-            color: Tokens.paperLift
+            color: root.crate ? Tokens.popover : Tokens.paperLift
             border.width: Tokens.border
-            border.color: Tokens.lineStrong
+            border.color: root.crate ? Tokens.line : Tokens.lineStrong
             clip: true
             Behavior on height {
                 enabled: root.motionAllowed
@@ -253,20 +304,36 @@ Item {
                     id: modelRow
                     required property var modelData
                     width: ListView.view ? ListView.view.width : 0
-                    height: 32 * root.s
+                    height: root.crate ? modelPick.implicitHeight : 32 * root.s
                     radius: Tokens.radius * root.s
                     readonly property bool current: String(modelData.id || "")
                         === String(Needle.pick || Needle.currentModel)
-                    color: modelRowTap.pressed ? Tokens.tint16
+                    color: root.crate ? "transparent"
+                        : modelRowTap.pressed ? Tokens.tint16
                         : current ? Tokens.bone
                         : modelRowHover.hovered ? Tokens.tint10 : "transparent"
-                    scale: modelRowTap.pressed && root.motionAllowed ? 0.96
+                    scale: root.crate ? 1
+                        : modelRowTap.pressed && root.motionAllowed ? 0.96
                         : modelRowHover.hovered && root.motionAllowed ? 1.015 : 1
+                    PickRow {
+                        id: modelPick
+                        objectName: "askChatModelRow"
+                        visible: root.crate
+                        anchors.left: parent.left
+                        anchors.right: parent.right
+                        title: modelRow.modelData.name || root.shortModel(modelRow.modelData.id)
+                        picked: modelRow.current
+                        onClicked: {
+                            Needle.setModel(modelRow.modelData.id);
+                            root.modelMenuOpen = false;
+                        }
+                    }
                     Behavior on scale {
                         enabled: root.motionAllowed
                         NumberAnimation { duration: Tokens.snap; easing.type: Tokens.easeSnap }
                     }
                     Text {
+                        visible: !root.crate
                         anchors.left: parent.left
                         anchors.right: parent.right
                         anchors.leftMargin: Tokens.s3 * root.s
@@ -282,6 +349,7 @@ Item {
                     HoverHandler { id: modelRowHover; cursorShape: Qt.PointingHandCursor }
                     TapHandler {
                         id: modelRowTap
+                        enabled: !root.crate
                         onTapped: {
                             Needle.setModel(modelRow.modelData.id);
                             root.modelMenuOpen = false;
@@ -389,7 +457,7 @@ Item {
                             width: 6 * root.s
                             height: width
                             radius: width / 2
-                            color: Tokens.inkDim
+                            color: root.crate ? Tokens.mark : Tokens.inkDim
                             SequentialAnimation on opacity {
                                 running: root.motionAllowed && row.live
                                 loops: Animation.Infinite
@@ -398,7 +466,14 @@ Item {
                                 onStopped: liveDot.opacity = 1
                             }
                         }
+                        TrackLabel {
+                            visible: root.crate
+                            anchors.verticalCenter: parent.verticalCenter
+                            text: row.isUser ? I18n.tr("YOU") : I18n.tr("RASHIN")
+                            tone: row.isUser ? "subtle" : "accent"
+                        }
                         Text {
+                            visible: !root.crate
                             text: row.isUser ? I18n.tr("YOU") : I18n.tr("RASHIN")
                             color: row.isUser ? Tokens.inkMuted : Tokens.inkDim
                             font.family: Tokens.mono
@@ -413,7 +488,9 @@ Item {
                         width: Math.min(parent.width * 0.78, 480 * root.s)
                         implicitHeight: userText.implicitHeight + Tokens.s3 * root.s * 2
                         radius: Tokens.radius * root.s
-                        color: Tokens.bone
+                        color: root.crate ? Tokens.tint5 : Tokens.bone
+                        border.width: root.crate ? Tokens.border : 0
+                        border.color: Tokens.line
                         TextEdit {
                             id: userText
                             anchors.left: parent.left
@@ -421,7 +498,7 @@ Item {
                             anchors.top: parent.top
                             anchors.margins: Tokens.s3 * root.s
                             text: row.body
-                            color: Tokens.inkOnBone
+                            color: root.crate ? Tokens.ink : Tokens.inkOnBone
                             font.family: Tokens.ui
                             font.pixelSize: Tokens.fSmall * root.s
                             wrapMode: TextEdit.Wrap
@@ -442,9 +519,9 @@ Item {
                                 width: 72 * root.s
                                 height: width
                                 radius: Tokens.radius * root.s
-                                color: Tokens.tint5
+                                color: root.crate ? "transparent" : Tokens.tint5
                                 border.width: Tokens.border
-                                border.color: Tokens.lineSoft
+                                border.color: root.crate ? Tokens.line : Tokens.lineSoft
                                 clip: true
                                 Image {
                                     anchors.fill: parent
@@ -464,9 +541,9 @@ Item {
                         width: parent.width
                         implicitHeight: thoughtColumn.implicitHeight + Tokens.s3 * root.s * 2
                         radius: Tokens.radius * root.s
-                        color: Tokens.tint5
+                        color: root.crate ? "transparent" : Tokens.tint5
                         border.width: Tokens.border
-                        border.color: Tokens.lineSoft
+                        border.color: root.crate ? Tokens.line : Tokens.lineSoft
                         Column {
                             id: thoughtColumn
                             anchors.left: parent.left
@@ -474,7 +551,13 @@ Item {
                             anchors.top: parent.top
                             anchors.margins: Tokens.s3 * root.s
                             spacing: Tokens.s1 * root.s
+                            TrackLabel {
+                                visible: root.crate
+                                text: row.live ? I18n.tr("Thinking…") : I18n.tr("Thought")
+                                tone: row.live ? "active" : "subtle"
+                            }
                             Text {
+                                visible: !root.crate
                                 text: row.live ? I18n.tr("Thinking…") : I18n.tr("Thought")
                                 color: row.live ? Tokens.inkDim : Tokens.inkMuted
                                 font.family: Tokens.mono
@@ -505,19 +588,21 @@ Item {
                         wrapMode: TextEdit.Wrap
                         readOnly: true
                         selectByMouse: true
-                        selectionColor: Tokens.bone
-                        selectedTextColor: Tokens.inkOnBone
+                        selectionColor: root.crate ? Tokens.mark : Tokens.bone
+                        selectedTextColor: root.crate ? Tokens.paper : Tokens.inkOnBone
                         onLinkActivated: url => Spawn.runApp(["xdg-open", url], { label: "browser" })
                     }
 
                     Rectangle {
                         visible: row.isTool
                         width: parent.width
+                        objectName: "askChatTool"
                         implicitHeight: toolColumn.implicitHeight + Tokens.s3 * root.s * 2
                         radius: Tokens.radius * root.s
-                        color: Tokens.tint5
+                        color: root.crate ? "transparent" : Tokens.tint5
                         border.width: Tokens.border
-                        border.color: row.status === "failed" ? Tokens.lineStrong : Tokens.lineSoft
+                        border.color: root.crate ? (row.status === "failed" ? Tokens.alert : Tokens.line)
+                            : row.status === "failed" ? Tokens.lineStrong : Tokens.lineSoft
                         Column {
                             id: toolColumn
                             anchors.left: parent.left
@@ -528,13 +613,22 @@ Item {
                             Row {
                                 width: parent.width
                                 spacing: Tokens.s2 * root.s
+                                Glyph {
+                                    visible: root.crate
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    name: row.tkind === "execute" ? "terminal" : row.tkind === "search" ? "search" : row.tkind === "read" ? "description" : "build"
+                                    size: 16
+                                    color: Tokens.inkSecondary
+                                }
                                 Text {
+                                    visible: !root.crate
                                     text: row.tkind === "execute" ? "terminal" : row.tkind === "search" ? "search" : row.tkind === "read" ? "description" : "build"
                                     color: row.status === "failed" ? Tokens.inkDim : Tokens.inkMuted
                                     font.family: "Material Symbols Rounded"
                                     font.pixelSize: Tokens.fBody * root.s
                                 }
                                 Text {
+                                    anchors.verticalCenter: root.crate ? parent.verticalCenter : undefined
                                     width: parent.width - 70 * root.s
                                     text: row.title.length > 0 ? row.title : row.tkind
                                     color: Tokens.ink
@@ -542,7 +636,30 @@ Item {
                                     font.pixelSize: Tokens.fSmall * root.s
                                     elide: Text.ElideRight
                                 }
+                                // under crate the call's state: a Beam while it runs, else its glyph
+                                Beam {
+                                    objectName: "askChatToolBeam"
+                                    visible: root.crate && row.output.trim().length === 0
+                                        && row.status !== "completed" && row.status !== "failed"
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    width: 40
+                                    interactive: false
+                                    indeterminate: true
+                                }
+                                Glyph {
+                                    visible: root.crate && (row.output.trim().length > 0
+                                        || row.status === "completed" || row.status === "failed")
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    name: row.output.trim().length > 0
+                                        ? (row.outputOpen ? "expand_less" : "expand_more")
+                                        : row.status === "completed" ? "check" : "error"
+                                    size: 16
+                                    color: row.status === "failed" ? Tokens.alert
+                                        : row.status === "completed" && row.output.trim().length === 0 ? Tokens.mark
+                                        : Tokens.inkSecondary
+                                }
                                 Text {
+                                    visible: !root.crate
                                     text: row.output.trim().length > 0
                                         ? (row.outputOpen ? "expand_less" : "expand_more")
                                         : row.status === "completed" ? "check" : row.status === "failed" ? "error" : "progress_activity"
@@ -582,9 +699,9 @@ Item {
                         width: parent.width
                         implicitHeight: permissionColumn.implicitHeight + Tokens.s3 * root.s * 2
                         radius: Tokens.radius * root.s
-                        color: Tokens.tint10
+                        color: root.crate ? "transparent" : Tokens.tint10
                         border.width: Tokens.border
-                        border.color: Tokens.lineStrong
+                        border.color: root.crate ? Tokens.mark : Tokens.lineStrong
                         Column {
                             id: permissionColumn
                             anchors.left: parent.left
@@ -592,7 +709,13 @@ Item {
                             anchors.top: parent.top
                             anchors.margins: Tokens.s3 * root.s
                             spacing: Tokens.s2 * root.s
+                            TrackLabel {
+                                visible: root.crate
+                                text: I18n.tr("Needs your approval")
+                                tone: "active"
+                            }
                             Text {
+                                visible: !root.crate
                                 text: I18n.tr("Needs your approval")
                                 color: Tokens.inkMuted
                                 font.family: Tokens.mono
@@ -615,15 +738,27 @@ Item {
                                     delegate: Rectangle {
                                         id: permissionChoice
                                         required property var modelData
-                                        width: permissionLabel.implicitWidth + Tokens.s4 * root.s
-                                        height: Tokens.ctlH * root.s
+                                        width: root.crate ? permissionBtn.implicitWidth : permissionLabel.implicitWidth + Tokens.s4 * root.s
+                                        height: root.crate ? permissionBtn.implicitHeight : Tokens.ctlH * root.s
                                         radius: Tokens.radius * root.s
-                                        color: permissionTap.pressed ? Tokens.tint16
+                                        color: root.crate ? "transparent"
+                                            : permissionTap.pressed ? Tokens.tint16
                                             : permissionHover.hovered ? Tokens.tint10 : Tokens.tint5
-                                        border.width: Tokens.border
+                                        border.width: root.crate ? 0 : Tokens.border
                                         border.color: Tokens.lineStrong
+                                        Btn {
+                                            id: permissionBtn
+                                            objectName: "askChatPermission"
+                                            visible: root.crate
+                                            anchors.fill: parent
+                                            compact: true
+                                            primary: String(permissionChoice.modelData.kind || "") === "allow_once"
+                                            text: permissionLabel.text
+                                            onAct: Needle.answerPermission(row.permission.requestId, permissionChoice.modelData.id)
+                                        }
                                         Text {
                                             id: permissionLabel
+                                            visible: !root.crate
                                             anchors.centerIn: parent
                                             text: String(permissionChoice.modelData.name || permissionChoice.modelData.id || I18n.tr("Decline"))
                                             color: Tokens.ink
@@ -631,7 +766,7 @@ Item {
                                             font.pixelSize: Tokens.fTiny * root.s
                                         }
                                         HoverHandler { id: permissionHover; cursorShape: Qt.PointingHandCursor }
-                                        TapHandler { id: permissionTap; onTapped: Needle.answerPermission(row.permission.requestId, permissionChoice.modelData.id) }
+                                        TapHandler { id: permissionTap; enabled: !root.crate; onTapped: Needle.answerPermission(row.permission.requestId, permissionChoice.modelData.id) }
                                     }
                                 }
                             }
@@ -651,9 +786,9 @@ Item {
                         width: transcript.width
                         implicitHeight: standaloneColumn.implicitHeight + Tokens.s3 * root.s * 2
                         radius: Tokens.radius * root.s
-                        color: Tokens.tint10
+                        color: root.crate ? "transparent" : Tokens.tint10
                         border.width: Tokens.border
-                        border.color: Tokens.lineStrong
+                        border.color: root.crate ? Tokens.mark : Tokens.lineStrong
                         Column {
                             id: standaloneColumn
                             anchors.left: parent.left
@@ -661,7 +796,13 @@ Item {
                             anchors.top: parent.top
                             anchors.margins: Tokens.s3 * root.s
                             spacing: Tokens.s2 * root.s
+                            TrackLabel {
+                                visible: root.crate
+                                text: I18n.tr("Needs your approval")
+                                tone: "active"
+                            }
                             Text {
+                                visible: !root.crate
                                 text: I18n.tr("Needs your approval")
                                 color: Tokens.inkMuted
                                 font.family: Tokens.mono
@@ -675,13 +816,24 @@ Item {
                                     delegate: Rectangle {
                                         id: standaloneChoice
                                         required property var modelData
-                                        width: standaloneLabel.implicitWidth + Tokens.s4 * root.s
-                                        height: Tokens.ctlH * root.s
+                                        width: root.crate ? standaloneBtn.implicitWidth : standaloneLabel.implicitWidth + Tokens.s4 * root.s
+                                        height: root.crate ? standaloneBtn.implicitHeight : Tokens.ctlH * root.s
                                         radius: Tokens.radius * root.s
-                                        color: standaloneTap.pressed ? Tokens.tint16
+                                        color: root.crate ? "transparent"
+                                            : standaloneTap.pressed ? Tokens.tint16
                                             : standaloneHover.hovered ? Tokens.tint10 : Tokens.tint5
+                                        Btn {
+                                            id: standaloneBtn
+                                            visible: root.crate
+                                            anchors.fill: parent
+                                            compact: true
+                                            primary: String(standaloneChoice.modelData.kind || "") === "allow_once"
+                                            text: standaloneLabel.text
+                                            onAct: Needle.answerPermission(standalone.modelData.requestId, standaloneChoice.modelData.id)
+                                        }
                                         Text {
                                             id: standaloneLabel
+                                            visible: !root.crate
                                             anchors.centerIn: parent
                                             text: String(standaloneChoice.modelData.name || standaloneChoice.modelData.id || I18n.tr("Decline"))
                                             color: Tokens.ink
@@ -689,7 +841,7 @@ Item {
                                             font.pixelSize: Tokens.fTiny * root.s
                                         }
                                         HoverHandler { id: standaloneHover; cursorShape: Qt.PointingHandCursor }
-                                        TapHandler { id: standaloneTap; onTapped: Needle.answerPermission(standalone.modelData.requestId, standaloneChoice.modelData.id) }
+                                        TapHandler { id: standaloneTap; enabled: !root.crate; onTapped: Needle.answerPermission(standalone.modelData.requestId, standaloneChoice.modelData.id) }
                                     }
                                 }
                             }
@@ -720,6 +872,16 @@ Item {
                     onStopped: workingLabel.opacity = 1
                 }
             }
+            Beam {
+                objectName: "askChatWorkBeam"
+                visible: root.crate && Needle.busy
+                anchors.left: workingLabel.right
+                anchors.leftMargin: Tokens.s3 * root.s
+                anchors.right: parent.right
+                anchors.verticalCenter: parent.verticalCenter
+                interactive: false
+                indeterminate: true
+            }
         }
 
         Rectangle {
@@ -728,21 +890,22 @@ Item {
             height: root.showComposer ? 44 * root.s : 0
             visible: root.showComposer
             radius: Tokens.radius * root.s
-            color: Tokens.paperLift
+            color: root.crate ? "transparent" : Tokens.paperLift
             border.width: Tokens.border
-            border.color: composer.activeFocus ? Tokens.lineStrong : Tokens.line
+            border.color: root.crate ? (composer.activeFocus ? Tokens.markHover : Tokens.line)
+                : composer.activeFocus ? Tokens.lineStrong : Tokens.line
 
             TextInput {
                 id: composer
                 anchors.left: parent.left
-                anchors.right: sendButton.left
+                anchors.right: root.crate ? sendIcon.left : sendButton.left
                 anchors.leftMargin: Tokens.s3 * root.s
                 anchors.rightMargin: Tokens.s2 * root.s
                 anchors.verticalCenter: parent.verticalCenter
                 text: root.draft
                 color: Tokens.ink
-                selectionColor: Tokens.bone
-                selectedTextColor: Tokens.inkOnBone
+                selectionColor: root.crate ? Tokens.mark : Tokens.bone
+                selectedTextColor: root.crate ? Tokens.paper : Tokens.inkOnBone
                 font.family: Tokens.ui
                 font.pixelSize: Tokens.fBody * root.s
                 selectByMouse: true
@@ -773,8 +936,21 @@ Item {
                 font.family: Tokens.ui
                 font.pixelSize: Tokens.fBody * root.s
             }
+            IconButton {
+                id: sendIcon
+                objectName: "askChatSend"
+                visible: root.crate
+                anchors.right: parent.right
+                anchors.verticalCenter: parent.verticalCenter
+                width: 36
+                height: 36
+                glyph: Needle.busy ? "stop" : "arrow_upward"
+                on: !Needle.busy && composer.text.trim().length > 0
+                onClicked: Needle.busy ? Needle.cancel() : root.send()
+            }
             Rectangle {
                 id: sendButton
+                visible: !root.crate
                 anchors.right: parent.right
                 anchors.rightMargin: Tokens.s2 * root.s
                 anchors.verticalCenter: parent.verticalCenter
