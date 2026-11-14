@@ -7,12 +7,14 @@ import inir.modules.iris.style
 import inir.modules.iris.dock as ShimaDock
 
 // The Shima dock, standing alone as it does under the QS Bar, in both looks.
-// Under crate its body, its name label and its menu are the one glass with a
-// 1 px line at the shared corner, its hover plates take that corner and the ink
-// hover wash, its running marks take the mark, its separator the line, and the
-// app menu and the windows sheet draw kit captions, Solar glyphs, kit
+// Under crate the dock itself has no panel: no body fill or line, no plate
+// behind an icon (lit or not) and no separator line, only the app icons (with a
+// soft shadow for any wallpaper) and their running marks in the mark. Its name
+// label and its menu are the one glass with a 1 px line at the shared corner,
+// and the app menu and the windows sheet draw kit captions, Solar glyphs, kit
 // IconButtons and the pick wash and edge on the focused window. Stock keeps
-// every iRiS role it had: no glass of its own, the body left to a chassis.
+// every iRiS role it had: its hover plates and separator, the body left to a
+// chassis.
 ShellRoot {
     id: probe
     property string look: "crate"
@@ -39,6 +41,18 @@ ShellRoot {
         if (!item) return out;
         if (item.objectName === name) out.push(item);
         for (const child of item.children) all(child, name, out);
+        return out;
+    }
+    // Everything under the dock body that paints a fill or a line, except the
+    // running marks and the badge (which carry the mark): under crate, nothing.
+    function paint(item, out) {
+        if (!item || !item.visible || item.width <= 0 || item.height <= 0) return out;
+        const name = item.objectName;
+        if (name === "shimaRunMark" || name === "shimaCrateBadge") return out;
+        const fills = item.color !== undefined && item.border !== undefined
+            && (item.color.a > 0.001 || (item.border.width > 0 && item.border.color.a > 0.001));
+        if (fills) out.push((name || String(item)) + " " + item.color);
+        for (const child of item.children) paint(child, out);
         return out;
     }
     function shown(item) {
@@ -85,25 +99,34 @@ ShellRoot {
 
     function verifyBar(crate) {
         check(dock.crate === crate, "the dock's crate switch follows the theme");
-        const glass = find(dock, "shimaDockGlass");
-        check(glass !== null, "the dock body has a glass layer");
-        check(glass.visible === crate, "the dock draws its own glass only under crate");
+        const body = find(dock, "shimaDockBody");
+        check(body !== null, "the dock body is found");
         if (crate) {
-            check(same(glass.color, Tokens.glass), "the dock body is the one glass");
-            check(glass.border.width === 1 && same(glass.border.color, Tokens.line), "the dock body's 1 px line");
-            check(glass.radius === Tokens.radius, "the dock body's corner, got " + glass.radius);
+            const fills = paint(body, []);
+            check(fills.length === 0, "nothing fills or lines the dock under crate: " + fills.join(", "));
         }
 
         const plates = all(dock, "shimaHoverPlate");
         check(plates.length >= 4, "a hover plate per slot, got " + plates.length);
         for (const plate of plates) {
-            check(plate.radius === (crate ? Tokens.radius : IrisStyle.iconRadius(plate.width)), "a hover plate's corner, got " + plate.radius);
-            check(plate.color.a === 0, "a hover plate rests clear");
+            plate.lit = true;
+            if (!shown(plate.parent)) continue;
+            check(crate ? !plate.visible : plate.visible && plate.radius === IrisStyle.iconRadius(plate.width),
+                "a lit hover plate shows only in stock");
         }
+        for (const plate of plates) plate.lit = false;
 
         const sep = find(dock, "shimaSeparator");
-        check(sep !== null, "the launcher separator is drawn");
-        check(same(sep.color, crate ? Tokens.line : IrisStyle.borderStrong), "the separator's ink");
+        check(sep !== null, "the launcher separator is found");
+        check(crate ? !sep.visible : same(sep.color, IrisStyle.borderStrong), "the separator line shows only in stock");
+
+        const icons = all(dock, "shimaAppIcon");
+        check(icons.length >= 3, "an icon per pinned app, got " + icons.length);
+        const shaders = dock.GraphicsInfo.api !== GraphicsInfo.Software;
+        check(dock.floatShadows === (crate && shaders), "the float shadow follows crate and a shader-capable scene graph");
+        for (const icon of icons)
+            check(icon.layer.enabled === dock.floatShadows, "an app icon casts its soft shadow only under crate");
+        check(dock.iconShadow.a <= 0.45, "the icon shadow stays under the blur rule's ignore_alpha");
 
         const marks = all(dock, "shimaRunMark").filter(shown);
         check(marks.length === 3, "a mark per running window, got " + marks.length);
@@ -146,7 +169,7 @@ ShellRoot {
         check(same(menu.color, crate ? Tokens.glass : IrisStyle.bodySurface), "the menu body's fill");
         if (crate) {
             check(menu.radius === Tokens.radius && menu.material === "solid", "the menu is a solid glass at the shared corner");
-            const top = find(dock, "shimaDockGlass").mapToItem(menu.parent, 0, 0).y;
+            const top = find(dock, "shimaDockBody").mapToItem(menu.parent, 0, 0).y;
             check(menu.y + menu.height <= top - Tokens.s2 + 0.5, "the menu's glass stands clear of the dock's by the kit gap");
         }
         const edge = find(dock, "shimaMenuEdge");

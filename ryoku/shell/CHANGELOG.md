@@ -1,6 +1,17 @@
 # Changelog: ryoku/shell/
 
 ## Unreleased
+- **The Shima dock floats without a panel under crate.** The dock no longer
+  draws a body (no glass, no line), a plate behind each icon or a separator
+  line: the app icons and their running marks float on the wallpaper with a soft
+  shadow in the palette's darker tone, and hover lifts the icon instead of
+  lighting a plate (press still scales it). The name label, the app menu and the
+  windows sheet stay the glass. The `ryoku-dock-shima` layer now has its own
+  crate-glass rule that ignores alpha under 0.5, so it frosts the label and the
+  menu but never the empty dock area or a halo around an icon. The stock look and
+  the iRiS bar are unchanged (`inir/modules/iris/dock/IrisDock.qml`,
+  `hyprland/modules/decoration.lua`; `tests/ui/shima-dock-kit-probe.sh`,
+  `tests/hyprland-crate-glass.lua`, `tests/visual/surfaces/scenes/shima-dock.qml`).
 - **Every QS Bar panel is the one glass under crate.** The panels painted the
   bar's own fill, so with the bar's frost off they took its 94 % opacity and
   read more opaque than Controls (Super+Esc). Under crate a panel's body, its

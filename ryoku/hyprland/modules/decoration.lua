@@ -140,8 +140,7 @@ hl.layer_rule({
 
 -- Crate for Ryoku's glass: under a theme style with controls "crate", every
 -- floating shell surface (the bar and the panels it grows, Controls, the OSD,
--- notifications, the clipboard, the frame's prompts and menus, the docks (the
--- Shima dock's body, label and menu in its full-output ryoku-dock-shima layer), the
+-- notifications, the clipboard, the frame's prompts and menus, the docks, the
 -- desktop menu, the first-boot Kit hint, a pin's action strip, the hero
 -- launcher's card and the window rail under it, the Stage editor's toolbar,
 -- catalogue panel and menus) is the panel grey at 68 %
@@ -159,7 +158,7 @@ end
 if crate_glass() then
   hl.layer_rule({
     name         = "crate-glass-blur",
-    match        = { namespace = "^(quickshell|ryoku-sidebar-left|ryoku-osd|ryoku-notifications|ryoku-frame|clipboard|qs-dock|ryoku-dock-shima|dockappmenu|ryoku-dock-menu|ryoku-desktop-menu|ryoku-dialog|ryoku-keys-hint|ryopin|launcher|launcher-window-rail)$" },
+    match        = { namespace = "^(quickshell|ryoku-sidebar-left|ryoku-osd|ryoku-notifications|ryoku-frame|clipboard|qs-dock|dockappmenu|ryoku-dock-menu|ryoku-desktop-menu|ryoku-dialog|ryoku-keys-hint|ryopin|launcher|launcher-window-rail)$" },
     blur         = not no_blur,
     ignore_alpha = 0.05,
   })
@@ -185,6 +184,18 @@ if crate_glass() then
     match        = { namespace = "^ryoku-(volume|network|bluetooth|battery|brightness|cpu|gpu|memory|thermals|storage|ai-usage|power-profile|workspace|tray|traymenu|tray-menu|mpris|dashboard|plugin-panel|control|ask|ask-bubble|image-carousel|image-carousel-hs|image-carousel-cr|media-browser|media-browser-hs|media-carousel)$" },
     blur         = not no_blur,
     ignore_alpha = 0.05,
+  })
+  -- The Shima dock's full-output layer (ryoku-dock-shima) has no panel under
+  -- crate: its icons float with a soft shadow that peaks under 45 %, and only
+  -- its name label and app menu are the glass (68 %). ignore_alpha between the
+  -- two frosts the label and the menu and never the empty dock area or a halo
+  -- around an icon (the icons themselves are opaque, so blur under them is never
+  -- seen).
+  hl.layer_rule({
+    name         = "crate-glass-blur-dock-shima",
+    match        = { namespace = "^ryoku-dock-shima$" },
+    blur         = not no_blur,
+    ignore_alpha = 0.5,
   })
   -- The Game Bar is one full-output overlay over a game: its strip and cards are
   -- the glass, and while the bar is open a black scrim dims the rest (Hub ->
