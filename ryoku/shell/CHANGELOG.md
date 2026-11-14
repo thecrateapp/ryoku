@@ -1,6 +1,11 @@
 # Changelog: ryoku/shell/
 
 ## Unreleased
+- **The kit button has a danger form.** A `Btn` with `danger` set fills, under
+  crate, with the theme's error role and writes its label in the ink on that
+  role, over primary and outline; disarmed it is a plain button. Every other
+  button, and the stock look, draws as before (`ui/Btn.qml`;
+  `tests/ui/btn-danger-probe.sh`).
 - **The Game Bar draws every icon from Solar under crate.** Its capture,
   performance, tasks, gallery, lyrics and grid icons, the headset and muted
   headphones, and the card grip are kit glyphs; only Discord keeps its mark.
