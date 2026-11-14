@@ -1,6 +1,13 @@
 # Changelog: ryoku/shell/
 
 ## Unreleased
+- **A notification with no image or icon shows a kit glyph under crate.** With
+  notification images on, a card whose app sent neither an image nor an icon
+  drew the Material bell or exclamation mark; under crate it now draws the
+  kit's Solar bell, or danger-circle in the mark for a critical card, like the
+  card's other glyphs. The stock look is unchanged
+  (`quickshell/shell/modules/notifications/NotificationCard.qml`;
+  `tests/ui/notification-glyph-probe.sh`).
 - **Pinned shots draw with the shared kit under crate.** A pin's image sits on
   an opaque card with the shared 6 px corner and a 1 px line, without the drop
   shadow. Its actions (edit, copy, copy path, close) are the kit's icon buttons
