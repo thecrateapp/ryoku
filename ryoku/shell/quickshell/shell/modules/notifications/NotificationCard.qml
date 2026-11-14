@@ -341,9 +341,21 @@ Rectangle {
                 visible: thumbnail.useIcon
             }
 
-            MaterialIcon {
+            // crate: the kit's Solar bell (danger-circle when critical), the
+            // critical one in the mark like the card's frame
+            Kit.Glyph {
+                objectName: "notifFallbackGlyph"
                 anchors.centerIn: parent
-                visible: thumbnail.useGlyph
+                visible: thumbnail.useGlyph && card.crate
+                name: card.critical ? "danger-circle" : "bell"
+                size: 24 * card.us
+                color: card.critical ? Ui.Tokens.mark : Ui.Tokens.inkSecondary
+            }
+
+            MaterialIcon {
+                objectName: "notifFallbackMaterial"
+                anchors.centerIn: parent
+                visible: thumbnail.useGlyph && !card.crate
                 text: card.n().urgency === 2 ? "priority_high" : "notifications"
                 font.pixelSize: Theme.iconLg * card.us
                 color: Theme.onSurfaceVariant
