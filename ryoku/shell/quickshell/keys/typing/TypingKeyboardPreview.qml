@@ -6,6 +6,7 @@ import Ryoku.Ui
 import Ryoku.Ui.Singletons
 import "."
 import "TypingFingers.js" as Fingers
+import ".."
 
 Item {
     id: preview
@@ -133,12 +134,12 @@ Item {
             delegate: Row {
                 required property var modelData
                 spacing: Tokens.s1
-                Text {
+                Caption {
                     text: parent.modelData.label
-                    color: Tokens.inkMuted
-                    font.family: Tokens.mono
-                    font.pixelSize: Tokens.fTiny
-                    font.letterSpacing: Tokens.trackLabel
+                    stockColor: Tokens.inkMuted
+                    stockFamily: Tokens.mono
+                    stockSize: Tokens.fTiny
+                    stockSpacing: Tokens.trackLabel
                     anchors.verticalCenter: parent.verticalCenter
                 }
                 Repeater {

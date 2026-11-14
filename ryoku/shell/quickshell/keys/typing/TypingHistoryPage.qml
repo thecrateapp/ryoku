@@ -4,6 +4,7 @@ import QtQuick
 import QtQuick.Layouts
 import Ryoku.Ui
 import Ryoku.Ui.Singletons
+import ".."
 
 Item {
     id: history
@@ -39,7 +40,7 @@ Item {
                 delegate: ColumnLayout {
                     required property var modelData
                     spacing: 0
-                    Text { text: parent.modelData.label; color: Tokens.inkMuted; font.family: Tokens.mono; font.pixelSize: Tokens.fTiny; font.letterSpacing: Tokens.trackLabel }
+                    Caption { text: parent.modelData.label; stockColor: Tokens.inkMuted; stockFamily: Tokens.mono; stockSize: Tokens.fTiny; stockSpacing: Tokens.trackLabel }
                     Text { text: String(parent.modelData.value); color: Tokens.ink; font.family: Tokens.mono; font.pixelSize: Tokens.fValue }
                 }
             }

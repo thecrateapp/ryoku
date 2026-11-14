@@ -20,13 +20,19 @@ Rectangle {
         }
     }
 
+    readonly property bool crate: Tokens.controlsCrate
+
     implicitHeight: Tokens.cellH + Tokens.s5
     radius: Tokens.radius
+    // under crate a flat tile on the 1 px hairline of the opaque pane: no plate
+    // of its own, the mark's hover edge, the mark when focused
     color: tap.pressed && armed ? Tokens.tint16
-        : hover.hovered && armed ? Tokens.tint10 : Tokens.paperLift
+        : hover.hovered && armed ? (root.crate ? Tokens.tint5 : Tokens.tint10)
+        : (root.crate ? "transparent" : Tokens.paperLift)
     border.width: Tokens.border
-    border.color: activeFocus ? Tokens.bone
-        : hover.hovered && armed ? Tokens.lineStrong : Tokens.lineSoft
+    border.color: activeFocus ? (root.crate ? Tokens.mark : Tokens.bone)
+        : hover.hovered && armed ? (root.crate ? Tokens.markHover : Tokens.lineStrong)
+        : (root.crate ? Tokens.line : Tokens.lineSoft)
     opacity: armed ? 1 : 0.58
     scale: tap.pressed && armed ? 0.985
         : hover.hovered && armed ? 1.008 : 1

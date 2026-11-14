@@ -79,8 +79,21 @@ Item {
         spacing: Tokens.s1
         visible: root.option.type === "choice"
 
+        // under crate each choice is the kit's Chip, filled with the mark when on
         Repeater {
-            model: root.option.choices ?? []
+            model: Tokens.controlsCrate ? (root.option.choices ?? []) : []
+            delegate: Chip {
+                id: kitChoice
+                objectName: "toolChoiceChip"
+                required property var modelData
+                text: String(kitChoice.modelData.label ?? kitChoice.modelData.value)
+                on: String(root.value) === String(kitChoice.modelData.value)
+                onClicked: root.changed(kitChoice.modelData.value)
+            }
+        }
+
+        Repeater {
+            model: Tokens.controlsCrate ? [] : (root.option.choices ?? [])
             delegate: Rectangle {
                 id: choice
                 required property var modelData

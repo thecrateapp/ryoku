@@ -3,6 +3,7 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import "."
 import Ryoku.Ui.Singletons
+import ".."
 
 Item {
     id: tab
@@ -50,13 +51,13 @@ Item {
         Column {
             anchors.centerIn: parent
             spacing: Tokens.s2
-            Text {
+            Caption {
                 anchors.horizontalCenter: parent.horizontalCenter
                 text: I18n.tr("PREPARING TEST")
-                color: Tokens.inkDim
-                font.family: Tokens.mono
-                font.pixelSize: Tokens.fMicro
-                font.letterSpacing: Tokens.trackLabel
+                stockColor: Tokens.inkDim
+                stockFamily: Tokens.mono
+                stockSize: Tokens.fMicro
+                stockSpacing: Tokens.trackLabel
             }
             Text {
                 anchors.horizontalCenter: parent.horizontalCenter

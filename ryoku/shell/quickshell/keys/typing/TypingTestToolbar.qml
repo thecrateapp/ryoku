@@ -1,6 +1,7 @@
 pragma ComponentBehavior: Bound
 
 import QtQuick
+import Ryoku.Ui
 import Ryoku.Ui.Singletons
 
 Flow {
@@ -11,46 +12,68 @@ Flow {
     signal refocus()
     spacing: Tokens.s2
 
-    component ToggleChip: Rectangle {
-        id: chip
+    // one option: the stock plate, or the kit's Chip under crate
+    component ToggleChip: Item {
+        id: toggle
         required property string label
         required property bool selected
         signal chosen()
-        width: chipLabel.implicitWidth + 20
-        height: 26
-        radius: Tokens.radius
-        color: selected ? Tokens.bone : (tap.pressed ? Tokens.tint16 : (hover.hovered ? Tokens.tint10 : "transparent"))
-        border.width: Tokens.border
-        border.color: selected ? Tokens.bone : (hover.hovered ? Tokens.lineStrong : Tokens.line)
-        opacity: toolbar.locked ? 0.45 : 1
-        scale: tap.pressed ? 0.96 : (hover.hovered ? 1.025 : 1)
-        Behavior on color {
-            enabled: !Tokens.reduceMotion
-            ColorAnimation { duration: Tokens.snap }
+        readonly property bool crate: Tokens.controlsCrate
+        width: toggle.crate ? kitChip.implicitWidth : chip.width
+        height: toggle.crate ? kitChip.implicitHeight : chip.height
+
+        Chip {
+            id: kitChip
+            objectName: "typingChip"
+            visible: toggle.crate
+            anchors.fill: parent
+            text: toggle.label
+            on: toggle.selected
+            enabled: !toolbar.locked
+            onClicked: toggle.chosen()
         }
-        Behavior on border.color {
-            enabled: !Tokens.reduceMotion
-            ColorAnimation { duration: Tokens.snap }
+
+        Rectangle {
+            id: chip
+            visible: !toggle.crate
+            readonly property string label: toggle.label
+            readonly property bool selected: toggle.selected
+            width: chipLabel.implicitWidth + 20
+            height: 26
+            radius: Tokens.radius
+            color: selected ? Tokens.bone : (tap.pressed ? Tokens.tint16 : (hover.hovered ? Tokens.tint10 : "transparent"))
+            border.width: Tokens.border
+            border.color: selected ? Tokens.bone : (hover.hovered ? Tokens.lineStrong : Tokens.line)
+            opacity: toolbar.locked ? 0.45 : 1
+            scale: tap.pressed ? 0.96 : (hover.hovered ? 1.025 : 1)
+            Behavior on color {
+                enabled: !Tokens.reduceMotion
+                ColorAnimation { duration: Tokens.snap }
+            }
+            Behavior on border.color {
+                enabled: !Tokens.reduceMotion
+                ColorAnimation { duration: Tokens.snap }
+            }
+            Behavior on scale {
+                enabled: !Tokens.reduceMotion
+                NumberAnimation { duration: Tokens.snap; easing.type: Easing.OutCubic }
+            }
+            Behavior on opacity {
+                enabled: !Tokens.reduceMotion
+                NumberAnimation { duration: Tokens.snap; easing.type: Easing.OutCubic }
+            }
+            Text {
+                id: chipLabel
+                anchors.centerIn: parent
+                text: chip.label
+                color: chip.selected ? Tokens.inkOnBone : Tokens.inkDim
+                font.family: Tokens.ui
+                font.pixelSize: Tokens.fMicro
+                font.weight: Font.Medium
+            }
+            HoverHandler { id: hover; enabled: !toolbar.locked; cursorShape: Qt.PointingHandCursor }
+            TapHandler { id: tap; enabled: !toolbar.locked; onTapped: toggle.chosen() }
         }
-        Behavior on scale {
-            enabled: !Tokens.reduceMotion
-            NumberAnimation { duration: Tokens.snap; easing.type: Easing.OutCubic }
-        }
-        Behavior on opacity {
-            enabled: !Tokens.reduceMotion
-            NumberAnimation { duration: Tokens.snap; easing.type: Easing.OutCubic }
-        }
-        Text {
-            id: chipLabel
-            anchors.centerIn: parent
-            text: chip.label
-            color: chip.selected ? Tokens.inkOnBone : Tokens.inkDim
-            font.family: Tokens.ui
-            font.pixelSize: Tokens.fMicro
-            font.weight: Font.Medium
-        }
-        HoverHandler { id: hover; enabled: !toolbar.locked; cursorShape: Qt.PointingHandCursor }
-        TapHandler { id: tap; enabled: !toolbar.locked; onTapped: chip.chosen() }
     }
 
     ToggleChip {

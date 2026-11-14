@@ -206,15 +206,37 @@ Item {
                         anchors.verticalCenter: parent.verticalCenter
                         spacing: Tokens.s1
                         IconBtn {
+                            visible: !Tokens.controlsCrate
                             glyph: contact.modelData.favorite === true ? "★" : "☆"
                             Accessible.name: I18n.tr("Favourite contact")
                             onAct: root.client.call("favoriteContact", [String(contact.modelData.id || ""), contact.modelData.favorite === true ? "false" : "true"])
                         }
                         IconBtn {
+                            visible: !Tokens.controlsCrate
                             glyph: "⧉"
                             armed: contact.currentNumber.length > 0
                             Accessible.name: I18n.tr("Copy number")
                             onAct: Quickshell.clipboardText = contact.currentNumber
+                        }
+                        // under crate the kit's icon buttons: a favourite is on
+                        IconButton {
+                            objectName: "phoneFavouriteButton"
+                            visible: Tokens.controlsCrate
+                            anchors.verticalCenter: parent.verticalCenter
+                            glyph: "star"
+                            iconSize: 16
+                            on: contact.modelData.favorite === true
+                            Accessible.name: I18n.tr("Favourite contact")
+                            onClicked: root.client.call("favoriteContact", [String(contact.modelData.id || ""), contact.modelData.favorite === true ? "false" : "true"])
+                        }
+                        IconButton {
+                            visible: Tokens.controlsCrate
+                            anchors.verticalCenter: parent.verticalCenter
+                            glyph: "content_copy"
+                            iconSize: 16
+                            enabled: contact.currentNumber.length > 0
+                            Accessible.name: I18n.tr("Copy number")
+                            onClicked: Quickshell.clipboardText = contact.currentNumber
                         }
                         Btn {
                             compact: true

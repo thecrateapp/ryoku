@@ -28,14 +28,17 @@ Item {
 
         Rectangle {
             id: disc
+            objectName: "phoneStepDisc"
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.top: parent.top
             width: Tokens.s6
             height: width
             radius: width / 2
-            color: root.current || root.done ? Tokens.bone : "transparent"
+            // under crate a reached step fills with the mark, as a chip that is on
+            color: root.current || root.done ? (Tokens.controlsCrate ? Tokens.mark : Tokens.bone) : "transparent"
             border.width: Tokens.border
-            border.color: root.current || root.done ? Tokens.bone : Tokens.lineStrong
+            border.color: root.current || root.done ? (Tokens.controlsCrate ? Tokens.mark : Tokens.bone)
+                : (Tokens.controlsCrate ? Tokens.line : Tokens.lineStrong)
             scale: root.current ? 1 : 0.9
             Behavior on color {
                 enabled: !Tokens.reduceMotion
@@ -48,7 +51,7 @@ Item {
             Text {
                 anchors.centerIn: parent
                 text: root.done ? "✓" : String(root.step)
-                color: root.current || root.done ? Tokens.inkOnBone : Tokens.inkMuted
+                color: root.current || root.done ? (Tokens.controlsCrate ? Tokens.paper : Tokens.inkOnBone) : Tokens.inkMuted
                 font.family: Tokens.mono
                 font.pixelSize: Tokens.fSmall
                 font.weight: Font.DemiBold

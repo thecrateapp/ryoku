@@ -171,13 +171,15 @@ Item {
                             width: Tokens.s6
                             height: width
                             radius: width / 2
-                            color: root.adb.state === "device" ? Tokens.bone : "transparent"
+                            // under crate a reached step fills with the mark
+                            color: root.adb.state === "device" ? (Tokens.controlsCrate ? Tokens.mark : Tokens.bone) : "transparent"
                             border.width: Tokens.border
-                            border.color: root.adb.state === "device" ? Tokens.bone : Tokens.lineStrong
+                            border.color: root.adb.state === "device" ? (Tokens.controlsCrate ? Tokens.mark : Tokens.bone)
+                                : (Tokens.controlsCrate ? Tokens.line : Tokens.lineStrong)
                             Text {
                                 anchors.centerIn: parent
                                 text: root.adb.state === "device" ? "✓" : "3"
-                                color: root.adb.state === "device" ? Tokens.inkOnBone : Tokens.inkDim
+                                color: root.adb.state === "device" ? (Tokens.controlsCrate ? Tokens.paper : Tokens.inkOnBone) : Tokens.inkDim
                                 font.family: Tokens.mono
                                 font.pixelSize: Tokens.fSmall
                             }

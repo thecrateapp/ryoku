@@ -215,7 +215,20 @@ Item {
                         }
                     }
 
+                    // under crate the kit's icon button: a favourite is on
+                    IconButton {
+                        objectName: "phoneFavouriteButton"
+                        visible: Tokens.controlsCrate
+                        anchors.top: parent.top
+                        anchors.right: parent.right
+                        glyph: "star"
+                        iconSize: 16
+                        on: appCell.modelData.favorite === true
+                        Accessible.name: I18n.tr("Favourite app")
+                        onClicked: root.client.call("favoriteApp", [String(appCell.modelData.package || ""), appCell.modelData.favorite === true ? "false" : "true"])
+                    }
                     IconBtn {
+                        visible: !Tokens.controlsCrate
                         anchors.top: parent.top
                         anchors.right: parent.right
                         anchors.margins: Tokens.s1
@@ -231,13 +244,14 @@ Item {
                         anchors.margins: Tokens.s2
                         width: runningText.implicitWidth + Tokens.s2
                         height: Tokens.s5
-                        radius: height / 2
-                        color: Tokens.bone
+                        // under crate a straight tag filled with the mark
+                        radius: Tokens.controlsCrate ? Tokens.radius : height / 2
+                        color: Tokens.controlsCrate ? Tokens.mark : Tokens.bone
                         Text {
                             id: runningText
                             anchors.centerIn: parent
                             text: I18n.tr("RUNNING")
-                            color: Tokens.inkOnBone
+                            color: Tokens.controlsCrate ? Tokens.paper : Tokens.inkOnBone
                             font.family: Tokens.mono
                             font.pixelSize: Tokens.fTiny
                             font.letterSpacing: Tokens.trackLabel

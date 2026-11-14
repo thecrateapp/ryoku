@@ -4,6 +4,7 @@ import QtQuick
 import QtQuick.Layouts
 import Ryoku.Ui
 import Ryoku.Ui.Singletons
+import ".."
 
 Item {
     id: root
@@ -107,12 +108,13 @@ Item {
                     Layout.fillWidth: true
                     spacing: Tokens.s1
 
-                    Text {
+                    Caption {
                         text: root.mode === "edit" ? I18n.tr("EDIT COMMAND") : I18n.tr("NEW COMMAND")
-                        color: Tokens.ink
-                        font.family: Tokens.mono
-                        font.pixelSize: Tokens.fMicro
-                        font.letterSpacing: Tokens.trackMark
+                        tone: "accent"
+                        stockColor: Tokens.ink
+                        stockFamily: Tokens.mono
+                        stockSize: Tokens.fMicro
+                        stockSpacing: Tokens.trackMark
                     }
 
                     Text {
@@ -149,12 +151,12 @@ Item {
                 Layout.fillWidth: true
                 spacing: Tokens.s2
 
-                Text {
+                Caption {
                     text: I18n.tr("NAME")
-                    color: Tokens.inkFaint
-                    font.family: Tokens.mono
-                    font.pixelSize: Tokens.fTiny
-                    font.letterSpacing: Tokens.trackLabel
+                    stockColor: Tokens.inkFaint
+                    stockFamily: Tokens.mono
+                    stockSize: Tokens.fTiny
+                    stockSpacing: Tokens.trackLabel
                 }
                 Field {
                     id: nameField
@@ -168,12 +170,12 @@ Item {
                 Layout.fillWidth: true
                 spacing: Tokens.s2
 
-                Text {
+                Caption {
                     text: I18n.tr("COMMAND")
-                    color: Tokens.inkFaint
-                    font.family: Tokens.mono
-                    font.pixelSize: Tokens.fTiny
-                    font.letterSpacing: Tokens.trackLabel
+                    stockColor: Tokens.inkFaint
+                    stockFamily: Tokens.mono
+                    stockSize: Tokens.fTiny
+                    stockSpacing: Tokens.trackLabel
                 }
                 Field {
                     id: commandField
@@ -188,12 +190,12 @@ Item {
                 Layout.fillWidth: true
                 spacing: Tokens.s2
 
-                Text {
+                Caption {
                     text: I18n.tr("DESCRIPTION")
-                    color: Tokens.inkFaint
-                    font.family: Tokens.mono
-                    font.pixelSize: Tokens.fTiny
-                    font.letterSpacing: Tokens.trackLabel
+                    stockColor: Tokens.inkFaint
+                    stockFamily: Tokens.mono
+                    stockSize: Tokens.fTiny
+                    stockSpacing: Tokens.trackLabel
                 }
                 Field {
                     id: descriptionField
@@ -207,12 +209,12 @@ Item {
                 Layout.fillWidth: true
                 spacing: Tokens.s2
 
-                Text {
+                Caption {
                     text: I18n.tr("TAGS")
-                    color: Tokens.inkFaint
-                    font.family: Tokens.mono
-                    font.pixelSize: Tokens.fTiny
-                    font.letterSpacing: Tokens.trackLabel
+                    stockColor: Tokens.inkFaint
+                    stockFamily: Tokens.mono
+                    stockSize: Tokens.fTiny
+                    stockSpacing: Tokens.trackLabel
                 }
                 Field {
                     id: tagsField
@@ -239,13 +241,13 @@ Item {
 
             Item { Layout.fillHeight: true }
 
-            Text {
+            Caption {
                 Layout.alignment: Qt.AlignRight
                 text: I18n.tr("CTRL + ENTER  SAVE    ESC  CANCEL")
-                color: Tokens.inkFaint
-                font.family: Tokens.mono
-                font.pixelSize: Tokens.fTiny
-                font.letterSpacing: Tokens.trackLabel
+                stockColor: Tokens.inkFaint
+                stockFamily: Tokens.mono
+                stockSize: Tokens.fTiny
+                stockSpacing: Tokens.trackLabel
             }
         }
     }

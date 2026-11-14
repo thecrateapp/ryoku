@@ -4,6 +4,7 @@ import QtQuick
 import QtQuick.Controls
 import Ryoku.Ui
 import Ryoku.Ui.Singletons
+import ".."
 
 Item {
     id: root
@@ -60,12 +61,13 @@ Item {
             Column {
                 width: parent.width
                 spacing: Tokens.s2
-                Text {
+                Caption {
                     text: I18n.tr("PHONE")
-                    color: Tokens.inkMuted
-                    font.family: Tokens.mono
-                    font.pixelSize: Tokens.fMicro
-                    font.letterSpacing: Tokens.trackMark
+                    tone: "accent"
+                    stockColor: Tokens.inkMuted
+                    stockFamily: Tokens.mono
+                    stockSize: Tokens.fMicro
+                    stockSpacing: Tokens.trackMark
                 }
                 Text {
                     width: parent.width

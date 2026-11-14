@@ -4,7 +4,7 @@ import Ryoku.Ui.Singletons
 
 // A category rendered as a spaced ledger: an optional tracked head (shown in
 // search results, where several groups stack) and its rows with air between
-// them.
+// them. Under crate the head is a TrackLabel without the lead square.
 Column {
     id: block
 
@@ -26,21 +26,26 @@ Column {
             anchors.left: parent.left
             anchors.verticalCenter: parent.verticalCenter
             spacing: Tokens.s2
+            // the stock lead square; under crate the head is the caption alone
             Rectangle {
+                objectName: "categoryBullet"
+                visible: !Tokens.controlsCrate
                 width: 4
                 height: 4
                 color: Tokens.labelAccent ? Tokens.caption : Tokens.ink
                 anchors.verticalCenter: parent.verticalCenter
             }
-            Text {
+            Caption {
+                objectName: "categoryHead"
                 anchors.verticalCenter: parent.verticalCenter
                 text: I18n.tr(block.name)
-                color: Tokens.labelAccent ? Tokens.caption : Tokens.ink
-                font.family: Tokens.navCaps ? Tokens.navFont : Tokens.ui
-                font.pixelSize: Tokens.fMicro
-                font.weight: Font.Medium
-                font.letterSpacing: Tokens.trackMark
-                font.capitalization: Font.AllUppercase
+                tone: "accent"
+                stockColor: Tokens.labelAccent ? Tokens.caption : Tokens.ink
+                stockFamily: Tokens.navCaps ? Tokens.navFont : Tokens.ui
+                stockSize: Tokens.fMicro
+                stockWeight: Font.Medium
+                stockSpacing: Tokens.trackMark
+                stockCaps: Font.AllUppercase
             }
         }
         Rectangle {

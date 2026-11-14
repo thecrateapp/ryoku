@@ -36,7 +36,7 @@ Item {
 
         QQC.AbstractButton {
             id: deviceButton
-            width: parent.width - settings.width - parent.spacing
+            width: parent.width - (Tokens.controlsCrate ? crateSettings.width : settings.width) - parent.spacing
             height: parent.height
             hoverEnabled: root.paired.length > 1
             onClicked: if (root.paired.length > 1) root.menuOpen = !root.menuOpen
@@ -100,8 +100,23 @@ Item {
             }
         }
 
+        // under crate the kit's icon button with the Solar settings glyph
+        IconButton {
+            id: crateSettings
+            objectName: "phoneSettingsButton"
+            visible: Tokens.controlsCrate
+            anchors.verticalCenter: parent.verticalCenter
+            glyph: "settings"
+            Accessible.name: I18n.tr("Phone settings")
+            onClicked: {
+                Spawn.run(["ryoku-shell", "hub", "open", "phone"]);
+                root.requestClose();
+            }
+        }
+
         IconBtn {
             id: settings
+            visible: !Tokens.controlsCrate
             anchors.verticalCenter: parent.verticalCenter
             width: Tokens.s6
             height: Tokens.s6
@@ -152,6 +167,7 @@ Item {
                 delegate: QQC.AbstractButton {
                     id: choice
                     required property var modelData
+                    readonly property bool picked: String(choice.modelData.id || "") === String(root.device ? root.device.id : "")
                     width: choices.width
                     height: Tokens.rowH
                     hoverEnabled: true
@@ -159,19 +175,21 @@ Item {
                         root.client.call("selectDevice", [String(modelData.id || "")]);
                         root.menuOpen = false;
                     }
+                    // under crate the picked device takes the pick wash and edge
                     background: Rectangle {
                         radius: Tokens.radius
-                        color: String(choice.modelData.id || "") === String(root.device ? root.device.id : "")
-                            ? Tokens.bone : choice.down ? Tokens.tint16
+                        color: choice.picked
+                            ? (Tokens.controlsCrate ? Tokens.pickFill : Tokens.bone) : choice.down ? Tokens.tint16
                             : choice.hovered ? Tokens.tint10 : "transparent"
+                        border.width: Tokens.controlsCrate && choice.picked ? Tokens.border : 0
+                        border.color: Tokens.pickEdge
                     }
                     contentItem: Row {
                         spacing: Tokens.s2
                         Text {
                             anchors.verticalCenter: parent.verticalCenter
                             text: choice.modelData.type === "tablet" ? "tablet" : "smartphone"
-                            color: String(choice.modelData.id || "") === String(root.device ? root.device.id : "")
-                                ? Tokens.inkOnBone : Tokens.inkDim
+                            color: choice.picked ? (Tokens.controlsCrate ? Tokens.pickInkDim : Tokens.inkOnBone) : Tokens.inkDim
                             font.family: "Material Symbols Rounded"
                             font.pixelSize: Tokens.fBody
                         }
@@ -181,8 +199,7 @@ Item {
                             Text {
                                 width: parent.width
                                 text: String(choice.modelData.name || I18n.tr("Phone"))
-                                color: String(choice.modelData.id || "") === String(root.device ? root.device.id : "")
-                                    ? Tokens.inkOnBone : Tokens.ink
+                                color: choice.picked ? (Tokens.controlsCrate ? Tokens.pickInk : Tokens.inkOnBone) : Tokens.ink
                                 font.family: Tokens.ui
                                 font.pixelSize: Tokens.fSmall
                                 font.weight: Font.DemiBold
@@ -191,8 +208,7 @@ Item {
                             Text {
                                 width: parent.width
                                 text: choice.modelData.reachable === true ? I18n.tr("Connected") : I18n.tr("Not connected")
-                                color: String(choice.modelData.id || "") === String(root.device ? root.device.id : "")
-                                    ? Tokens.inkOnBoneDim : Tokens.inkMuted
+                                color: choice.picked ? (Tokens.controlsCrate ? Tokens.pickInkDim : Tokens.inkOnBoneDim) : Tokens.inkMuted
                                 font.family: Tokens.ui
                                 font.pixelSize: Tokens.fTiny
                             }

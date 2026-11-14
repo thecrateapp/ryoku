@@ -1,6 +1,21 @@
 # Changelog: ryoku/shell/
 
 ## Unreleased
+- **Crate Kit and its first-boot hint use the shared kit.** Under crate the
+  Kit card (Super+K) is opaque panel grey on the shared corner; its head is the
+  shared page header with the 道具 gloss, its tabs the shared tabs (a tab's
+  match count as its note), its close and the phone settings, favourite and
+  copy actions the kit's icon buttons, its search glyph a Solar glyph, and its
+  footer, rail heads, category heads and every tab's captions tracked labels.
+  The live rail entry and the picked phone take the 1 px pick edge instead of
+  the mark bar or the bone plate; the typing toolbar and a dev tool's choices
+  are kit chips, the typing test's progress a read-only beam, and a reached
+  phone setup step fills with the mark. The masthead's lead rule and seal, the
+  marginalia and the category lead squares stay in the stock look. The hint's
+  two cards are the crate glass, frosted by the crate-glass rule, without the
+  lead rule, with the kit's close. The stock look is unchanged
+  (`quickshell/keys/`, `quickshell/keys-hint/`, `hyprland/modules/decoration.lua`;
+  `tests/ui/keys-kit-probe.sh`, `tests/hyprland-crate-glass.lua`).
 - **The bar's audio glyph shows what you are listening through.** Under crate
   the audio widget draws a kit glyph for the default sink's device, read from
   its PipeWire properties: Bluetooth headphones, a remote speaker (a Bluetooth
