@@ -18,7 +18,15 @@ Item {
     property bool markEffects: false
     property bool markMotion: true
     property color markGlow: "#67e8f9"
-    readonly property bool themed: themeMark !== ""
+    readonly property bool wantsThemeMark: themeMark !== ""
+    // the theme's mark replaces the wordmark only once its image has loaded: a
+    // deleted file or one that is not an image keeps Ryoku's wordmark
+    readonly property bool themed: wantsThemeMark && themeMarkLoader.status === Loader.Ready
+        && themeMarkLoader.item !== null && themeMarkLoader.item.ready
+    // a path as a file URL, each segment encoded so a '#', '?' or '%' stays in the name
+    function fileUrl(path) {
+        return "file://" + path.split("/").map(encodeURIComponent).join("/")
+    }
     readonly property int themeMarkHeight: 96
     onMediaPathChanged: {
         orientationKnown = false
@@ -117,13 +125,15 @@ Item {
     }
 
     Loader {
+        id: themeMarkLoader
         anchors.centerIn: parent
-        active: root.themed
-        visible: root.showingDefault
+        active: root.wantsThemeMark
+        visible: root.showingDefault && root.themed
         sourceComponent: Item {
             id: markBox
             objectName: "markBox"
             readonly property bool pulsing: pulseAnim.running
+            readonly property bool ready: themeMarkImage.status === Image.Ready
             implicitWidth: themeMarkImage.implicitWidth
             implicitHeight: themeMarkImage.implicitHeight
 
@@ -161,7 +171,7 @@ Item {
                 id: themeMarkImage
                 objectName: "themeMark"
                 visible: !root.markEffects
-                source: "file://" + root.themeMark
+                source: root.fileUrl(root.themeMark)
                 sourceSize.height: root.themeMarkHeight
                 fillMode: Image.PreserveAspectFit
             }

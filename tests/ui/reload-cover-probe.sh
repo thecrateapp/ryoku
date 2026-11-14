@@ -15,6 +15,7 @@ run() {
     ln -s "$repo/ryoku/shell/quickshell/reload-cover" "$work/shell/reload-cover"
     cp "$here/reload-cover-probe.qml" "$work/shell/shell.qml"
     local mark="$here/fixtures/cover-mark.svg"
+    [ "$look" = crate-broken ] && mark="$here/fixtures/broken-mark.svg"
     if [ "$look" != stock ]; then
         local reduce=false
         [ "$look" = crate-still ] && reduce=true
@@ -36,4 +37,5 @@ run() {
 run stock
 run crate
 run crate-still
+run crate-broken
 echo "reload-cover-probe: the theme's mark with its glow, glosses and Beam under crate (still under reduced motion); Ryoku's cover unchanged otherwise"

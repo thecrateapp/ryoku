@@ -16,6 +16,7 @@ ShellRoot {
     id: probe
     readonly property string look: Quickshell.env("PROBE_LOOK")
     readonly property bool wantCrate: look === "crate" || look === "crate-still"
+    readonly property bool wantBroken: look === "crate-broken"
     readonly property string fixture: Quickshell.env("PROBE_MARK")
 
     Item {
@@ -87,6 +88,14 @@ ShellRoot {
         return true;
     }
 
+    // a theme mark that does not load (deleted, not an image) must not leave the
+    // cover blank: Ryoku's wordmark comes back
+    function checkBroken() {
+        if (!Tokens.controlsCrate || Tokens.coverMark !== probe.fixture) return fail("broken run: style not read");
+        if (!part(media, "wordmark").visible) return fail("a broken theme mark leaves the cover without a mark");
+        return true;
+    }
+
     function checkStock() {
         if (Tokens.controlsCrate) return fail("stock run reads a crate style");
         if (part(media, "themeMark")) return fail("stock cover draws a theme mark");
@@ -106,7 +115,7 @@ ShellRoot {
         interval: 1500
         running: true
         onTriggered: {
-            if (probe.wantCrate ? checkCrate() : checkStock())
+            if (probe.wantBroken ? checkBroken() : probe.wantCrate ? checkCrate() : checkStock())
                 console.log("RELOAD-COVER-PROBE-PASS " + probe.look);
             Qt.quit();
         }
