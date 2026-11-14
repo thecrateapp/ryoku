@@ -48,8 +48,9 @@
 - **The widget faces' icons have Solar glyphs too.** The kit's catalogue gains
   the Solar stand-ins and Material aliases for the icons the widget faces and
   the wallpaper framing coach draw (`photo_library`, `animation`, `pan_tool`,
-  `done_all`, `location_on` and the rest), with struck variants for
-  `mobile_off`, `phonelink_off` and `music_off`. Existing glyphs are unchanged
+  `done_all`, `location_on`, the timers' hourglasses, the mail widget's
+  `login` and `save`, and the rest), with struck variants for `mobile_off`,
+  `phonelink_off`, `music_off` and `hourglass_disabled`. Existing glyphs are unchanged
   (`ui/tools/`, `ui/lib/glyphs.js`).
 - **Every Stage icon has a Solar glyph under crate.** The kit's catalogue gains
   105 Solar Outline icons and 145 Material aliases (`schedule`, `album`,

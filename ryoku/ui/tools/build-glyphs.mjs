@@ -33,6 +33,7 @@ icons["magnet-off"] = struck(icons["magnet"]);
 icons["pin-off"] = struck(icons["pin"]);
 icons["smartphone-off"] = struck(icons["smartphone"]);
 icons["music-note-off"] = struck(icons["music-note-2"]);
+icons["hourglass-off"] = struck(icons["hourglass"]);
 
 // Solar has no DIMM. Draw the module and its contacts at the same 24-unit scale.
 icons["memory-stick"] = SVG_OPEN
@@ -152,6 +153,9 @@ const alias = {
   voice_over_off: "microphone-2-off", voice_selection_off: "microphone-2-off",
   // the desktop shortcuts' menus
   dashboard_customize: "widget-add", file_copy: "copy", folder_open: "folder-open", language: "global", url: "link",
+  // the timers' and the mail widget's
+  hourglass_disabled: "hourglass-off", hourglass_empty: "hourglass-line", keyboard_arrow_down: "alt-arrow-down",
+  login: "login-2", save: "diskette",
   // the icons the widget faces draw
   animation: "clapperboard-play", battery_std: "battery-half", bolt: "bolt", bookmark_add: "bookmark-plus",
   calendar_view_week: "calendar-minimalistic", check_box_outline_blank: "stop",
