@@ -36,6 +36,9 @@ Rectangle {
 
     function clear() { input.text = "" }
     function grabFocus() { input.forceActiveFocus() }
+    function selectAll() { input.selectAll() }
+    // gives the keyboard up, for an owner that decides when typing is over
+    function releaseFocus() { input.focus = false }
 
     HoverHandler { id: hh; cursorShape: Qt.IBeamCursor }
     // the glyph sits outside the input: a tap there still focuses it

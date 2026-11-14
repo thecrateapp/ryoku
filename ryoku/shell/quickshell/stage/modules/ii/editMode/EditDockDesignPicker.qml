@@ -2,6 +2,7 @@ import QtQuick
 import QtQuick.Layouts
 import Quickshell
 import Quickshell.Io
+import Ryoku.Ui as Ui
 import Ryoku.Ui.Singletons
 import stage.modules.common
 import stage.modules.common.widgets
@@ -17,6 +18,10 @@ ColumnLayout {
     // picker wears what is yours, offers its updates, and points to the Store
     // for the rest.
     property var storeDocks: []
+    // Under crate a design is a kit pick card: the chosen one the pick wash in
+    // the 1 px pickEdge, the rest a hairline on the panel, Solar glyphs, and
+    // the Store tag the tracked mono caption.
+    readonly property bool crate: Tokens.controlsCrate
     property string updatingId: ""
 
     readonly property var designs: [
@@ -114,20 +119,25 @@ ColumnLayout {
                 readonly property bool store: modelData.store === true
                 // A Store dock you have not installed opens RyoStore instead.
                 readonly property bool wearable: !card.store || modelData.installed === true
-                readonly property color plate: chosen
+                readonly property color plate: root.crate ? (chosen ? Tokens.pickFill : "transparent")
+                    : chosen
                     ? Appearance.colors.colSecondaryContainer : Appearance.colors.colLayer1
-                readonly property color ink: chosen
+                readonly property color ink: root.crate ? (chosen ? Tokens.pickInk : Tokens.ink)
+                    : chosen
                     ? Appearance.colors.colOnSecondaryContainer : Appearance.colors.colOnSurface
-                readonly property color inkDim: chosen
+                readonly property color inkDim: root.crate ? (chosen ? Tokens.pickInkDim : Tokens.inkSubtle)
+                    : chosen
                     ? Appearance.colors.colOnSecondaryContainer : Appearance.colors.colOnSurfaceVariant
 
                 Layout.fillWidth: true
                 implicitHeight: 108
-                radius: Appearance.rounding.small
+                objectName: "dockDesign-" + modelData.value
+                radius: root.crate ? Tokens.radius : Appearance.rounding.small
                 color: card.plate
                 opacity: card.wearable ? 1 : 0.6
                 border.width: 1
-                border.color: chosen
+                border.color: root.crate ? (chosen ? Tokens.pickEdge : Tokens.line)
+                    : chosen
                     ? Appearance.colors.colSecondary : Appearance.colors.colOutlineVariant
 
                 // Under the content, so the update pill keeps its own clicks.
@@ -184,7 +194,13 @@ ColumnLayout {
 
                     RowLayout {
                         Layout.fillWidth: true
+                        Ui.Glyph {
+                            visible: root.crate
+                            name: card.modelData.glyph
+                            color: card.ink
+                        }
                         MaterialSymbol {
+                            visible: !root.crate
                             text: card.modelData.glyph
                             iconSize: 18
                             color: card.ink
@@ -196,8 +212,12 @@ ColumnLayout {
                             font.weight: Font.DemiBold
                             elide: Text.ElideRight
                         }
+                        Ui.TrackLabel {
+                            visible: root.crate && card.store && !update.visible
+                            text: Translation.tr("STORE")
+                        }
                         StyledText {
-                            visible: card.store && !update.visible
+                            visible: !root.crate && card.store && !update.visible
                             text: Translation.tr("STORE")
                             color: card.inkDim
                             font.pixelSize: Appearance.font.pixelSize.smaller
@@ -210,14 +230,14 @@ ColumnLayout {
                             visible: card.store && card.wearable && card.modelData.updateAvailable === true
                             implicitWidth: updateLabel.implicitWidth + Appearance.sizes.space2 * 2
                             implicitHeight: updateLabel.implicitHeight + Appearance.sizes.space1 * 2
-                            radius: height / 2
-                            color: card.ink
+                            radius: root.crate ? Tokens.radius : height / 2
+                            color: root.crate ? Tokens.mark : card.ink
                             StyledText {
                                 id: updateLabel
                                 anchors.centerIn: parent
                                 text: root.updatingId === card.modelData.value
                                     ? Translation.tr("Updating") : Translation.tr("Update")
-                                color: card.plate
+                                color: root.crate ? Tokens.paper : card.plate
                                 font.pixelSize: Appearance.font.pixelSize.smaller
                                 font.weight: Font.DemiBold
                             }
@@ -227,8 +247,13 @@ ColumnLayout {
                                 onClicked: root.updateDock(card.modelData.value)
                             }
                         }
+                        Ui.Glyph {
+                            visible: root.crate && card.chosen
+                            name: "check_circle"
+                            color: Tokens.mark
+                        }
                         MaterialSymbol {
-                            visible: card.chosen
+                            visible: !root.crate && card.chosen
                             text: "check_circle"
                             iconSize: 18
                             color: card.chosen ? card.ink : Appearance.colors.colSecondary

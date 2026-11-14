@@ -1,6 +1,15 @@
 # Changelog: ryoku/shell/
 
 ## Unreleased
+- **The editor's catalogue, dock and style pages use the kit under crate.** The
+  catalogue search is the kit Field (kept in step with the query, Escape
+  empties it and then lets the keyboard go), and so is the new folder's name;
+  apps on the desktop take the pick wash in the 1 px pick edge; the carried
+  row is a glass tag. The dock design cards are pick cards; the selection's
+  align strip is an opaque popover plate with kit IconButtons; the style
+  presets' apply, rename and delete are kit IconButtons with Solar glyphs. The
+  kit Field gains selectAll() and releaseFocus(). Stock is unchanged
+  (`quickshell/stage/modules/ii/editMode/`, `ui/Field.qml`).
 - **The widget faces' icons have Solar glyphs too.** The kit's catalogue gains
   the Solar stand-ins and Material aliases for the icons the widget faces and
   the wallpaper framing coach draw (`photo_library`, `animation`, `pan_tool`,

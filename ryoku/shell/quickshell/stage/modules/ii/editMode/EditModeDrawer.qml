@@ -201,7 +201,7 @@ Item {
             return;
         root.searchWanted = false;
         root.searchHeld = false;
-        searchField.focus = false;
+        root.dropSearchField();
         root.fieldItem = item;
         root.fieldWanted = true;
         item.forceActiveFocus();
@@ -234,8 +234,25 @@ Item {
     function releaseSearchFocus() {
         root.searchWanted = false;
         root.searchHeld = false;
-        searchField.focus = false;
+        root.dropSearchField();
         root.releaseFieldFocus();
+    }
+
+    // The field the user types in: the Stage text field in stock, the kit's
+    // Field under crate. The stock field holds the query in both looks; the
+    // kit Field is kept in step with it.
+    function dropSearchField() {
+        searchField.focus = false;
+        kitSearch.releaseFocus();
+    }
+    function grabSearchField() {
+        if (root.crate) {
+            kitSearch.grabFocus();
+            kitSearch.selectAll();
+        } else {
+            searchField.forceActiveFocus();
+            searchField.selectAll();
+        }
     }
 
     function clearSearch() {
@@ -265,8 +282,7 @@ Item {
         if (!root.searchable || root.screenName !== GlobalStates.editModeMonitor)
             return;
         root.searchWanted = true;
-        searchField.forceActiveFocus();
-        searchField.selectAll();
+        root.grabSearchField();
     }
 
     Connections {
@@ -886,8 +902,47 @@ Item {
                 Layout.rightMargin: Appearance.sizes.space1
                 implicitHeight: 36
 
+                Field {
+                    id: kitSearch
+                    objectName: "editKitSearch"
+                    anchors.fill: parent
+                    visible: root.crate
+                    toolbar: true
+                    glyph: "search"
+                    clearOnEscape: false
+                    placeholder: searchField.placeholderText
+                    onEdited: value => searchField.text = value
+                    onFocusedChanged: {
+                        if (kitSearch.focused) {
+                            root.searchWanted = true;
+                            root.searchHeld = true;
+                            return;
+                        }
+                        if (!root.searchHeld)
+                            return;
+                        root.searchHeld = false;
+                        root.searchWanted = false;
+                    }
+                    // as below: the first Escape empties, the second lets go
+                    onEscaped: {
+                        if (searchField.text !== "") {
+                            searchField.text = "";
+                            return;
+                        }
+                        root.releaseSearchFocus();
+                    }
+                    Connections {
+                        target: searchField
+                        function onTextChanged() {
+                            if (kitSearch.text !== searchField.text)
+                                kitSearch.text = searchField.text;
+                        }
+                    }
+                }
+
                 ToolbarTextField {
                     id: searchField
+                    visible: !root.crate
                     anchors.fill: parent
                     Layout.fillHeight: false
                     leftPadding: 32
@@ -923,16 +978,8 @@ Item {
                     }
                 }
 
-                // Under crate the field's search mark is the kit's Solar
-                // glyph and its clear the kit's IconButton.
-                Glyph {
-                    anchors.left: parent.left
-                    anchors.leftMargin: Appearance.sizes.space3
-                    anchors.verticalCenter: parent.verticalCenter
-                    visible: root.crate
-                    name: "search"
-                    color: Tokens.inkSubtle
-                }
+                // Under crate the kit Field carries its own search glyph, and
+                // the clear is the kit's IconButton.
                 MaterialSymbol {
                     anchors.left: parent.left
                     anchors.leftMargin: Appearance.sizes.space3
@@ -958,7 +1005,7 @@ Item {
                         glyph: "close"
                         onClicked: {
                             searchField.text = "";
-                            searchField.forceActiveFocus();
+                            kitSearch.grabFocus();
                         }
                     }
                 }
@@ -1248,12 +1295,14 @@ Item {
                     width: desktopAppList.width
                     height: Tokens.rowH + Tokens.s2
                     radius: Tokens.radius
-                    color: modelData.onScreen ? Tokens.bone
+                    // under crate an app on the desktop is a picked list row:
+                    // the pick wash in the 1 px pickEdge
+                    color: modelData.onScreen ? (root.crate ? Tokens.pickFill : Tokens.bone)
                         : rowTap.pressed ? Tokens.tint16
                         : rowHover.hovered ? Tokens.tint5 : "transparent"
                     border.width: Tokens.border
-                    border.color: modelData.onScreen ? Tokens.bone
-                        : rowHover.hovered ? Tokens.lineStrong : Tokens.line
+                    border.color: modelData.onScreen ? (root.crate ? Tokens.pickEdge : Tokens.bone)
+                        : rowHover.hovered ? (root.crate ? Tokens.markHover : Tokens.lineStrong) : Tokens.line
                     opacity: Persistent.ready && !Persistent.blockWrites ? 1 : 0.45
                     activeFocusOnTab: true
 
@@ -1283,7 +1332,7 @@ Item {
                         Text {
                             width: parent.width
                             text: appRow.modelData.name ?? appRow.modelData.id
-                            color: appRow.modelData.onScreen ? Tokens.inkOnBone : Tokens.ink
+                            color: appRow.modelData.onScreen ? (root.crate ? Tokens.pickInk : Tokens.inkOnBone) : Tokens.ink
                             font.family: Tokens.ui
                             font.pixelSize: Tokens.fRow
                             font.weight: Font.Medium
@@ -1294,7 +1343,7 @@ Item {
                             visible: text.length > 0
                             text: appRow.modelData.placement
                                 || appRow.modelData.genericName || appRow.modelData.comment || ""
-                            color: appRow.modelData.onScreen ? Tokens.inkOnBoneDim : Tokens.inkMuted
+                            color: appRow.modelData.onScreen ? (root.crate ? Tokens.pickInkDim : Tokens.inkOnBoneDim) : Tokens.inkMuted
                             font.family: Tokens.ui
                             font.pixelSize: Tokens.fSmall
                             elide: Text.ElideRight
@@ -1307,7 +1356,7 @@ Item {
                         anchors.rightMargin: Tokens.s3
                         anchors.verticalCenter: parent.verticalCenter
                         text: appRow.modelData.onScreen ? Translation.tr("ON") : "+"
-                        color: appRow.modelData.onScreen ? Tokens.inkOnBone : Tokens.inkDim
+                        color: appRow.modelData.onScreen ? (root.crate ? Tokens.mark : Tokens.inkOnBone) : Tokens.inkDim
                         font.family: appRow.modelData.onScreen ? Tokens.mono : Tokens.ui
                         font.pixelSize: appRow.modelData.onScreen ? Tokens.fTiny : Tokens.fBody
                         font.letterSpacing: appRow.modelData.onScreen ? Tokens.trackLabel : 0
@@ -1936,8 +1985,21 @@ Item {
                     Layout.rightMargin: 6
                     implicitHeight: 46
 
+                    // under crate the kit's Field, kept in step with the name
+                    Field {
+                        objectName: "editKitFolderName"
+                        anchors.fill: parent
+                        visible: root.crate
+                        toolbar: true
+                        glyph: "folder"
+                        text: folderRoot.folderName
+                        placeholder: Translation.tr("Folder name")
+                        onEdited: value => folderRoot.folderName = value
+                    }
+
                     ToolbarTextField {
                         id: folderNameInput
+                        visible: !root.crate
                         anchors.fill: parent
                         leftPadding: 42
                         colBackground: Appearance.colors.colLayer1
@@ -2180,14 +2242,23 @@ Item {
         z: 100
         width: ghostRow.implicitWidth + 24
         height: 40
-        radius: Appearance.rounding.full
-        color: Appearance.m3colors.m3surfaceContainer
+        // under crate the carried row is the glass in a hairline
+        radius: root.crate ? Tokens.radius : Appearance.rounding.full
+        color: root.crate ? Tokens.glass : Appearance.m3colors.m3surfaceContainer
+        border.width: root.crate ? Tokens.border : 0
+        border.color: Tokens.line
 
         RowLayout {
             id: ghostRow
             anchors.centerIn: parent
             spacing: 8
+            Glyph {
+                visible: root.crate
+                name: root.dragMetadata?.icon ?? "widgets"
+                color: Tokens.ink
+            }
             MaterialSymbol {
+                visible: !root.crate
                 text: root.dragMetadata?.icon ?? "widgets"
                 iconSize: 20
                 color: Appearance.colors.colOnSurface

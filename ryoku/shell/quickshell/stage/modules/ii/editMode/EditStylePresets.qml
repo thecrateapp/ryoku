@@ -314,42 +314,30 @@ ColumnLayout {
                         anchors.fill: parent
                         spacing: Tokens.s1
 
-                        Ui.IconBtn {
+                        PresetAction {
                             width: Tokens.s6
                             height: Tokens.s6
-                            glyph: "✓"
                             armed: !presetItem.selected
                             onAct: root.applyPreset(presetItem.presetName)
-                            HoverHandler { id: applyHover }
-                            StyledToolTip {
-                                extraVisibleCondition: false
-                                alternativeVisibleCondition: applyHover.hovered
-                                text: Translation.tr("Apply preset")
-                            }
+                            mark: "✓"
+                            glyphName: "check"
+                            tip: Translation.tr("Apply preset")
                         }
-                        Ui.IconBtn {
+                        PresetAction {
                             width: Tokens.s6
                             height: Tokens.s6
-                            glyph: "✎"
                             onAct: root.beginRename(presetItem.presetName)
-                            HoverHandler { id: renameHover }
-                            StyledToolTip {
-                                extraVisibleCondition: false
-                                alternativeVisibleCondition: renameHover.hovered
-                                text: Translation.tr("Rename preset")
-                            }
+                            mark: "✎"
+                            glyphName: "pen"
+                            tip: Translation.tr("Rename preset")
                         }
-                        Ui.IconBtn {
+                        PresetAction {
                             width: Tokens.s6
                             height: Tokens.s6
-                            glyph: "×"
                             onAct: root.deletePreset(presetItem.presetName)
-                            HoverHandler { id: deleteHover }
-                            StyledToolTip {
-                                extraVisibleCondition: false
-                                alternativeVisibleCondition: deleteHover.hovered
-                                text: Translation.tr("Delete preset")
-                            }
+                            mark: "×"
+                            glyphName: "close"
+                            tip: Translation.tr("Delete preset")
                         }
                     }
                 }
@@ -373,30 +361,22 @@ ColumnLayout {
                     placeholder: Translation.tr("Preset name")
                     onAccepted: root.commitRename()
                 }
-                Ui.IconBtn {
+                PresetAction {
                     Layout.preferredWidth: Tokens.s6
                     Layout.fillHeight: true
-                    glyph: "×"
                     onAct: root.cancelRename()
-                    HoverHandler { id: cancelRenameHover }
-                    StyledToolTip {
-                        extraVisibleCondition: false
-                        alternativeVisibleCondition: cancelRenameHover.hovered
-                        text: Translation.tr("Cancel rename")
-                    }
+                    mark: "×"
+                    glyphName: "close"
+                    tip: Translation.tr("Cancel rename")
                 }
-                Ui.IconBtn {
+                PresetAction {
                     Layout.preferredWidth: Tokens.s6
                     Layout.fillHeight: true
-                    glyph: "✓"
                     armed: root.cleanName(renameField.text) !== ""
                     onAct: root.commitRename()
-                    HoverHandler { id: saveRenameHover }
-                    StyledToolTip {
-                        extraVisibleCondition: false
-                        alternativeVisibleCondition: saveRenameHover.hovered
-                        text: Translation.tr("Save name")
-                    }
+                    mark: "✓"
+                    glyphName: "check"
+                    tip: Translation.tr("Save name")
                 }
             }
         }
@@ -407,5 +387,41 @@ ColumnLayout {
         visible: root.applyError !== "" || PresetStore.lastError !== ""
         symbol: "error"
         text: root.applyError !== "" ? root.applyError : PresetStore.lastError
+    }
+
+    // A preset's action: the kit's square utility button in stock, its
+    // IconButton with a Solar glyph under crate.
+    component PresetAction: Item {
+        id: action
+        property string mark: ""
+        property string glyphName: ""
+        property string tip: ""
+        property bool armed: true
+        signal act()
+        implicitWidth: Tokens.s6
+        implicitHeight: Tokens.s6
+
+        Ui.IconBtn {
+            anchors.fill: parent
+            visible: !Tokens.controlsCrate
+            glyph: action.mark
+            armed: action.armed
+            onAct: action.act()
+        }
+        Ui.IconButton {
+            id: kitAction
+            objectName: "presetKit-" + action.glyphName
+            anchors.fill: parent
+            visible: Tokens.controlsCrate
+            glyph: action.glyphName
+            enabled: action.armed
+            onClicked: action.act()
+        }
+        HoverHandler { id: actionHover }
+        StyledToolTip {
+            extraVisibleCondition: false
+            alternativeVisibleCondition: actionHover.hovered
+            text: action.tip
+        }
     }
 }
