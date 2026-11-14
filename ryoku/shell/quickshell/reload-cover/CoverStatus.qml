@@ -8,8 +8,8 @@ import Ryoku.Ui.Singletons
 // Ryoku's look is the tracked JetBrains Mono line it always was. Under controls
 // "crate" it is the kit's tracked label with its Japanese gloss (再読込 reload,
 // 起動中 boot, 失敗 failure, after showJapaneseGloss), an indeterminate Beam
-// while the cover holds (real waiting), and the failure in the theme's error
-// role.
+// scanning both ways while the cover holds (real waiting), and the failure in
+// the theme's error role.
 Item {
     id: status
 
@@ -83,6 +83,7 @@ Item {
                     visible: status.phase === "hold"
                     interactive: false
                     indeterminate: true
+                    bounce: true
                 }
             }
         }

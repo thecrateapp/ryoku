@@ -21,6 +21,9 @@ Item {
     property real stepSize: 0
     property bool interactive: true
     property bool indeterminate: false
+    // indeterminate only: the segment scans to the end and back (KITT) instead
+    // of running out on the right and coming in from the left
+    property bool bounce: false
     property bool bipolar: false
     // show the thumb while an owner that handles input itself (a QQC.Slider
     // drawing through a Beam) is hovered, pressed or focused
@@ -178,14 +181,20 @@ Item {
         }
     }
 
-    // indeterminate: a short segment sweeping across; held still under reduced motion
+    // indeterminate: a short segment sweeping across; held still under reduced motion.
+    // With bounce it scans to the right end and back, the bright head always leading
+    // (the gradient mirrors on the way back).
     Rectangle {
         id: sweep
+        objectName: "beamSweep"
+        property bool back: false
+        readonly property int headDirection: back ? -1 : 1
         visible: beam.indeterminate
         y: beam.cy
         width: Math.max(24, beam.width * 0.22)
         height: 1
-        x: Tokens.reduceMotion ? (beam.width - width) / 2 : -width
+        x: Tokens.reduceMotion ? (beam.width - width) / 2 : beam.bounce ? 0 : -width
+        transform: Scale { origin.x: sweep.width / 2; xScale: sweep.headDirection }
         gradient: Gradient {
             orientation: Gradient.Horizontal
             GradientStop { position: 0.0; color: "transparent" }
@@ -193,11 +202,28 @@ Item {
             GradientStop { position: 1.0; color: Tokens.thumb }
         }
         NumberAnimation on x {
-            running: beam.indeterminate && beam.visible && !Tokens.reduceMotion
+            running: beam.indeterminate && !beam.bounce && beam.visible && !Tokens.reduceMotion
             loops: Animation.Infinite
             from: -sweep.width
             to: beam.width
             duration: 1100
+        }
+        SequentialAnimation {
+            running: beam.indeterminate && beam.bounce && beam.visible && !Tokens.reduceMotion
+            loops: Animation.Infinite
+            onStopped: sweep.back = false
+            ScriptAction { script: sweep.back = false }
+            NumberAnimation {
+                target: sweep; property: "x"
+                from: 0; to: beam.width - sweep.width
+                duration: 900; easing.type: Easing.InOutSine
+            }
+            ScriptAction { script: sweep.back = true }
+            NumberAnimation {
+                target: sweep; property: "x"
+                from: beam.width - sweep.width; to: 0
+                duration: 900; easing.type: Easing.InOutSine
+            }
         }
     }
 

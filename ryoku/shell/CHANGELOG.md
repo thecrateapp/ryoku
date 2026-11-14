@@ -10,7 +10,8 @@
   glow, a sheen sweep and a faint aura (still, without the sheen, under reduced
   motion), and the status is the tracked
   label with its Japanese gloss (再読込, 起動中, 失敗), an indeterminate Beam
-  while the cover holds and the failure in the error role. Ryoku's cover is
+  scanning to each end and back (the kit Beam's new `bounce`) while the cover
+  holds and the failure in the error role. Ryoku's cover is
   unchanged and a user's own reload cover still wins
   (`quickshell/reload-cover/`, `ipc/usertheme.go`; `tests/ui/reload-cover-probe.sh`).
 - **CRATE and the Crate logo are launcher marks.** QS Bar Settings > Identity
