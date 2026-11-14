@@ -5,6 +5,7 @@ import QtQuick.Effects
 import QtQuick.Shapes
 import Ryoku.Ui as Kit
 import Ryoku.Ui.Singletons
+import "../modules/AudioOutput.js" as AudioOutput
 
 // The QS Bar media panel under the crate look (the user's pick: the turning
 // record and the equalizer as a curve). The record turns while playing, with
@@ -185,8 +186,10 @@ Column {
                 spacing: Tokens.s2
                 Kit.Glyph {
                     id: outGlyph
+                    objectName: "mediaOutputGlyph"
                     anchors.verticalCenter: parent.verticalCenter
-                    name: details.panel.outputHeadphones ? "headphones" : "speaker"
+                    // the glyph the bar and the volume panel's picked row draw
+                    name: AudioOutput.sinkGlyph(details.panel.outputSink, Kit.GlyphCatalog.has)
                     size: 16
                     color: Tokens.inkSecondary
                 }

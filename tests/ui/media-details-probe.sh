@@ -12,8 +12,12 @@ echo '{"language":"es"}' > "$work/config/ryoku/shell.json"
 export RYOKU_I18N_DIR="$repo/ryoku/i18n/catalog"
 chmod 700 "$work/runtime"
 ln -s "${RYOKU_UI_SOURCE:-$repo/ryoku/ui}" "$work/Ryoku/Ui"
-cp "$repo/ryoku/shell/quickshell/shell/modules/bar/barstyles/qsbar/panels/CrateMediaDetails.qml" "$work/"
-cp "$repo/ryoku/shell/quickshell/shell/modules/bar/barstyles/qsbar/panels/CrateResourceHeader.qml" "$work/"
+# the body and its header in panels/, next to modules/ for the AudioOutput.js
+# it imports (the output glyph)
+qsbar="$repo/ryoku/shell/quickshell/shell/modules/bar/barstyles/qsbar"
+mkdir -p "$work/panels" "$work/modules"
+cp "$qsbar/panels/CrateMediaDetails.qml" "$qsbar/panels/CrateResourceHeader.qml" "$work/panels/"
+cp "$qsbar/modules/AudioOutput.js" "$work/modules/"
 cp "$here/media-details-probe.qml" "$work/shell.qml"
 QT_QPA_PLATFORM=offscreen XDG_CONFIG_HOME="$work/config" XDG_RUNTIME_DIR="$work/runtime" \
 QML2_IMPORT_PATH="$work" timeout 20 qs -p "$work/shell.qml" >"$work/log" 2>&1 || true

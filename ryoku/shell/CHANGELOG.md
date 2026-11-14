@@ -1,6 +1,14 @@
 # Changelog: ryoku/shell/
 
 ## Unreleased
+- **The media panel's output glyph matches the bar's audio icon.** Under
+  crate the now-playing card drew headphones or a speaker from Audio.nodeIcon,
+  so a laptop speaker, an HDMI monitor or Bluetooth headphones could read
+  differently there than in the bar and the volume panel. Its output line now
+  draws AudioOutput.sinkGlyph for the default sink, the glyph the bar and the
+  picked device row draw. The stock card keeps its chips
+  (`qsbar/panels/CrateMediaDetails.qml`, `MprisPanel.qml`;
+  `tests/ui/audio-output-glyph-probe.sh`, `tests/ui/media-details-probe.sh`).
 - **The QS Bar's audio icon is the device picked in the volume panel.** Under
   crate the bar sorted the default sink into a glyph with AudioOutput.js while
   the panel's device rows took Audio.nodeIcon, so a laptop speaker read as the

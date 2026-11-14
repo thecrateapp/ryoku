@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
 # audio-output-glyph-probe: under crate the bar's audio widget draws the same
-# glyph as the volume panel's picked device row, for a laptop speaker, wired
-# headphones, an HDMI monitor and Bluetooth headphones, with the current kit and
-# with a kit from before the newer glyphs; the stock look keeps graphic_eq.
+# glyph as the volume panel's picked device row and the media panel's output
+# line, for a laptop speaker, wired headphones, an HDMI monitor and Bluetooth
+# headphones, with the current kit and with a kit from before the newer glyphs;
+# the stock look keeps graphic_eq.
 set -euo pipefail
 here="$(cd "$(dirname "$0")" && pwd)"
 repo="$(cd "$here/../.." && pwd)"
@@ -63,4 +64,4 @@ QML
 
 run new
 run old
-echo "audio-output-glyph-probe: the bar's audio glyph is the picked device row's glyph under crate, with the current and an older kit; stock keeps graphic_eq"
+echo "audio-output-glyph-probe: the bar's audio glyph is the picked device row's and the media panel's under crate, with the current and an older kit; stock keeps graphic_eq"

@@ -8,8 +8,9 @@ import "modules" as Modules
 import "panels" as Panels
 
 // Under crate the bar's audio widget must draw the glyph of the device the
-// volume panel shows picked, for each kind of sink; the stock look keeps the
-// Material graphic_eq and the panel's crate rows stay out of it.
+// volume panel shows picked, and the media panel's output line the same one,
+// for each kind of sink; the stock look keeps the Material graphic_eq and the
+// panels' crate bodies stay out of it.
 ShellRoot {
     id: probe
 
@@ -67,12 +68,59 @@ ShellRoot {
         function hideTooltip(owner) {}
     }
 
+    // the media panel as its crate body reads it: the output is the default sink
+    QtObject {
+        id: media
+        property bool visible: true
+        property bool active: true
+        property bool playing: false
+        property string playerName: "Crate"
+        property string trackTitle: "Pronto"
+        property string trackArtist: "Repion"
+        property string trackAlbum: ""
+        property url artSource: ""
+        property string outputLabel: Audio.nodeLabel(Audio.sink)
+        property var outputSink: Audio.sink
+        property real shownPos: 0
+        property real curLen: 200
+        property bool canSeek: false
+        property bool canPrevious: false
+        property bool canNext: false
+        property bool canTogglePlaying: false
+        property var levels: []
+        property int bands: 0
+        property real energy: 0
+        property bool eqOn: false
+        property string eqPreset: "Flat"
+        property var eqPresets: ["Flat"]
+        property var eqBandLabels: ["31", "63", "125", "250", "500", "1k", "2k", "4k", "8k", "16k"]
+        property int eqRange: 12
+        property var eqGains: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+        function fmtTime(s) { return "0:00" }
+        function seekTo(f) {}
+        function previous() {}
+        function next() {}
+        function togglePlaying() {}
+        function eqPresetLabel(p) { return p }
+        function setEqOn(v) {}
+        function setEqBand(i, db) {}
+        function applyEqPreset(p) {}
+    }
+
     FloatingWindow {
-        implicitWidth: 360
-        implicitHeight: 360
+        implicitWidth: 820
+        implicitHeight: 900
         TestCase { id: input; when: false }
         Modules.AudioWidget { id: widget; x: 10; y: 10; root: theme }
         Panels.CrateOutputRows { id: rows; x: 10; y: 60; width: 320 }
+        Loader {
+            id: mediaBody
+            x: 380
+            y: 10
+            width: 408
+            active: Tokens.controlsCrate
+            sourceComponent: Panels.CrateMediaDetails { panel: media }
+        }
     }
 
     function check(ok, message) {
@@ -127,6 +175,10 @@ ShellRoot {
                     const bar = Kit.GlyphCatalog.resolve(glyph.name);
                     const row = Kit.GlyphCatalog.resolve(rowGlyph.name);
                     check(bar === row, sink.name + ": bar draws " + bar + ", the picked row " + row);
+                    const chipGlyph = input.findChild(mediaBody.item, "mediaOutputGlyph");
+                    check(chipGlyph && chipGlyph.drawn, sink.name + ": the media panel's output glyph is not drawn");
+                    const chip = Kit.GlyphCatalog.resolve(chipGlyph.name);
+                    check(chip === bar, sink.name + ": bar draws " + bar + ", the media panel " + chip);
                     check(bar === want, sink.name + ": draws " + bar + ", want " + want);
                 }
 

@@ -1,6 +1,7 @@
 import QtQuick
 import Quickshell
 import Ryoku.Ui.Singletons
+import "panels"
 
 // Drives the QS Bar's crate media body with a stand-in panel: the track and
 // its output read out, the seek beam follows the position and seeks, the
@@ -20,7 +21,7 @@ ShellRoot {
         property string trackAlbum: "Ciudad lenta"
         property url artSource: ""
         property string outputLabel: "Speakers"
-        property bool outputHeadphones: false
+        property var outputSink: null
         property real shownPos: 84
         property real curLen: 222
         property bool canSeek: true

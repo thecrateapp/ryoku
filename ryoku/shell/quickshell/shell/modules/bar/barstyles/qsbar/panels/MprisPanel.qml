@@ -97,7 +97,8 @@ PanelWindow {
     readonly property string trackAlbum: player ? (player.trackAlbum || "") : ""
     readonly property url artSource: artwork.source
     readonly property string outputLabel: Audio.nodeLabel(Audio.sink)
-    readonly property bool outputHeadphones: Audio.nodeIcon(Audio.sink) === "headphones"
+    // the default sink; the crate body draws its glyph with AudioOutput.sinkGlyph
+    readonly property var outputSink: Audio.sink
     readonly property bool canSeek: player ? player.canSeek : false
     readonly property bool canPrevious: player ? player.canGoPrevious : false
     readonly property bool canNext: player ? player.canGoNext : false

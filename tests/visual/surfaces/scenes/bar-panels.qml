@@ -195,7 +195,7 @@ ShellRoot {
         property string trackAlbum: "Ciudad lenta"
         property url artSource: ""
         property string outputLabel: "Speakers"
-        property bool outputHeadphones: false
+        property var outputSink: null
         property real shownPos: 84
         property real curLen: 222
         property bool canSeek: true
