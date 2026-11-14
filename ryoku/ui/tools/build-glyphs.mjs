@@ -28,6 +28,7 @@ for (const [name, markup] of Object.entries(src.icons))
 
 icons["microphone-2-off"] = struck(icons["microphone-2"]);
 icons["bluetooth-off"] = struck(icons["bluetooth"]);
+icons["bluetooth-square-off"] = struck(icons["bluetooth-square"]);
 
 // Solar has no DIMM. Draw the module and its contacts at the same 24-unit scale.
 icons["memory-stick"] = SVG_OPEN

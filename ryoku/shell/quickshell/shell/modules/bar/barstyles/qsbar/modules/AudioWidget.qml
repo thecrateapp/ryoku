@@ -3,6 +3,8 @@ import Quickshell
 import Quickshell.Io
 import shell.services
 import Ryoku.Ui.Singletons
+import Ryoku.Ui as Kit
+import "AudioOutput.js" as AudioOutput
 
 Item {
     id: rootMod
@@ -12,6 +14,9 @@ Item {
     readonly property int    volume:   audio.volume
     readonly property bool   muted:    audio.muted
     readonly property string volumeIcon: "graphic_eq"
+    // what the default sink plays through (headphones, a remote speaker, a
+    // monitor, the laptop...), shown as the glyph under crate
+    readonly property string outputKind: AudioOutput.outputKind(audio.sink ? audio.sink.properties : null)
     readonly property color contentColor: root.widgetContentColor("G6", root.widgetIconColor)
 
     readonly property string tooltipText: muted
@@ -29,7 +34,20 @@ Item {
         anchors.centerIn: parent
         spacing: 4
 
+        Kit.Glyph {
+            objectName: "audioGlyph"
+            visible: Tokens.controlsCrate
+            anchors.verticalCenter: parent.verticalCenter
+            name: AudioOutput.outputGlyph(rootMod.outputKind)
+            size: 18
+            color: rootMod.muted
+                ? Qt.rgba(rootMod.contentColor.r, rootMod.contentColor.g, rootMod.contentColor.b, 0.35)
+                : rootMod.contentColor
+            Behavior on color { ColorAnimation { duration: 160 } }
+        }
+
         IconText {
+            visible: !Tokens.controlsCrate
             anchors.verticalCenter: parent.verticalCenter
             text: rootMod.volumeIcon
             color: rootMod.muted

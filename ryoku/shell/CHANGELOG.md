@@ -1,6 +1,17 @@
 # Changelog: ryoku/shell/
 
 ## Unreleased
+- **The bar's audio glyph shows what you are listening through.** Under crate
+  the audio widget draws a kit glyph for the default sink's device, read from
+  its PipeWire properties: Bluetooth headphones, a remote speaker (a Bluetooth
+  speaker, AirPlay, a network tunnel, ROC or Snapcast), wired or USB
+  headphones, a monitor or TV over HDMI or DisplayPort, the laptop's speakers,
+  or any other speaker. The Bluetooth widget draws Solar's squared rune, struck
+  through while the radio is off. The kit catalogue gains bluetooth-square (and
+  its struck variant), headphones-round-sound, laptop and speaker-minimalistic.
+  The stock look keeps its icons (`modules/bar/barstyles/qsbar/modules/AudioOutput.js`,
+  `AudioWidget.qml`, `BluetoothWidget.qml`, `ui/tools/`; `AudioOutput.test.mjs`,
+  `tests/ui/bar-device-glyphs-probe.sh`).
 - **Every waiting Beam scans back and forth inside its track.** An
   indeterminate kit Beam (Wi-Fi and Bluetooth scans, Ryostore and Ryovm
   downloads of unknown size, Hub updates, the reload cover) now runs to the end
