@@ -1,6 +1,14 @@
 # Changelog: ryoku/shell/
 
 ## Unreleased
+- **Every waiting Beam scans as one smooth motion.** An indeterminate kit Beam
+  (Wi-Fi and Bluetooth scans, Ryostore and Ryovm downloads, Hub updates, the
+  reload cover) now moves like the Beam on ryoku.cratemusic.app: a symmetric
+  segment, dark at both ends and bright in the middle, over a soft glow, driven
+  by one continuous phase so it eases out and in at each end. Before, two
+  animations met at each end and the segment flipped its gradient there, which
+  read as a jump (`ui/Beam.qml`, `ui/lib/beam.js`; `ui/lib/beam.test.mjs`,
+  `tests/ui/beam-bounce-probe.sh`).
 - **The Shima dock sits on a minimal glass under crate.** Floating with no
   panel, its white line icons were lost over a light wallpaper or window. The
   dock's body is the one glass again, frosted by its own `ryoku-dock-shima`

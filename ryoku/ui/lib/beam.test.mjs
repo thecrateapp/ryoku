@@ -50,3 +50,22 @@ test("snap rounds to the step from the start and leaves a zero step alone", () =
   assert.equal(snap(7.6, 0, 5), 10);
   near(snap(0.333, 0, 0), 0.333);
 });
+
+test("bounce runs to the far end at half a cycle and back, easing at both ends", () => {
+  const { bounce } = require("./beam.js");
+  near(bounce(0), 0);
+  near(bounce(0.25), 0.5);
+  near(bounce(0.5), 1);
+  near(bounce(0.75), 0.5);
+  near(bounce(1), 0);
+  // eased: barely moving near the ends, fastest in the middle (ease-in-out sine legs)
+  assert.ok(bounce(0.01) < 0.002);
+  assert.ok(bounce(0.26) - bounce(0.24) > bounce(0.02) - bounce(0));
+});
+
+test("bounce stays inside 0..1 for any phase, including past one cycle", () => {
+  for (let p = -2; p <= 3; p += 0.013) {
+    const v = require("./beam.js").bounce(p);
+    assert.ok(v >= 0 && v <= 1, `bounce(${p}) = ${v}`);
+  }
+});

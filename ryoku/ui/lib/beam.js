@@ -56,5 +56,12 @@ function valueAt(r, x, width) {
     return clamp(snap(v, r.from, r.step || 0), r.from, top(r));
 }
 
+// Where an indeterminate scan is, 0 (left end) to 1 (right end), for a phase where
+// one unit is a full trip there and back. (1 - cos 2πp) / 2 gives an ease-in-out
+// sine leg each way from a single continuous motion: no turn, no hitch at the ends.
+function bounce(phase) {
+    return (1 - Math.cos(2 * Math.PI * phase)) / 2;
+}
+
 if (typeof module !== "undefined" && module.exports)
-    module.exports = { span, fraction, markFraction, mainFraction, overFraction, valueAt, snap };
+    module.exports = { span, fraction, markFraction, mainFraction, overFraction, valueAt, snap, bounce };

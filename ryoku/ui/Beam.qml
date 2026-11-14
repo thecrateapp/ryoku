@@ -182,40 +182,65 @@ Item {
     }
 
     // indeterminate: a short segment scanning to the right end and back (KITT),
-    // always inside the track, the bright head leading (the gradient mirrors on the
-    // way back); held still in the middle under reduced motion.
-    Rectangle {
+    // always inside the track, held still in the middle under reduced motion. One
+    // continuous motion like the web's Beam: a symmetric segment (dark, bright
+    // middle, dark) over a soft glow, driven by a single phase so the turns at
+    // either end ease out and in with no flip and no hitch.
+    Item {
         id: sweep
         objectName: "beamSweep"
-        property bool back: false
-        readonly property int headDirection: back ? -1 : 1
+        // 0..1 is one full trip there and back (2 x 900 ms legs)
+        property real phase: 0
+        readonly property bool back: sweep.phase % 1 >= 0.5
+        readonly property real travel: Math.max(0, beam.width - sweep.width)
         visible: beam.indeterminate
         y: beam.cy
         width: Math.max(24, beam.width * 0.22)
         height: 1
-        x: Tokens.reduceMotion ? (beam.width - width) / 2 : 0
-        transform: Scale { origin.x: sweep.width / 2; xScale: sweep.headDirection }
-        gradient: Gradient {
-            orientation: Gradient.Horizontal
-            GradientStop { position: 0.0; color: "transparent" }
-            GradientStop { position: 0.7; color: Tokens.beamTail }
-            GradientStop { position: 1.0; color: Tokens.thumb }
-        }
-        SequentialAnimation {
+        x: Tokens.reduceMotion ? sweep.travel / 2 : BeamMath.bounce(sweep.phase) * sweep.travel
+
+        NumberAnimation on phase {
             running: beam.indeterminate && beam.visible && !Tokens.reduceMotion
+            from: 0
+            to: 1
+            duration: 1800
             loops: Animation.Infinite
-            onStopped: sweep.back = false
-            ScriptAction { script: sweep.back = false }
-            NumberAnimation {
-                target: sweep; property: "x"
-                from: 0; to: beam.width - sweep.width
-                duration: 900; easing.type: Easing.InOutSine
+            easing.type: Easing.Linear
+        }
+
+        // glow under the line, like the web Beam's halo
+        Rectangle {
+            id: glow
+            y: 0.5 - height / 2
+            width: sweep.width
+            height: 6
+            radius: height / 2
+            opacity: 0.55
+            gradient: Gradient {
+                orientation: Gradient.Horizontal
+                GradientStop { position: 0.0; color: "transparent" }
+                GradientStop { position: 0.5; color: Qt.rgba(Tokens.sun.r, Tokens.sun.g, Tokens.sun.b, 0.5) }
+                GradientStop { position: 1.0; color: "transparent" }
             }
-            ScriptAction { script: sweep.back = true }
-            NumberAnimation {
-                target: sweep; property: "x"
-                from: beam.width - sweep.width; to: 0
-                duration: 900; easing.type: Easing.InOutSine
+            layer.enabled: sweep.visible
+            layer.effect: MultiEffect {
+                blurEnabled: true
+                blurMax: 12
+                blur: 0.6
+                autoPaddingEnabled: true
+            }
+        }
+
+        Rectangle {
+            id: line
+            objectName: "beamSweepLine"
+            width: sweep.width
+            height: 1
+            gradient: Gradient {
+                orientation: Gradient.Horizontal
+                GradientStop { position: 0.0; color: "transparent" }
+                GradientStop { position: 0.5; color: Tokens.thumb }
+                GradientStop { position: 1.0; color: "transparent" }
             }
         }
     }

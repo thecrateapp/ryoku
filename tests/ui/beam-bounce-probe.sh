@@ -18,4 +18,4 @@ if ! grep -q BEAM-BOUNCE-PROBE-PASS "$work/log"; then
     sed -n '1,80p' "$work/log" >&2
     exit 1
 fi
-echo "beam-bounce-probe: every indeterminate Beam scans to both ends and back inside its track, head leading"
+echo "beam-bounce-probe: every indeterminate Beam scans to both ends and back inside its track, one symmetric segment, no jumps"
