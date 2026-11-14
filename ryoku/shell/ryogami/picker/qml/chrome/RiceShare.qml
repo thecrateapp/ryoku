@@ -1,4 +1,5 @@
 import QtQuick
+import Ryoku.Ui as Kit
 import Quickshell
 import Quickshell.Io
 import Ryoku.Ui.Singletons
@@ -250,13 +251,28 @@ Item {
         opacity: root.reveal
         transform: Translate { y: (1 - root.reveal) * 12 * Theme.scale }
 
-        color: Theme.withAlpha(Theme.surface, 0.99)
+        // crate: the shared corner and hairline, and the kit's plateless close
+        radius: Theme.crate ? Tokens.radius : 0
+        color: Theme.withAlpha(Theme.surface, Theme.crate ? 1 : 0.99)
         border.width: 1
-        border.color: Theme.withAlpha(Theme.outline, 0.58)
+        border.color: Theme.crate ? Tokens.line : Theme.withAlpha(Theme.outline, 0.58)
 
         MouseArea { anchors.fill: parent }
 
+        Kit.IconButton {
+            visible: Theme.crate
+            enabled: Theme.crate
+            anchors.top: parent.top
+            anchors.right: parent.right
+            anchors.margins: 6
+            width: 36
+            height: 36
+            z: 5
+            glyph: "close"
+            onClicked: root.close()
+        }
         Text {
+            visible: !Theme.crate
             anchors.top: parent.top
             anchors.right: parent.right
             anchors.topMargin: 12 * Theme.scale
@@ -269,6 +285,7 @@ Item {
             renderType: Text.NativeRendering
             MouseArea {
                 id: closeMouse
+                enabled: !Theme.crate
                 anchors.fill: parent
                 anchors.margins: -8 * Theme.scale
                 hoverEnabled: true

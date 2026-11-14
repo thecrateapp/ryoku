@@ -111,9 +111,10 @@ Item {
         anchors.centerIn: parent
         width: Math.max(260 * Theme.scale, Math.min(380 * Theme.scale, parent.width * 0.32))
         height: Math.max(180 * Theme.scale, Math.min(420 * Theme.scale, parent.height * 0.55))
-        color: Theme.withAlpha(Theme.surface, 0.99)
+        radius: Theme.crate ? Tokens.radius : 0
+        color: Theme.withAlpha(Theme.surface, Theme.crate ? 1 : 0.99)
         border.width: 1
-        border.color: Theme.withAlpha(Theme.outline, 0.40)
+        border.color: Theme.crate ? Tokens.line : Theme.withAlpha(Theme.outline, 0.40)
         clip: true
 
         MouseArea { anchors.fill: parent }

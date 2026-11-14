@@ -1,7 +1,10 @@
 import QtQuick
+import Ryoku.Ui as Kit
 
 // moved fires while dragging; released fires once on let-go.
 // A hairline track fills bone to a round knob; the knob springs a touch under the pointer.
+// Under crate the slider draws the kit Beam over the same track; it keeps its own
+// input, so snapping, dragging and released() behave the same in both looks.
 Item {
     id: slider
 
@@ -39,6 +42,7 @@ Item {
     }
 
     Rectangle {
+        visible: !Theme.crate
         height: 2
         radius: height
         width: slider._trackW
@@ -48,6 +52,7 @@ Item {
     }
 
     Rectangle {
+        visible: !Theme.crate
         height: 2
         radius: height
         width: Math.max(0, slider._knobX - slider._inset)
@@ -57,6 +62,7 @@ Item {
     }
 
     Rectangle {
+        visible: !Theme.crate
         width: slider._knob
         height: slider._knob
         radius: slider._knob / 2
@@ -68,10 +74,26 @@ Item {
         Behavior on scale { NumberAnimation { duration: Theme.fast; easing.type: Easing.OutBack; easing.overshoot: 2.4 } }
     }
 
+    Kit.Beam {
+        objectName: "folioBeam"
+        visible: Theme.crate
+        x: slider._inset
+        width: slider._trackW
+        height: slider.height
+        from: slider.from
+        to: slider.to
+        value: slider.value
+        stepSize: slider.step
+        interactive: false
+        hotHint: drag.containsMouse || drag.pressed || slider.focused
+        opacity: slider.enabled ? 1 : 0.5
+    }
+
     MouseArea {
         id: drag
         anchors.fill: parent
         enabled: slider.enabled
+        hoverEnabled: Theme.crate
         preventStealing: true
         cursorShape: Qt.PointingHandCursor
         onPressed: (m) => { var v = slider._fromX(m.x); if (v !== slider.value) { slider.value = v; slider.moved(v) } }

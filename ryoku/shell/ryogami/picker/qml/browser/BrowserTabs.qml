@@ -1,6 +1,10 @@
 import QtQuick
+import Ryoku.Ui as Kit
 import Ryoku.Ui.Singletons
 
+// The browser's source rail. Under crate its head is the kit label alone (the brand
+// mark and the numbered index are Ryoku marginalia) and the open source takes a
+// list's pick: the pick wash in a 1 px pick edge.
 Item {
     id: rail
 
@@ -30,6 +34,7 @@ Item {
             spacing: 7 * Theme.scale
 
             Text {
+                visible: !Theme.crate
                 anchors.verticalCenter: parent.verticalCenter
                 text: UiPreferences.brandMark("力")
                 color: Theme.primary
@@ -37,7 +42,14 @@ Item {
                 font.pixelSize: Theme.fs(18)
                 renderType: Text.NativeRendering
             }
+            Kit.TrackLabel {
+                visible: Theme.crate
+                anchors.verticalCenter: parent.verticalCenter
+                text: I18n.tr("Sources")
+                tone: "accent"
+            }
             Text {
+                visible: !Theme.crate
                 anchors.verticalCenter: parent.verticalCenter
                 text: I18n.tr("SOURCES")
                 color: Theme.withAlpha(Theme.surfaceText, 0.68)
@@ -84,7 +96,9 @@ Item {
                             radius: Theme.radius
                             readonly property bool selected: rail.current === modelData.id
                             readonly property bool available: modelData.enabled === true
-                            color: selected
+                            color: Theme.crate ? (selected ? Tokens.pickFill
+                                    : hover.hovered && available ? Tokens.tint5 : "transparent")
+                                : selected
                                 ? Theme.surfaceText
                                 : (tap.pressed
                                    ? Theme.withAlpha(Theme.surfaceText, 0.14)
@@ -92,6 +106,8 @@ Item {
                                       ? Theme.withAlpha(Theme.surfaceText, 0.07)
                                       : "transparent"))
                             opacity: rail.reveal
+                            border.width: Theme.crate && selected ? 1 : 0
+                            border.color: Tokens.pickEdge
 
                             Behavior on color { ColorAnimation { duration: Theme.fast } }
 
@@ -102,6 +118,7 @@ Item {
                                 spacing: 7 * Theme.scale
 
                                 Text {
+                                    visible: !Theme.crate
                                     anchors.verticalCenter: parent.verticalCenter
                                     text: entry.selected ? "//" : (entry.index < 9 ? "0" : "") + String(entry.index + 1)
                                     color: entry.selected
@@ -113,11 +130,13 @@ Item {
                                 }
 
                                 Text {
-                                    width: parent.width - 42 * Theme.scale
+                                    width: parent.width - (Theme.crate ? 20 : 42) * Theme.scale
                                     anchors.verticalCenter: parent.verticalCenter
                                     text: I18n.tr(entry.modelData.label)
                                     elide: Text.ElideRight
-                                    color: entry.selected
+                                    color: Theme.crate ? (entry.selected ? Tokens.pickInk
+                                            : entry.available ? Tokens.inkSecondary : Tokens.inkFaint2)
+                                        : entry.selected
                                         ? Theme.surface
                                         : Theme.withAlpha(Theme.surfaceText, entry.available ? 0.84 : 0.34)
                                     font.family: Theme.sans

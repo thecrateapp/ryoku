@@ -1,0 +1,3 @@
+#!/bin/sh
+# A scene stub: the capture must not reach the real ryogami.
+exit 0

@@ -30,9 +30,10 @@ Item {
         anchors.centerIn: parent
         width: Math.min(parent.width - 60 * Theme.scale, 1000 * Theme.scale)
         height: Math.min(parent.height - 60 * Theme.scale, 720 * Theme.scale)
-        color: Theme.withAlpha(Theme.surface, 0.99)
+        radius: Theme.crate ? Tokens.radius : 0
+        color: Theme.withAlpha(Theme.surface, Theme.crate ? 1 : 0.99)
         border.width: 1
-        border.color: Theme.withAlpha(Theme.outline, 0.58)
+        border.color: Theme.crate ? Tokens.line : Theme.withAlpha(Theme.outline, 0.58)
         clip: true
 
         // Swallows clicks so the backdrop dismiss does not fire.

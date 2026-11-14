@@ -1,5 +1,6 @@
 import QtQuick
 import QtQuick.Effects
+import Ryoku.Ui as Kit
 import Ryoku.Ui.Singletons
 
 // The picker's masthead, set like the head of a printed page: the 力 seal, the four
@@ -197,9 +198,10 @@ Item {
         x: (root.width - width) * 0.5
         y: root.edge
         radius: Theme.radius
-        color: Theme.withAlpha(Theme.surface, 0.95)
+        // crate: the picker is one working window, opaque popover in a hairline
+        color: Theme.crate ? Theme.surface : Theme.withAlpha(Theme.surface, 0.95)
         border.width: 1
-        border.color: Theme.withAlpha(Theme.outline, 0.5)
+        border.color: Theme.crate ? Tokens.line : Theme.withAlpha(Theme.outline, 0.5)
         enabled: root.revealed
         opacity: root.revealed ? 1 : 0
         visible: opacity > 0.01
@@ -217,9 +219,11 @@ Item {
             height: 58 * Theme.scale
 
             // Ryoku's mark, the one on the README. On a light theme its bone strokes would
-            // vanish, so it takes the ink colour there.
+            // vanish, so it takes the ink colour there. Under crate the seal and its rule
+            // are Ryoku marginalia and the libraries lead the line.
             Item {
                 id: seal
+                visible: !Theme.crate
                 anchors.left: parent.left
                 anchors.leftMargin: 16 * Theme.scale
                 anchors.verticalCenter: parent.verticalCenter
@@ -250,6 +254,7 @@ Item {
             }
             Rectangle {
                 id: sealRule
+                visible: !Theme.crate
                 anchors.left: seal.right
                 anchors.leftMargin: 14 * Theme.scale
                 anchors.verticalCenter: parent.verticalCenter
@@ -260,8 +265,8 @@ Item {
 
             CollectionTabs {
                 id: tabsBlock
-                anchors.left: sealRule.right
-                anchors.leftMargin: 10 * Theme.scale
+                anchors.left: Theme.crate ? parent.left : sealRule.right
+                anchors.leftMargin: (Theme.crate ? 4 : 10) * Theme.scale
                 anchors.verticalCenter: parent.verticalCenter
                 state: root.state
             }
@@ -287,8 +292,8 @@ Item {
                         Text {
                             anchors.right: parent.right
                             text: String(Math.round(countMark.shown))
-                            font.family: Theme.display
-                            font.pixelSize: Theme.fs(24)
+                            font.family: Theme.crate ? Theme.mono : Theme.display
+                            font.pixelSize: Theme.crate ? Theme.fs(Tokens.fRow + 4) : Theme.fs(24)
                             font.weight: Font.Normal
                             font.features: { "tnum": 1, "lnum": 1 }
                             color: Theme.surfaceText
@@ -300,11 +305,11 @@ Item {
                                 : root.collection === "rices" ? I18n.tr("rices")
                                 : root.collection === "workshop" ? I18n.tr("scenes")
                                 : I18n.tr("walls")
-                            font.family: Theme.sans
-                            font.pixelSize: Theme.fs(9)
-                            font.letterSpacing: 1.6
+                            font.family: Theme.crate ? Theme.mono : Theme.sans
+                            font.pixelSize: Theme.crate ? Theme.fontMicro : Theme.fs(9)
+                            font.letterSpacing: Theme.crate ? Tokens.trackLabel : 1.6
                             font.capitalization: Font.AllUppercase
-                            color: Theme.withAlpha(Theme.surfaceText, 0.5)
+                            color: Theme.crate ? Tokens.inkSubtle : Theme.withAlpha(Theme.surfaceText, 0.5)
                             renderType: Text.NativeRendering
                         }
                     }

@@ -9,7 +9,8 @@
 # its shell.qml, since Quickshell refuses relative imports outside the config
 # root: a scene imports "modules/<name>" as the shell does.
 # The Hub renders every routed page into hub-LOOK-SECTION.png; an app-* scene
-# renders one of the Wave 4 apps through app-scene.sh.
+# renders one of the Wave 4 apps through app-scene.sh; a ryogami scene renders the
+# picker through ryogami-scene.sh (BENCH_OPEN picks the open surface).
 set -euo pipefail
 here=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 repo=$(cd "$here/../../.." && pwd)
@@ -20,6 +21,7 @@ mkdir -p "$out"
 case $scene in
   shell-states) exec "$here/shell-states.sh" "$out" ;;
   app-*) exec "$here/app-scene.sh" "$scene" "$out" ;;
+  ryogami*) exec "$here/ryogami-scene.sh" "$scene" "$out" ;;
   hub|hub-states|hub-dialogs)
     case $scene in
       hub) marker=HUB-CAPTURE-DONE ;;

@@ -5,6 +5,8 @@ import Ryoku.Ui.Singletons
 // One bone plate sits under the open tab and slides to the next. The plate carries its
 // own dark copy of the words, clipped to itself, so every letter it passes over inverts
 // in step with it. Switching is instant: it only reconfigures the one shared view.
+// Under crate the open tab is marked the kit Tabs' way: its label in the mark over a
+// 2 px underline, with no plate.
 Item {
     id: tabs
 
@@ -66,6 +68,7 @@ Item {
                 font.pixelSize: Theme.fs(9.5)
                 font.letterSpacing: 2
                 color: tab.inverted ? Theme.withAlpha(Theme.surface, 0.7)
+                     : Theme.crate ? (tab.active ? Tokens.mark : tab.hovered ? Tokens.inkSecondary : Tokens.inkFaint2)
                      : Theme.withAlpha(Theme.surfaceText, tab.hovered ? 0.85 : 0.42)
                 renderType: Text.NativeRendering
                 Behavior on y { NumberAnimation { duration: Theme.fast; easing.type: Easing.OutCubic } }
@@ -81,6 +84,7 @@ Item {
                 font.weight: tab.active ? Font.DemiBold : Font.Medium
                 font.pixelSize: Theme.fs(14)
                 color: tab.inverted ? Theme.surface
+                     : Theme.crate ? (tab.active ? Tokens.mark : tab.hovered ? Tokens.hoverInk : Tokens.inkSubtle)
                      : Theme.withAlpha(Theme.surfaceText, tab.active || tab.hovered ? 1 : 0.66)
                 renderType: Text.NativeRendering
                 Behavior on color { ColorAnimation { duration: Theme.fast } }
@@ -93,7 +97,7 @@ Item {
                 anchors.topMargin: 1
                 height: 1
                 width: tab.hovered ? latin.width : 0
-                color: Theme.withAlpha(Theme.surfaceText, 0.6)
+                color: Theme.crate ? Tokens.markHover : Theme.withAlpha(Theme.surfaceText, 0.6)
                 Behavior on width { NumberAnimation { duration: Theme.standard; easing.type: Easing.OutCubic } }
             }
 
@@ -126,7 +130,7 @@ Item {
         radius: Theme.radius
         color: Theme.surfaceText
         clip: true
-        visible: tabs.plateW > 0
+        visible: tabs.plateW > 0 && !Theme.crate
         Behavior on x {
             enabled: tabs._placed
             NumberAnimation { duration: Theme.standard * 1.4; easing.type: Easing.OutBack; easing.overshoot: 0.8 }
@@ -143,6 +147,24 @@ Item {
             Repeater { model: tabs._tabs; delegate: face }
         }
     }
+    Rectangle {
+        objectName: "collectionUnderline"
+        visible: Theme.crate && tabs.plateW > 0
+        x: tabs.plateX + 15 * Theme.scale
+        width: Math.max(0, tabs.plateW - 30 * Theme.scale)
+        y: tabs.height - height
+        height: 2
+        color: Tokens.mark
+        Behavior on x {
+            enabled: tabs._placed
+            NumberAnimation { duration: Theme.standard; easing.type: Easing.OutCubic }
+        }
+        Behavior on width {
+            enabled: tabs._placed
+            NumberAnimation { duration: Theme.standard; easing.type: Easing.OutCubic }
+        }
+    }
+
     // The first placement lands without travelling; only a switch slides.
     Timer { interval: 1; running: tabs.plateW > 0 && !tabs._placed; onTriggered: tabs._placed = true }
 }

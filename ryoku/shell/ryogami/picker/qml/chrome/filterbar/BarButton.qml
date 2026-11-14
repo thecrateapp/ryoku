@@ -1,7 +1,9 @@
 import QtQuick
+import Ryoku.Ui.Singletons
 
 // One masthead control. Emphasis is inversion: an active control turns into a bone
-// plate with dark ink rather than taking an accent colour.
+// plate with dark ink rather than taking an accent colour. Under crate it is plateless,
+// the kit IconButton's way: secondary ink, the mark on hover and while active.
 Item {
     id: btn
 
@@ -24,6 +26,7 @@ Item {
 
     readonly property bool hovered: hover.containsMouse
     readonly property color ink: !btn.enabled ? Theme.withAlpha(Theme.surfaceText, 0.3)
+        : Theme.crate ? (btn.destructive ? Tokens.alert : btn.active || btn.hovered ? Tokens.mark : Tokens.inkSecondary)
         : btn.active ? Theme.surface
         : btn.destructive ? Theme.tertiary
         : btn.hovered ? Theme.surfaceText
@@ -36,8 +39,9 @@ Item {
         id: face
         anchors.fill: parent
         radius: Theme.radius
-        scale: hover.pressed ? 0.94 : 1
-        color: btn.active ? Theme.surfaceText
+        scale: hover.pressed && !Theme.crate ? 0.94 : 1
+        color: Theme.crate ? "transparent"
+             : btn.active ? Theme.surfaceText
              : btn.hovered && btn.enabled ? Theme.withAlpha(Theme.surfaceText, 0.09)
              : Theme.withAlpha(Theme.surfaceText, 0)
         Behavior on color { ColorAnimation { duration: Theme.fast } }
@@ -124,7 +128,9 @@ Item {
         width: tipText.implicitWidth + 16 * Theme.scale
         height: tipText.implicitHeight + 10 * Theme.scale
         radius: Theme.radius
-        color: Theme.surfaceText
+        color: Theme.crate ? Theme.surface : Theme.surfaceText
+        border.width: Theme.crate ? 1 : 0
+        border.color: Tokens.line
         Text {
             id: tipText
             anchors.centerIn: parent
@@ -132,7 +138,7 @@ Item {
             font.family: Theme.sans
             font.weight: Font.Medium
             font.pixelSize: Theme.fs(11.5)
-            color: Theme.surface
+            color: Theme.crate ? Tokens.ink : Theme.surface
             renderType: Text.NativeRendering
         }
     }

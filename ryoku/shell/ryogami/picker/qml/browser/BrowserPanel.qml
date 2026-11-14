@@ -442,9 +442,11 @@ Item {
             id: sheet
             anchors.fill: parent
             clip: true
-            color: Theme.withAlpha(Theme.surface, 0.985 * panel.ease)
+            radius: Theme.crate ? Tokens.radius : 0
+            color: Theme.withAlpha(Theme.surface, (Theme.crate ? 1 : 0.985) * panel.ease)
             border.width: 1
-            border.color: Theme.withAlpha(Theme.outline, 0.58 * panel.ease)
+            border.color: Theme.crate ? Theme.withAlpha(Tokens.line, Tokens.line.a * panel.ease)
+                : Theme.withAlpha(Theme.outline, 0.58 * panel.ease)
 
             Image {
                 id: atmosphere
@@ -459,6 +461,8 @@ Item {
             }
             Rectangle {
                 anchors.fill: parent
+                anchors.margins: Theme.crate ? 1 : 0
+                radius: Theme.crate ? Tokens.radius : 0
                 color: Theme.withAlpha(Theme.surface, 0.92 * panel.ease)
             }
 

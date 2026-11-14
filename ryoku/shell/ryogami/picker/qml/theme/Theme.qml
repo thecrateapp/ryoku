@@ -2,10 +2,17 @@ pragma Singleton
 import QtQuick
 import Quickshell
 import Quickshell.Io
+import Ryoku.Ui.Singletons
 
 // Every surface reads these tokens; no component hardcodes a colour, size or duration.
+// Under a theme style's controls "crate" the picker wears the desktop kit: its roles,
+// faces, type ladder and corner come from Tokens, the way every other Ryoku surface
+// takes them, and its controls draw through Ryoku.Ui. The stock look keeps its own
+// palette from colors.json and its own ladder.
 QtObject {
     id: theme
+
+    readonly property bool crate: Tokens.controlsCrate
 
     property var wall: ({})
     property FileView colorFile: FileView {
@@ -78,11 +85,29 @@ QtObject {
         }
     }
 
+    // Under crate the roles are the kit's: panels and sheets on the opaque popover,
+    // the canvas behind them on paper, the accent on sun. outline is an opaque ink
+    // a fifth of the way from popover to ink, so the alphas callers apply to it
+    // land on crate-mark's hairline strength instead of a mid-grey rule.
+    readonly property var cratePalette: ({
+        primary: Tokens.sun,
+        primaryText: Tokens.paper,
+        surface: Tokens.popover,
+        surfaceText: Tokens.ink,
+        surfaceVariant: Tokens.mixRole(Tokens.popover, Tokens.ink, 0.1),
+        surfaceContainer: Tokens.paperLift,
+        background: Tokens.paper,
+        outline: Tokens.mixRole(Tokens.popover, Tokens.ink, 0.2),
+        tertiary: Tokens.alert
+    })
+
     // null wears the desktop's palette; any role the candidate omits falls through.
+    // A candidate is content (the theme audition shows it on the chrome), so it
+    // wins in either look.
     property var previewPalette: null
 
     readonly property var palette: {
-        var base = theme.wallPalette
+        var base = theme.crate ? theme.cratePalette : theme.wallPalette
         var p = theme.previewPalette
         if (!p)
             return base
@@ -136,25 +161,29 @@ QtObject {
         base: 11, wide: 11.5, body: 12, body2: 12.5, label: 13, label2: 13.5,
         field: 14, lead: 15, head: 16, title: 20, segment: 22, studio: 31, folio: 46
     })
-    readonly property real fontMicro: fs(8)
-    readonly property real fontTiny: fs(8.5)
-    readonly property real fontFine: fs(9)
-    readonly property real fontMini: fs(9.5)
-    readonly property real fontSmall: fs(10)
-    readonly property real fontXSmall: fs(10.5)
-    readonly property real fontBase: fs(11)
-    readonly property real fontWide: fs(11.5)
-    readonly property real fontBody: fs(12)
-    readonly property real fontBody2: fs(12.5)
-    readonly property real fontLabel: fs(13)
-    readonly property real fontLabel2: fs(13.5)
+    // Under crate the small steps collapse onto the kit's ladder (Tokens at the
+    // picker's own scale, so its UI scale setting still sizes text): captions on
+    // crate-mark's 11 px label, then small, body and row, and the folio title on
+    // the page title. Field and the display sizes keep their steps.
+    readonly property real fontMicro: fs(theme.crate ? Tokens.fMicro : 8)
+    readonly property real fontTiny: fs(theme.crate ? Tokens.fMicro : 8.5)
+    readonly property real fontFine: fs(theme.crate ? Tokens.fMicro : 9)
+    readonly property real fontMini: fs(theme.crate ? Tokens.fMicro : 9.5)
+    readonly property real fontSmall: fs(theme.crate ? Tokens.fMicro : 10)
+    readonly property real fontXSmall: fs(theme.crate ? Tokens.fSmall : 10.5)
+    readonly property real fontBase: fs(theme.crate ? Tokens.fSmall : 11)
+    readonly property real fontWide: fs(theme.crate ? Tokens.fSmall : 11.5)
+    readonly property real fontBody: fs(theme.crate ? Tokens.fBody : 12)
+    readonly property real fontBody2: fs(theme.crate ? Tokens.fBody : 12.5)
+    readonly property real fontLabel: fs(theme.crate ? Tokens.fRow : 13)
+    readonly property real fontLabel2: fs(theme.crate ? Tokens.fRow : 13.5)
     readonly property real fontField: fs(14)
     readonly property real fontLead: fs(15)
     readonly property real fontHead: fs(16)
     readonly property real fontTitle: fs(20)
     readonly property real fontSegment: fs(22)
     readonly property real fontStudio: fs(31)
-    readonly property real fontSection: fs(46)
+    readonly property real fontSection: fs(theme.crate ? Tokens.fTitle : 46)
 
     function space(n) { return n * theme.scale }
     readonly property real spaceXs: space(4)
@@ -164,7 +193,8 @@ QtObject {
     readonly property real spaceXl: space(20)
     readonly property real spaceXxl: space(28)
 
-    readonly property real radius: 6 * theme.scale
+    // crate: the shared 6 px corner on every surface, whatever the picker's scale
+    readonly property real radius: theme.crate ? Tokens.radius : 6 * theme.scale
     readonly property real panelSkew: 14 * theme.scale
 
     // Folio sheet geometry (base px; components clamp to the viewport).
@@ -194,10 +224,14 @@ QtObject {
     readonly property int revealEasing: Easing.InOutQuad
     function smoothstep(t) { t = Math.max(0, Math.min(1, t)); return t * t * (3 - 2 * t) }
 
-    readonly property string ui: Fonts.ui
-    readonly property int uiWeight: Fonts.uiWeight
+    // crate: the desktop's faces (the theme's ui, display and mono) replace the
+    // bundled condensed cut and the brand stack
+    readonly property string ui: theme.crate ? Tokens.ui : Fonts.ui
+    readonly property int uiWeight: theme.crate ? Font.Medium : Fonts.uiWeight
     readonly property string icon: Fonts.icon
-    readonly property string display: Fonts.display
-    readonly property string sans: Fonts.sans
-    readonly property string jp: Fonts.jp
+    readonly property string display: theme.crate ? Tokens.display : Fonts.display
+    readonly property string sans: theme.crate ? Tokens.ui : Fonts.sans
+    readonly property string jp: theme.crate ? Tokens.jp : Fonts.jp
+    // values, counts and captions under crate (crate-mark's mono face)
+    readonly property string mono: Tokens.mono
 }

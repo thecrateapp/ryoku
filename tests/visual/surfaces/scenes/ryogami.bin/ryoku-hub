@@ -1,0 +1,3 @@
+#!/bin/sh
+# A scene stub: the capture must not reach the real ryoku-hub.
+exit 0

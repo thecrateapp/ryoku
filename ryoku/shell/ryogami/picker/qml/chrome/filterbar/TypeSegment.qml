@@ -53,7 +53,7 @@ Item {
                 Rectangle {
                     anchors.fill: parent
                     radius: Theme.radius
-                    color: Theme.withAlpha(Theme.surfaceText, opt.hovered && !opt.on ? 0.07 : 0)
+                    color: Theme.crate ? "transparent" : Theme.withAlpha(Theme.surfaceText, opt.hovered && !opt.on ? 0.07 : 0)
                     Behavior on color { ColorAnimation { duration: Theme.fast } }
                 }
                 Text {
@@ -64,7 +64,8 @@ Item {
                     font.family: Theme.sans
                     font.weight: opt.on ? Font.DemiBold : Font.Medium
                     font.pixelSize: Theme.fs(12.5)
-                    color: opt.on || opt.hovered ? Theme.surfaceText : Theme.withAlpha(Theme.surfaceText, 0.58)
+                    color: Theme.crate ? (opt.on ? Tokens.mark : opt.hovered ? Tokens.hoverInk : Tokens.inkSubtle)
+                        : opt.on || opt.hovered ? Theme.surfaceText : Theme.withAlpha(Theme.surfaceText, 0.58)
                     renderType: Text.NativeRendering
                     Behavior on color { ColorAnimation { duration: Theme.fast } }
                 }
@@ -84,9 +85,9 @@ Item {
         width: seg.ruleW
         anchors.bottom: parent.bottom
         anchors.bottomMargin: 3 * Theme.scale
-        height: 2 * Theme.scale
+        height: Theme.crate ? 2 : 2 * Theme.scale
         radius: height
-        color: Theme.surfaceText
+        color: Theme.crate ? Tokens.mark : Theme.surfaceText
         Behavior on x { NumberAnimation { duration: Theme.standard; easing.type: Easing.OutBack; easing.overshoot: 1.2 } }
         Behavior on width { NumberAnimation { duration: Theme.standard; easing.type: Easing.OutCubic } }
     }

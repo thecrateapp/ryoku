@@ -1,4 +1,5 @@
 import QtQuick
+import Ryoku.Ui as Kit
 import Ryoku.Ui.Singletons
 
 // The search surface: one focused panel that drops from the masthead search line. A text field
@@ -6,6 +7,8 @@ import Ryoku.Ui.Singletons
 // data, and tags are quiet chips you include or exclude. Describe search says plainly when a
 // model is missing and offers the one action that sets it up. Masthead language throughout:
 // bone ink on dark paper, emphasis by inversion, hairline borders, colour only as data.
+// Under crate the switches, segments and chips are the kit's (Seg and Chip), selection
+// filled with the mark.
 Item {
     id: root
 
@@ -588,10 +591,21 @@ Item {
         property real plateX: 0
         property real plateW: 0
 
-        implicitHeight: 32 * Theme.scale
-        implicitWidth: msRow.implicitWidth + 6 * Theme.scale
+        implicitHeight: Theme.crate ? msKit.implicitHeight : 32 * Theme.scale
+        implicitWidth: Theme.crate ? msKit.implicitWidth : msRow.implicitWidth + 6 * Theme.scale
 
+        Kit.Seg {
+            id: msKit
+            objectName: "searchModeSeg"
+            visible: Theme.crate
+            width: implicitWidth
+            options: ms.opts.map(o => o.v)
+            labels: ({ "tags": ms.opts[0].label, "describe": ms.opts[1].label })
+            current: ms.current
+            onChose: (key) => ms.picked(key)
+        }
         Rectangle {
+            visible: !Theme.crate
             anchors.fill: parent
             radius: Theme.radius
             color: Theme.withAlpha(Theme.surfaceText, 0.06)
@@ -599,6 +613,7 @@ Item {
             border.color: Theme.withAlpha(Theme.outline, 0.35)
         }
         Rectangle {
+            visible: !Theme.crate
             x: ms.plateX
             width: ms.plateW
             anchors.verticalCenter: parent.verticalCenter
@@ -610,6 +625,7 @@ Item {
         }
         Row {
             id: msRow
+            visible: !Theme.crate
             x: 3 * Theme.scale
             height: parent.height
             Repeater {
@@ -664,8 +680,23 @@ Item {
         signal picked(string value)
         spacing: 3 * Theme.scale
 
+        Kit.Seg {
+            objectName: "miniSeg"
+            visible: Theme.crate
+            width: implicitWidth
+            options: seg.options.map(o => o.v)
+            labels: {
+                var m = {};
+                for (var i = 0; i < seg.options.length; ++i)
+                    m[seg.options[i].v] = seg.options[i].label;
+                return m;
+            }
+            current: seg.current
+            onChose: (key) => seg.picked(key)
+        }
+
         Repeater {
-            model: seg.options
+            model: Theme.crate ? [] : seg.options
             delegate: Rectangle {
                 id: cell
                 required property var modelData
@@ -711,22 +742,43 @@ Item {
         readonly property bool excluded: tagState === "exclude"
         readonly property bool hovered: qcMouse.containsMouse
 
-        height: 28 * Theme.scale
-        implicitWidth: qcRow.implicitWidth + 20 * Theme.scale
+        readonly property string countText: qc.chipCount >= 1000 ? (Math.round(qc.chipCount / 100) / 10) + "k" : String(qc.chipCount)
+
+        height: Theme.crate ? qcKit.implicitHeight : 28 * Theme.scale
+        implicitWidth: Theme.crate ? qcKit.implicitWidth : qcRow.implicitWidth + 20 * Theme.scale
         width: implicitWidth
         radius: Theme.radius
-        color: qc.included ? Theme.surfaceText
+        color: Theme.crate ? "transparent"
+             : qc.included ? Theme.surfaceText
              : qc.excluded ? Theme.withAlpha(Theme.tertiary, 0.14)
              : qc.hovered ? Theme.withAlpha(Theme.surfaceText, 0.09)
              : Theme.withAlpha(Theme.surfaceText, 0.045)
-        border.width: 1
+        border.width: Theme.crate ? 0 : 1
         border.color: qc.included ? Theme.surfaceText
                     : qc.excluded ? Theme.withAlpha(Theme.tertiary, 0.7)
                     : Theme.withAlpha(Theme.outline, 0.38)
         Behavior on color { ColorAnimation { duration: Theme.fast } }
 
+        // crate: the kit chip, filled with the mark when the tag is included and in
+        // the alert ink when it is excluded; a left click includes, a right click
+        // (the MouseArea below) excludes, as in the stock chip
+        Kit.Chip {
+            id: qcKit
+            objectName: "quietChip"
+            visible: Theme.crate
+            enabled: Theme.crate
+            anchors.fill: parent
+            text: (qc.excluded ? "\u2212 " : "") + qc.chipTag + "  " + qc.countText
+            on: qc.included
+            labelInk: qc.excluded ? Tokens.alert : qcKit.tone
+            border.color: qc.excluded ? Qt.rgba(Tokens.alert.r, Tokens.alert.g, Tokens.alert.b, 0.6)
+                : qc.included ? Tokens.mark
+                : qcKit.hot ? Tokens.markHover : Tokens.line
+            onClicked: root._toggle(qc.chipTag, false)
+        }
         Row {
             id: qcRow
+            visible: !Theme.crate
             anchors.centerIn: parent
             spacing: 5 * Theme.scale
             Text {
@@ -765,12 +817,12 @@ Item {
             NumberAnimation { target: qc; property: "scale"; to: 1.1; duration: Theme.fast * 0.4; easing.type: Easing.OutQuad }
             NumberAnimation { target: qc; property: "scale"; to: 1; duration: Theme.fast; easing.type: Easing.OutBack; easing.overshoot: 3 }
         }
-        onIncludedChanged: if (qc.included) qcPop.restart()
+        onIncludedChanged: if (qc.included && !Theme.crate) qcPop.restart()
         MouseArea {
             id: qcMouse
             anchors.fill: parent
-            hoverEnabled: true
-            acceptedButtons: Qt.LeftButton | Qt.RightButton
+            hoverEnabled: !Theme.crate
+            acceptedButtons: Theme.crate ? Qt.RightButton : (Qt.LeftButton | Qt.RightButton)
             cursorShape: Qt.PointingHandCursor
             onClicked: (mouse) => root._toggle(qc.chipTag, mouse.button === Qt.RightButton)
         }
@@ -782,16 +834,25 @@ Item {
         property string label: ""
         signal triggered()
         readonly property bool hovered: tbMouse.containsMouse
-        height: 22 * Theme.scale
-        implicitWidth: tbText.implicitWidth + 16 * Theme.scale
+        height: Theme.crate ? tbKit.implicitHeight : 22 * Theme.scale
+        implicitWidth: Theme.crate ? tbKit.implicitWidth : tbText.implicitWidth + 16 * Theme.scale
         width: implicitWidth
         radius: Theme.radius
-        color: tb.hovered ? Theme.surfaceText : Theme.withAlpha(Theme.surfaceText, 0.06)
-        border.width: 1
+        color: Theme.crate ? "transparent" : tb.hovered ? Theme.surfaceText : Theme.withAlpha(Theme.surfaceText, 0.06)
+        border.width: Theme.crate ? 0 : 1
         border.color: tb.hovered ? Theme.surfaceText : Theme.withAlpha(Theme.outline, 0.35)
         Behavior on color { ColorAnimation { duration: Theme.fast } }
+        Kit.Chip {
+            id: tbKit
+            visible: Theme.crate
+            enabled: Theme.crate
+            anchors.fill: parent
+            text: tb.label
+            onClicked: tb.triggered()
+        }
         Text {
             id: tbText
+            visible: !Theme.crate
             anchors.centerIn: parent
             text: tb.label
             font.family: Theme.sans
@@ -803,6 +864,7 @@ Item {
         MouseArea {
             id: tbMouse
             anchors.fill: parent
+            enabled: !Theme.crate
             hoverEnabled: true
             cursorShape: Qt.PointingHandCursor
             onClicked: tb.triggered()

@@ -1,7 +1,9 @@
 import QtQuick
+import Ryoku.Ui as Kit
 import Ryoku.Ui.Singletons
 
-// kind: "plain", "order" or "swatch".
+// kind: "plain", "order" or "swatch". Under crate a plain or order chip is the kit
+// chip, filled with the mark when active; a swatch is colour data and keeps its square.
 Item {
     id: chip
 
@@ -19,14 +21,29 @@ Item {
     readonly property bool _order: chip.kind === "order"
     readonly property bool hovered: hoverArea.containsMouse
 
-    implicitHeight: _swatch ? 18 * Theme.scale : (_order ? 20 * Theme.scale : 22 * Theme.scale)
-    implicitWidth: _swatch
+    readonly property bool _kit: Theme.crate && !chip._swatch
+
+    implicitHeight: chip._kit ? browserKit.implicitHeight
+        : _swatch ? 18 * Theme.scale : (_order ? 20 * Theme.scale : 22 * Theme.scale)
+    implicitWidth: chip._kit ? browserKit.implicitWidth
+        : _swatch
         ? 18 * Theme.scale
         : labelText.implicitWidth + (_order ? 20 : 16) * Theme.scale
 
+    Kit.Chip {
+        id: browserKit
+        objectName: "browserChip"
+        visible: chip._kit
+        enabled: chip._kit
+        anchors.fill: parent
+        text: chip.label
+        on: chip.active
+        onClicked: chip.clicked()
+    }
+
     Rectangle {
         anchors.fill: parent
-        visible: !chip._swatch
+        visible: !chip._swatch && !chip._kit
         radius: Theme.radius
         color: chip.active
             ? (chip._order ? "transparent" : Theme.withAlpha(Theme.surfaceText, 0.06))
@@ -60,7 +77,7 @@ Item {
 
     Text {
         id: labelText
-        visible: !chip._swatch
+        visible: !chip._swatch && !chip._kit
         anchors.verticalCenter: parent.verticalCenter
         anchors.left: parent.left
         anchors.leftMargin: (chip._order ? 8 : 7) * Theme.scale
@@ -101,6 +118,7 @@ Item {
     MouseArea {
         id: hoverArea
         anchors.fill: parent
+        enabled: !chip._kit
         hoverEnabled: true
         cursorShape: Qt.PointingHandCursor
         onClicked: chip.clicked()

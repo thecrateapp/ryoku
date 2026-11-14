@@ -1,9 +1,13 @@
 import QtQuick
+import Ryoku.Ui as Kit
 import Ryoku.Ui.Singletons
 
 // A pressable control in the masthead language: emphasis is inversion, so a held or
 // confirmed control flips to a bone plate with dark ink rather than taking an accent fill.
 // Idle is bare paper with a hairline; hover lifts a faint wash; press gives one small spring.
+// Under crate it is the kit Chip: a hairline that warms on hover, filled with the mark
+// while held, flashed or armed; a destructive one takes the alert. The chip takes the
+// pointer and hands its clicks to the same arm-then-confirm logic.
 Item {
     id: btn
 
@@ -27,15 +31,22 @@ Item {
     signal clicked()
     signal triggered()
 
-    implicitHeight: 30 * Theme.scale
-    implicitWidth: btn.fixedWidth > 0
+    // a lone x is a dismiss: under crate the kit's plateless close button
+    readonly property bool dismiss: (btn.label === "\u00d7" && btn.glyph.length === 0)
+        || (btn.glyph === "\u00d7" && btn.label.length === 0)
+
+    implicitHeight: Theme.crate ? (btn.dismiss ? 32 : chipFace.implicitHeight) : 30 * Theme.scale
+    implicitWidth: Theme.crate && btn.dismiss ? 32 : btn.fixedWidth > 0
         ? btn.fixedWidth
         : Math.max(btn.minWidth * Theme.scale,
-                   Math.min(btn.maxWidth * Theme.scale, content.implicitWidth + btn.hpad * 2 * Theme.scale))
+                   Math.min(btn.maxWidth * Theme.scale, Theme.crate
+                       ? (btn.glyph.length > 0 ? crateRow.implicitWidth + 28 : chipFace.implicitWidth)
+                       : content.implicitWidth + btn.hpad * 2 * Theme.scale))
 
     readonly property color plate: btn.destructive ? Theme.tertiary : Theme.surfaceText
     readonly property color plateInk: btn.destructive ? Theme.background : Theme.surface
-    readonly property bool hovered: hoverArea.containsMouse
+    readonly property bool hovered: Theme.crate ? (btn.dismiss ? closeFace.hot : chipFace.hot) : hoverArea.containsMouse
+    readonly property string shownLabel: btn.armState ? (I18n.tr("Confirm") + " " + btn.label) : btn.label
     readonly property bool hot: btn.active || btn.holdFill || btn.armState
 
     property bool holdFill: false
@@ -66,8 +77,62 @@ Item {
         btn.clicked()
     }
 
+    Kit.IconButton {
+        id: closeFace
+        objectName: "fixedClose"
+        visible: Theme.crate && btn.dismiss
+        enabled: Theme.crate && btn.dismiss && btn.enabled
+        anchors.centerIn: parent
+        width: 32
+        height: 32
+        glyph: "close"
+        onClicked: btn._activate()
+    }
+
+    Kit.Chip {
+        id: chipFace
+        objectName: "fixedChip"
+        visible: Theme.crate && !btn.dismiss
+        enabled: Theme.crate && !btn.dismiss && btn.enabled
+        anchors.fill: parent
+        text: btn.glyph.length > 0 ? "" : btn.shownLabel
+        on: btn.hot
+        color: btn.hot ? (btn.destructive ? Tokens.alert : Tokens.mark) : "transparent"
+        border.color: btn.focused ? Tokens.focus
+            : btn.hot ? (btn.destructive ? Tokens.alert : Tokens.mark)
+            : chipFace.hot ? Tokens.markHover
+            : btn.destructive ? Qt.rgba(Tokens.alert.r, Tokens.alert.g, Tokens.alert.b, 0.5)
+            : Tokens.line
+        labelInk: btn.destructive && !btn.hot ? Tokens.alert : chipFace.tone
+        onClicked: btn._activate()
+
+        Row {
+            id: crateRow
+            visible: btn.glyph.length > 0
+            anchors.centerIn: parent
+            spacing: 6
+            Text {
+                anchors.verticalCenter: parent.verticalCenter
+                text: btn.glyph
+                font.family: Theme.icon
+                font.pixelSize: 14
+                color: chipFace.labelInk
+            }
+            Text {
+                visible: btn.shownLabel.length > 0
+                anchors.verticalCenter: parent.verticalCenter
+                text: btn.shownLabel
+                font.family: Tokens.mono
+                font.pixelSize: 12
+                font.letterSpacing: 12 * 0.04
+                color: chipFace.labelInk
+            }
+        }
+    }
+
     Rectangle {
         id: box
+        visible: !Theme.crate
         anchors.fill: parent
         radius: Theme.radius
         scale: hoverArea.pressed && btn.enabled ? 0.94 : 1
@@ -88,6 +153,7 @@ Item {
 
     Row {
         id: content
+        visible: !Theme.crate
         anchors.centerIn: parent
         spacing: 6 * Theme.scale
         scale: box.scale
@@ -112,7 +178,7 @@ Item {
         Text {
             visible: btn.label.length > 0 || btn.armState
             anchors.verticalCenter: parent.verticalCenter
-            text: btn.armState ? (I18n.tr("Confirm") + " " + btn.label) : btn.label
+            text: btn.shownLabel
             font.family: Theme.sans
             font.weight: btn.hot ? Font.DemiBold : Font.Medium
             font.pixelSize: Theme.fontLabel
@@ -126,7 +192,7 @@ Item {
         id: hoverArea
         anchors.fill: parent
         hoverEnabled: true
-        enabled: btn.enabled
+        enabled: btn.enabled && !Theme.crate
         cursorShape: Qt.PointingHandCursor
         onClicked: btn._activate()
     }

@@ -93,8 +93,9 @@ Item {
                     anchors.verticalCenter: parent.verticalCenter
                     visible: row._slider
                     text: row._format(row._shown)
-                    font.family: Theme.display
-                    font.pixelSize: Theme.fontField
+                    // crate: a value is mono
+                    font.family: Theme.crate ? Theme.mono : Theme.display
+                    font.pixelSize: Theme.crate ? Theme.fontLabel : Theme.fontField
                     color: Theme.withAlpha(Theme.surfaceText, row.enabled ? row.reveal : 0.4 * row.reveal)
                     renderType: Text.NativeRendering
                 }

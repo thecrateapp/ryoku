@@ -1,7 +1,9 @@
 import QtQuick
+import Ryoku.Ui as Kit
 
 // A true binary. On flips the track to a bone plate and slides the knob across; off is a
 // hairline track with a muted knob. The knob springs as it lands, the one bit of motion.
+// Under crate it is the kit Sw, the slim pill switch, right-aligned in the same slot.
 Item {
     id: sw
 
@@ -18,6 +20,7 @@ Item {
 
     Rectangle {
         id: track
+        visible: !Theme.crate
         anchors.fill: parent
         radius: height / 2
         color: sw.checked ? Theme.withAlpha(Theme.surfaceText, sw.enabled ? 1 : 0.4)
@@ -31,6 +34,7 @@ Item {
 
     Rectangle {
         id: knob
+        visible: !Theme.crate
         width: sw._knob
         height: sw._knob
         radius: sw._knob / 2
@@ -42,11 +46,22 @@ Item {
         Behavior on color { ColorAnimation { duration: Theme.fast } }
     }
 
+    Kit.Sw {
+        objectName: "folioSw"
+        visible: Theme.crate
+        anchors.right: parent.right
+        anchors.verticalCenter: parent.verticalCenter
+        on: sw.checked
+        enabled: sw.enabled && Theme.crate
+        opacity: sw.enabled ? 1 : 0.5
+        onToggled: (v) => sw.toggled(v)
+    }
+
     MouseArea {
         id: area
         anchors.fill: parent
         hoverEnabled: true
-        enabled: sw.enabled
+        enabled: sw.enabled && !Theme.crate
         cursorShape: Qt.PointingHandCursor
         onClicked: sw.toggled(!sw.checked)
     }

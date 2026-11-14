@@ -1,6 +1,17 @@
 # Changelog: ryoku/shell/
 
 ## Unreleased
+- **The Ryogami picker wears the shared kit under crate.** Its Theme takes the
+  roles, faces (with the mono), type ladder and the 6 px corner from Tokens; a
+  candidate palette in the theme audition still shows on the chrome. Sliders
+  draw the Beam, switches are Sw, section heads the tracked label, the reset,
+  rice, browser and search chips and its buttons the kit Chip (filled with the
+  mark when held; a lone x is the plateless close), the search segments Seg.
+  The open library and wallpaper type are underlined in the mark, picked index,
+  source and role rows take the pick edge, and the masthead seal, the dotted
+  index rail and the numbered source column are gone. The picker is one opaque
+  working window (popover, hairline), not glass. The stock look is unchanged
+  (`ryogami/picker/`).
 - **The Crate Welcome uses the shared kit.** Under crate the window is the
   opaque panel grey; the step rail is the shared tabs, whose underline marks
   the step (no progress beam under them); each step's title is the shared page header; the picked bar card

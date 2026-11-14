@@ -94,7 +94,7 @@ Column {
 
             Flow {
                 width: parent.width
-                spacing: 3 * Theme.scale
+                spacing: Theme.crate ? 8 : 3 * Theme.scale
                 Repeater {
                     model: modelData.chips
                     delegate: BrowserChip {

@@ -59,8 +59,8 @@ Item {
         anchors.verticalCenter: parent.verticalCenter
         clip: true
         enabled: numberField.enabled
-        font.family: Theme.display
-        font.pixelSize: Theme.fontHead
+        font.family: Theme.crate ? Theme.mono : Theme.display
+        font.pixelSize: Theme.crate ? Theme.fontLabel : Theme.fontHead
         color: numberField.enabled ? Theme.surfaceText : Theme.withAlpha(Theme.surfaceText, 0.4)
         selectionColor: Theme.withAlpha(Theme.surfaceText, 0.24)
         selectedTextColor: Theme.surfaceText

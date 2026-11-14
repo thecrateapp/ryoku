@@ -1,5 +1,8 @@
 import QtQuick
+import Ryoku.Ui.Singletons
 
+// One colour role in the theme designer's index. Under crate the picked role is a
+// list's pick (the pick wash in a 1 px pick edge, the dot in the mark) and its hex is mono.
 Item {
     id: row
 
@@ -17,9 +20,12 @@ Item {
     Rectangle {
         anchors.fill: parent
         radius: Theme.radius
-        color: row.active ? Theme.withAlpha(Theme.surfaceText, 0.09)
+        color: Theme.crate ? (row.active ? Tokens.pickFill : hover.containsMouse ? Tokens.tint5 : "transparent")
+             : row.active ? Theme.withAlpha(Theme.surfaceText, 0.09)
              : hover.containsMouse ? Theme.withAlpha(Theme.surfaceText, 0.05)
              : "transparent"
+        border.width: Theme.crate && row.active ? 1 : 0
+        border.color: Tokens.pickEdge
         Behavior on color { ColorAnimation { duration: Theme.fast } }
     }
 
@@ -29,7 +35,7 @@ Item {
         anchors.rightMargin: 7 * Theme.scale
         anchors.verticalCenter: parent.verticalCenter
         text: row.hex
-        font.family: Theme.display
+        font.family: Theme.crate ? Theme.mono : Theme.display
         font.pixelSize: Theme.fontFine
         color: Theme.withAlpha(Theme.surfaceText, 0.46)
         renderType: Text.NativeRendering
@@ -53,7 +59,7 @@ Item {
                 width: 6 * Theme.scale
                 height: 6 * Theme.scale
                 radius: width / 2
-                color: row.active ? Theme.withAlpha(Theme.surfaceText, 0.9) : "transparent"
+                color: row.active ? (Theme.crate ? Tokens.mark : Theme.withAlpha(Theme.surfaceText, 0.9)) : "transparent"
                 border.width: row.active ? 0 : 1
                 border.color: Theme.withAlpha(Theme.surfaceText, 0.4)
                 Behavior on color { ColorAnimation { duration: Theme.fast } }

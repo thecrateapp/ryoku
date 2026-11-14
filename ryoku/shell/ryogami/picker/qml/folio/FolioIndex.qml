@@ -226,7 +226,7 @@ FolioIndexShell {
 
             Flickable {
                 id: tflick
-                width: treeRow.width - rail.width - treeRow.spacing
+                width: treeRow.width - (rail.visible ? rail.width + treeRow.spacing : 0)
                 height: treeRow.height
                 contentWidth: width
                 contentHeight: tree.height
@@ -252,7 +252,9 @@ FolioIndexShell {
                                 width: parent.width
                                 height: catText.implicitHeight + 16 * Theme.scale
                                 radius: Theme.radius
-                                color: cat._active ? Theme.withAlpha(Theme.surfaceText, 0.09 * nav.reveal)
+                                // crate: an open group carries no plate; its picked section does
+                                color: Theme.crate ? (catArea.containsMouse && !cat._active ? Tokens.tint5 : "transparent")
+                                    : cat._active ? Theme.withAlpha(Theme.surfaceText, 0.09 * nav.reveal)
                                     : (catArea.containsMouse ? Theme.withAlpha(Theme.surfaceText, 0.06 * nav.reveal) : "transparent")
 
                                 Row {
@@ -328,8 +330,12 @@ FolioIndexShell {
                                                 height: 36 * Theme.scale
                                                 radius: Theme.radius
                                                 readonly property bool _active: cat._active && sec.index === nav.activeSectionIndex
-                                                color: sec._active ? Theme.withAlpha(Theme.surfaceText, nav.reveal)
+                                                // crate: a list's pick, the pick wash in a 1 px pick edge
+                                                color: Theme.crate ? (sec._active ? Tokens.pickFill : secArea.containsMouse ? Tokens.tint5 : "transparent")
+                                                    : sec._active ? Theme.withAlpha(Theme.surfaceText, nav.reveal)
                                                     : (secArea.containsMouse ? Theme.withAlpha(Theme.surfaceText, 0.07 * nav.reveal) : "transparent")
+                                                border.width: Theme.crate && sec._active ? 1 : 0
+                                                border.color: Tokens.pickEdge
 
                                                 Text {
                                                     anchors.left: parent.left
@@ -341,7 +347,8 @@ FolioIndexShell {
                                                     font.family: Theme.sans
                                                     font.weight: sec._active ? Font.DemiBold : Font.Medium
                                                     font.pixelSize: Theme.fontWide
-                                                    color: sec._active ? Theme.surface : Theme.withAlpha(Theme.surfaceText, nav.reveal * 0.72)
+                                                    color: Theme.crate ? (sec._active ? Tokens.pickInk : Tokens.inkSecondary)
+                                                        : sec._active ? Theme.surface : Theme.withAlpha(Theme.surfaceText, nav.reveal * 0.72)
                                                     elide: Text.ElideRight
                                                     renderType: Text.NativeRendering
                                                 }
@@ -362,8 +369,10 @@ FolioIndexShell {
                 }
             }
 
+            // the dotted position rail is Ryoku marginalia; the picked row says it under crate
             IndexRail {
                 id: rail
+                visible: !Theme.crate
                 height: treeRow.height
                 count: nav.tabs.length
                 activeIndex: nav.activeTabIndex

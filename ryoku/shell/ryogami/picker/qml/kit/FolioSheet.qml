@@ -1,4 +1,5 @@
 import QtQuick
+import Ryoku.Ui.Singletons
 import QtQuick.Effects
 
 // Callers parent content into mastheadArea, indexArea and readingArea.
@@ -50,7 +51,7 @@ Item {
         radius: Theme.radius
         color: "transparent"
         border.width: 1
-        border.color: Theme.withAlpha(Theme.outline, 0.58)
+        border.color: Theme.crate ? Tokens.line : Theme.withAlpha(Theme.outline, 0.58)
         opacity: sheet.reveal
         clip: true
 
@@ -62,7 +63,7 @@ Item {
             visible: sheet.showMasthead
             topLeftRadius: Theme.radius
             topRightRadius: Theme.radius
-            color: Theme.withAlpha(Theme.surface, 0.99)
+            color: Theme.withAlpha(Theme.surface, Theme.crate ? 1 : 0.99)
         }
         Rectangle {
             anchors.top: mastheadHost.bottom
@@ -70,7 +71,7 @@ Item {
             anchors.bottom: parent.bottom
             width: sheet._indexW
             bottomLeftRadius: Theme.radius
-            color: Theme.withAlpha(Theme.surface, 0.99)
+            color: Theme.withAlpha(Theme.surface, Theme.crate ? 1 : 0.99)
         }
         Item {
             id: mastheadHost
@@ -100,7 +101,9 @@ Item {
             Rectangle {
                 anchors.fill: parent
                 bottomRightRadius: Theme.radius
-                color: Theme.withAlpha(Theme.surface, sheet.pageOpacity)
+                // crate: a working sheet is opaque; a design section that lowers the
+                // page to show the scene through still does
+                color: Theme.withAlpha(Theme.surface, Theme.crate && sheet.pageOpacity >= 0.96 ? 1 : sheet.pageOpacity)
             }
             Item {
                 id: readingHost
