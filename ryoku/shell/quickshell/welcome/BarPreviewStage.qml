@@ -12,7 +12,8 @@ Rectangle {
 
     height: 192
     radius: Tokens.radius
-    color: Tokens.paperLift
+    // under crate a flat frame on the 1 px hairline, without corner ticks
+    color: Tokens.controlsCrate ? "transparent" : Tokens.paperLift
     border.width: Tokens.border
     border.color: Tokens.line
 
@@ -63,7 +64,7 @@ Rectangle {
         radius: Tokens.radius
         color: Tokens.paper
         border.width: Tokens.border
-        border.color: Tokens.lineStrong
+        border.color: Tokens.controlsCrate ? Tokens.line : Tokens.lineStrong
         clip: true
 
         Rectangle {
@@ -96,7 +97,7 @@ Rectangle {
             styleId: root.renderedStyle
         }
 
-        Ticks { anchors.margins: Tokens.s2 }
+        Ticks { objectName: "welcomeTicks"; visible: !Tokens.controlsCrate; anchors.margins: Tokens.s2 }
     }
 
     SequentialAnimation {

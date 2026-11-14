@@ -29,7 +29,7 @@ Item {
                 opacity: 0.9
             }
             Grain { anchors.fill: parent }
-            Ticks { anchors.margins: Tokens.s3 }
+            Ticks { objectName: "welcomeTicks"; visible: !Tokens.controlsCrate; anchors.margins: Tokens.s3 }
 
             Rectangle {
                 anchors.left: parent.left

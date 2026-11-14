@@ -13,11 +13,12 @@ Item {
         width: Math.min(parent.width, 720)
         height: Math.min(parent.height, 360)
         radius: Tokens.radius
-        color: Tokens.paperLift
+        // under crate a flat card on the 1 px hairline, without corner ticks
+        color: Tokens.controlsCrate ? "transparent" : Tokens.paperLift
         border.width: Tokens.border
-        border.color: Tokens.lineStrong
+        border.color: Tokens.controlsCrate ? Tokens.line : Tokens.lineStrong
 
-        Ticks { anchors.margins: Tokens.s3 }
+        Ticks { objectName: "welcomeTicks"; visible: !Tokens.controlsCrate; anchors.margins: Tokens.s3 }
 
         Column {
             anchors.centerIn: parent

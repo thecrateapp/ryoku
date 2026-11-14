@@ -34,11 +34,14 @@ Item {
                 width: Math.floor((parent.width - parent.spacing) * 0.66)
                 height: parent.height
                 radius: Tokens.radius
-                color: Tokens.paper
+                // under crate a flat card on the 1 px hairline, without the lead bar
+                color: Tokens.controlsCrate ? "transparent" : Tokens.paper
                 border.width: Tokens.border
-                border.color: Tokens.lineStrong
+                border.color: Tokens.controlsCrate ? Tokens.line : Tokens.lineStrong
 
                 Rectangle {
+                    objectName: "welcomeStoreLead"
+                    visible: !Tokens.controlsCrate
                     anchors.left: parent.left
                     anchors.top: parent.top
                     anchors.bottom: parent.bottom
@@ -124,11 +127,11 @@ Item {
                 width: parent.width - parent.spacing - storeCard.width
                 height: parent.height
                 radius: Tokens.radius
-                color: Tokens.paperLift
+                color: Tokens.controlsCrate ? "transparent" : Tokens.paperLift
                 border.width: Tokens.border
                 border.color: Tokens.line
 
-                Ticks { anchors.margins: Tokens.s3 }
+                Ticks { objectName: "welcomeTicks"; visible: !Tokens.controlsCrate; anchors.margins: Tokens.s3 }
 
                 Column {
                     anchors.left: parent.left

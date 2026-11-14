@@ -6,7 +6,8 @@ import "welcome" as Welcome
 // The Welcome on the kit, in both looks: an opaque surface; under crate the
 // step rail is the kit's keyed Tabs over a Beam of the way through, a tab
 // moves to its step, the page title is the kit PageHeader and a picked bar card
-// draws through PickCard; stock keeps its own rail, title and card.
+// draws through PickCard, and cards and the live bar frame drop their corner
+// ticks and lead bar; stock keeps its own rail, title, cards and marginalia.
 ShellRoot {
     id: probe
     property string look: "crate"
@@ -15,6 +16,7 @@ ShellRoot {
         implicitWidth: 1180
         implicitHeight: 760
         Welcome.Welcome { id: app; anchors.fill: parent; step: 1 }
+        Welcome.PageMake { id: make; opacity: 0; width: 1100; height: 560 }
     }
 
     function find(item, name) {
@@ -25,6 +27,12 @@ ShellRoot {
             if (hit) return hit;
         }
         return null;
+    }
+    function all(item, name, out) {
+        if (!item) return out;
+        if (item.objectName === name) out.push(item);
+        for (const child of item.children) all(child, name, out);
+        return out;
     }
     function tabsOf(rail) {
         for (const child of rail.children)
@@ -45,6 +53,9 @@ ShellRoot {
         check(header !== null && header.visible === crate && header.title.length > 0, "the page title is the kit PageHeader under crate");
         const pick = find(app, "welcomeBarPick");
         check(pick !== null && pick.visible === crate, "bar cards draw through PickCard under crate");
+        const ticks = all(app, "welcomeTicks", []).concat(all(make, "welcomeTicks", []));
+        check(ticks.length >= 2 && ticks.every(t => t.visible === !crate), "corner ticks only in stock");
+        check(find(make, "welcomeStoreLead").visible === !crate, "the store card's lead bar only in stock");
     }
 
     Timer {
