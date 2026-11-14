@@ -1,6 +1,10 @@
 # Changelog: ryoku/shell/
 
 ## Unreleased
+- **A rice that names no pinned dock apps keeps the user's.** A rice's dock
+  block replaced the whole dock map, so a rice that carries the dock's look but
+  leaves the apps to the user dropped every pin. Applying it now puts the user's
+  pinned apps back (`hub/backend/rice.go`).
 - **A notification with no image or icon shows a kit glyph under crate.** With
   notification images on, a card whose app sent neither an image nor an icon
   drew the Material bell or exclamation mark; under crate it now draws the

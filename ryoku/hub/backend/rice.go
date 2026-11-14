@@ -200,6 +200,35 @@ func nameLauncherMarks(path string) error {
 	return atomicWrite(path, mustJSON(cur), 0o644)
 }
 
+// keepDockPins puts the user's pinned dock apps back after a rice replaced the
+// dock block without naming any: the dock's look travels with a rice, but a
+// rice that leaves "pinned" out (the Crate rice) leaves the apps to the user.
+func keepDockPins(path string, riceShell map[string]any, prev map[string]any) error {
+	riceDock, ok := riceShell["dock"].(map[string]any)
+	if !ok || prev == nil {
+		return nil
+	}
+	if _, names := riceDock["pinned"]; names {
+		return nil
+	}
+	cur := readJSONMap(path)
+	dock, ok := cur["dock"].(map[string]any)
+	if !ok {
+		return nil
+	}
+	changed := false
+	for _, k := range []string{"pinned", "pinnedConfigured"} {
+		if v, had := prev[k]; had {
+			dock[k] = v
+			changed = true
+		}
+	}
+	if !changed {
+		return nil
+	}
+	return atomicWrite(path, mustJSON(cur), 0o644)
+}
+
 // overlayStore sets the allowlisted keys from src into the store file, leaves
 // every other key untouched, and writes atomically. unknown keys in src are
 // ignored, so a rice built on an older schema can never inject a retired key;
@@ -1226,7 +1255,11 @@ func applyRice(slug string, layers []string) error {
 			}
 		}
 	}
+	prevDock, _ := readJSONMap(shellStorePath())["dock"].(map[string]any)
 	if err := overlayStore(shellStorePath(), r.Look["shell"], nil); err != nil {
+		return fmt.Errorf("apply shell look: %w", err)
+	}
+	if err := keepDockPins(shellStorePath(), r.Look["shell"], prevDock); err != nil {
 		return fmt.Errorf("apply shell look: %w", err)
 	}
 	if err := nameLauncherMarks(shellStorePath()); err != nil {

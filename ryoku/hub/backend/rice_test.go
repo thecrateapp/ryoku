@@ -1525,3 +1525,58 @@ func TestRiceApplyAndRestoreNameTheLauncherMarks(t *testing.T) {
 		t.Fatalf("restoring a slot from before the marks kept %v %v, want ryoku", txt, icon)
 	}
 }
+
+// A rice's dock block replaces the user's whole dock map. A rice that names no
+// pinned apps (the Crate rice leaves them to the user) must keep the user's pins;
+// a rice that names them still sets them.
+func TestRiceApplyKeepsDockPinsWhenTheRiceNamesNone(t *testing.T) {
+	dir := t.TempDir()
+	t.Setenv("XDG_CONFIG_HOME", dir)
+	t.Setenv("XDG_CACHE_HOME", filepath.Join(dir, "cache"))
+	t.Setenv("HOME", dir)
+	if err := os.MkdirAll(filepath.Join(dir, "ryoku"), 0o755); err != nil {
+		t.Fatal(err)
+	}
+	origRun, origReload := riceRun, riceReload
+	riceRun = func(name string, args ...string) error { return nil }
+	riceReload = func() {}
+	t.Cleanup(func() { riceRun, riceReload = origRun, origReload })
+	w := func(p, body string) {
+		if err := os.WriteFile(p, []byte(body), 0o644); err != nil {
+			t.Fatal(err)
+		}
+	}
+	writeDesktopStore(t, `{"appearance":{"rounding":2}}`)
+	w(shellStorePath(), `{"dock":{"design":"ryoku","pinned":["kitty","firefox"],"pinnedConfigured":true}}`)
+	w(launcherStorePath(), `{}`)
+	for slug, dock := range map[string]string{
+		"keeps": `{"design":"shima","edge":"bottom"}`,
+		"sets":  `{"design":"ryoku","pinned":[]}`,
+	} {
+		if err := os.MkdirAll(filepath.Join(ricesDir(), slug), 0o755); err != nil {
+			t.Fatal(err)
+		}
+		w(ricePath(slug), `{"schema":1,"slug":"`+slug+`","name":"`+slug+`","look":{"shell":{"dock":`+dock+`},"launcher":{}}}`)
+	}
+	dock := func() map[string]any {
+		d, _ := readJSONMap(shellStorePath())["dock"].(map[string]any)
+		return d
+	}
+	if err := applyRice("keeps", nil); err != nil {
+		t.Fatal(err)
+	}
+	d := dock()
+	if d["design"] != "shima" || d["edge"] != "bottom" {
+		t.Fatalf("the rice's dock look was not applied: %v", d)
+	}
+	pins, _ := d["pinned"].([]any)
+	if len(pins) != 2 || pins[0] != "kitty" || d["pinnedConfigured"] != true {
+		t.Fatalf("a rice naming no pins dropped the user's: %v", d)
+	}
+	if err := applyRice("sets", nil); err != nil {
+		t.Fatal(err)
+	}
+	if pins, _ := dock()["pinned"].([]any); len(pins) != 0 {
+		t.Fatalf("a rice naming its pins did not set them: %v", dock())
+	}
+}
