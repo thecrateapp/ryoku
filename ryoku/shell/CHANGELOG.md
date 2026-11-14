@@ -10,6 +10,19 @@
   is unchanged (`quickshell/ryopin/`, `hyprland/modules/decoration.lua`;
   `tests/ui/ryopin-kit-probe.sh`, `tests/hyprland-crate-glass.lua`,
   `tests/visual/surfaces/scenes/ryopin.qml`).
+- **The hero launcher draws with the kit under crate.** The card is the one
+  glass (Tokens.glass in a hairline at the 6 px corner, no filled shadow,
+  frosted by a crate-glass blur rule on the `launcher` and
+  `launcher-window-rail` layers instead of its own screen still); the search
+  is the kit Field with the search glyph, the modes kit Chips, the "/"
+  categories the kit Tabs; the lead result, the picked row, the focused
+  action and the focused window tile take the pick wash and the 1 px pick
+  edge; the ledger drops its rank numerals and grid rules; captions are the
+  tracked mono label. The card's drawing moves into LauncherCard and the rail's
+  tiles into WindowTile, so `tests/ui/launcher-kit-probe.sh` and the launcher
+  scene load them offscreen; under the software renderer the card draws a
+  plain clipped plate, since it has no shader effects. The kit Field reports
+  keys and composition text to its owner. Stock is unchanged.
 - **A rice that names no launcher mark gets Ryoku's own.** The bar keeps its
   wordmark and glyph in shell.json and its widget cache, so switching from a
   rice that set them (the Crate rice's CRATE) to one that did not, or restoring

@@ -19,9 +19,12 @@ Item {
     property bool windowRailFocused: false
     property bool resultNavigationActive: false
     property string activeMode: "rest"
+    // the stock query line's input holds the query in both looks; under crate
+    // the kit Field is the input the user sees and types in, kept in step
     property alias query: field.text
-    readonly property string preeditText: field.preeditText
-    readonly property bool inputFocused: field.activeFocus
+    readonly property bool crate: Tokens.controlsCrate
+    readonly property string preeditText: crate ? kitField.preeditText : field.preeditText
+    readonly property bool inputFocused: field.activeFocus || kitField.focused
 
     signal moved(int delta)
     signal accepted()
@@ -61,22 +64,74 @@ Item {
     readonly property real shade: Tokens.light ? 1 : 0
 
     function focusField() {
-        field.forceActiveFocus();
+        if (crate)
+            kitField.grabFocus();
+        else
+            field.forceActiveFocus();
     }
 
     function cancelPreedit() {
         Qt.inputMethod.reset();
-        field.forceActiveFocus();
+        focusField();
     }
 
     function handlePreeditChange(text) {
         if (String(text || "").length === 0)
             return;
-        field.forceActiveFocus();
+        focusField();
         compositionStarted();
     }
 
     onPreeditTextChanged: handlePreeditChange(preeditText)
+    // a live theme switch hands the keys to the input that now shows
+    onCrateChanged: if (inputFocused) Qt.callLater(focusField)
+
+    // One key path for both inputs: the stock TextInput and the kit Field
+    // (which reports every key before its input handles it).
+    function handleKey(event, preedit) {
+        var composition = LauncherState.compositionKeyDisposition(
+            preedit.length > 0,
+            event.key === Qt.Key_Escape);
+        if (composition === "input") {
+            return;
+        } else if (composition === "cancel") {
+            root.dismissed();
+            event.accepted = true;
+        } else if ((root.shelfOpen && (event.key === Qt.Key_Tab
+                || event.key === Qt.Key_Backtab
+                || event.key === Qt.Key_Left
+                || event.key === Qt.Key_Right
+                || event.key === Qt.Key_Up
+                || event.key === Qt.Key_Down))
+                || (root.resultNavigationActive
+                    && (event.key === Qt.Key_Left
+                        || event.key === Qt.Key_Right
+                        || event.key === Qt.Key_Up
+                        || event.key === Qt.Key_Down))) {
+            root.keyPressed(event);
+            event.accepted = true;
+        } else if (event.key === Qt.Key_Up || event.key === Qt.Key_Down) {
+            root.moved(event.key === Qt.Key_Up ? -1 : 1);
+            event.accepted = true;
+        } else if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter) {
+            root.accepted();
+            event.accepted = true;
+        } else if (event.key === Qt.Key_Escape) {
+            root.dismissed();
+            event.accepted = true;
+        } else if (event.key === Qt.Key_F1) {
+            root.helpRequested();
+            event.accepted = true;
+        } else if (event.key === Qt.Key_Tab || event.key === Qt.Key_Backtab
+                || ((event.modifiers & Qt.ControlModifier)
+                    && (event.key === Qt.Key_K
+                        || (event.key === Qt.Key_A
+                            && root.activeMode === "rest"
+                            && root.query.length === 0)))) {
+            root.keyPressed(event);
+            event.accepted = true;
+        }
+    }
 
     SystemClock {
         id: clock
@@ -199,9 +254,9 @@ Item {
             style: Text.Raised
             styleColor: Qt.rgba(root.shade, root.shade, root.shade, 0.82)
             font.family: Theme.mono
-            font.pixelSize: 9 * root.s
-            font.weight: Font.DemiBold
-            font.letterSpacing: 1.5 * root.s
+            font.pixelSize: root.crate ? Tokens.fMicro : 9 * root.s
+            font.weight: root.crate ? Font.Normal : Font.DemiBold
+            font.letterSpacing: root.crate ? Tokens.trackLabel : 1.5 * root.s
         }
 
         Text {
@@ -210,7 +265,8 @@ Item {
             style: Text.Raised
             styleColor: Qt.rgba(root.shade, root.shade, root.shade, 0.86)
             font.family: Theme.font
-            font.pixelSize: (root.compressed ? 17 : 28) * root.s
+            font.pixelSize: root.crate ? (root.compressed ? Tokens.fValue : Tokens.fHero)
+                : (root.compressed ? 17 : 28) * root.s
             font.weight: Font.Light
             font.features: ({ "tnum": 1 })
         }
@@ -244,7 +300,8 @@ Item {
                 style: Text.Raised
                 styleColor: Qt.rgba(root.shade, root.shade, root.shade, 0.86)
                 font.family: Theme.font
-                font.pixelSize: (root.compressed ? 14 : 19) * root.s
+                font.pixelSize: root.crate ? (root.compressed ? Tokens.fRow : Tokens.fValue)
+                    : (root.compressed ? 14 : 19) * root.s
                 font.weight: Font.Medium
                 font.features: ({ "tnum": 1 })
             }
@@ -258,23 +315,27 @@ Item {
             style: Text.Raised
             styleColor: Qt.rgba(root.shade, root.shade, root.shade, 0.86)
             font.family: Theme.font
-            font.pixelSize: 10 * root.s
+            font.pixelSize: root.crate ? Tokens.fSmall : 10 * root.s
         }
 
         Text {
+            objectName: "heroDate"
             anchors.right: parent.right
             text: root.dateText
             color: Theme.bright
             style: Text.Raised
             styleColor: Qt.rgba(root.shade, root.shade, root.shade, 0.86)
-            font.family: Theme.mono
-            font.pixelSize: 9 * root.s
-            font.letterSpacing: 0.6 * root.s
+            font.family: root.crate ? Tokens.mono : Theme.mono
+            font.pixelSize: root.crate ? Tokens.fMicro : 9 * root.s
+            font.letterSpacing: root.crate ? Tokens.trackLabel : 0.6 * root.s
+            font.capitalization: root.crate ? Font.AllUppercase : Font.MixedCase
         }
     }
 
     Item {
         id: queryLine
+        objectName: "heroQueryLine"
+        visible: !root.crate
         anchors.horizontalCenter: parent.horizontalCenter
         y: (root.compressed ? 39 : 105) * root.s
         width: Math.min(parent.width - 48 * root.s, 430 * root.s)
@@ -331,50 +392,7 @@ Item {
             Accessible.searchEdit: true
             Accessible.focusable: true
             Accessible.focused: activeFocus
-            Keys.onPressed: event => {
-                var composition = LauncherState.compositionKeyDisposition(
-                    field.preeditText.length > 0,
-                    event.key === Qt.Key_Escape);
-                if (composition === "input") {
-                    return;
-                } else if (composition === "cancel") {
-                    root.dismissed();
-                    event.accepted = true;
-                } else if ((root.shelfOpen && (event.key === Qt.Key_Tab
-                        || event.key === Qt.Key_Backtab
-                        || event.key === Qt.Key_Left
-                        || event.key === Qt.Key_Right
-                        || event.key === Qt.Key_Up
-                        || event.key === Qt.Key_Down))
-                        || (root.resultNavigationActive
-                            && (event.key === Qt.Key_Left
-                                || event.key === Qt.Key_Right
-                                || event.key === Qt.Key_Up
-                                || event.key === Qt.Key_Down))) {
-                    root.keyPressed(event);
-                    event.accepted = true;
-                } else if (event.key === Qt.Key_Up || event.key === Qt.Key_Down) {
-                    root.moved(event.key === Qt.Key_Up ? -1 : 1);
-                    event.accepted = true;
-                } else if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter) {
-                    root.accepted();
-                    event.accepted = true;
-                } else if (event.key === Qt.Key_Escape) {
-                    root.dismissed();
-                    event.accepted = true;
-                } else if (event.key === Qt.Key_F1) {
-                    root.helpRequested();
-                    event.accepted = true;
-                } else if (event.key === Qt.Key_Tab || event.key === Qt.Key_Backtab
-                        || ((event.modifiers & Qt.ControlModifier)
-                            && (event.key === Qt.Key_K
-                                || (event.key === Qt.Key_A
-                                    && root.activeMode === "rest"
-                                    && field.text.length === 0)))) {
-                    root.keyPressed(event);
-                    event.accepted = true;
-                }
-            }
+            Keys.onPressed: event => root.handleKey(event, field.preeditText)
         }
 
         Text {
@@ -400,8 +418,40 @@ Item {
         }
     }
 
+    // the kit's search field, in the query line's place
+    Field {
+        id: kitField
+        objectName: "heroKitField"
+        visible: root.crate
+        anchors.horizontalCenter: parent.horizontalCenter
+        y: queryLine.y + (queryLine.height - height) / 2
+        width: queryLine.width
+        toolbar: true
+        glyph: "search"
+        placeholder: I18n.tr("Search")
+        clearOnEscape: false
+        // over the hero art the field sits on the glass, not bare
+        color: Tokens.glass
+        Accessible.role: Accessible.EditableText
+        Accessible.name: I18n.tr("Launcher search")
+        Accessible.description: I18n.tr("Type to search or use the mode controls")
+        onEdited: value => field.text = value
+        onKeyPressed: event => root.handleKey(event, kitField.preeditText)
+        onEscaped: root.dismissed()
+
+        Connections {
+            target: field
+            function onTextChanged() {
+                if (kitField.text !== field.text)
+                    kitField.text = field.text;
+            }
+        }
+    }
+
     Row {
         id: modeKeys
+        objectName: "heroModeKeys"
+        visible: !root.crate
         anchors.horizontalCenter: parent.horizontalCenter
         y: (root.compressed ? 83 : 154) * root.s
         spacing: 7 * root.s
@@ -429,6 +479,33 @@ Item {
             label: I18n.tr("REC")
             active: root.activeMode === "recent"
             onActivated: root.modeRequested("recent")
+        }
+    }
+
+    // the modes as kit Chips under crate, the live one filled with the mark
+    Row {
+        objectName: "heroModeChips"
+        visible: root.crate
+        anchors.horizontalCenter: parent.horizontalCenter
+        y: modeKeys.y + (modeKeys.height - height) / 2
+        spacing: Tokens.s2
+
+        Repeater {
+            model: [
+                { mode: "all", label: I18n.tr("ALL") },
+                { mode: "image", label: I18n.tr("IMG") },
+                { mode: "file", label: I18n.tr("FILE") },
+                { mode: "recent", label: I18n.tr("REC") }
+            ]
+            Chip {
+                required property var modelData
+                objectName: "heroMode-" + modelData.mode
+                text: modelData.label
+                on: root.activeMode === modelData.mode
+                // over the hero art the off chips sit on the glass, not bare
+                color: on ? Tokens.mark : Tokens.glass
+                onClicked: root.modeRequested(modelData.mode)
+            }
         }
     }
 }

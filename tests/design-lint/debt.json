@@ -1229,14 +1229,8 @@
  "ryoku/shell/quickshell/shell/modules/launcher/shared/Singletons/Theme.qml": {
   "hex-colour": 21
  },
- "ryoku/shell/quickshell/shell/modules/launcher/variants/hero/ActionShelf.qml": {
-  "pixel-size": 2
- },
  "ryoku/shell/quickshell/shell/modules/launcher/variants/hero/HeroShutter.qml": {
-  "pixel-size": 5
- },
- "ryoku/shell/quickshell/shell/modules/launcher/variants/hero/LeadResult.qml": {
-  "pixel-size": 6
+  "pixel-size": 2
  },
  "ryoku/shell/quickshell/shell/modules/launcher/variants/hero/ModeKey.qml": {
   "pixel-size": 1
@@ -1248,10 +1242,10 @@
   "pixel-size": 2
  },
  "ryoku/shell/quickshell/shell/modules/launcher/variants/hero/ResultLedger.qml": {
-  "pixel-size": 4
+  "pixel-size": 1
  },
  "ryoku/shell/quickshell/shell/modules/launcher/variants/hero/WindowRail.qml": {
-  "pixel-size": 4
+  "pixel-size": 2
  },
  "ryoku/shell/quickshell/shell/modules/launcher/variants/kairos/Main.qml": {
   "pixel-size": 6

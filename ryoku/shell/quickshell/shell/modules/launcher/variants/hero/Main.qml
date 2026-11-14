@@ -115,8 +115,11 @@ Scope {
     // capture surface that lives as long as the launcher. Only ask where the
     // compositor tolerates that shape; elsewhere the card opens over a solid
     // drawer, which is the path a failed or timed-out capture already takes.
+    // Under crate the card is the one glass and the compositor frosts it
+    // (decoration.lua crate-glass-blur), so it never asks for its own still.
     function frostEligible() {
-        return (LauncherConfig.bgBlur | 0) > 0
+        return !Ui.Tokens.controlsCrate
+            && (LauncherConfig.bgBlur | 0) > 0
             && !Motion.reduce
             && !Performance.blurDisabled
             && Wm.caps.persistentScreenCapture === true;

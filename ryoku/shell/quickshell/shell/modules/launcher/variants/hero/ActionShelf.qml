@@ -16,6 +16,9 @@ Flickable {
     property string focusedActionId: ""
 
     signal focusRequested(string actionId)
+    // under crate an action is a kit list cell: a hairline at Tokens.radius,
+    // the focused one the pick wash in the 1 px pickEdge
+    readonly property bool crate: Ui.Tokens.controlsCrate
     signal executeRequested(string actionId)
 
     readonly property var geometry: Results.shelfGeometry(actions.length, s)
@@ -152,10 +155,14 @@ Flickable {
                             ? actionRow.width
                             : (actionRow.width - gap * (actionCount - 1)) / actionCount
                         height: actionRow.height
-                        color: focused ? Theme.drawerRaised
+                        color: focused ? (root.crate ? Ui.Tokens.pickFill : Theme.drawerRaised)
                             : (actionPointer.containsMouse ? Theme.sheen : "transparent")
+                        radius: root.crate ? Ui.Tokens.radius : 0
                         border.width: 1
-                        border.color: focused ? Theme.frame : Theme.hair
+                        border.color: root.crate
+                            ? (focused ? Ui.Tokens.pickEdge
+                                : actionPointer.containsMouse ? Ui.Tokens.markHover : Ui.Tokens.line)
+                            : focused ? Theme.frame : Theme.hair
 
                         Accessible.role: Accessible.Button
                         Accessible.name: currentAction
@@ -206,11 +213,14 @@ Flickable {
                                 text: actionCell.currentAction
                                     ? String(actionCell.currentAction.name || "").toUpperCase()
                                     : ""
-                                color: actionCell.focused ? Theme.bright : Theme.subtle
+                                color: root.crate
+                                    ? (actionCell.focused ? Ui.Tokens.pickInk : Ui.Tokens.inkSecondary)
+                                    : actionCell.focused ? Theme.bright : Theme.subtle
                                 font.family: Theme.mono
-                                font.pixelSize: 9 * root.s
-                                font.weight: actionCell.focused ? Font.DemiBold : Font.Medium
-                                font.letterSpacing: 0.7 * root.s
+                                font.pixelSize: root.crate ? Ui.Tokens.fMicro : 9 * root.s
+                                font.weight: root.crate ? Font.Normal
+                                    : actionCell.focused ? Font.DemiBold : Font.Medium
+                                font.letterSpacing: root.crate ? Ui.Tokens.trackLabel : 0.7 * root.s
                                 elide: Text.ElideRight
                             }
                         }
@@ -240,16 +250,17 @@ Flickable {
         height: 16 * root.s
         z: 10
         visible: root.visibleRange.length > 0
-        color: Theme.drawer
+        color: root.crate ? Ui.Tokens.popover : Theme.drawer
+        radius: root.crate ? Ui.Tokens.radius : 0
         border.width: 1
-        border.color: Theme.hair
+        border.color: root.crate ? Ui.Tokens.line : Theme.hair
 
         Text {
             anchors.centerIn: parent
             text: root.visibleRange
-            color: Theme.bright
+            color: root.crate ? Ui.Tokens.ink : Theme.bright
             font.family: Theme.mono
-            font.pixelSize: 7.5 * root.s
+            font.pixelSize: root.crate ? Ui.Tokens.fTiny : 7.5 * root.s
             font.weight: Font.DemiBold
             font.features: ({ "tnum": 1 })
         }

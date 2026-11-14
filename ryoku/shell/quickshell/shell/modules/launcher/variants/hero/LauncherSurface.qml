@@ -1,7 +1,6 @@
 pragma ComponentBehavior: Bound
 
 import QtQuick
-import QtQuick.Effects
 import Quickshell
 import "../../../../components"
 import Quickshell.Wayland
@@ -464,31 +463,13 @@ PanelWindow {
             onPressed: event => event.accepted = true
         }
 
-        RectangularShadow {
-            width: visualGroup.width
-            height: visualGroup.height
-            color: Qt.rgba(0, 0, 0, 0.94)
-            offset: Qt.vector2d(8 * win.s, 8 * win.s)
-            blur: Math.max(0.5, win.s)
-            spread: 0
-            topLeftRadius: win.longRadius
-            topRightRadius: win.shortRadius
-            bottomLeftRadius: win.shortRadius
-            bottomRightRadius: win.longRadius
-        }
-
-        ClippingRectangle {
+        HeroVariant.LauncherCard {
             id: cardClip
             width: visualGroup.width
             height: visualGroup.height
-            color: Theme.drawer
-            contentUnderBorder: true
-            topLeftRadius: win.longRadius
-            topRightRadius: win.shortRadius
-            bottomLeftRadius: win.shortRadius
-            bottomRightRadius: win.longRadius
-            border.width: 1
-            border.color: Theme.frame
+            s: win.s
+            longRadius: win.longRadius
+            shortRadius: win.shortRadius
 
             Loader {
                 id: frostPresentation

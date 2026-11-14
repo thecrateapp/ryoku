@@ -30,12 +30,20 @@ Rectangle {
         return detail.length ? title + ", " + detail : title;
     }
 
-    implicitHeight: 82 * s
-    color: Theme.leadContainer
-    opacity: entry && entry.disabled ? 0.56 : 1
+    // Under crate the lead is the picked row of the kit: the pick wash in the
+    // 1 px pickEdge at Tokens.radius, its ink the pick ink, its captions the
+    // tracked mono label. Stock keeps the bone plate in a 2 px bright edge.
+    readonly property bool crate: Tokens.controlsCrate
+    readonly property color ink: crate ? Tokens.pickInk : Theme.onLead
+    readonly property color inkDim: crate ? Tokens.pickInkDim : Theme.onLeadDim
 
-    border.width: Math.max(1, 2 * s)
-    border.color: Theme.bright
+    implicitHeight: 82 * s
+    color: crate ? Tokens.pickFill : Theme.leadContainer
+    opacity: entry && entry.disabled ? 0.56 : 1
+    radius: crate ? Tokens.radius : 0
+
+    border.width: crate ? Tokens.border : Math.max(1, 2 * s)
+    border.color: crate ? Tokens.pickEdge : Theme.bright
 
     Accessible.role: Accessible.ListItem
     Accessible.name: accessibleName
@@ -153,9 +161,11 @@ Rectangle {
             width: parent.visualHasPreview || parent.visualHasIcon
                 || parent.visualIsWeb ? 38 * parent.scaleFactor : 0
             height: width
-            color: parent.visualIsWeb ? Theme.onLead : Theme.drawerRaised
+            color: root.crate ? (parent.visualIsWeb ? Tokens.mark : "transparent")
+                : parent.visualIsWeb ? Theme.onLead : Theme.drawerRaised
+            radius: root.crate ? Tokens.radius : 0
             border.width: parent.visualHasPreview ? Math.max(1, parent.scaleFactor) : 0
-            border.color: Theme.onLeadDim
+            border.color: root.crate ? Tokens.line : Theme.onLeadDim
             clip: true
 
             Image {
@@ -177,9 +187,9 @@ Rectangle {
                 anchors.centerIn: parent
                 visible: icon.parent.visualIsWeb
                 text: "?"
-                color: Theme.leadContainer
-                font.family: Theme.mono
-                font.pixelSize: 24 * icon.parent.scaleFactor
+                color: root.crate ? Tokens.paper : Theme.leadContainer
+                font.family: root.crate ? Tokens.mono : Theme.mono
+                font.pixelSize: root.crate ? Tokens.fValue : 24 * icon.parent.scaleFactor
                 font.weight: Font.DemiBold
             }
         }
@@ -195,13 +205,14 @@ Rectangle {
             spacing: 3 * parent.scaleFactor
 
             Text {
+                objectName: "leadTitle"
                 width: parent.width
                 text: parent.parent.visualEntry
                     ? String(parent.parent.visualEntry.title || "") : ""
-                color: Theme.onLead
-                font.family: Theme.font
-                font.pixelSize: 16 * parent.parent.scaleFactor
-                font.weight: Font.DemiBold
+                color: root.ink
+                font.family: root.crate ? Tokens.ui : Theme.font
+                font.pixelSize: root.crate ? Tokens.fRow : 16 * parent.parent.scaleFactor
+                font.weight: root.crate ? Font.Medium : Font.DemiBold
                 elide: Text.ElideRight
             }
 
@@ -211,10 +222,10 @@ Rectangle {
                     ? parent.parent.visualError
                     : root.metadataFor(parent.parent.visualEntry)
                 color: parent.parent.visualError.length
-                    ? Theme.onLead : Theme.onLeadDim
-                font.family: Theme.mono
-                font.pixelSize: 9 * parent.parent.scaleFactor
-                font.letterSpacing: 0.35 * parent.parent.scaleFactor
+                    ? (root.crate ? Tokens.alert : root.ink) : root.inkDim
+                font.family: root.crate ? Tokens.ui : Theme.mono
+                font.pixelSize: root.crate ? Tokens.fSmall : 9 * parent.parent.scaleFactor
+                font.letterSpacing: root.crate ? 0 : 0.35 * parent.parent.scaleFactor
                 elide: Text.ElideMiddle
                 visible: text.length > 0
             }
@@ -234,11 +245,11 @@ Rectangle {
                         : String(parent.parent.visualPrimary.name || I18n.tr("OPEN"))
                             .toUpperCase())
                     : I18n.tr("INFO")
-                color: Theme.onLead
-                font.family: Theme.mono
-                font.pixelSize: 9 * parent.parent.scaleFactor
-                font.weight: Font.DemiBold
-                font.letterSpacing: 0.8 * parent.parent.scaleFactor
+                color: root.ink
+                font.family: root.crate ? Tokens.mono : Theme.mono
+                font.pixelSize: root.crate ? Tokens.fMicro : 9 * parent.parent.scaleFactor
+                font.weight: root.crate ? Font.Normal : Font.DemiBold
+                font.letterSpacing: root.crate ? Tokens.trackLabel : 0.8 * parent.parent.scaleFactor
             }
 
             Text {
@@ -249,10 +260,10 @@ Rectangle {
                             ? I18n.tr("WINDOW FOCUS  ·  ENTER")
                             : I18n.tr("ENTER NEW  ·  TAB WINDOWS"))
                         : I18n.tr("\u23ce  ENTER"))
-                color: Theme.onLeadDim
-                font.family: Theme.mono
-                font.pixelSize: 8 * parent.parent.scaleFactor
-                font.letterSpacing: 0.5 * parent.parent.scaleFactor
+                color: root.crate ? Tokens.inkSubtle : root.inkDim
+                font.family: root.crate ? Tokens.mono : Theme.mono
+                font.pixelSize: root.crate ? Tokens.fMicro : 8 * parent.parent.scaleFactor
+                font.letterSpacing: root.crate ? Tokens.trackLabel : 0.5 * parent.parent.scaleFactor
             }
 
             Text {
@@ -260,10 +271,11 @@ Rectangle {
                 visible: parent.parent.visualSecondaries.length > 0
                 text: I18n.tr("+%1 MORE  \u00b7  CTRL+K")
                     .arg(parent.parent.visualSecondaries.length)
-                color: Theme.onLead
-                font.family: Theme.mono
-                font.pixelSize: 8 * parent.parent.scaleFactor
-                font.weight: Font.DemiBold
+                color: root.crate ? Tokens.inkSubtle : root.ink
+                font.family: root.crate ? Tokens.mono : Theme.mono
+                font.pixelSize: root.crate ? Tokens.fMicro : 8 * parent.parent.scaleFactor
+                font.weight: root.crate ? Font.Normal : Font.DemiBold
+                font.letterSpacing: root.crate ? Tokens.trackLabel : 0
             }
         }
     }

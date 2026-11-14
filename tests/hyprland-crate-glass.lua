@@ -77,6 +77,9 @@ local namespaces = {
     -- AskBubbleCard/Disc), not the file that maps the layer
     ["ryoku-ask"] = "AskBar (AskSurface)",
     ["ryoku-ask-bubble"] = "AskBubble (AskBubbleCard, AskBubbleDisc)",
+    -- the hero launcher's layers host the glass drawn in LauncherCard and WindowTile
+    ["launcher"] = "modules/launcher/variants/hero/LauncherCard.qml",
+    ["launcher-window-rail"] = "modules/launcher/variants/hero/WindowTile.qml",
 }
 for path in listing:lines() do
     local file = assert(io.open(path))

@@ -17,10 +17,15 @@ Rectangle {
     property string glyph: ""          // a leading catalogue glyph, "search" for a search field
     property alias inputObjectName: input.objectName
     readonly property bool focused: input.activeFocus
+    // text an input method is still composing (not yet in `text`)
+    readonly property alias preeditText: input.preeditText
     signal committed(string value)
     signal edited(string value)
     signal accepted()
     signal escaped()
+    // every key the input sees, before it handles it: a caller that accepts
+    // the event (arrows over a list, Tab between regions) keeps it from the input
+    signal keyPressed(var event)
 
     implicitHeight: toolbar ? 36 : 30
     radius: Tokens.radius
@@ -64,6 +69,7 @@ Rectangle {
         onTextEdited: field.edited(text)
         onEditingFinished: field.committed(text)
         onAccepted: field.accepted()
+        Keys.onPressed: event => field.keyPressed(event)
         Keys.onEscapePressed: {
             if (field.clearOnEscape) {
                 text = "";
