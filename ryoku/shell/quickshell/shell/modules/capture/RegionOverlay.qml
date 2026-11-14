@@ -44,7 +44,6 @@ PanelWindow {
     readonly property real by: box ? Math.max(0, box.y) : 0
     readonly property real bw: box ? Math.min(win.screenW, box.x + box.w) - bx : 0
     readonly property real bh: box ? Math.min(win.screenH, box.y + box.h) - by : 0
-    readonly property color dim: Qt.rgba(0, 0, 0, 0.45)
 
     screen: modelData
     visible: Recorder.active && Recorder.regionGeom !== "" && onScreen
@@ -59,9 +58,14 @@ PanelWindow {
     // click-through: purely a visual boundary, never eats a press.
     mask: Region {}
 
-    // four dim bands framing the clear box (top / bottom / left / right).
-    Rectangle { color: win.dim; x: 0; y: 0; width: win.screenW; height: win.by }
-    Rectangle { color: win.dim; x: 0; y: win.by + win.bh; width: win.screenW; height: win.screenH - (win.by + win.bh) }
-    Rectangle { color: win.dim; x: 0; y: win.by; width: win.bx; height: win.bh }
-    Rectangle { color: win.dim; x: win.bx + win.bw; y: win.by; width: win.screenW - (win.bx + win.bw); height: win.bh }
+    // four dim bands framing the clear box (RegionDim).
+    RegionDim {
+        anchors.fill: parent
+        bx: win.bx
+        by: win.by
+        bw: win.bw
+        bh: win.bh
+        screenW: win.screenW
+        screenH: win.screenH
+    }
 }

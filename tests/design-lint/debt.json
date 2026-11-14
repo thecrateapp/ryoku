@@ -1009,12 +1009,6 @@
  "ryoku/shell/quickshell/shell/modules/bar/popouts/VoicePopout.qml": {
   "pixel-size": 4
  },
- "ryoku/shell/quickshell/shell/modules/capture/CameraHandles.qml": {
-  "pixel-size": 2
- },
- "ryoku/shell/quickshell/shell/modules/capture/KeypressOverlay.qml": {
-  "pixel-size": 1
- },
  "ryoku/shell/quickshell/shell/modules/desktop/MenuChip.qml": {
   "control-name": 1
  },

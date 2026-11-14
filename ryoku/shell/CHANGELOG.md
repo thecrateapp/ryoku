@@ -34,6 +34,18 @@
   lead rule, with the kit's close. The stock look is unchanged
   (`quickshell/keys/`, `quickshell/keys-hint/`, `hyprland/modules/decoration.lua`;
   `tests/ui/keys-kit-probe.sh`, `tests/hyprland-crate-glass.lua`).
+- **The capture overlays draw with the shared kit under crate.** Picking a
+  region or a window edges it in the 1 px selection mark, and the size readout
+  is an opaque tag with a mono value that stays on screen, so it reads over
+  whatever the selection crosses. The camera bubble takes the popover ground
+  while it warms up, Solar's video camera cue and a 1 px rim in the mark; its
+  handles are popover knobs, its radius and size readouts the same tags, and its
+  mirror switch the kit's icon button with Solar's flip glyph (new in the
+  catalogue). The keypress placement edge takes the shared corner and the "drag
+  to place" tag the kit's tracked caption. The dim around a selection or a
+  region recording is the theme's scrim. The keycaps keep their fixed stock and
+  the stock look is unchanged (`modules/capture/`, `ui/tools/`;
+  `tests/ui/capture-kit-probe.sh`, `tests/visual/surfaces/scenes/capture.qml`).
 - **The bar's audio glyph shows what you are listening through.** Under crate
   the audio widget draws a kit glyph for the default sink's device, read from
   its PipeWire properties: Bluetooth headphones, a remote speaker (a Bluetooth

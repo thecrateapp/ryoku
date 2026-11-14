@@ -70,40 +70,13 @@ PanelWindow {
         motionEnabled: !Motion.reduce
     }
 
-    Rectangle {
+    // the edge and the "DRAG TO PLACE" tag (KeypressPlacement).
+    KeypressPlacement {
         anchors.fill: display
         anchors.margins: -10 * win.us
-        visible: opacity > 0.01
-        opacity: (stackHover.hovered || drag.dragging) && !Recorder.active ? 1 : 0
-        color: "transparent"
-        radius: (Tokens.radius + 6) * win.us
-        border.width: Tokens.border * win.us
-        border.color: Keypresses.theme === "dark" ? Tokens.keycapOnDark : Tokens.keycapOnLight
-
-        Behavior on opacity {
-            NumberAnimation { duration: Motion.dur(150); easing.type: Easing.OutCubic }
-        }
-
-        Rectangle {
-            anchors.horizontalCenter: parent.horizontalCenter
-            anchors.top: parent.bottom
-            anchors.topMargin: Tokens.s1 * win.us
-            width: dragLabel.implicitWidth + 18 * win.us
-            height: 24 * win.us
-            radius: height / 2
-            color: Keypresses.theme === "dark" ? Tokens.keycapLight : Tokens.keycapDark
-
-            Text {
-                id: dragLabel
-                anchors.centerIn: parent
-                text: I18n.tr("DRAG TO PLACE")
-                color: Keypresses.theme === "dark" ? Tokens.keycapOnLight : Tokens.keycapOnDark
-                font.family: Tokens.ui
-                font.pixelSize: 9 * win.us
-                font.weight: Font.DemiBold
-                font.letterSpacing: Tokens.trackLabel * win.us
-            }
-        }
+        dark: Keypresses.theme === "dark"
+        shown: (stackHover.hovered || drag.dragging) && !Recorder.active
+        us: win.us
     }
 
     Item {

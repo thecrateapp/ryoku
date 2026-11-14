@@ -124,48 +124,19 @@ PanelWindow {
     readonly property real hlw: (win.sel === "window" && win.hoverWin >= 0) ? win.wins[win.hoverWin].w : win.rw
     readonly property real hlh: (win.sel === "window" && win.hoverWin >= 0) ? win.wins[win.hoverWin].h : win.rh
 
-    readonly property color dimC: Qt.rgba(0, 0, 0, 0.45)
-    readonly property color liteC: Qt.rgba(0, 0, 0, 0.05)
-
-    // --- scrim ----------------------------------------------------------------
-    // Monitor: the whole output dims light while this overlay is hovered, dark
-    // otherwise. Region/window before a selection: a plain full-cover scrim.
-    Rectangle {
+    // The scrim, the cutout, the outline and the readout (CaptureFrame).
+    CaptureFrame {
         anchors.fill: parent
-        visible: win.sel === "monitor" || !win.hasRect
-        color: win.sel === "monitor" ? (win.hovering ? win.liteC : win.dimC) : win.dimC
-    }
-    // Region/window with a selection: four dim bands frame the clear cutout.
-    Item {
-        anchors.fill: parent
-        visible: win.hasRect
-        Rectangle { color: win.dimC; x: 0; y: 0; width: win.scrW; height: Math.max(0, win.hly) }
-        Rectangle { color: win.dimC; x: 0; y: win.hly + win.hlh; width: win.scrW; height: Math.max(0, win.scrH - (win.hly + win.hlh)) }
-        Rectangle { color: win.dimC; x: 0; y: win.hly; width: Math.max(0, win.hlx); height: win.hlh }
-        Rectangle { color: win.dimC; x: win.hlx + win.hlw; y: win.hly; width: Math.max(0, win.scrW - (win.hlx + win.hlw)); height: win.hlh }
-    }
-
-    // Selection / hover outline: 2px for region, 3px for monitor/window.
-    Rectangle {
-        visible: win.hasRect || (win.sel === "monitor" && win.hovering)
-        color: "transparent"
-        border.width: (win.sel === "region" ? 2 : 3) * win.us
-        border.color: Theme.frameLine
-        x: win.sel === "monitor" ? 1.5 * win.us : win.hlx
-        y: win.sel === "monitor" ? 1.5 * win.us : win.hly
-        width: win.sel === "monitor" ? win.scrW - 3 * win.us : win.hlw
-        height: win.sel === "monitor" ? win.scrH - 3 * win.us : win.hlh
-    }
-
-    // Region dimension readout "W×H" (U+00D7), centred under the selection.
-    Text {
-        visible: win.sel === "region" && win.hasRect
-        text: Math.round(win.hlw) + "\u00d7" + Math.round(win.hlh)
-        color: Theme.outline
-        font.family: Theme.fontPrimary
-        font.pixelSize: Theme.fontSm * win.us
-        x: win.hlx + (win.hlw - width) / 2
-        y: win.hly + win.hlh + 20 * win.us
+        sel: win.sel
+        hasRect: win.hasRect
+        hovering: win.hovering
+        hlx: win.hlx
+        hly: win.hly
+        hlw: win.hlw
+        hlh: win.hlh
+        scrW: win.scrW
+        scrH: win.scrH
+        us: win.us
     }
 
     // --- input ----------------------------------------------------------------

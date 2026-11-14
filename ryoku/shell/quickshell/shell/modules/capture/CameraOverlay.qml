@@ -1,12 +1,9 @@
 pragma ComponentBehavior: Bound
 
 import QtQuick
-import QtQuick.Effects
 import Quickshell
 import Quickshell.Wayland
-import Ryoku.Blobs
 import shell.services
-import "../../components"
 import Ryoku.Ui.Singletons
 
 // Draggable, shaped webcam bubble on a per-screen layer surface: it stays put
@@ -75,48 +72,11 @@ PanelWindow {
         readonly property real rad: Camera.roundness * Math.min(width, height) / 2
         property string dragMode: "" // "" | move | resize | round -- from the drag below
 
-        // rounded backdrop + cue, shown until the first camera frame arrives (the
-        // feed is transparent while the camera warms up).
-        Rectangle {
+        // backdrop and cue, the masked live feed and the rim (CameraFace).
+        CameraFace {
             anchors.fill: parent
-            radius: bubble.rad
-            color: Theme.frameBg
-        }
-        GlyphIcon {
-            anchors.centerIn: parent
-            width: 28 * win.us
-            height: 28 * win.us
-            name: "webcam"
-            color: Theme.onSurfaceVariant
-            stroke: 1.7
-        }
-
-        // live feed, rendered as a scene-graph texture so the mask applies.
-        CameraFeed {
-            anchors.fill: parent
-            active: Camera.active
-            mirror: Camera.flipped
-            layer.enabled: true
-            layer.effect: MultiEffect {
-                maskEnabled: true
-                maskSource: maskRect
-            }
-        }
-        Rectangle {
-            id: maskRect
-            anchors.fill: parent
-            radius: bubble.rad
-            visible: false
-            layer.enabled: true
-        }
-
-        // rim tracing the same shape.
-        Rectangle {
-            anchors.fill: parent
-            radius: bubble.rad
-            color: "transparent"
-            border.width: 2 * win.us
-            border.color: Theme.primary
+            rad: bubble.rad
+            us: win.us
         }
 
         // Figma-style edit handles (roundness dot, resize grip, flip): pure
