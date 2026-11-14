@@ -1,6 +1,13 @@
 # Changelog: ryoku/shell/
 
 ## Unreleased
+- **The Game Bar draws every icon from Solar under crate.** Its capture,
+  performance, tasks, gallery, lyrics and grid icons, the headset and muted
+  headphones, and the card grip are kit glyphs; only Discord keeps its mark.
+  The catalogue gains crop-minimalistic, window-frame, full-screen,
+  speedometer-middle, graph-up, checklist-minimalistic, gallery, widget-2,
+  playlist-minimalistic, menu-dots-vertical and a struck headphones-round-off
+  (`modules/gamebar/look/GameBarLook.qml`; `tests/ui/gamebar-kit-probe.sh`).
 - **The Game Bar wears the shared kit under crate.** The strip and every card
   are the shared glass with a hairline and the 6 px corner, one plate with no
   second fill inside, and the compositor frosts them (a `crate-glass-blur-gamebar`

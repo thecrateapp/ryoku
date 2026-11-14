@@ -69,9 +69,8 @@ QtObject {
     // readings (the clock, levels, counts): the mono face under crate
     readonly property string numeric: root.crate ? Ui.Tokens.mono : Theme.fontPrimary
 
-    // The overlay's icon names, as the kit's Solar catalogue names them. A name
-    // missing here has no Solar glyph and keeps the Game Bar's own line icon or
-    // Material symbol under crate too.
+    // The overlay's icon names, as the kit's Solar catalogue names them. Only
+    // Discord's mark (a brand) keeps the Game Bar's own icon under crate.
     readonly property var solarNames: ({
         "pin": "pin",
         "close": "close",
@@ -88,7 +87,20 @@ QtObject {
         "skip_previous": "skip_previous",
         "skip_next": "skip_next",
         "play_arrow": "play_arrow",
-        "pause": "pause"
+        "pause": "pause",
+        "screenshot_region": "crop-minimalistic",
+        "region": "crop-minimalistic",
+        "window": "window-frame",
+        "screens": "full-screen",
+        "speed": "speedometer-middle",
+        "monitoring": "graph-up",
+        "checklist": "checklist-minimalistic",
+        "photo_library": "gallery",
+        "grid_view": "widget-2",
+        "lyrics": "playlist-minimalistic",
+        "headset_mic": "headphones-round-sound",
+        "headphones-off": "headphones-round-off",
+        "grip": "menu-dots-vertical"
     })
 
     function solar(name) {

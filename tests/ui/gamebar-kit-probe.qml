@@ -114,6 +114,11 @@ ShellRoot {
         const L = GameBarLook;
         // roles: every colour and corner from Tokens under crate, Theme otherwise
         check(L.crate === crate, "GameBarLook follows controlsCrate");
+        // every icon the overlay names draws a Solar glyph under crate (only
+        // Discord's mark is a brand and keeps its own)
+        if (crate)
+            for (const n in L.solarNames)
+                check(L.solar(n).length > 0, "a Solar glyph for " + n);
         check(same(L.panel, crate ? Tokens.glass : Theme.surfaceContainerLow), "the card fill");
         check(same(L.bar, crate ? Tokens.glass : Theme.surfaceContainer), "the strip fill");
         check(same(L.border, crate ? Tokens.line : Theme.outlineVariant), "the hairline");
@@ -138,7 +143,7 @@ ShellRoot {
         check(kitButtons.every(b => probe.shown(b) === crate), "the strip's kit buttons show under crate only");
         check(!crate || kitButtons[1].on && !kitButtons[0].on, "the active widget's button is on");
         check(!crate || kitButtons[2].glyph === "music_note", "a widget with a Solar glyph draws it");
-        check(!crate || kitButtons[0].glyph === "screenshot_region", "a widget Solar lacks keeps its Material symbol");
+        check(!crate || kitButtons[0].glyph === "crop-minimalistic", "the capture widget draws its Solar glyph");
         check(!crate || kitButtons[3].glyph === "" && kitButtons[3].path === "",
             "Discord keeps its own solid mark, carried inside the kit button");
         check(probe.shown(probe.find(strip, "gameBarSnapButton")) === crate, "the snap toggle is a kit button");
