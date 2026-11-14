@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 # launcher-mark-probe: CRATE wordmark and Crate glyph exist, persist and draw.
 set -euo pipefail
+# The probe runs on the live Wayland session (the qsbar Theme does not load
+# offscreen) but in its own XDG_RUNTIME_DIR: the shell writes shell.json through
+# the daemon socket there, and sharing it would rewrite the live config.
 
 here="$(cd "$(dirname "$0")" && pwd)"
 repo="$here/../.."
@@ -8,6 +11,8 @@ src="$repo/ryoku/shell/quickshell/shell"
 work="$(mktemp -d)"
 trap 'rm -rf "$work"' EXIT
 
+mkdir -p "$work/runtime" "$work/home" && chmod 700 "$work/runtime"
+wayland="${XDG_RUNTIME_DIR:-/run/user/$(id -u)}/${WAYLAND_DISPLAY:-wayland-1}"
 mkdir -p "$work/Ryoku" "$work/shell/modules" "$work/cfg/ryoku"
 ln -s "$repo/ryoku/ui" "$work/Ryoku/Ui"
 ln -s "$repo/ryoku/shell/framebars" "$work/Ryoku/FrameBars"
@@ -27,6 +32,7 @@ cat >"$work/cfg/ryoku/shell.json" <<'JSON'
 JSON
 
 HOME="$work" XDG_CONFIG_HOME="$work/cfg" XDG_CACHE_HOME="$work/cache" \
+XDG_RUNTIME_DIR="$work/runtime" WAYLAND_DISPLAY="$wayland" \
 QML2_IMPORT_PATH="$work:${QML2_IMPORT_PATH:-$HOME/.local/lib/qt6/qml}" \
 timeout 20 qs -p "$work/shell/probe.qml" >"$work/probe.log" 2>&1 || true
 
