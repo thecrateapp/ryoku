@@ -1463,3 +1463,65 @@ func TestApplyRefreshesOnlyUntouchedPackagedCopies(t *testing.T) {
 		}
 	}
 }
+
+// The bar keeps its launcher wordmark and glyph in shell.json, and its widget
+// cache remembers the last ones it saw. A rice (or a restored slot) whose bar
+// names neither must not inherit the previous rice's marks (the Crate rice's
+// CRATE wordmark stuck after switching away): it gets Ryoku's own; a rice that
+// names them keeps them.
+func TestRiceApplyAndRestoreNameTheLauncherMarks(t *testing.T) {
+	dir := t.TempDir()
+	t.Setenv("XDG_CONFIG_HOME", dir)
+	t.Setenv("XDG_CACHE_HOME", filepath.Join(dir, "cache"))
+	t.Setenv("HOME", dir)
+	if err := os.MkdirAll(filepath.Join(dir, "ryoku"), 0o755); err != nil {
+		t.Fatal(err)
+	}
+	origRun, origReload := riceRun, riceReload
+	riceRun = func(name string, args ...string) error { return nil }
+	riceReload = func() {}
+	t.Cleanup(func() { riceRun, riceReload = origRun, origReload })
+	w := func(p, body string) {
+		if err := os.WriteFile(p, []byte(body), 0o644); err != nil {
+			t.Fatal(err)
+		}
+	}
+	writeDesktopStore(t, `{"appearance":{"rounding":2}}`)
+	w(shellStorePath(), `{"qsbar":{"barScale":1}}`)
+	w(launcherStorePath(), `{}`)
+	marks := func() (any, any) {
+		q, _ := readJSONMap(shellStorePath())["qsbar"].(map[string]any)
+		return q["launcherLogoText"], q["launcherLogoIcon"]
+	}
+	for slug, qsbar := range map[string]string{
+		"crate": `{"launcherLogoMode":"text","launcherLogoText":"crate","launcherLogoIcon":"crate"}`,
+		"plain": `{"barScale":1}`,
+	} {
+		if err := os.MkdirAll(filepath.Join(ricesDir(), slug), 0o755); err != nil {
+			t.Fatal(err)
+		}
+		w(ricePath(slug), `{"schema":1,"slug":"`+slug+`","name":"`+slug+`","look":{"shell":{"qsbar":`+qsbar+`},"launcher":{}}}`)
+	}
+
+	if err := applyRice("crate", nil); err != nil {
+		t.Fatal(err)
+	}
+	if txt, icon := marks(); txt != "crate" || icon != "crate" {
+		t.Fatalf("the crate rice's marks: %v %v", txt, icon)
+	}
+	if err := applyRice("plain", nil); err != nil {
+		t.Fatal(err)
+	}
+	if txt, icon := marks(); txt != "ryoku" || icon != "ryoku" {
+		t.Fatalf("a rice naming no marks inherited %v %v, want ryoku", txt, icon)
+	}
+	if err := applyRice("crate", nil); err != nil {
+		t.Fatal(err)
+	}
+	if err := restoreRice(".baseline"); err != nil {
+		t.Fatal(err)
+	}
+	if txt, icon := marks(); txt != "ryoku" || icon != "ryoku" {
+		t.Fatalf("restoring a slot from before the marks kept %v %v, want ryoku", txt, icon)
+	}
+}

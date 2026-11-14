@@ -175,6 +175,31 @@ func omit(src map[string]any, deny []string) map[string]any {
 	return out
 }
 
+// nameLauncherMarks gives the QS Bar block in shell.json Ryoku's own launcher
+// wordmark and glyph when it names neither. The bar keeps the marks in
+// shell.json but also remembers the last ones in its widget cache, and a key
+// missing from shell.json keeps the cached one, so without this a rice (or a
+// restored slot) that never named the marks would inherit the previous rice's
+// (the Crate rice's CRATE wordmark stuck after switching away).
+func nameLauncherMarks(path string) error {
+	cur := readJSONMap(path)
+	q, ok := cur["qsbar"].(map[string]any)
+	if !ok {
+		return nil
+	}
+	changed := false
+	for _, k := range []string{"launcherLogoText", "launcherLogoIcon"} {
+		if _, has := q[k]; !has {
+			q[k] = "ryoku"
+			changed = true
+		}
+	}
+	if !changed {
+		return nil
+	}
+	return atomicWrite(path, mustJSON(cur), 0o644)
+}
+
 // overlayStore sets the allowlisted keys from src into the store file, leaves
 // every other key untouched, and writes atomically. unknown keys in src are
 // ignored, so a rice built on an older schema can never inject a retired key;
@@ -1024,6 +1049,9 @@ func restoreRice(slot string) error {
 	if !restored {
 		return fmt.Errorf("no backup to restore at %q", slot)
 	}
+	if err := nameLauncherMarks(shellStorePath()); err != nil {
+		return err
+	}
 	if b, err := os.ReadFile(filepath.Join(dir, "wallpaper.path")); err == nil && isFile(strings.TrimSpace(string(b))) {
 		_ = riceRun("ryogami", "wallpaper", "set", "--screen", "*", strings.TrimSpace(string(b)))
 	} else {
@@ -1199,6 +1227,9 @@ func applyRice(slug string, layers []string) error {
 		}
 	}
 	if err := overlayStore(shellStorePath(), r.Look["shell"], nil); err != nil {
+		return fmt.Errorf("apply shell look: %w", err)
+	}
+	if err := nameLauncherMarks(shellStorePath()); err != nil {
 		return fmt.Errorf("apply shell look: %w", err)
 	}
 	if err := overlayStore(launcherStorePath(), r.Look["launcher"], nil); err != nil {

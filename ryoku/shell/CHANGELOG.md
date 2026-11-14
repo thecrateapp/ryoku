@@ -1,6 +1,17 @@
 # Changelog: ryoku/shell/
 
 ## Unreleased
+- **A rice that names no launcher mark gets Ryoku's own.** The bar keeps its
+  wordmark and glyph in shell.json and its widget cache, so switching from a
+  rice that set them (the Crate rice's CRATE) to one that did not, or restoring
+  an older slot, kept the old mark. Applying a rice or restoring a slot now
+  names Ryoku's when the bar names none (`hub/backend/rice.go`).
+- **The reload cover falls back to the wordmark when the theme's mark fails.**
+  A deleted or broken cover mark no longer leaves the cover without a mark,
+  and a path with a `#`, `?` or `%` loads (`quickshell/reload-cover/ReloadMedia.qml`).
+- **Bar glyphs fall back on an older kit.** The audio and Bluetooth widgets
+  draw a glyph the kit has (the speaker, the plain rune) when it lacks the
+  newer ones, instead of printing the name.
 - **The bar's audio glyph shows what you are listening through.** Under crate
   the audio widget draws a kit glyph for the default sink's device, read from
   its PipeWire properties: Bluetooth headphones, a remote speaker (a Bluetooth
