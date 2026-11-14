@@ -12,15 +12,18 @@ Rectangle {
     property bool on: false
     property bool interactive: true
     property color labelInk: chip.tone
+    // a colour sample drawn before the label (a colour value), none when transparent
+    property color swatch: "transparent"
     signal clicked()
 
     readonly property bool crate: Tokens.controlsCrate
     readonly property bool hot: hover.hovered && chip.enabled
+    readonly property bool swatched: chip.swatch.a > 0
     readonly property color tone: chip.on ? (chip.crate ? Tokens.paper : Tokens.inkOnBone)
         : chip.crate ? (chip.hot ? Tokens.ink : Tokens.inkSecondary)
         : (chip.hot && Tokens.accentMarks ? Tokens.hoverInk : Tokens.inkDim)
 
-    implicitWidth: label.implicitWidth + (chip.crate ? 28 : 18)
+    implicitWidth: label.implicitWidth + (chip.crate ? 28 : 18) + (chip.swatched ? sample.width + 6 : 0)
     implicitHeight: chip.crate ? 32 : 24
     radius: Tokens.radius
     opacity: chip.enabled ? 1 : 0.5
@@ -34,9 +37,24 @@ Rectangle {
     Behavior on color { ColorAnimation { duration: chip.crate ? 150 : Tokens.snap } }
     Behavior on border.color { ColorAnimation { duration: chip.crate ? 150 : Tokens.snap } }
 
+    Rectangle {
+        id: sample
+        visible: chip.swatched
+        anchors.right: label.left
+        anchors.rightMargin: 6
+        anchors.verticalCenter: parent.verticalCenter
+        width: 10
+        height: 10
+        radius: Tokens.radius / 3
+        color: chip.swatch
+        border.width: Tokens.border
+        border.color: chip.on ? chip.tone : Tokens.lineStrong
+    }
+
     Text {
         id: label
         anchors.centerIn: parent
+        anchors.horizontalCenterOffset: chip.swatched ? (sample.width + 6) / 2 : 0
         text: chip.text
         color: chip.labelInk
         font.family: chip.crate ? Tokens.mono : Tokens.ui
