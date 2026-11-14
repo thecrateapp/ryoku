@@ -2,10 +2,10 @@ import QtQuick
 import Quickshell
 import Ryoku.Ui
 
-// An indeterminate Beam with bounce scans like KITT: the segment runs to the
-// right end, turns and runs back, never leaving the track, its bright head
-// always leading (the gradient mirrors on the way back). Without bounce it
-// keeps running out on the right and coming in from the left.
+// Every indeterminate Beam scans like KITT: the segment runs to the right end,
+// turns and runs back, never leaving the track (a panel's Beam must not paint
+// outside its container), its bright head always leading (the gradient
+// mirrors on the way back). The narrow Beam checks the 24 px minimum segment.
 ShellRoot {
     id: probe
     property real minX: 1e9
@@ -14,14 +14,14 @@ ShellRoot {
     property bool sawForth: false
     property bool headLeads: true
     property real runMinX: 1e9
-    property bool runBack: false
+    property real runMaxX: -1e9
 
     FloatingWindow {
         implicitWidth: 300
         implicitHeight: 60
         Column {
-            Beam { id: kitt; width: 200; height: 12; interactive: false; indeterminate: true; bounce: true }
-            Beam { id: run; width: 200; height: 12; interactive: false; indeterminate: true }
+            Beam { id: kitt; width: 200; height: 12; interactive: false; indeterminate: true }
+            Beam { id: run; width: 60; height: 12; interactive: false; indeterminate: true }
         }
     }
 
@@ -43,7 +43,7 @@ ShellRoot {
             if ((s.back ? -1 : 1) !== s.headDirection) probe.headLeads = false;
             const r = part(run, "beamSweep");
             probe.runMinX = Math.min(probe.runMinX, r.x);
-            if (r.back) probe.runBack = true;
+            probe.runMaxX = Math.max(probe.runMaxX, r.x + r.width);
         }
     }
 
@@ -61,8 +61,8 @@ ShellRoot {
                 err = "bounce never turned (back " + probe.sawBack + ", forth " + probe.sawForth + ")";
             else if (!probe.headLeads)
                 err = "the head trails on the way back";
-            else if (probe.runBack || probe.runMinX > -1)
-                err = "the plain sweep changed (back " + probe.runBack + ", min x " + probe.runMinX + ")";
+            else if (probe.runMinX < -0.5 || probe.runMaxX > run.width + 0.5)
+                err = "the narrow Beam left its track: " + probe.runMinX + ".." + probe.runMaxX;
             console.log(err ? "BEAM-BOUNCE-PROBE-FAIL " + err : "BEAM-BOUNCE-PROBE-PASS");
             Qt.quit();
         }

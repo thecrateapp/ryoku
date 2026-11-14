@@ -78,7 +78,6 @@ ShellRoot {
         const label = part(reload, "coverLabel");
         if (label.text !== "SHELL RELOADING" || label.font.family !== Tokens.mono) return fail("reload label " + label.text + " " + label.font.family);
         if (!part(reload, "coverBeam").visible || !part(reload, "coverBeam").indeterminate) return fail("no waiting Beam while holding");
-        if (!part(reload, "coverBeam").bounce) return fail("the waiting Beam does not scan both ways");
         if (part(closing, "coverBeam").visible) return fail("Beam shown while the iris closes");
         if (part(failed, "coverBeam").visible) return fail("Beam shown on failure");
         const err = part(failed, "coverLabel");

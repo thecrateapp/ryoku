@@ -21,9 +21,6 @@ Item {
     property real stepSize: 0
     property bool interactive: true
     property bool indeterminate: false
-    // indeterminate only: the segment scans to the end and back (KITT) instead
-    // of running out on the right and coming in from the left
-    property bool bounce: false
     property bool bipolar: false
     // show the thumb while an owner that handles input itself (a QQC.Slider
     // drawing through a Beam) is hovered, pressed or focused
@@ -181,9 +178,9 @@ Item {
         }
     }
 
-    // indeterminate: a short segment sweeping across; held still under reduced motion.
-    // With bounce it scans to the right end and back, the bright head always leading
-    // (the gradient mirrors on the way back).
+    // indeterminate: a short segment scanning to the right end and back (KITT),
+    // always inside the track, the bright head leading (the gradient mirrors on the
+    // way back); held still in the middle under reduced motion.
     Rectangle {
         id: sweep
         objectName: "beamSweep"
@@ -193,7 +190,7 @@ Item {
         y: beam.cy
         width: Math.max(24, beam.width * 0.22)
         height: 1
-        x: Tokens.reduceMotion ? (beam.width - width) / 2 : beam.bounce ? 0 : -width
+        x: Tokens.reduceMotion ? (beam.width - width) / 2 : 0
         transform: Scale { origin.x: sweep.width / 2; xScale: sweep.headDirection }
         gradient: Gradient {
             orientation: Gradient.Horizontal
@@ -201,15 +198,8 @@ Item {
             GradientStop { position: 0.7; color: Tokens.beamTail }
             GradientStop { position: 1.0; color: Tokens.thumb }
         }
-        NumberAnimation on x {
-            running: beam.indeterminate && !beam.bounce && beam.visible && !Tokens.reduceMotion
-            loops: Animation.Infinite
-            from: -sweep.width
-            to: beam.width
-            duration: 1100
-        }
         SequentialAnimation {
-            running: beam.indeterminate && beam.bounce && beam.visible && !Tokens.reduceMotion
+            running: beam.indeterminate && beam.visible && !Tokens.reduceMotion
             loops: Animation.Infinite
             onStopped: sweep.back = false
             ScriptAction { script: sweep.back = false }

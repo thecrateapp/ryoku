@@ -83,7 +83,6 @@ Item {
                     visible: status.phase === "hold"
                     interactive: false
                     indeterminate: true
-                    bounce: true
                 }
             }
         }
