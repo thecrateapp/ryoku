@@ -22,7 +22,7 @@ Item {
         rotation: 45
         transformOrigin: Item.Center
         antialiasing: true
-        color: pointer.root.bg
+        color: pointer.root.panelFill
         border.color: pointer.root.panelOuterBorderColor
         border.width: pointer.root.panelOuterBorderW
     }
@@ -32,6 +32,6 @@ Item {
         y: pointer.pointsUp ? 0 : pointer.height - 8
         width: 14
         height: 8
-        color: pointer.root.bg
+        color: pointer.root.panelFill
     }
 }

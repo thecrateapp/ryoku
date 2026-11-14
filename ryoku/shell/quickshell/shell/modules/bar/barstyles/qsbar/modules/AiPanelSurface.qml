@@ -49,7 +49,7 @@ Item {
         ShapePath {
             strokeColor: surface.root.panelOuterBorderColor
             strokeWidth: surface.root.panelOuterBorderW
-            fillColor: surface.root.bg
+            fillColor: surface.root.panelFill
             capStyle: ShapePath.FlatCap
             joinStyle: ShapePath.MiterJoin
             startX: surface.r
@@ -102,7 +102,7 @@ Item {
         ShapePath {
             strokeColor: surface.root.panelOuterBorderColor
             strokeWidth: surface.root.panelOuterBorderW
-            fillColor: surface.root.bg
+            fillColor: surface.root.panelFill
             capStyle: ShapePath.FlatCap
             joinStyle: ShapePath.MiterJoin
             startX: surface.r

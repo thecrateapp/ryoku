@@ -1,6 +1,12 @@
 # Changelog: ryoku/shell/
 
 ## Unreleased
+- **Every QS Bar panel is the one glass under crate.** The panels painted the
+  bar's own fill, so with the bar's frost off they took its 94 % opacity and
+  read more opaque than Controls (Super+Esc). Under crate a panel's body, its
+  pointer and the tray menu are now Tokens.glass whatever the bar's opacity; the
+  bar keeps the user's setting (`qsbar/Theme.qml` panelFill;
+  `tests/ui/qsbar-panel-glass-probe.sh`).
 - **A rice that names no pinned dock apps keeps the user's.** A rice's dock
   block replaced the whole dock map, so a rice that carries the dock's look but
   leaves the apps to the user dropped every pin. Applying it now puts the user's

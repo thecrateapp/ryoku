@@ -105,7 +105,7 @@ PanelWindow {
         width: Tokens.controlsCrate ? 240 : 220
         height: panelBody.implicitHeight + panelBody.inset * 2
         radius: reveal > 0.001 ? root.panelRadius : 0
-        color: root.bg
+        color: root.panelFill
         border.color: root.panelOuterBorderColor
         border.width: root.panelOuterBorderW
         PillShadow { theme: root }

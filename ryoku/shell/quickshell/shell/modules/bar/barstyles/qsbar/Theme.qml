@@ -137,6 +137,10 @@ Item {
     readonly property color surfaceTone: Tokens.controlsCrate ? Tokens.popover : paper
     readonly property color bg:     Qt.rgba(surfaceTone.r, surfaceTone.g, surfaceTone.b, surfaceOpacity)
     readonly property color barBg:  Qt.rgba(surfaceTone.r, surfaceTone.g, surfaceTone.b, surfaceOpacity)
+    // A panel's body. Under crate every panel is the one glass, like Controls,
+    // whatever opacity the user gives the bar itself (a frost-off bar painted its
+    // panels at 94 % and they read more opaque than Controls); stock keeps the bar's.
+    readonly property color panelFill: Tokens.controlsCrate ? Tokens.glass : bg
     readonly property color pill:   Qt.rgba(paper.r, paper.g, paper.b, pillOpacity)
     readonly property color fg:     ink
     readonly property color muted:  sumi
