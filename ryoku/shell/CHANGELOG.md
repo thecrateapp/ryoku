@@ -1,6 +1,13 @@
 # Changelog: ryoku/shell/
 
 ## Unreleased
+- **Every Stage icon has a Solar glyph under crate.** The kit's catalogue gains
+  105 Solar Outline icons and 145 Material aliases (`schedule`, `album`,
+  `calendar_month`, the align and view icons, and the rest the widget
+  catalogue, the bar's components, the editor's rows and the widget buttons
+  name), so no Stage icon falls back to the font glyph under crate. Existing
+  glyphs are unchanged (`ui/tools/`, `ui/lib/glyphs.js`;
+  `tests/ui/stage-kit-probe.sh` checks the registries resolve).
 - **Edit Mode's badges and catalogue search use the kit under crate.** The add
   and remove badges on the bar's widgets and the dock's apps take the shared
   corner, the mark and alert roles and Solar glyphs; the catalogue search's

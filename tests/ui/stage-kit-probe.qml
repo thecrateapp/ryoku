@@ -330,6 +330,17 @@ ShellRoot {
         }
         bar.destroy();
     }
+    // Every icon the catalogue, the widget menus and the bar menus name has a
+    // Solar glyph under crate: none falls back to the font.
+    function verifyIcons() {
+        const missing = [];
+        for (const w of WidgetsRegistry.builtinWidgets)
+            if (w.icon && !GlyphCatalog.has(w.icon)) missing.push(w.icon);
+        for (const c of BarComponentRegistry.allComponents)
+            if (c.icon && !GlyphCatalog.has(c.icon)) missing.push(c.icon);
+        check(missing.length === 0, "icons without a Solar glyph: " + Array.from(new Set(missing)).join(" "));
+    }
+
     function verifyFaces() {
         const base = "file://" + Quickshell.env("STAGE_WIDGETS") + "/";
         for (const face of probe.faces) {
@@ -366,6 +377,7 @@ ShellRoot {
                 probe.verifyWidgets(false);
                 probe.verifySeek(false);
                 probe.verifyFaces();
+                probe.verifyIcons();
                 console.log("STAGE-KIT-PROBE-PASS");
             } catch (e) {
                 console.log("STAGE-KIT-PROBE-FAIL " + e.message);
