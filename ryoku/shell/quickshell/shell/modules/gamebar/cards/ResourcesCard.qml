@@ -10,7 +10,9 @@ import "../look"
 // Resources: a tab per resource, the reading
 // in huge numerals over "of %1", and the graph on the secondary container
 // filling the rest. The sampler has no history for GPU and memory, so the card
-// keeps its own short window for the two tabs it has to draw itself.
+// keeps its own short window for the two tabs it has to draw itself. Under crate
+// the tabs are the kit's, the reading is mono and the graph sits on its hairline
+// grid instead of a filled plate.
 GameBarCard {
     id: card
 
@@ -106,7 +108,7 @@ GameBarCard {
                         : card.tabIndex === 2 ? Math.round(card.mon.memoryUsedGiB * 10) / 10 + " GiB"
                         : Math.round(card.fraction * 100) + "%"
                     color: GameBarLook.fg
-                    font.family: GameBarLook.face
+                    font.family: GameBarLook.numeric
                     font.pixelSize: GameBarLook.huge * card.s
                 }
 
@@ -128,7 +130,8 @@ GameBarCard {
                 Layout.fillWidth: true
                 Layout.fillHeight: true
                 radius: GameBarLook.radiusSmall * card.s
-                color: GameBarLook.toggled
+                // under crate the graph draws its own hairline grid, on no plate
+                color: GameBarLook.crate ? "transparent" : GameBarLook.toggled
                 clip: true
 
                 GameBarSpark {

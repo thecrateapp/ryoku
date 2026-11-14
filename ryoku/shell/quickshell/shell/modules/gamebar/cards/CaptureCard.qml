@@ -57,11 +57,9 @@ GameBarCard {
                 width: parent.width - targets.width - 14 * card.s
                 spacing: 4 * card.s
 
-                Text {
+                GameBarCaption {
+                    s: card.s
                     text: I18n.tr("Recording")
-                    color: GameBarLook.subtext
-                    font.family: GameBarLook.face
-                    font.pixelSize: GameBarLook.smallie * card.s
                 }
 
                 Text {
@@ -69,7 +67,7 @@ GameBarCard {
                         ? I18n.tr("Starting in %1").arg(Recorder.countdownSec)
                         : (Recorder.anyActive ? Recorder.elapsedText : I18n.tr("Idle"))
                     color: Recorder.anyActive || Recorder.countingDown ? GameBarLook.accent : GameBarLook.fg
-                    font.family: GameBarLook.face
+                    font.family: GameBarLook.numeric
                     font.pixelSize: GameBarLook.huge * card.s
                 }
 

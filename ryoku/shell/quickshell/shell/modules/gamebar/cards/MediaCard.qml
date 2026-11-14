@@ -9,7 +9,8 @@ import Ryoku.Ui.Singletons
 import "../look"
 
 // Media: the one now-playing pick the whole shell shares, with its cover,
-// transport and a lyric view that follows the track.
+// transport and a lyric view that follows the track. Under crate the transport
+// is the kit's plateless IconButtons on no pill, and every corner the shared one.
 GameBarCard {
     id: card
 
@@ -67,7 +68,7 @@ GameBarCard {
             Rectangle {
                 anchors.fill: parent
                 radius: GameBarLook.radiusSmall * card.s
-                color: GameBarLook.content
+                color: GameBarLook.wash
             }
 
             Image {
@@ -85,8 +86,8 @@ GameBarCard {
                 anchors.fill: parent
                 radius: GameBarLook.radiusSmall * card.s
                 gradient: Gradient {
-                    GradientStop { position: 0.0; color: GameBarLook.alpha(GameBarLook.content, 0.10) }
-                    GradientStop { position: 1.0; color: GameBarLook.alpha(GameBarLook.content, 0.38) }
+                    GradientStop { position: 0.0; color: GameBarLook.alpha(GameBarLook.wash, 0.10) }
+                    GradientStop { position: 1.0; color: GameBarLook.alpha(GameBarLook.wash, 0.38) }
                 }
             }
         }
@@ -211,7 +212,7 @@ GameBarCard {
             height: 28 * card.s
             visible: card.lyricsOpen
             gradient: Gradient {
-                GradientStop { position: 0.0; color: GameBarLook.alpha(GameBarLook.content, 0.55) }
+                GradientStop { position: 0.0; color: GameBarLook.alpha(GameBarLook.wash, 0.55) }
                 GradientStop { position: 1.0; color: "transparent" }
             }
         }
@@ -227,7 +228,7 @@ GameBarCard {
             visible: card.lyricsOpen
             gradient: Gradient {
                 GradientStop { position: 0.0; color: "transparent" }
-                GradientStop { position: 1.0; color: GameBarLook.alpha(GameBarLook.content, 0.92) }
+                GradientStop { position: 1.0; color: GameBarLook.alpha(GameBarLook.wash, 0.92) }
             }
         }
 
@@ -239,10 +240,11 @@ GameBarCard {
             height: 38 * card.s
 
             Rectangle {
+                visible: !GameBarLook.crate
                 anchors.fill: parent
                 radius: height / 2
                 color: card.lyricsOpen
-                    ? GameBarLook.alpha(GameBarLook.content, 0.24)
+                    ? GameBarLook.alpha(GameBarLook.wash, 0.24)
                     : GameBarLook.alpha(GameBarLook.raised, 0.55)
 
                 Behavior on color {
@@ -252,8 +254,9 @@ GameBarCard {
 
             Item {
                 id: dockGlass
+                visible: !GameBarLook.crate
                 anchors.fill: parent
-                layer.enabled: card.art.length > 0
+                layer.enabled: visible && card.art.length > 0
                 layer.effect: MultiEffect {
                     maskEnabled: true
                     maskSource: dockMask
@@ -287,17 +290,19 @@ GameBarCard {
                 height: dockGlass.height
                 radius: height / 2
                 visible: false
-                layer.enabled: true
+                layer.enabled: dockGlass.visible
             }
 
             Rectangle {
+                visible: !GameBarLook.crate
                 anchors.fill: parent
                 radius: height / 2
-                color: GameBarLook.alpha(GameBarLook.content, 0.55)
+                color: GameBarLook.alpha(GameBarLook.wash, 0.55)
                 opacity: card.art.length > 0 ? 1 : 0
             }
 
             Rectangle {
+                visible: !GameBarLook.crate
                 anchors.fill: parent
                 radius: height / 2
                 color: "transparent"

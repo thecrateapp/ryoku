@@ -149,7 +149,7 @@ GameBarCard {
             label: I18n.tr("GPU")
             value: card.mon.gpuAvailable ? Units.pct(card.mon.gpuPercent / 100) : "n/a"
             fraction: card.mon.gpuAvailable ? card.mon.gpuPercent / 100 : 0
-            tint: Theme.tertiary
+            tint: GameBarLook.second
         }
         GameBarMeter {
             s: card.s
@@ -167,7 +167,7 @@ GameBarCard {
                 : "n/a"
             fraction: card.mon.gpuMemoryAvailable && card.mon.gpuMemoryTotalGiB > 0
                 ? card.mon.gpuMemoryUsedGiB / card.mon.gpuMemoryTotalGiB : 0
-            tint: Theme.tertiary
+            tint: GameBarLook.second
         }
 
         GameBarSpark {

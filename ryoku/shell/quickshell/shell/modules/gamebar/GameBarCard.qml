@@ -7,7 +7,8 @@ import "look"
 
 // The card frame: an 8px grab margin, an 18px panel with a 1px outline, a
 // 30px title bar and a 12px content area. The widget drags from its surface;
-// the body is the default property.
+// the body is the default property. Under crate the frame is the shared glass
+// with a hairline edge and the 6 px corner, one plate with no second fill inside.
 Item {
     id: root
 
@@ -26,6 +27,10 @@ Item {
 
     readonly property real grab: root.minimal ? 0 : 8 * root.s
     readonly property real pad: 6 * root.s
+    // under crate the card keeps the panels' 16 px padding: the head's glyph and
+    // the body start on the same edge (stock: a 6 px head over a 14 px body)
+    readonly property real headInset: GameBarLook.crate ? 16 * root.s : root.pad
+    readonly property real bodyInset: GameBarLook.crate ? 8 * root.s : root.pad
     readonly property real barHeight: 30 * root.s
     readonly property real grip: 18 * root.s
 
@@ -74,6 +79,7 @@ Item {
 
     Rectangle {
         id: frame
+        objectName: "gameBarCardFrame"
         anchors.fill: parent
         anchors.margins: root.grab
         radius: root.minimal ? 0 : GameBarLook.radiusWindow * root.s
@@ -83,10 +89,11 @@ Item {
 
         Item {
             id: titleBar
+            objectName: "gameBarTitleBar"
             visible: !root.minimal
-            x: root.pad
+            x: root.headInset
             y: root.pad
-            width: parent.width - root.pad * 2
+            width: parent.width - root.headInset * 2
             height: root.barHeight
 
             Row {
@@ -100,31 +107,25 @@ Item {
                     width: 20 * root.s
                     height: 20 * root.s
 
-                    MaterialIcon {
+                    GameBarGlyph {
                         anchors.fill: parent
-                        visible: root.iconGlyph.length === 0
-                        text: root.host ? root.host.symbolFor(root.cardId) : ""
+                        glyph: root.iconGlyph
+                        symbol: root.host ? root.host.symbolFor(root.cardId) : ""
                         color: GameBarLook.fg
-                        font.pixelSize: 20 * root.s
-                    }
-
-                    GlyphIcon {
-                        anchors.fill: parent
-                        visible: root.iconGlyph.length > 0
-                        name: root.iconGlyph
-                        color: GameBarLook.fg
-                        stroke: 1.6
                     }
                 }
 
-                Text {
+                // under crate the card's head is the kit's tracked caption in
+                // the accent tone, as the QS Bar's panels head theirs
+                GameBarCaption {
+                    objectName: "gameBarCardTitle"
                     anchors.verticalCenter: parent.verticalCenter
-                    leftPadding: 4 * root.s
+                    s: root.s
+                    tone: "accent"
+                    leftPadding: (GameBarLook.crate ? 8 : 4) * root.s
                     text: root.title
-                    color: GameBarLook.fg
-                    font.family: GameBarLook.face
-                    font.pixelSize: GameBarLook.small * root.s
-                    elide: Text.ElideRight
+                    stockColor: GameBarLook.fg
+                    stockSize: GameBarLook.small
                 }
             }
 
@@ -150,10 +151,10 @@ Item {
 
         Item {
             id: content
-            x: root.minimal ? 0 : root.pad
+            x: root.minimal ? 0 : root.bodyInset
             y: root.minimal ? 0 : titleBar.y + titleBar.height + 1
-            width: parent.width - (root.minimal ? 0 : root.pad * 2)
-            height: parent.height - y - (root.minimal ? 0 : root.pad)
+            width: parent.width - (root.minimal ? 0 : root.bodyInset * 2)
+            height: parent.height - y - (root.minimal ? 0 : root.bodyInset)
 
             Rectangle {
                 id: contentFill
@@ -164,6 +165,7 @@ Item {
 
             Item {
                 id: bodyArea
+                objectName: "gameBarBody"
                 anchors.fill: parent
                 anchors.margins: root.minimal ? 0 : 8 * root.s
             }

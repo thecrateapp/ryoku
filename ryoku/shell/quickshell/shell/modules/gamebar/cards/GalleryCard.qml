@@ -6,6 +6,7 @@ import qs.Commons
 import shell.services
 import ".."
 import "../../../components"
+import Ryoku.Ui as Kit
 import Ryoku.Ui.Singletons
 import "../look"
 
@@ -117,16 +118,14 @@ GameBarCard {
             width: parent.width
             height: 24 * card.s
 
-            Text {
+            GameBarCaption {
                 anchors.left: parent.left
                 anchors.verticalCenter: parent.verticalCenter
+                s: card.s
                 text: card.items.length === 1
                     ? (card.mode === "clips" ? I18n.tr("1 recent clip") : I18n.tr("1 recent shot"))
                     : (card.mode === "clips"
                         ? I18n.tr("%1 recent clips") : I18n.tr("%1 recent shots")).arg(card.items.length)
-                color: GameBarLook.subtext
-                font.family: GameBarLook.face
-                font.pixelSize: GameBarLook.smallie * card.s
             }
 
             GameBarTextButton {
@@ -134,6 +133,7 @@ GameBarCard {
                 anchors.verticalCenter: parent.verticalCenter
                 s: card.s
                 compact: true
+                outline: true
                 label: I18n.tr("Folder")
                 onClicked: Spawn.run(["xdg-open", card.folder])
             }
@@ -217,7 +217,22 @@ GameBarCard {
             font.pixelSize: GameBarLook.small * card.s
         }
 
+        // under crate the two modes are the kit's segmented choice
+        GameBarScaled {
+            visible: GameBarLook.crate
+            s: card.s
+
+            Kit.Seg {
+                objectName: "gameBarGallerySeg"
+                options: ["shots", "clips"]
+                labels: ({ shots: I18n.tr("Screenshots"), clips: I18n.tr("Recordings") })
+                current: card.mode
+                onChose: key => card.mode = key
+            }
+        }
+
         Row {
+            visible: !GameBarLook.crate
             width: parent.width
             spacing: 8 * card.s
 

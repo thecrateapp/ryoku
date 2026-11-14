@@ -10,7 +10,8 @@ import "../../utils/units.js" as Units
 
 // One process line. End arms on the first press and only fires on the second,
 // so a stray click cannot SIGTERM anything; processes the desktop needs never
-// offer the control at all.
+// offer the control at all. Under crate the readings are mono and the buttons
+// the kit's (GameBarTextButton).
 Item {
     id: root
 
@@ -57,7 +58,7 @@ Item {
         width: 40 * root.s
         text: root.task ? Units.pct(root.task.cpu / 100) : ""
         color: GameBarLook.subtext
-        font.family: GameBarLook.face
+        font.family: GameBarLook.numeric
         font.pixelSize: GameBarLook.smallie * root.s
         horizontalAlignment: Text.AlignRight
     }
@@ -70,7 +71,7 @@ Item {
         width: 54 * root.s
         text: root.task ? Math.round(root.task.memMiB) + " MB" : ""
         color: GameBarLook.subtext
-        font.family: GameBarLook.face
+        font.family: GameBarLook.numeric
         font.pixelSize: GameBarLook.smallie * root.s
         horizontalAlignment: Text.AlignRight
     }
@@ -81,13 +82,11 @@ Item {
         anchors.verticalCenter: parent.verticalCenter
         spacing: 4 * root.s
 
-        Text {
+        GameBarCaption {
             visible: root.protectedName && !root.confirming
             anchors.verticalCenter: parent.verticalCenter
+            s: root.s
             text: I18n.tr("core")
-            color: GameBarLook.subtext
-            font.family: GameBarLook.face
-            font.pixelSize: GameBarLook.smallie * root.s
         }
 
         GameBarTextButton {

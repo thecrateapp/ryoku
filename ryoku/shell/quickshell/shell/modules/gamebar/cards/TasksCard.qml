@@ -77,21 +77,17 @@ GameBarCard {
             width: parent.width
             height: 22 * card.s
 
-            Text {
+            GameBarCaption {
                 anchors.left: parent.left
                 anchors.verticalCenter: parent.verticalCenter
+                s: card.s
                 text: I18n.tr("Process")
-                color: GameBarLook.subtext
-                font.family: GameBarLook.face
-                font.pixelSize: GameBarLook.smallie * card.s
             }
-            Text {
+            GameBarCaption {
                 anchors.right: parent.right
                 anchors.verticalCenter: parent.verticalCenter
+                s: card.s
                 text: I18n.tr("CPU    MEM")
-                color: GameBarLook.subtext
-                font.family: GameBarLook.face
-                font.pixelSize: GameBarLook.smallie * card.s
             }
         }
 

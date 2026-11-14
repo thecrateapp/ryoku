@@ -52,7 +52,18 @@ cmake --build "$build" >/dev/null
 mods=$(mktemp -d)
 trap 'rm -r -- "$mods"' EXIT
 mkdir -p "$mods/Ryoku" "$mods/root"
-ln -s "$repo/ryoku/ui" "$mods/Ryoku/Ui"
+# The kit, linked entry by entry: Wm.qml reads Quickshell.WindowManager, which
+# aborts the process under the offscreen platform, so a scene that reaches Wm
+# (the Game Bar's cards do) gets a copy with those two Wayland reads emptied.
+mkdir -p "$mods/Ryoku/Ui/Singletons"
+for entry in "$repo/ryoku/ui"/*; do
+  [ "$(basename "$entry")" = Singletons ] || ln -s "$entry" "$mods/Ryoku/Ui/$(basename "$entry")"
+done
+for entry in "$repo/ryoku/ui/Singletons"/*; do
+  [ "$(basename "$entry")" = Wm.qml ] || ln -s "$entry" "$mods/Ryoku/Ui/Singletons/$(basename "$entry")"
+done
+sed -e 's/WindowManager\.windowsets/[]/' -e 's/ToplevelManager\.toplevels/null/' \
+  "$repo/ryoku/ui/Singletons/Wm.qml" >"$mods/Ryoku/Ui/Singletons/Wm.qml"
 for entry in "$repo/ryoku/shell/quickshell/shell"/*; do
   [ "$(basename "$entry")" = shell.qml ] || ln -s "$entry" "$mods/root/$(basename "$entry")"
 done

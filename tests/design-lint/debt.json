@@ -1208,15 +1208,6 @@
  "ryoku/shell/quickshell/shell/modules/gamebar/GameBar.qml": {
   "hex-colour": 1
  },
- "ryoku/shell/quickshell/shell/modules/gamebar/GameBarCard.qml": {
-  "pixel-size": 1
- },
- "ryoku/shell/quickshell/shell/modules/gamebar/GameBarStrip.qml": {
-  "pixel-size": 3
- },
- "ryoku/shell/quickshell/shell/modules/gamebar/discordVoice/ParticipantAvatar.qml": {
-  "pixel-size": 1
- },
  "ryoku/shell/quickshell/shell/modules/launcher/shared/Singletons/Config.qml": {
   "hex-colour": 1
  },
