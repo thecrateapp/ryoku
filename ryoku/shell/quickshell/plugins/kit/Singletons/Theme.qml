@@ -8,8 +8,12 @@ import Ryoku.Ui.Singletons as Ui
 // fixed named scheme or the live wallpaper) instead of a hardcoded tint; the
 // RASHIN flame and the rest-card sky stay fixed identity, deliberately
 // independent of the accent. brand/verm are the live accent (the palette
-// primary); sun/gold are the fixed brand marks.
+// primary); sun/gold are the fixed brand marks. Under a theme style's controls
+// "crate" the face, the mono, the hairline and the corner are the desktop kit's
+// (Tokens), so a plugin's card speaks the same geometry as the shell around it.
 Singleton {
+    readonly property bool crate: Ui.Tokens.controlsCrate
+
     // accent family: the live system accent (palette primary), with lit/deep
     // variants tinted off it. brand + verm are the accent under their historical
     // names, so existing plugin content follows the theme with no change.
@@ -32,7 +36,7 @@ Singleton {
     readonly property color cardBot:  Scheme.deep
     readonly property color panelTop: cardTop
     readonly property color panelBot: cardBot
-    readonly property color border:   Scheme.line
+    readonly property color border:   crate ? Ui.Tokens.line : Scheme.line
     readonly property color lineStrong: Qt.rgba(bright.r, bright.g, bright.b, 0.40)
     readonly property color shadow:   "#000000"
     readonly property color tileBg:   Scheme.elevated
@@ -72,10 +76,10 @@ Singleton {
     // type stack + brutalist geometry, the website language.
     readonly property string display: Ui.Tokens.display
     readonly property int displayWeight: Ui.Tokens.displayWeight
-    readonly property string font: "Space Grotesk"
+    readonly property string font: crate ? Ui.Tokens.ui : "Space Grotesk"
     readonly property string fontJp: "Noto Sans CJK JP"
-    readonly property string mono: "JetBrainsMono Nerd Font"
-    readonly property int radius: 0
+    readonly property string mono: crate ? Ui.Tokens.mono : "JetBrainsMono Nerd Font"
+    readonly property int radius: crate ? Ui.Tokens.radius : 0
     readonly property real border2: 1
     readonly property int shadowStep: 6
 

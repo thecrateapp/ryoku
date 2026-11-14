@@ -1,13 +1,16 @@
 import QtQuick
 import "Singletons"
+import Ryoku.Ui as Kit
 
+// A plugin card: the palette's depth gradient in a hairline. Under crate it takes
+// the shared corner and its eyebrow is the kit's tracked label.
 Rectangle {
     id: card
     property real s: 1
     property string eyebrow: ""
     default property alias content: body.data
 
-    radius: 0
+    radius: Theme.radius
     color: "transparent"
     border.width: 1
     border.color: Theme.border
@@ -21,8 +24,13 @@ Rectangle {
         anchors.fill: parent
         anchors.margins: 13 * card.s
         spacing: 11 * card.s
+        Kit.TrackLabel {
+            objectName: "cardEyebrow"
+            visible: Theme.crate && card.eyebrow.length > 0
+            text: card.eyebrow
+        }
         Text {
-            visible: card.eyebrow.length > 0
+            visible: !Theme.crate && card.eyebrow.length > 0
             text: card.eyebrow
             color: Theme.dim
             font.family: Theme.font

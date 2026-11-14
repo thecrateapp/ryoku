@@ -3,7 +3,7 @@
 #   tests/visual/surfaces/app-scene.sh SCENE OUT_DIR
 # The scene's root links the checkout's kit (Ryoku.Ui) and the four Wave 4 apps
 # under their names, so a scene imports "ryostore", "ryovm", "welcome" or
-# "ryoshot" as a probe does. Each look reads its own config: crate is the Crate
+# "ryoshot" as a probe does, and the plugin kit as Ryoku.PluginKit. Each look reads its own config: crate is the Crate
 # theme from hub-fixture/crate.json, stock a plain shell.json. A scene's
 # scenes/SCENE.bin directory, when present, leads PATH with fake commands.
 set -euo pipefail
@@ -16,6 +16,7 @@ work=$(mktemp -d)
 trap 'rm -rf -- "$work"' EXIT
 mkdir -p "$work/root/Ryoku"
 ln -s "$repo/ryoku/ui" "$work/root/Ryoku/Ui"
+ln -s "$repo/ryoku/shell/quickshell/plugins/kit" "$work/root/Ryoku/PluginKit"
 ln -s "$repo/ryoku/apps/ryostore/quickshell" "$work/root/ryostore"
 ln -s "$repo/ryoku/apps/ryovm/quickshell" "$work/root/ryovm"
 ln -s "$repo/ryoku/shell/quickshell/welcome" "$work/root/welcome"

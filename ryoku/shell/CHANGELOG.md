@@ -1,6 +1,14 @@
 # Changelog: ryoku/shell/
 
 ## Unreleased
+- **Plugins draw with the shared kit.** Ryoku.PluginKit re-exports the kit's
+  Beam, Chip, IconButton and TrackLabel, so a plugin (which may import only the
+  plugin kit) uses the shell's own controls. Under crate the plugin Theme takes
+  the face, mono, hairline and 6 px corner from Tokens, MicroLabel is the
+  accent tracked label without its dot, CornerTicks draw nothing and Card takes
+  the shared corner; WaveMeter stays the deck's own meter in every look. The kit
+  Beam reports `dragging` while the pointer holds it. The stock look is unchanged
+  (`quickshell/plugins/kit/`, `ui/Beam.qml`).
 - **The Ryogami picker wears the shared kit under crate.** Its Theme takes the
   roles, faces (with the mono), type ladder and the 6 px corner from Tokens; a
   candidate palette in the theme audition still shows on the chrome. Sliders

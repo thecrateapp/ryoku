@@ -42,6 +42,8 @@ Item {
     readonly property real cy: Math.round(height / 2)
     readonly property real headX: Math.round(width * beam.frac)
     readonly property bool hot: beam.hotHint || (beam.interactive && (area.containsMouse || area.pressed || beam.activeFocus))
+    // the pointer holds the head: an owner shows the dragged value instead of the live one
+    readonly property bool dragging: area.pressed
 
     implicitHeight: 24
     implicitWidth: 160

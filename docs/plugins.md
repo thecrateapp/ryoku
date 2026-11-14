@@ -446,12 +446,23 @@ shell automatically:
 
 ```qml
 import Ryoku.PluginKit            // Theme, Motion, GlyphIcon, MicroLabel,
-                                  // SearchField, Card, CornerTicks, WaveMeter
+                                  // SearchField, Card, CornerTicks, WaveMeter,
+                                  // Beam, Chip, IconButton, TrackLabel
 ```
 
 Use `Theme` colors and `Motion` curves - mono eyebrows, hairline dividers, the
 vermillion accent, the project's morph timing. **Don't hardcode colors**; read
 them from `Theme`. The vermillion accent is the one accent - use it sparingly.
+
+`Beam`, `Chip`, `IconButton` and `TrackLabel` are the shell kit's own controls
+(Ryoku.Ui), re-exported because a plugin may import only the PluginKit: the
+Beam slider and progress, the straight chip, the plateless icon button (a
+catalogue glyph name, or a 24-unit SVG path) and the tracked mono caption. Use
+them instead of drawing your own, and the plugin follows a theme's `controls`
+style with the rest of the shell. Under `controls: "crate"` the kit's `Theme`
+also takes the face, the mono, the hairline and the 6 px corner from the shell,
+`MicroLabel` drops its dot and `CornerTicks` draw nothing. `WaveMeter` stays its
+own visual in every look: it is the deck's identity and only shows a reading.
 
 Your **settings are not QML** - you declare them as a `metadata.settings` schema
 in the manifest (below) and Ryoku renders native controls for them, both in

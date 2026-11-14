@@ -7,3 +7,7 @@ WaveMeter 1.0 WaveMeter.qml
 Card 1.0 Card.qml
 PluginSurface 1.0 PluginSurface.qml
 PluginObjectSlot 1.0 PluginObjectSlot.qml
+Beam 1.0 Beam.qml
+Chip 1.0 Chip.qml
+IconButton 1.0 IconButton.qml
+TrackLabel 1.0 TrackLabel.qml

@@ -6,7 +6,9 @@ import "Singletons"
 // Ryoku wave as a meter. dim line full-width, bright (brand) crest filled from
 // the left up to `frac` of the width: lit length = the value. travels gently
 // while visible. used for RAM + disk readouts on the system card. set `frac`
-// (0..1) and a width.
+// (0..1) and a width. It stays a distinct visual in both looks, an allowed
+// exception to the kit Beam (design-system plan, Wave 5): the wave is the
+// plugin deck's identity, and it only ever shows a reading, never takes input.
 Item {
     id: root
 

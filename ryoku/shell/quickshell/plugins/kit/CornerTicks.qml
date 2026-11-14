@@ -2,9 +2,12 @@ import QtQuick
 import "Singletons"
 
 // faint L-bracket reg ticks at the four corners, framing the panel like an
-// editorial specimen sheet. decorative; sits behind content.
+// editorial specimen sheet. decorative; sits behind content. Corner ticks are
+// Ryoku marginalia, so they do not draw under crate.
 Item {
     id: ticks
+
+    visible: !Theme.crate
 
     property real s: 1
     property real len: 9 * s
