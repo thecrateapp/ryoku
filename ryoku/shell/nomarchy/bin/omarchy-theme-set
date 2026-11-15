@@ -55,7 +55,8 @@ render_generated_colors() {
   fi
   if [[ ! -f $generated && -f $carrier && -f $palette_template ]] && command -v matugen >/dev/null 2>&1; then
     render_config=$(mktemp)
-    printf '[templates.nomarchy]\ninput_path = "%s"\noutput_path = "%s"\n' "$palette_template" "$generated" >"$render_config"
+    # matugen 4 refuses a config without its [config] table
+    printf '[config]\n\n[templates.nomarchy]\ninput_path = "%s"\noutput_path = "%s"\n' "$palette_template" "$generated" >"$render_config"
     matugen -q -c "$render_config" json "$carrier"
     rm -f "$render_config"
   fi

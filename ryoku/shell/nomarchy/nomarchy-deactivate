@@ -17,5 +17,17 @@ for link in "$local_bin"/omarchy "$local_bin"/omarchy-*; do
   rm -f -- "$link"
 done
 
+# The theme nomarchy rendered into Omarchy's state goes with its commands:
+# apps that follow Omarchy (ZapFast and other fastframe apps) take
+# ~/.config/omarchy plus this folder for a running Omarchy, then call the
+# omarchy-* commands removed above. nomarchy-activate renders it again. Only
+# nomarchy's own: a real Omarchy install ($data_home/omarchy) keeps its theme.
+state_home=${XDG_STATE_HOME:-$HOME/.local/state}
+current=$state_home/omarchy/current
+if [[ -d $root && ! -d $data_home/omarchy && ( -e $current || -L $current ) ]]; then
+  (( check )) && exit 1
+  rm -rf -- "$current"
+fi
+
 (( check )) && exit 0
 exit 0
