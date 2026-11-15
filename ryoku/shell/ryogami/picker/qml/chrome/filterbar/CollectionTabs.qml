@@ -6,7 +6,8 @@ import Ryoku.Ui.Singletons
 // own dark copy of the words, clipped to itself, so every letter it passes over inverts
 // in step with it. Switching is instant: it only reconfigures the one shared view.
 // Under crate the open tab is marked the kit Tabs' way: its label in the mark over a
-// 2 px underline, with no plate.
+// 2 px underline, with no plate, and the names are navigation, set in the mono's
+// tracked caps. The Japanese words stay, as UiPreferences says.
 Item {
     id: tabs
 
@@ -43,9 +44,11 @@ Item {
 
             TextMetrics {
                 id: boldCut
-                font.family: Theme.sans
-                font.weight: Font.DemiBold
-                font.pixelSize: Theme.fs(14)
+                font.family: latin.font.family
+                font.weight: Theme.crate ? Font.Medium : Font.DemiBold
+                font.pixelSize: latin.font.pixelSize
+                font.capitalization: latin.font.capitalization
+                font.letterSpacing: latin.font.letterSpacing
                 text: tab.modelData.label
             }
             Binding {
@@ -79,10 +82,13 @@ Item {
                 anchors.horizontalCenter: parent.horizontalCenter
                 anchors.bottom: parent.bottom
                 anchors.bottomMargin: 6 * Theme.scale
+                objectName: "collectionTabLabel"
                 text: tab.modelData.label
-                font.family: Theme.sans
-                font.weight: tab.active ? Font.DemiBold : Font.Medium
-                font.pixelSize: Theme.fs(14)
+                font.family: Theme.crate ? Theme.mono : Theme.sans
+                font.weight: Theme.crate || !tab.active ? Font.Medium : Font.DemiBold
+                font.pixelSize: Theme.crate ? Theme.fontMicro : Theme.fs(14)
+                font.capitalization: Theme.crate ? Font.AllUppercase : Font.MixedCase
+                font.letterSpacing: Theme.crate ? Tokens.trackLabel : 0
                 color: tab.inverted ? Theme.surface
                      : Theme.crate ? (tab.active ? Tokens.mark : tab.hovered ? Tokens.hoverInk : Tokens.inkSubtle)
                      : Theme.withAlpha(Theme.surfaceText, tab.active || tab.hovered ? 1 : 0.66)

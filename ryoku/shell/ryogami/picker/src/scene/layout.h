@@ -25,6 +25,14 @@ struct ScenePalette {
     QColor shadow = QColor(0, 0, 0);
 };
 
+// How a card's frame is drawn, set by the picker's look rather than per layout.
+// cornerRadius below zero keeps each layout's own corners; at or above zero it
+// replaces the radius of any card the layout rounds.
+struct SceneFrame {
+    float currentEdge = 3.0f;
+    float cornerRadius = -1.0f;
+};
+
 struct FlipState {
     int row = -1;
     double progress = 0;   // 0 front, 1 back
@@ -45,6 +53,7 @@ struct LayoutContext {
     const ParamSource *params = nullptr;
     const CardSource *source = nullptr;
     ScenePalette palette;
+    SceneFrame frame;
     FlipState flip;
     // 0 means the wall layout reads its column count from settings.
     int columnsOverride = 0;

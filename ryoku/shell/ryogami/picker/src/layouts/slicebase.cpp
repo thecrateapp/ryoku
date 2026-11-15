@@ -166,8 +166,12 @@ void SliceBase::emitCard(const LayoutContext &ctx, std::vector<CardVisual> &out,
     const float cx = geom::centerLayout(vw, 0.0f).centerX + sp.offsetX * vw * 0.5f;
     const bool isCurrent = row == ctx.current;
     const bool isHover = row == ctx.hovered;
+    std::array<float, 4> corners = sp.corners;
+    const bool rounded = std::any_of(corners.begin(), corners.end(), [](float r) { return r > 0.0f; });
+    if (ctx.frame.cornerRadius >= 0.0f && rounded)
+        corners.fill(ctx.frame.cornerRadius);
     const std::array<float, 4> radii =
-        geom::sliceClampedCorners(sp.corners, w, sp.sliceH, sp.skew, sp.edgeTilt);
+        geom::sliceClampedCorners(corners, w, sp.sliceH, sp.skew, sp.edgeTilt);
     const float hw = w * 0.5f;
     const float hh = sp.sliceH * 0.5f;
 
@@ -218,7 +222,7 @@ void SliceBase::emitCard(const LayoutContext &ctx, std::vector<CardVisual> &out,
     const float curBorder[4] = {pr, pg, pb, 1.0f};
     for (int i = 0; i < 4; ++i)
         card.inst.border[i] = baseBorder[i] + (curBorder[i] - baseBorder[i]) * borderSel;
-    card.inst.params[1] = 1.0f + 2.0f * borderSel;
+    card.inst.params[1] = 1.0f + (ctx.frame.currentEdge - 1.0f) * borderSel;
 
     if (depthMode && !depthSelectionFrame) {
         setVec4(card.inst.border, 0.0f, 0.0f, 0.0f, 0.0f);

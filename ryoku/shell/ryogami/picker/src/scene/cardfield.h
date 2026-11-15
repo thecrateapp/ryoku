@@ -39,6 +39,7 @@ class CardField : public QQuickItem
     Q_PROPERTY(bool active READ active WRITE setActive NOTIFY activeChanged)
     Q_PROPERTY(bool previewAllowed READ previewAllowed WRITE setPreviewAllowed NOTIFY previewAllowedChanged)
     Q_PROPERTY(QVariantMap palette READ palette WRITE setPalette NOTIFY paletteChanged)
+    Q_PROPERTY(QVariantMap frame READ frame WRITE setFrame NOTIFY frameChanged)
     Q_PROPERTY(bool interactive READ interactive WRITE setInteractive NOTIFY interactiveChanged)
     Q_PROPERTY(int columns READ columns WRITE setColumns NOTIFY columnsChanged)
     Q_PROPERTY(bool activateOnClick READ activateOnClick WRITE setActivateOnClick NOTIFY activateOnClickChanged)
@@ -72,6 +73,8 @@ public:
     void setPreviewAllowed(bool allowed);
     QVariantMap palette() const { return m_paletteMap; }
     void setPalette(const QVariantMap &palette);
+    QVariantMap frame() const { return m_frameMap; }
+    void setFrame(const QVariantMap &frame);
     bool interactive() const { return m_interactive; }
     void setInteractive(bool interactive);
     bool activateOnClick() const { return m_activateOnClick; }
@@ -111,6 +114,7 @@ Q_SIGNALS:
     void activeChanged();
     void previewAllowedChanged();
     void paletteChanged();
+    void frameChanged();
     void interactiveChanged();
     void columnsChanged();
     void hoveredIndexChanged();
@@ -209,6 +213,8 @@ private:
     Spring m_entrance;
     QVariantMap m_paletteMap;
     ScenePalette m_palette;
+    QVariantMap m_frameMap;
+    SceneFrame m_frame;
     int m_hovered = -1;
     QRectF m_currentRect;
     QPointF m_currentShear;

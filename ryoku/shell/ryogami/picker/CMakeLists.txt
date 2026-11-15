@@ -25,6 +25,7 @@ set(picker_test_sources
     "src/tests/cardinstancesanitize_test.cpp"
     "src/tests/hexlayout_test.cpp"
     "src/tests/previewyuv_test.cpp"
+    "src/tests/slicesframe_test.cpp"
     "src/tests/thumbdecoder_test.cpp")
 list(REMOVE_ITEM picker_sources ${picker_test_sources})
 file(GLOB_RECURSE picker_qml CONFIGURE_DEPENDS
@@ -102,6 +103,14 @@ if(RYOGAMI_PICKER_TESTS)
     target_include_directories(ryogami-hexlayout-test PRIVATE src/layouts src/render src/scene)
     target_link_libraries(ryogami-hexlayout-test PRIVATE Qt6::Gui)
     add_test(NAME ryogami-hexlayout COMMAND ryogami-hexlayout-test)
+    add_executable(ryogami-slicesframe-test
+        src/tests/slicesframe_test.cpp
+        src/layouts/sliceslayout.cpp
+        src/layouts/slicebase.cpp
+        src/layouts/geometry.cpp)
+    target_include_directories(ryogami-slicesframe-test PRIVATE src/layouts src/render src/scene)
+    target_link_libraries(ryogami-slicesframe-test PRIVATE Qt6::Gui)
+    add_test(NAME ryogami-slicesframe COMMAND ryogami-slicesframe-test)
     add_executable(ryogami-thumbdecoder-test
         src/tests/thumbdecoder_test.cpp
         src/render/thumbdecoder.cpp

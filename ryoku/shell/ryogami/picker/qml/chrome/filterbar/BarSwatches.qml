@@ -1,4 +1,5 @@
 import QtQuick
+import Ryoku.Ui.Singletons
 
 // The hue filter: colour here is data, the one place the masthead carries it.
 Row {
@@ -26,15 +27,16 @@ Row {
             width: (strip.compact ? 10 : 13) * Theme.scale
             height: strip.height
 
-            // The chosen hue gets a bone ring standing off its chip.
+            // The chosen hue gets a bone ring standing off its chip; under crate the
+            // ring is the 1 px pick edge in the mark.
             Rectangle {
                 anchors.centerIn: chip
                 width: chip.width + 6 * Theme.scale
                 height: width
                 radius: 4 * Theme.scale
                 color: "transparent"
-                border.width: 1.5 * Theme.scale
-                border.color: Theme.surfaceText
+                border.width: Theme.crate ? Tokens.border : 1.5 * Theme.scale
+                border.color: Theme.crate ? Tokens.mark : Theme.surfaceText
                 opacity: cell.isSelected ? 1 : 0
                 scale: cell.isSelected ? 1 : 0.6
                 Behavior on opacity { NumberAnimation { duration: Theme.fast } }

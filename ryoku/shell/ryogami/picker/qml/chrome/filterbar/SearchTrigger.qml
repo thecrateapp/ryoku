@@ -3,6 +3,8 @@ import Ryoku.Ui.Singletons
 
 // The search line in the masthead: it reads like a field and opens the search panel,
 // which owns tag and describe search. A running query shows here with a way to clear it.
+// Under crate it is drawn as the kit's field, a hairline box at the shared corner whose
+// edge takes the mark while search is in play, and the rule that fills under it goes.
 Item {
     id: st
 
@@ -18,15 +20,27 @@ Item {
 
     implicitHeight: 34 * Theme.scale
 
+    Rectangle {
+        objectName: "searchBox"
+        visible: Theme.crate
+        anchors.fill: parent
+        radius: Tokens.radius
+        color: "transparent"
+        border.width: Tokens.border
+        border.color: st.engaged ? Tokens.mark : st.hovered ? Tokens.lineStrong : Tokens.line
+        Behavior on border.color { ColorAnimation { duration: Tokens.snap } }
+    }
+
     Text {
         id: lens
         anchors.left: parent.left
+        anchors.leftMargin: Theme.crate ? Tokens.s2 : 0
         anchors.verticalCenter: parent.verticalCenter
         text: "\u{f0349}"
         font.family: Theme.icon
         font.pixelSize: Theme.fs(15)
         color: Theme.withAlpha(Theme.surfaceText, st.engaged || st.hovered ? 1 : 0.55)
-        rotation: st.hovered ? -12 : 0
+        rotation: st.hovered && !Theme.crate ? -12 : 0
         renderType: Text.NativeRendering
         Behavior on rotation { NumberAnimation { duration: Theme.standard; easing.type: Easing.OutBack } }
         Behavior on color { ColorAnimation { duration: Theme.fast } }
@@ -52,6 +66,7 @@ Item {
 
     // The rule under the line brightens and fills from the left while search is in play.
     Rectangle {
+        visible: !Theme.crate
         anchors.left: parent.left
         anchors.right: parent.right
         anchors.bottom: parent.bottom
@@ -59,6 +74,7 @@ Item {
         color: Theme.withAlpha(Theme.surfaceText, 0.22)
     }
     Rectangle {
+        visible: !Theme.crate
         anchors.left: parent.left
         anchors.bottom: parent.bottom
         height: 1.5 * Theme.scale
@@ -79,6 +95,7 @@ Item {
         id: clear
         visible: st.active
         anchors.right: parent.right
+        anchors.rightMargin: Theme.crate ? Tokens.s1 : 0
         anchors.verticalCenter: parent.verticalCenter
         glyph: "\u{f0156}"
         tooltip: I18n.tr("Clear search")
