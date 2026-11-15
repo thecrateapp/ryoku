@@ -1710,6 +1710,9 @@ PanelWindow {
                             readonly property string stateDir: (Quickshell.env("XDG_STATE_HOME") || (Quickshell.env("HOME") + "/.local/state"))
                                 + "/ryoku/plugins/" + slot.pluginId
                             readonly property bool panelOpen: barSlot.root.pluginPanelId === slot.pluginId
+                            // the shell's shared spectrum (levels, bars, energy, silent);
+                            // call spectrum.setActive(owner, true) while drawing it
+                            readonly property var spectrum: Svc.AudioBars
                             readonly property bool hasPanel: !!(pluginHostRoot.entry && pluginHostRoot.entry.manifest
                                 && pluginHostRoot.entry.manifest.entryPoints
                                 && pluginHostRoot.entry.manifest.entryPoints.panel)

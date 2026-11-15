@@ -9,5 +9,6 @@ PluginSurface 1.0 PluginSurface.qml
 PluginObjectSlot 1.0 PluginObjectSlot.qml
 Beam 1.0 Beam.qml
 Chip 1.0 Chip.qml
+Sw 1.0 Sw.qml
 IconButton 1.0 IconButton.qml
 TrackLabel 1.0 TrackLabel.qml

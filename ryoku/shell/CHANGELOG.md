@@ -1,6 +1,14 @@
 # Changelog: ryoku/shell/
 
 ## Unreleased
+- **Plugins get the kit switch and the shell's spectrum.** `Ryoku.PluginKit`
+  re-exports the kit `Sw`, so a plugin's boolean (crate-mark's equalizer on/off)
+  is the switch the shell draws, not a look-alike. Bar plugins and popouts also
+  receive `pluginApi.spectrum`, the shared AudioBars (`levels`, `bars`,
+  `energy`, `silent`, `setActive`), so a plugin can draw the same spectrum as
+  the media panel without importing shell services (R4)
+  (`plugins/kit/Sw.qml`, `BarSlot.qml`, `PluginPopouts.qml`, `docs/plugins.md`;
+  `tests/ui/pluginkit-kit-probe.sh`, `tests/plugin-api-spectrum.sh`).
 - **Every waiting Beam scans as one smooth motion.** An indeterminate kit Beam
   (Wi-Fi and Bluetooth scans, Ryostore and Ryovm downloads, Hub updates, the
   reload cover) now moves like the Beam on ryoku.cratemusic.app: a symmetric

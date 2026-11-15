@@ -363,6 +363,7 @@ Read it; never reassign it.
 | `saveSetting(key, value)` | function | persists one setting through `ryoku-plugins-place`; `pluginSettings` re-derives on the `plugins.json` change (R5) |
 | `panelOpen` | `bool` (readonly) | whether the bar panel is open (bar host; present but inert elsewhere) |
 | `openPanel()` / `closePanel()` / `togglePanel()` | function | open, close, or toggle the bar panel |
+| `spectrum` | `var` (readonly) | the shell's shared audio spectrum (bar host and popouts): `levels` (0..1 per bar), `bars`, `energy`, `silent`. It analyses only while someone draws it: call `spectrum.setActive(owner, true)` while yours is visible and `false` after. Guard it: older shells have none |
 
 Your service and its `pluginApi` survive a settings write: `saveSetting`
 persists the value and re-derives `pluginSettings` without tearing anything

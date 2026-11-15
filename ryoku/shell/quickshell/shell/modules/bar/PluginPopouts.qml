@@ -194,6 +194,7 @@ Item {
                 property var mainInstance: serviceSlot.item
                 property var pluginSettings: (pop.place && pop.place.settings) ? pop.place.settings : {}
                 property string pluginDir: pop.entry ? pop.entry.dir : ""
+                readonly property var spectrum: AudioBars
                 function saveSettings() {}
             }
 

@@ -9,12 +9,13 @@ import Ryoku.PluginKit.Singletons as Kit
 // its Theme takes the face, the mono, the hairline and the corner from Tokens,
 // MicroLabel is the kit's accent tracked label without its dot, CornerTicks draw
 // nothing and a Card takes the shared corner; WaveMeter stays in both looks.
-// Beam, Chip, IconButton and TrackLabel are the shell kit's own controls,
+// Beam, Chip, IconButton, Sw and TrackLabel are the shell kit's own controls,
 // re-exported for plugins (R4), Beam reporting a drag while the pointer holds it.
 ShellRoot {
     id: probe
     property int chipTaps: 0
     property int closes: 0
+    property var swTo: undefined
     property real seekTo: -1
     // crate from the start, so the controls' colour animations have settled by the checks
     Component.onCompleted: Tokens.controlsCrate = true
@@ -40,6 +41,7 @@ ShellRoot {
                 Chip { id: chip; text: "Smart"; on: true; onClicked: probe.chipTaps++ }
                 IconButton { id: close; glyph: "close"; glyphFont: "Material Symbols Rounded"; onClicked: probe.closes++ }
                 TrackLabel { id: caption; text: "Equalizer"; tone: "accent" }
+                Sw { id: sw; on: true; onToggled: (v) => probe.swTo = v }
             }
         }
     }
@@ -87,6 +89,9 @@ ShellRoot {
             close.clicked();
             check(probe.closes === 1, "the icon button clicks");
             check(caption.font.family === Tokens.mono && caption.font.capitalization === Font.AllUppercase, "the re-exported label is mono, upper case");
+            check(sw.implicitWidth === 34 && sw.implicitHeight === 18, "the re-exported Sw is the crate switch");
+            sw.activate();
+            check(probe.swTo === false, "the switch asks to turn off");
 
             Tokens.controlsCrate = false;
             stock.start();
@@ -102,7 +107,7 @@ ShellRoot {
             check(ticks.visible, "stock corner ticks");
             check(card.radius === 0 && !find(card, "cardEyebrow").visible, "stock card");
             check(wave.visible, "WaveMeter in the stock look");
-            check(chip.implicitHeight === 24 && close.implicitWidth === 26, "the re-exports follow the stock kit");
+            check(chip.implicitHeight === 24 && close.implicitWidth === 26 && sw.implicitWidth === 54, "the re-exports follow the stock kit");
             console.log("PLUGINKIT-KIT-PROBE-PASS");
             Qt.quit();
         }

@@ -96,3 +96,6 @@ position, size, motion, and chrome.
 - `panelOpen` (bool), `openPanel()`, `closePanel()`, `togglePanel()`: the bar
   panel controls (present but inert off the bar). The sanctioned bar-widget
   click is `onClicked: pluginApi.togglePanel()`.
+- `spectrum`: the shell's shared audio spectrum (`levels`, `bars`, `energy`,
+  `silent`); call `spectrum.setActive(owner, true)` while you draw it and
+  `false` after. Older shells have none: check it first.
