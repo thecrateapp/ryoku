@@ -147,7 +147,7 @@
   .subnav { margin-bottom: var(--s3); }
   .section-note { margin-bottom: var(--s3); color: var(--ink-mute); font-size: var(--f-small); }
   .section-note.alert { color: var(--alert); }
-  .table-wrap { overflow-x: auto; border: 1px solid var(--line-soft); border-radius: var(--radius); background: var(--paper-lift); }
+  .table-wrap { overflow-x: auto; border: 1px solid var(--line-soft); border-radius: var(--radius); background: var(--raised); }
   .table-wrap table { min-width: 680px; }
   .table-wrap th, .table-wrap td { padding-left: var(--s4); }
   .table-wrap th:last-child, .table-wrap td:last-child { padding-right: var(--s4); }

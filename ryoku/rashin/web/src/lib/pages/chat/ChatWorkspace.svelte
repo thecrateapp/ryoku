@@ -205,7 +205,7 @@
 
 <style>
   .workspace { position: relative; display: grid; grid-template-columns: auto minmax(0, 1fr) auto; height: 100%; min-height: 0; overflow: hidden; }
-  .conversation { display: flex; min-width: 0; min-height: 0; flex-direction: column; background: var(--paper); }
+  .conversation { display: flex; min-width: 0; min-height: 0; flex-direction: column; background: var(--window); }
   .transcript-wrap { position: relative; display: flex; flex: 1; min-height: 0; }
   .dock-wrap { flex: none; padding: 0 var(--s5) var(--s3); }
   .pane-reveals { display: grid; grid-template-columns: auto 1fr auto; align-items: center; min-height: 44px; padding: var(--s2) var(--s3); border-bottom: 1px solid var(--line-soft); }

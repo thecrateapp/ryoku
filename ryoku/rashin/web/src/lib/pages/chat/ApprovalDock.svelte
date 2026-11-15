@@ -86,7 +86,7 @@
     padding: var(--s3) var(--s4);
     border: 1px solid var(--bone);
     border-radius: var(--radius);
-    background: var(--paper-lift);
+    background: var(--raised);
     animation: dock-in var(--t-mid) var(--ease-out);
   }
   @keyframes dock-in { from { opacity: 0; transform: translateY(8px); } }
@@ -116,7 +116,7 @@
     padding: var(--s2) var(--s3);
     border: 1px solid var(--line-soft);
     border-radius: 4px;
-    background: var(--paper);
+    background: var(--window);
     color: var(--ink-dim);
     font-size: var(--f-small);
     line-height: 1.5;

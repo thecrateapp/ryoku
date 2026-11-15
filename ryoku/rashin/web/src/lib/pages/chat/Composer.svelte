@@ -328,10 +328,10 @@
 </div>
 
 <style>
-  .composer-shell { position: relative; z-index: 3; flex: none; border-top: 1px solid var(--line-soft); background: var(--paper); }
+  .composer-shell { position: relative; z-index: 3; flex: none; border-top: 1px solid var(--line-soft); background: var(--window); }
   .composer-inner { width: min(100%, var(--measure)); margin: 0 auto; padding: var(--s3) var(--s5) var(--s4); }
 
-  .field { display: flex; align-items: flex-end; gap: var(--s2); padding: var(--s2); border: 1px solid var(--line); border-radius: var(--radius); background: var(--paper-lift); transition: border-color var(--t-fast) var(--ease); }
+  .field { display: flex; align-items: flex-end; gap: var(--s2); padding: var(--s2); border: 1px solid var(--line); border-radius: var(--radius); background: var(--raised); transition: border-color var(--t-fast) var(--ease); }
   .field:focus-within { border-color: var(--line-strong); }
   textarea { flex: 1; min-width: 0; min-height: 32px; max-height: 176px; resize: none; overflow-y: auto; padding: 5px var(--s1); border: 0; outline: 0; background: transparent; color: var(--ink); line-height: 22px; }
   textarea::placeholder { color: var(--ink-faint); }
@@ -342,7 +342,7 @@
   .attachments { display: flex; gap: var(--s2); margin-bottom: var(--s2); overflow-x: auto; }
   figure { position: relative; flex: none; width: 88px; height: 64px; }
   figure img { width: 100%; height: 100%; border: 1px solid var(--line); border-radius: var(--radius); object-fit: cover; }
-  figure :global(.ib) { position: absolute; top: var(--s1); right: var(--s1); border-color: var(--line-strong); background: var(--paper-lift); }
+  figure :global(.ib) { position: absolute; top: var(--s1); right: var(--s1); border-color: var(--line-strong); background: var(--raised); }
   .status-line { display: flex; align-items: center; justify-content: space-between; gap: var(--s3); min-height: 30px; padding-top: var(--s2); }
   .activity { display: flex; align-items: center; gap: var(--s2); flex: 1 1 0; min-width: 0; color: var(--ink-mute); font-size: var(--f-small); }
   .activity-text { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
@@ -357,7 +357,7 @@
   /* The slash menu is a typeahead anchored over the field, not a popover: a
      popover trigger owns Space and Enter as a button would, which is how a
      space typed into the message went missing. */
-  .command-menu { position: absolute; left: 0; right: 0; bottom: calc(100% + var(--s2)); z-index: 20; display: flex; flex-direction: column; max-height: 320px; overflow: auto; padding: var(--s2); border: 1px solid var(--line-strong); border-radius: var(--radius); background: var(--paper-lift); animation: menu-rise var(--t-fast) var(--ease-out); }
+  .command-menu { position: absolute; left: 0; right: 0; bottom: calc(100% + var(--s2)); z-index: 20; display: flex; flex-direction: column; max-height: 320px; overflow: auto; padding: var(--s2); border: 1px solid var(--line-strong); border-radius: var(--radius); background: var(--raised); animation: menu-rise var(--t-fast) var(--ease-out); }
   @keyframes menu-rise { from { opacity: 0; transform: translateY(4px); } }
   .command-menu button { display: grid; grid-template-columns: 112px minmax(0, 1fr) auto; align-items: center; gap: var(--s3); min-height: 38px; padding: var(--s2) var(--s3); border-radius: 4px; text-align: left; }
   .command-menu button.active { background: var(--tint10); }
@@ -371,6 +371,7 @@
     .agent-hint { display: none; }
   }
 
+  :global(:root[data-look="crate"]) :global(.send-action) { width: var(--btn-h); }
   :global(:root[data-look="crate"]) .composer-shell { border-top-color: var(--line); }
   :global(:root[data-look="crate"]) .command-menu { border-color: var(--line); background: var(--glass); backdrop-filter: var(--glass-blur); }
 </style>

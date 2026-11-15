@@ -63,7 +63,7 @@
     flex-wrap: wrap;
     align-items: stretch;
     border-bottom: 1px solid var(--line-soft);
-    background: var(--paper);
+    background: var(--window);
   }
   .live-key { display: flex; align-items: center; gap: var(--s2); padding: var(--s5); border-right: 1px solid var(--line-soft); }
   .pulse { width: 7px; height: 7px; border-radius: 50%; background: var(--bone); animation: live-pulse 2s var(--ease) infinite; }

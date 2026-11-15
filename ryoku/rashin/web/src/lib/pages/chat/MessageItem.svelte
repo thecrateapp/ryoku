@@ -123,6 +123,6 @@
   }
 
   /* Crate: a prompt is a raised hairline card, not an accent block. */
-  :global(:root[data-look="crate"]) .user-plate { border: 1px solid var(--line); background: var(--paper-lift); color: var(--ink); }
+  :global(:root[data-look="crate"]) .user-plate { border: 1px solid var(--line); background: var(--raised); color: var(--ink); }
   :global(:root[data-look="crate"]) .prompt-images img { border-color: var(--line); }
 </style>

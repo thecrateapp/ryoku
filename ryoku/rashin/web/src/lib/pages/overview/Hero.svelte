@@ -79,7 +79,7 @@
     min-height: clamp(300px, 40vh, 430px);
     overflow: hidden;
     isolation: isolate;
-    background: var(--paper-lift);
+    background: var(--raised);
     border-bottom: 1px solid var(--line-soft);
   }
   .art { position: absolute; inset: 0; z-index: -2; }
@@ -97,7 +97,7 @@
     position: absolute;
     inset: 0;
     z-index: -1;
-    background: linear-gradient(90deg, var(--paper) 0%, color-mix(in srgb, var(--paper) 90%, transparent) 38%, color-mix(in srgb, var(--paper) 32%, transparent) 74%, color-mix(in srgb, var(--paper) 12%, transparent) 100%);
+    background: linear-gradient(90deg, var(--window) 0%, color-mix(in srgb, var(--window) 90%, transparent) 38%, color-mix(in srgb, var(--window) 32%, transparent) 74%, color-mix(in srgb, var(--window) 12%, transparent) 100%);
   }
   .hero:not(.has-art)::after { background: none; }
   .readout {

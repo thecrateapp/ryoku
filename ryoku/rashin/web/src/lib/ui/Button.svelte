@@ -54,7 +54,7 @@
   .btn:disabled { opacity: 0.45; cursor: default; }
 
   .plate { background: var(--bone); color: var(--ink-on-bone); border-color: var(--bone); }
-  .plate:hover:not(:disabled) { background: color-mix(in srgb, var(--bone) 88%, var(--paper)); }
+  .plate:hover:not(:disabled) { background: color-mix(in srgb, var(--bone) 88%, var(--window)); }
 
   .line { border-color: var(--line); background: transparent; }
   .line:hover:not(:disabled) { background: var(--tint10); border-color: var(--line-strong); }
@@ -64,6 +64,10 @@
 
   .label { display: inline-block; }
 
+  /* Crate: one button height, whatever the role or size, so a primary and an
+     outline button in one row line up (44 px under a coarse pointer); a small
+     button keeps only its smaller type and padding. */
+  :global(:root[data-look="crate"]) .btn, :global(:root[data-look="crate"]) .btn.sm { height: var(--btn-h); }
   /* Crate: the primary action fills with the accent. */
   :global(:root[data-look="crate"]) .plate { background: var(--sun); border-color: var(--sun); color: var(--ink-on-bone); }
   :global(:root[data-look="crate"]) .plate:hover:not(:disabled) { background: var(--sun-hi); border-color: var(--sun-hi); }

@@ -47,7 +47,7 @@ table.data tbody tr:hover { background: var(--tint5); }
 .prose a { color: var(--ink); border-bottom: 1px solid var(--line-strong); transition: border-color var(--t-fast) var(--ease); }
 .prose a:hover { border-color: var(--bone); }
 .prose code { font-family: var(--mono); font-size: 0.92em; padding: 1px 5px; border-radius: 4px; background: var(--tint10); color: var(--ink); }
-.prose pre { position: relative; padding: var(--s3) var(--s4); border: 1px solid var(--line-soft); border-radius: var(--radius); background: var(--paper-lift); overflow-x: auto; }
+.prose pre { position: relative; padding: var(--s3) var(--s4); border: 1px solid var(--line-soft); border-radius: var(--radius); background: var(--raised); overflow-x: auto; }
 .prose pre code { padding: 0; background: none; font-size: var(--f-small); line-height: 1.55; color: var(--ink-dim); }
 .prose pre[data-lang]::before { content: attr(data-lang); position: absolute; top: var(--s2); right: var(--s3); font-family: var(--mono); font-size: var(--f-tiny); letter-spacing: var(--track-label); text-transform: uppercase; color: var(--ink-faint); }
 .prose ul, .prose ol { padding-left: 1.4em; }

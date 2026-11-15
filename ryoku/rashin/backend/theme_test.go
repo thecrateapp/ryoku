@@ -110,6 +110,21 @@ func TestThemeSecondaryFallsBackToThePrimary(t *testing.T) {
 	}
 }
 
+func TestThemeSurfaceContainerFallsBackToTheLowContainer(t *testing.T) {
+	cfg, cache, _ := themeEnv(t)
+	if got := ThemeNow().Roles["surfaceContainer"]; got != "#0a0a0a" {
+		t.Errorf("surfaceContainer = %q, want the signature paperLift #0a0a0a", got)
+	}
+	writeThemeFile(t, filepath.Join(cache, "ryoku", "colors.json"), `{"surfaceContainerLow":"#1d1b20"}`)
+	if got := ThemeNow().Roles["surfaceContainer"]; got != "#1d1b20" {
+		t.Errorf("surfaceContainer = %q, want the wallpaper's low container #1d1b20", got)
+	}
+	writeThemeFile(t, filepath.Join(cfg, "ryoku", "shell.json"), `{"themePalette":{"surface":"#0a0a0f","surfaceContainerLow":"#0f1016","surfaceContainer":"#111218"}}`)
+	if got := ThemeNow().Roles["surfaceContainer"]; got != "#111218" {
+		t.Errorf("surfaceContainer = %q, want the named #111218", got)
+	}
+}
+
 func TestThemeLookFollowsTheCrateControls(t *testing.T) {
 	cases := []struct{ name, shell, want string }{
 		{"no shell.json is the stock look", "", "stock"},

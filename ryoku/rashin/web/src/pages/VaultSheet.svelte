@@ -185,9 +185,9 @@
     border-radius: var(--radius);
     overflow: hidden;
   }
-  .vault-side { display: flex; flex-direction: column; gap: var(--s4); min-height: 0; padding: var(--s4); border-right: 1px solid var(--line); background: var(--paper-lift); }
+  .vault-side { display: flex; flex-direction: column; gap: var(--s4); min-height: 0; padding: var(--s4); border-right: 1px solid var(--line); background: var(--raised); }
   .tree-scroll { min-height: 0; overflow: auto; padding-right: var(--s1); }
-  .reader { display: flex; flex-direction: column; min-width: 0; min-height: 0; background: var(--paper); }
+  .reader { display: flex; flex-direction: column; min-width: 0; min-height: 0; background: var(--window); }
   .pathbar {
     position: sticky;
     top: 0;
@@ -198,7 +198,7 @@
     min-height: 46px;
     padding: 0 var(--s4) 0 var(--s5);
     border-bottom: 1px solid var(--line-soft);
-    background: var(--paper);
+    background: var(--window);
   }
   .path { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-family: var(--mono); font-size: var(--f-small); color: var(--ink-mute); }
   .document-scroll { flex: 1; min-height: 0; overflow: auto; padding: var(--s6) clamp(var(--s5), 4vw, var(--s7)) var(--s7); }
@@ -208,7 +208,7 @@
   :global(.vault-doc.prose h2) { font-family: var(--display); font-size: 21px; font-weight: var(--display-weight); line-height: 1.2; }
   :global(.vault-doc.prose h2::before) { content: "// "; color: var(--ink-faint); }
   :global(.vault-doc.prose h3) { font-size: 17px; }
-  :global(.vault-doc.prose pre) { padding: var(--s4); background: var(--paper); }
+  :global(.vault-doc.prose pre) { padding: var(--s4); background: var(--window); }
   :global(.vault-doc.prose table) { width: 100%; font-size: var(--f-small); }
   :global(.vault-doc.prose th) { font-family: var(--mono); font-size: var(--f-micro); font-weight: 400; letter-spacing: var(--track-label); text-transform: uppercase; color: var(--ink-faint); }
   :global(.vault-doc.prose blockquote) { font-family: var(--display); font-size: 17px; font-style: italic; }

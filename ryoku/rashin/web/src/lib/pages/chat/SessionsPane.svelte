@@ -72,7 +72,7 @@
     min-height: 0;
     padding: var(--s4);
     border-right: 1px solid var(--line-soft);
-    background: var(--paper);
+    background: var(--window);
   }
   .pane-head { display: flex; align-items: center; justify-content: space-between; gap: var(--s3); min-height: 28px; }
   .pane-head > div { display: flex; align-items: center; gap: var(--s2); }

@@ -135,7 +135,7 @@
 </aside>
 
 <style>
-  .inspector { display: flex; flex-direction: column; width: 300px; min-width: 300px; min-height: 0; border-left: 1px solid var(--line-soft); background: var(--paper); }
+  .inspector { display: flex; flex-direction: column; width: 300px; min-width: 300px; min-height: 0; border-left: 1px solid var(--line-soft); background: var(--window); }
   .pane-head { display: flex; align-items: center; justify-content: space-between; gap: var(--s3); min-height: 61px; padding: var(--s4); border-bottom: 1px solid var(--line-soft); }
   .pane-head > div { display: flex; align-items: center; gap: var(--s2); }
   .inspector-scroll { flex: 1; min-height: 0; overflow-y: auto; }

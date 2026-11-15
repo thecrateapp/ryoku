@@ -48,7 +48,7 @@
     padding: var(--s2);
     border: 1px solid var(--line-strong);
     border-radius: var(--radius);
-    background: var(--paper-lift);
+    background: var(--raised);
     animation: pop-in var(--t-fast) var(--ease-out);
     transform-origin: var(--bits-popover-content-transform-origin, top);
   }

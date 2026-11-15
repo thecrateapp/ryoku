@@ -14,19 +14,23 @@ import (
 // that is missing or empty falls through to the next layer, so a colors.json
 // caught mid-write never paints the page black.
 
-// themeRoles are the Material roles the dashboard paints with, and the
-// signature default each one falls back to (Tokens.qml's defaults).
-var themeRoles = []struct{ key, base string }{
-	{"surface", "#000000"},
-	{"surfaceContainerLow", "#0a0a0a"},
-	{"onSurface", "#cdc4ba"},
-	{"onSurfaceVariant", "#b0a9a0"},
-	{"inverseSurface", "#cdc4ba"},
-	{"inverseOnSurface", "#000000"},
-	{"primary", "#e2342a"},
+// themeRoles are the Material roles the dashboard paints with, and what each
+// one falls back to: a signature default (Tokens.qml's defaults), or, where
+// Tokens.qml derives the role from another, that role as already resolved.
+var themeRoles = []struct{ key, base, from string }{
+	{"surface", "#000000", ""},
+	{"surfaceContainerLow", "#0a0a0a", ""},
+	// the large working window's surface; Tokens.qml's popover, which falls
+	// back to paperLift (surfaceContainerLow)
+	{"surfaceContainer", "", "surfaceContainerLow"},
+	{"onSurface", "#cdc4ba", ""},
+	{"onSurfaceVariant", "#b0a9a0", ""},
+	{"inverseSurface", "#cdc4ba", ""},
+	{"inverseOnSurface", "#000000", ""},
+	{"primary", "#e2342a", ""},
 	// the bright accent for marks; Tokens.qml's sunHi, which falls back to the
-	// resolved primary rather than to a colour of its own
-	{"secondary", ""},
+	// resolved primary
+	{"secondary", "", "primary"},
 }
 
 // Theme is what the dashboard needs to wear the desktop's look.
@@ -102,8 +106,8 @@ func ThemeNow() Theme {
 			}
 			continue
 		}
-		if r.base == "" {
-			th.Roles[r.key] = th.Roles["primary"]
+		if r.from != "" {
+			th.Roles[r.key] = th.Roles[r.from]
 			continue
 		}
 		th.Roles[r.key] = r.base

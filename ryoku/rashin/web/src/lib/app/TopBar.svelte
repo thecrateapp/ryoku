@@ -73,7 +73,7 @@
     padding: 0 var(--s3);
     border: 1px solid var(--line-soft);
     border-radius: var(--island-radius);
-    background: var(--paper);
+    background: var(--window);
     min-width: 0;
   }
 
@@ -115,7 +115,7 @@
      The seal's north and bar take the accent and the ink. */
   :global(:root[data-look="crate"]) .island { border-color: var(--line); }
   :global(:root[data-look="crate"]) .wordmark { letter-spacing: -0.02em; }
-  :global(:root[data-look="crate"]) .seal :global(path:nth-of-type(1)) { fill: var(--paper-lift); }
+  :global(:root[data-look="crate"]) .seal :global(path:nth-of-type(1)) { fill: var(--raised); }
   :global(:root[data-look="crate"]) .seal :global(path:nth-of-type(2)) { fill: var(--sun); }
   :global(:root[data-look="crate"]) .seal :global(path:nth-of-type(3)),
   :global(:root[data-look="crate"]) .seal :global(rect) { fill: var(--ink); }

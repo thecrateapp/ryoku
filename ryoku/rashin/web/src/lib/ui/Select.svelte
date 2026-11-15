@@ -73,7 +73,7 @@
     padding: var(--s1);
     border: 1px solid var(--line-strong);
     border-radius: var(--radius);
-    background: var(--paper-lift);
+    background: var(--raised);
     animation: menu-in var(--t-fast) var(--ease-out);
   }
   @keyframes menu-in { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: none; } }

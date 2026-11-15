@@ -7,6 +7,9 @@
 :root {
   --paper: #000000;
   --paper-lift: #0a0a0a;
+  /* the large working window's surface (Tokens.qml popover); only the Crate
+     look paints with it */
+  --paper-window: var(--paper-lift);
   --ink: #cdc4ba;
   --ink-dim: #b0a9a0;
   --ink-mute: #958f87;
@@ -24,7 +27,11 @@
   --tint5: color-mix(in srgb, var(--ink) 5%, transparent);
   --tint10: color-mix(in srgb, var(--ink) 10%, transparent);
   --tint16: color-mix(in srgb, var(--ink) 16%, transparent);
-  --scrim: color-mix(in srgb, var(--paper) 72%, transparent);
+  /* what the window and a raised part are painted with: the paper and its
+     lift in the signature look, the working-window surface under Crate */
+  --window: var(--paper);
+  --raised: var(--paper-lift);
+  --scrim: color-mix(in srgb, var(--window) 72%, transparent);
 
   --display: "Fraunces", Georgia, serif;
   --ui: "Space Grotesk", system-ui, sans-serif;
@@ -47,6 +54,7 @@
   --island-radius: 12px;
   --row-h: 48px;
   --ctl-h: 26px;
+  --btn-h: 32px;
   --rail-w: 268px;
   --measure: 76ch;
   --track-label: 0.14em;
@@ -81,8 +89,14 @@
   --row-wash: color-mix(in srgb, var(--sun) 8%, transparent);
   /* the one glass every floating panel wears (Tokens.qml glass): the raised
      paper at 68 % over a blur; the window itself stays opaque */
-  --glass: color-mix(in srgb, var(--paper-lift) 68%, transparent);
+  --window: var(--paper-window);
+  --raised: color-mix(in srgb, var(--ink) 3%, var(--paper-window));
+  --glass: color-mix(in srgb, var(--paper-window) 68%, transparent);
   --glass-blur: blur(24px);
+}
+
+@media (pointer: coarse) {
+  :root[data-look="crate"] { --btn-h: 44px; }
 }
 
 @font-face { font-family: "Fraunces"; font-weight: 300 600; font-display: swap;
@@ -114,7 +128,7 @@ html, body { height: 100%; }
 
 body {
   margin: 0;
-  background: var(--paper);
+  background: var(--window);
   color: var(--ink-dim);
   font-family: var(--ui);
   font-size: var(--f-body);

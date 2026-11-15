@@ -37,7 +37,7 @@
     min-width: 0;
     border: 1px solid var(--line-soft);
     border-radius: var(--radius);
-    background: var(--paper);
+    background: var(--window);
   }
   /* The head keeps its inset even when the body is flush (a table, a
      toolbar), and the body starts a full step below the lead: a lead

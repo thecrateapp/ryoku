@@ -51,7 +51,7 @@
     padding: 0 var(--s2);
     border: 1px solid var(--line);
     border-radius: 4px;
-    background: var(--paper-lift);
+    background: var(--raised);
     font-family: var(--mono);
     font-size: var(--f-tiny);
     letter-spacing: var(--track-label);

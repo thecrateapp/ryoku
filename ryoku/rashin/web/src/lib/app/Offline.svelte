@@ -23,7 +23,7 @@
     padding: var(--s2) var(--s4);
     border: 1px solid var(--line-strong);
     border-radius: var(--island-radius);
-    background: var(--paper-lift);
+    background: var(--raised);
     color: var(--ink-dim);
     font-size: var(--f-small);
     z-index: 30;

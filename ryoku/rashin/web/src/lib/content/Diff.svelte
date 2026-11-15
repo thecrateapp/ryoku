@@ -55,7 +55,7 @@
     min-height: 34px;
     padding: var(--s1) var(--s3);
     border-bottom: 1px solid var(--line-soft);
-    background: var(--paper-lift);
+    background: var(--raised);
   }
   .diff-path {
     overflow: hidden;

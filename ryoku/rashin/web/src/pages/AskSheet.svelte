@@ -267,7 +267,7 @@
   .route-row, .answer-head, .ask-actions, .working, .continue-row { display: flex; align-items: center; justify-content: space-between; gap: var(--s3); }
   .route-row p, .via { margin-top: var(--s1); color: var(--ink-mute); font-size: var(--f-small); }
   .ask-field { display: grid; gap: var(--s3); margin-top: var(--s4); }
-  textarea { width: 100%; min-height: 112px; resize: vertical; padding: var(--s3); border: 1px solid var(--line); border-radius: var(--radius); outline: 0; background: var(--paper-lift); color: var(--ink); font: inherit; line-height: 1.55; }
+  textarea { width: 100%; min-height: 112px; resize: vertical; padding: var(--s3); border: 1px solid var(--line); border-radius: var(--radius); outline: 0; background: var(--raised); color: var(--ink); font: inherit; line-height: 1.55; }
   textarea:focus { border-color: var(--line-strong); }
   textarea::placeholder { color: var(--ink-faint); }
   .ask-actions { justify-content: flex-end; }

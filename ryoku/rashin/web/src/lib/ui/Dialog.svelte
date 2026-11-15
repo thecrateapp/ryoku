@@ -71,8 +71,8 @@
     transform: translate(-50%, -50%);
     border: 1px solid var(--line-strong);
     border-radius: var(--island-radius);
-    background: var(--paper-lift);
-    box-shadow: 0 24px 64px color-mix(in srgb, var(--paper) 70%, transparent);
+    background: var(--raised);
+    box-shadow: 0 24px 64px color-mix(in srgb, var(--window) 70%, transparent);
     animation: dlg-in var(--t-mid) var(--ease-out);
   }
   @keyframes scrim-in { from { opacity: 0; } }

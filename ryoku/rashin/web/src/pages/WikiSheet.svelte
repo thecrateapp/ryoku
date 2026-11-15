@@ -126,12 +126,12 @@
 <style>
   .reader-note { color: var(--ink-mute); font-size: var(--f-small); }
   .wiki-layout { display: grid; grid-template-columns: minmax(220px, 268px) minmax(0, 1fr); height: calc(100vh - 216px); min-height: 480px; overflow: hidden; border: 1px solid var(--line-soft); border-radius: var(--radius); }
-  .wiki-side { display: flex; min-height: 0; flex-direction: column; gap: var(--s3); padding: var(--s4); border-right: 1px solid var(--line); background: var(--paper-lift); }
+  .wiki-side { display: flex; min-height: 0; flex-direction: column; gap: var(--s3); padding: var(--s4); border-right: 1px solid var(--line); background: var(--raised); }
   .wiki-side nav { display: flex; min-height: 0; flex-direction: column; gap: 2px; overflow-y: auto; }
   .wiki-side button { min-height: 36px; padding: 0 var(--s3); border-radius: var(--radius); color: var(--ink-dim); font-size: var(--f-small); text-align: left; transition: color var(--t-fast) var(--ease), background-color var(--t-fast) var(--ease); }
   .wiki-side button:hover { color: var(--ink); background: var(--tint5); }
   .wiki-side button.on { color: var(--ink-on-bone); background: var(--bone); }
-  .reader { display: flex; min-width: 0; min-height: 0; flex-direction: column; background: var(--paper); }
+  .reader { display: flex; min-width: 0; min-height: 0; flex-direction: column; background: var(--window); }
   .document-scroll { flex: 1; min-height: 0; overflow-y: auto; padding: var(--s6) clamp(var(--s5), 4vw, var(--s7)) var(--s7); }
   footer { display: flex; justify-content: space-between; gap: var(--s4); padding: var(--s3) var(--s5); border-top: 1px solid var(--line-soft); }
   :global(.wiki-doc.prose) { max-width: 74ch; margin: 0 auto; font-size: var(--f-row); line-height: 1.7; }
@@ -139,7 +139,7 @@
   :global(.wiki-doc.prose h2) { font-family: var(--display); font-size: 21px; font-weight: var(--display-weight); line-height: 1.2; }
   :global(.wiki-doc.prose h2::before) { content: "// "; color: var(--ink-faint); }
   :global(.wiki-doc.prose h3) { font-size: 17px; }
-  :global(.wiki-doc.prose pre) { padding: var(--s4); background: var(--paper); }
+  :global(.wiki-doc.prose pre) { padding: var(--s4); background: var(--window); }
   :global(.wiki-doc.prose table) { width: 100%; font-size: var(--f-small); }
   :global(.wiki-doc.prose th) { color: var(--ink-faint); font-family: var(--mono); font-size: var(--f-micro); font-weight: 400; letter-spacing: var(--track-label); text-transform: uppercase; }
   :global(.wiki-doc.prose blockquote) { font-family: var(--display); font-size: 17px; font-style: italic; }

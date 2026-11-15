@@ -25,8 +25,8 @@
     aria-label={label}
     aria-pressed={active || undefined}
     disabled={!armed || rest.disabled}
-    style:width="{size}px"
-    style:height="{size}px"
+    class:compact={size < 26}
+    style:--ib-size="{size}px"
     {...rest}
   >
     <Icon name={icon} size={Math.round(size * 0.53)} />
@@ -41,6 +41,8 @@
 
 <style>
   .ib {
+    width: var(--ib-size);
+    height: var(--ib-size);
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -56,6 +58,9 @@
   .ib.active { background: var(--bone); color: var(--ink-on-bone); border-color: var(--bone); }
   .ib:disabled { opacity: 0.4; cursor: default; }
 
+  /* Crate: a glyph button is as tall as the buttons beside it; a compact one
+     (an attachment's remove mark) keeps its own size. */
+  :global(:root[data-look="crate"]) .ib:not(.compact) { width: var(--btn-h); height: var(--btn-h); }
   /* Crate: a pressed toggle fills with the mark, like a chip. */
   :global(:root[data-look="crate"]) .ib.active { background: var(--sun-hi); color: var(--ink-on-bone); border-color: var(--sun-hi); }
 </style>

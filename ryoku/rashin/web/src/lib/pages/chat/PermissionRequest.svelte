@@ -52,7 +52,7 @@
     padding: var(--s2) var(--s3);
     border: 1px solid var(--line-soft);
     border-radius: 4px;
-    background: var(--paper-lift);
+    background: var(--raised);
     color: var(--ink-dim);
     font-size: var(--f-small);
     line-height: 1.5;

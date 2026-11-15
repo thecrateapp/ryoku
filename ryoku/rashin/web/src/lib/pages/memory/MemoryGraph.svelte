@@ -67,7 +67,7 @@
       dim: style.getPropertyValue("--ink-dim").trim(),
       faint: style.getPropertyValue("--ink-faint").trim(),
       line: style.getPropertyValue("--line").trim(),
-      paper: style.getPropertyValue("--paper").trim(),
+      paper: style.getPropertyValue("--window").trim(),
     };
   }
 

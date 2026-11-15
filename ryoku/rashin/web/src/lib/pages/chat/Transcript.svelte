@@ -150,7 +150,7 @@
     align-items: center;
     justify-content: center;
     gap: var(--s3);
-    background: var(--paper);
+    background: var(--window);
     color: var(--ink-mute);
     font-size: var(--f-small);
   }

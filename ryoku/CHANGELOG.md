@@ -3,6 +3,14 @@
 ## Unreleased
 
 ### Fixed
+- **Rashin under Crate matches Ryoku's other working windows.** Its window
+  is painted in the working-window surface (`surfaceContainer`, Tokens'
+  `popover`, which `/api/theme` now sends and falls back to
+  `surfaceContainerLow`) instead of the desktop canvas, with raised parts a
+  step above it; and every button in a row is the same height, 32 px (44 px
+  under a coarse pointer), so "Open in terminal" no longer sits shorter than
+  "New chat". The signature look is unchanged (`rashin/backend/theme.go`,
+  `rashin/web/`).
 - **Fastfetch reads the wallpaper-tinted config again.** The effective config
   keeps the `// ryoku:` header comments from `config.jsonc`, so it is now
   cached as `fastfetch-effective.jsonc`; fastfetch rejects comments in a

@@ -8,6 +8,7 @@ import { api } from "$lib/api/client";
 const ROLE_VARS: Record<string, string> = {
   surface: "--paper",
   surfaceContainerLow: "--paper-lift",
+  surfaceContainer: "--paper-window",
   onSurface: "--ink",
   onSurfaceVariant: "--ink-dim",
   inverseSurface: "--bone",

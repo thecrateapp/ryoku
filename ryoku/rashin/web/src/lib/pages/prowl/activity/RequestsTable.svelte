@@ -106,7 +106,7 @@
   .route span { margin-top: 2px; color: var(--ink-mute); font-family: var(--mono); font-size: var(--f-tiny); }
   .detail-row:hover { background: transparent; }
   .detail-row td { padding: 0 var(--s3) var(--s4); }
-  .detail { display: grid; gap: var(--s3); padding: var(--s4); border: 1px solid var(--line-soft); border-radius: var(--radius); background: var(--paper-lift); }
+  .detail { display: grid; gap: var(--s3); padding: var(--s4); border: 1px solid var(--line-soft); border-radius: var(--radius); background: var(--raised); }
   .detail dl { display: flex; flex-wrap: wrap; gap: var(--s3) var(--s5); }
   .detail dl div { display: flex; gap: var(--s2); }
   .detail dt { color: var(--ink-faint); }

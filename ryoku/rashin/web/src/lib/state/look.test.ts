@@ -29,11 +29,16 @@ const TRANSCRIPT = "../pages/chat/Transcript.svelte";
 const LAMP = "../ui/Lamp.svelte";
 const SEG = "../ui/Seg.svelte";
 const MESSAGE = "../pages/chat/MessageItem.svelte";
+const BUTTON = "../ui/Button.svelte";
+const ICON_BUTTON = "../ui/IconButton.svelte";
+const SESSIONS = "../pages/chat/SessionsPane.svelte";
+const INSPECTOR = "../pages/chat/Inspector.svelte";
 
 // The Crate scheme's roles, as /api/theme hands them to applyRoles.
 const CRATE_ROLES: Record<string, string> = {
   "--paper": "#0a0a0f",
   "--paper-lift": "#0f1016",
+  "--paper-window": "#111218",
   "--ink": "#f1f5f9",
   "--ink-dim": "#999ca0",
   "--bone": "#67e8f9",
@@ -43,7 +48,7 @@ const CRATE_ROLES: Record<string, string> = {
 };
 
 beforeAll(() => {
-  const sheets = [read("../../app.css"), read("../ui/kit.css"), ...[TOPBAR, TRANSCRIPT, LAMP, SEG, MESSAGE].map(component)];
+  const sheets = [read("../../app.css"), read("../ui/kit.css"), ...[TOPBAR, TRANSCRIPT, LAMP, SEG, MESSAGE, BUTTON, ICON_BUTTON, SESSIONS, INSPECTOR].map(component)];
   for (const css of sheets) {
     const style = document.createElement("style");
     style.textContent = css;
@@ -65,12 +70,17 @@ function wear(look: "crate" | "stock"): void {
   applyLook(look, document.documentElement);
 }
 
-/** Every var() resolved against the root, where the tokens live. */
-function resolve(value: string): string {
+/** Every var() resolved against the element's own inline properties, then the
+    root, where the tokens live. */
+function resolve(value: string, el?: Element): string {
   const root = getComputedStyle(document.documentElement);
+  const own = el instanceof HTMLElement ? el.style : null;
   let out = value;
   for (let i = 0; i < 8 && out.includes("var("); i++) {
-    out = out.replace(/var\((--[\w-]+)(?:,\s*([^()]*))?\)/g, (_, name: string, fallback?: string) => root.getPropertyValue(name).trim() || fallback || "");
+    out = out.replace(
+      /var\((--[\w-]+)(?:,\s*([^()]*))?\)/g,
+      (_, name: string, fallback?: string) => own?.getPropertyValue(name).trim() || root.getPropertyValue(name).trim() || fallback || "",
+    );
   }
   return out.trim();
 }
@@ -111,7 +121,7 @@ function cascade(el: Element, ...props: string[]): string {
       }
     }
   }
-  return best ? resolve(best.value) : "";
+  return best ? resolve(best.value, el) : "";
 }
 
 /** Builds `<tag class="a b scope">` nested as given, returning the innermost. */
@@ -237,7 +247,7 @@ describe("a sent prompt", () => {
 
   it("is a raised hairline card under Crate and the bone plate in stock", () => {
     wear("crate");
-    expect(cascade(plate(), "background", "background-color")).toBe("#0f1016");
+    expect(cascade(plate(), "background", "background-color")).toBe("color-mix(in srgb, #f1f5f9 3%, #111218)");
     wear("stock");
     expect(cascade(plate(), "background", "background-color")).toBe("#cdc4ba");
   });
@@ -258,5 +268,50 @@ describe("the Needle", () => {
 
   it("falls back to the stock face when the accent is not a colour", () => {
     expect(needleColours("crate", "cyan", "#0a0a0f")).toEqual(STOCK_NEEDLE);
+  });
+});
+
+describe("buttons side by side", () => {
+  const button = (cls: string) => mount(BUTTON, ["button", `btn ${cls}`]);
+  const glyph = (cls = "") => {
+    const el = mount(ICON_BUTTON, ["button", `ib ${cls}`]);
+    el.style.setProperty("--ib-size", cls.includes("compact") ? "22px" : "28px");
+    return el;
+  };
+
+  it("share Crate's 32 px height whatever their role or size", () => {
+    wear("crate");
+    expect(cascade(button("plate md"), "height")).toBe("32px");
+    expect(cascade(button("line sm"), "height")).toBe("32px");
+    expect(cascade(button("quiet sm"), "height")).toBe("32px");
+    expect(cascade(glyph(), "height")).toBe("32px");
+  });
+
+  it("let a compact glyph button keep its own size under Crate", () => {
+    wear("crate");
+    expect(cascade(glyph("compact"), "height")).toBe("22px");
+  });
+
+  it("keep the stock heights: 32 px, 26 px small, the glyph button its own size", () => {
+    wear("stock");
+    expect(cascade(button("plate md"), "height")).toBe("32px");
+    expect(cascade(button("line sm"), "height")).toBe("26px");
+    expect(cascade(glyph(), "height")).toBe("28px");
+  });
+});
+
+describe("the window surface", () => {
+  const regions = () => [document.body, mount(SESSIONS, ["aside", "sessions"]), mount(INSPECTOR, ["aside", "inspector"]), mount(TOPBAR, ["div", "island"])];
+
+  it("is the working-window surface under Crate, with raised parts a step above it", () => {
+    wear("crate");
+    for (const el of regions()) expect(cascade(el, "background", "background-color")).toBe("#111218");
+    expect(resolve("var(--raised)")).toBe("color-mix(in srgb, #f1f5f9 3%, #111218)");
+  });
+
+  it("stays the stock paper with its lift", () => {
+    wear("stock");
+    for (const el of regions()) expect(cascade(el, "background", "background-color")).toBe("#000000");
+    expect(resolve("var(--raised)")).toBe("#0a0a0a");
   });
 });
