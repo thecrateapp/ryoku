@@ -25,4 +25,7 @@
     color: var(--ink-mute);
     background: var(--tint5);
   }
+
+  /* Crate: a flat hairline keycap, no raised lip. */
+  :global(:root[data-look="crate"]) kbd { border-bottom-width: 1px; background: transparent; }
 </style>

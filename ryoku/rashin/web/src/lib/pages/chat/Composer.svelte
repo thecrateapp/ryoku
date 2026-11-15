@@ -370,4 +370,7 @@
     .composer-controls { width: 100%; justify-content: flex-start; flex-wrap: wrap; }
     .agent-hint { display: none; }
   }
+
+  :global(:root[data-look="crate"]) .composer-shell { border-top-color: var(--line); }
+  :global(:root[data-look="crate"]) .command-menu { border-color: var(--line); background: var(--glass); backdrop-filter: var(--glass-blur); }
 </style>

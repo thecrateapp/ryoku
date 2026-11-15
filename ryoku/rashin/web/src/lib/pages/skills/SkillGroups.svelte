@@ -83,4 +83,6 @@
   @media (max-width: 620px) {
     .skill-detail { grid-template-columns: 1fr; padding-left: var(--s4); }
   }
+  /* Crate carries no "//" eyebrows. */
+  :global(:root[data-look="crate"]) .group-summary > span:first-child::before { content: none; }
 </style>

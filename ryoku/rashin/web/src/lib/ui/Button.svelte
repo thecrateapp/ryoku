@@ -63,4 +63,8 @@
   .quiet:hover:not(:disabled) { color: var(--ink); background: var(--tint5); }
 
   .label { display: inline-block; }
+
+  /* Crate: the primary action fills with the accent. */
+  :global(:root[data-look="crate"]) .plate { background: var(--sun); border-color: var(--sun); color: var(--ink-on-bone); }
+  :global(:root[data-look="crate"]) .plate:hover:not(:disabled) { background: var(--sun-hi); border-color: var(--sun-hi); }
 </style>

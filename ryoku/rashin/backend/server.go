@@ -138,6 +138,7 @@ func Serve(cfg Config) error {
 			"roles":        th.Roles,
 			"source":       th.Source,
 			"reduceMotion": th.ReduceMotion,
+			"look":         th.Look,
 			"wallpaper":    wall,
 		})
 	})

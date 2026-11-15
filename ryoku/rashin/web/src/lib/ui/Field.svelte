@@ -37,4 +37,6 @@
   .field-input:hover { border-color: var(--line-strong); }
   .field-input:focus { border-color: var(--bone); background: var(--tint5); }
   .field-hint { color: var(--ink-faint); font-size: var(--f-small); }
+
+  :global(:root[data-look="crate"]) .field-input:focus { border-color: var(--focus); }
 </style>

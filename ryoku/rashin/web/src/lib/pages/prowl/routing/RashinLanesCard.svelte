@@ -99,7 +99,7 @@
   .lane + .lane { padding-left: var(--s5); border-left: 1px solid var(--line-soft); }
   header { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--s3); }
   header > div { min-width: 0; }
-  h3 { margin-top: var(--s1); overflow: hidden; color: var(--ink); font-family: var(--display); font-size: 24px; font-weight: 400; line-height: 1.2; text-overflow: ellipsis; white-space: nowrap; }
+  h3 { margin-top: var(--s1); overflow: hidden; color: var(--ink); font-family: var(--display); font-size: 24px; font-weight: var(--display-weight); line-height: 1.2; text-overflow: ellipsis; white-space: nowrap; }
   .lane > p { min-height: 42px; margin-top: var(--s2); color: var(--ink-mute); font-size: var(--f-small); line-height: 1.5; }
   .lane > .pick-unavailable { min-height: 0; padding: var(--s3); border: 1px solid color-mix(in srgb, var(--alert) 45%, transparent); border-radius: var(--radius); color: var(--alert); }
   dl { display: grid; gap: var(--s2); margin: var(--s4) 0; padding-top: var(--s3); border-top: 1px solid var(--line-soft); }

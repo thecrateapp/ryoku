@@ -135,8 +135,8 @@
   .document-scroll { flex: 1; min-height: 0; overflow-y: auto; padding: var(--s6) clamp(var(--s5), 4vw, var(--s7)) var(--s7); }
   footer { display: flex; justify-content: space-between; gap: var(--s4); padding: var(--s3) var(--s5); border-top: 1px solid var(--line-soft); }
   :global(.wiki-doc.prose) { max-width: 74ch; margin: 0 auto; font-size: var(--f-row); line-height: 1.7; }
-  :global(.wiki-doc.prose h1) { font-family: var(--display); font-size: 28px; font-weight: 400; line-height: 1.2; }
-  :global(.wiki-doc.prose h2) { font-family: var(--display); font-size: 21px; font-weight: 400; line-height: 1.2; }
+  :global(.wiki-doc.prose h1) { font-family: var(--display); font-size: 28px; font-weight: var(--display-weight); line-height: 1.2; }
+  :global(.wiki-doc.prose h2) { font-family: var(--display); font-size: 21px; font-weight: var(--display-weight); line-height: 1.2; }
   :global(.wiki-doc.prose h2::before) { content: "// "; color: var(--ink-faint); }
   :global(.wiki-doc.prose h3) { font-size: 17px; }
   :global(.wiki-doc.prose pre) { padding: var(--s4); background: var(--paper); }
@@ -149,4 +149,6 @@
     .wiki-side { max-height: 280px; border-right: 0; border-bottom: 1px solid var(--line); }
     .reader { min-height: 520px; }
   }
+  /* Crate carries no "//" eyebrows. */
+  :global(:root[data-look="crate"]) :global(.wiki-doc.prose h2::before) { content: none; }
 </style>

@@ -26,4 +26,7 @@
   .bad { background: var(--alert); border-color: var(--alert); }
   .busy { background: var(--bone); border-color: var(--bone); animation: lamp-breathe 1.6s var(--ease) infinite; }
   @keyframes lamp-breathe { 0%, 100% { opacity: 1; } 50% { opacity: 0.35; } }
+
+  /* Crate: a live dot is the accent, whatever the palette's bone is. */
+  :global(:root[data-look="crate"]) .ok, :global(:root[data-look="crate"]) .busy { background: var(--sun-hi); border-color: var(--sun-hi); }
 </style>

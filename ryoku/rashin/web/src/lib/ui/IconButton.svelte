@@ -55,4 +55,7 @@
   .ib:active:not(:disabled) { transform: scale(0.96); }
   .ib.active { background: var(--bone); color: var(--ink-on-bone); border-color: var(--bone); }
   .ib:disabled { opacity: 0.4; cursor: default; }
+
+  /* Crate: a pressed toggle fills with the mark, like a chip. */
+  :global(:root[data-look="crate"]) .ib.active { background: var(--sun-hi); color: var(--ink-on-bone); border-color: var(--sun-hi); }
 </style>

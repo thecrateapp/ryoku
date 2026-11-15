@@ -80,7 +80,7 @@
   .brand { gap: var(--s2); padding-right: var(--s4); }
   .seal { display: inline-flex; width: 26px; height: 26px; }
   .seal :global(svg) { width: 100%; height: 100%; }
-  .wordmark { font-family: var(--display); font-size: 19px; color: var(--ink); letter-spacing: -0.01em; }
+  .wordmark { font-family: var(--display); font-size: 19px; font-weight: var(--display-weight); color: var(--ink); letter-spacing: -0.01em; }
   .brand-gloss { font-size: var(--f-small); }
 
   .sheets { gap: 2px; padding: 0 var(--s2); overflow-x: auto; scrollbar-width: none; }
@@ -109,4 +109,33 @@
   .needle-word { font-size: var(--f-small); white-space: nowrap; min-width: 6ch; }
   .lamps { display: inline-flex; gap: var(--s2); align-items: center; }
   .clock { font-size: var(--f-small); color: var(--ink-faint); font-variant-numeric: tabular-nums; }
+
+  /* Crate: islands edge in the 10 % hairline; the sheets are tabs, so the
+     current one is a 2 px underline in the mark over mono caps, never a fill.
+     The seal's north and bar take the accent and the ink. */
+  :global(:root[data-look="crate"]) .island { border-color: var(--line); }
+  :global(:root[data-look="crate"]) .wordmark { letter-spacing: -0.02em; }
+  :global(:root[data-look="crate"]) .seal :global(path:nth-of-type(1)) { fill: var(--paper-lift); }
+  :global(:root[data-look="crate"]) .seal :global(path:nth-of-type(2)) { fill: var(--sun); }
+  :global(:root[data-look="crate"]) .seal :global(path:nth-of-type(3)),
+  :global(:root[data-look="crate"]) .seal :global(rect) { fill: var(--ink); }
+  :global(:root[data-look="crate"]) .sheet {
+    height: 42px;
+    padding: 0 var(--s2);
+    border-radius: 0;
+    border-bottom: 2px solid transparent;
+    transition: color var(--t-fast) var(--ease), border-color var(--t-fast) var(--ease);
+  }
+  :global(:root[data-look="crate"]) .sheet-name {
+    font-family: var(--mono);
+    font-size: var(--f-micro);
+    font-weight: 400;
+    line-height: 40px;
+    letter-spacing: var(--track-label);
+    text-transform: uppercase;
+  }
+  :global(:root[data-look="crate"]) .sheet:hover { background: transparent; color: var(--ink); }
+  :global(:root[data-look="crate"]) .sheet.on { background: transparent; color: var(--ink); border-bottom-color: var(--sun-hi); }
+  :global(:root[data-look="crate"]) .sheet.on .sheet-gloss { color: var(--ink-faint); }
+  :global(:root[data-look="crate"]) .needle { border-radius: var(--radius); }
 </style>

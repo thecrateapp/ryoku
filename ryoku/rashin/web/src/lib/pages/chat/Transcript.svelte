@@ -171,7 +171,7 @@
   .banner.dead p { margin-top: 2px; color: var(--ink-mute); font-size: var(--f-small); }
   .banner.starting { width: fit-content; color: var(--ink-mute); font-size: var(--f-small); }
   .empty-chat { display: flex; flex-direction: column; align-items: flex-start; gap: var(--s4); padding-top: var(--s7); }
-  .empty-chat p { color: var(--ink); font-family: var(--display); font-size: 24px; font-weight: 400; }
+  .empty-chat p { color: var(--ink); font-family: var(--display); font-size: 24px; font-weight: var(--display-weight); }
   .suggestions { display: flex; flex-wrap: wrap; gap: var(--s2); }
   .suggestions button {
     min-height: 28px;
@@ -209,4 +209,6 @@
     .transcript-inner { padding: var(--s5) var(--s4) var(--s6); }
     .unmatched-permission { margin-left: 0; }
   }
+
+  :global(:root[data-look="crate"]) .empty-chat p { letter-spacing: -0.02em; }
 </style>

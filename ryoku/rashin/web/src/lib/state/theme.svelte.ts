@@ -13,7 +13,12 @@ const ROLE_VARS: Record<string, string> = {
   inverseSurface: "--bone",
   inverseOnSurface: "--ink-on-bone",
   primary: "--sun",
+  secondary: "--sun-hi",
 };
+
+export type Look = "crate" | "stock";
+
+const LOOK_KEY = "rashin.look";
 
 export interface Wallpaper {
   available: boolean;
@@ -23,6 +28,7 @@ export interface Wallpaper {
 
 interface ThemeAnswer {
   roles?: Record<string, string>;
+  look?: string;
   reduceMotion?: boolean;
   wallpaper?: Partial<Wallpaper>;
 }
@@ -45,8 +51,39 @@ export function applyRoles(roles: Record<string, string> | undefined, style: CSS
   style.setProperty("color-scheme", isLight(roles?.surface) ? "light" : "dark");
 }
 
+/** Only an explicit "crate" changes the console; anything else is the stock look. */
+export function lookOf(answer: { look?: unknown } | null | undefined): Look {
+  return answer?.look === "crate" ? "crate" : "stock";
+}
+
+export function applyLook(look: Look, root: HTMLElement): void {
+  if (look === "crate") root.dataset.look = "crate";
+  else delete root.dataset.look;
+}
+
+/** The last look worn, so a reopened window paints it before /api/theme answers. */
+export function rememberedLook(storage: Pick<Storage, "getItem"> | undefined): Look {
+  try {
+    return lookOf({ look: storage?.getItem(LOOK_KEY) });
+  } catch {
+    return "stock";
+  }
+}
+
+function rememberLook(look: Look): void {
+  try {
+    localStorage.setItem(LOOK_KEY, look);
+  } catch {
+    /* a private or blocked store only costs the first paint */
+  }
+}
+
 export class ThemeStore {
   light = $state(false);
+  look = $state<Look>("stock");
+  /** the resolved accent and paper, for painters that take a colour rather than a CSS variable */
+  accent = $state("#e2342a");
+  paper = $state("#000000");
   reduceMotion = $state(false);
   wallpaper = $state<Wallpaper | null>(null);
   /** bumps when the roles change, so canvases repaint their ink */
@@ -66,7 +103,15 @@ export class ThemeStore {
       this.lastRoles = roles;
       applyRoles(t.roles, document.documentElement.style);
       this.light = isLight(t.roles?.surface);
+      if (HEX.test(t.roles?.primary ?? "")) this.accent = t.roles!.primary!;
+      if (HEX.test(t.roles?.surface ?? "")) this.paper = t.roles!.surface!;
       this.rev++;
+    }
+    const look = lookOf(t);
+    if (look !== this.look) {
+      this.look = look;
+      applyLook(look, document.documentElement);
+      rememberLook(look);
     }
     this.reduceMotion = !!t.reduceMotion;
     document.documentElement.classList.toggle("reduce-motion", this.reduceMotion);
@@ -76,6 +121,14 @@ export class ThemeStore {
   }
 
   start(): void {
+    let storage: Storage | undefined;
+    try {
+      storage = localStorage;
+    } catch {
+      storage = undefined;
+    }
+    this.look = rememberedLook(storage);
+    applyLook(this.look, document.documentElement);
     void this.refresh();
     this.timer = window.setInterval(() => {
       if (!document.hidden) void this.refresh();

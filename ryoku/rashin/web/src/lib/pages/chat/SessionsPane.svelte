@@ -88,4 +88,9 @@
   time { flex: none; padding-top: 2px; color: var(--ink-faint); font-family: var(--mono); font-size: var(--f-tiny); }
   .session.on time { color: color-mix(in srgb, var(--ink-on-bone) 62%, transparent); }
   :global(.sessions .empty) { padding: var(--s5) var(--s3); }
+
+  /* Crate: the rail edges in the hairline; the open conversation keeps its ink
+     inside the pick edge (kit.css), so its details stay faint. */
+  :global(:root[data-look="crate"]) .sessions { border-right-color: var(--line); }
+  :global(:root[data-look="crate"]) .session.on .session-cwd, :global(:root[data-look="crate"]) .session.on time { color: var(--ink-faint); }
 </style>

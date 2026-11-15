@@ -84,8 +84,10 @@
     gap: var(--s4);
     padding: var(--s5) var(--s5) var(--s3);
   }
-  :global(.dlg-title) { font-family: var(--display); font-size: 22px; font-weight: 400; color: var(--ink); line-height: 1.2; }
+  :global(.dlg-title) { font-family: var(--display); font-size: 22px; font-weight: var(--display-weight); color: var(--ink); line-height: 1.2; }
   :global(.dlg-desc) { margin-top: var(--s1); color: var(--ink-mute); font-size: var(--f-small); }
   .dlg-body { padding: 0 var(--s5) var(--s5); overflow: auto; }
   .dlg-foot { display: flex; justify-content: flex-end; gap: var(--s2); padding: var(--s3) var(--s5) var(--s5); border-top: 1px solid var(--line-soft); }
+  /* Crate: the dialog floats in the one glass on a hairline, with no shadow. */
+  :global(:root[data-look="crate"]) :global(.dlg) { border-color: var(--line); background: var(--glass); backdrop-filter: var(--glass-blur); box-shadow: none; }
 </style>

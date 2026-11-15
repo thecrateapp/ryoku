@@ -125,4 +125,8 @@
   }
   .dock-actions { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s2); }
   .dock-keys { display: inline-flex; align-items: center; gap: var(--s2); margin-left: auto; color: var(--ink-faint); font-size: var(--f-micro); }
+
+  /* Crate: the kanji stays as a gloss in the mark, without its framed seal. */
+  :global(:root[data-look="crate"]) .dock { border-color: var(--sun-hi); }
+  :global(:root[data-look="crate"]) .dock-mark { background: transparent; color: var(--sun-hi); }
 </style>

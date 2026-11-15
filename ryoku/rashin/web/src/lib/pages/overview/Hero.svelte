@@ -126,7 +126,7 @@
     width: max-content;
     font-family: var(--display);
     font-size: clamp(68px, 9vw, 126px);
-    font-weight: 300;
+    font-weight: var(--display-weight-light);
     line-height: .82;
     letter-spacing: -.055em;
     color: var(--ink);
@@ -148,4 +148,6 @@
     .clock { font-size: clamp(58px, 20vw, 84px); }
     .machine-line span:last-child { display: none; }
   }
+
+  :global(:root[data-look="crate"]) .machine-line .seal { color: var(--sun-hi); }
 </style>

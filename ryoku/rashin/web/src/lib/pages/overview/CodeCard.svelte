@@ -96,7 +96,7 @@
   :global(.code-card) { min-height: 100%; }
   .loading { color: var(--ink-mute); }
   .saved { display: flex; align-items: baseline; gap: var(--s4); padding-bottom: var(--s5); border-bottom: 1px solid var(--line-soft); }
-  .saved strong { flex: none; font-family: var(--display); font-size: clamp(46px, 6vw, 76px); font-weight: 300; line-height: .9; letter-spacing: -.04em; color: var(--ink); font-variant-numeric: tabular-nums; }
+  .saved strong { flex: none; font-family: var(--display); font-size: clamp(46px, 6vw, 76px); font-weight: var(--display-weight-light); line-height: .9; letter-spacing: -.04em; color: var(--ink); font-variant-numeric: tabular-nums; }
   .saved span { max-width: 27ch; color: var(--ink-mute); font-size: var(--f-small); }
   .ledger { display: grid; grid-template-columns: repeat(4, 1fr); margin: var(--s5) 0; border-block: 1px solid var(--line-soft); }
   .ledger div { display: flex; flex-direction: column; gap: var(--s1); padding: var(--s3); border-right: 1px solid var(--line-soft); }

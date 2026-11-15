@@ -98,6 +98,39 @@ func TestThemeResolvesLikeTheDesktop(t *testing.T) {
 	}
 }
 
+func TestThemeSecondaryFallsBackToThePrimary(t *testing.T) {
+	cfg, _, _ := themeEnv(t)
+	writeThemeFile(t, filepath.Join(cfg, "ryoku", "shell.json"), `{"themePalette":{"primary":"#06b6d4"}}`)
+	if got := ThemeNow().Roles["secondary"]; got != "#06b6d4" {
+		t.Errorf("secondary = %q, want the primary #06b6d4", got)
+	}
+	writeThemeFile(t, filepath.Join(cfg, "ryoku", "shell.json"), `{"themePalette":{"primary":"#06b6d4","secondary":"#67e8f9"}}`)
+	if got := ThemeNow().Roles["secondary"]; got != "#67e8f9" {
+		t.Errorf("secondary = %q, want the named #67e8f9", got)
+	}
+}
+
+func TestThemeLookFollowsTheCrateControls(t *testing.T) {
+	cases := []struct{ name, shell, want string }{
+		{"no shell.json is the stock look", "", "stock"},
+		{"a theme without a style is the stock look", `{"themePalette":{"primary":"#06b6d4"}}`, "stock"},
+		{"a style with other controls is the stock look", `{"themeStyle":{"controls":"stock","navCaps":true}}`, "stock"},
+		{"a malformed style is the stock look", `{"themeStyle":"crate"}`, "stock"},
+		{"controls crate is the Crate look", `{"themeStyle":{"controls":"crate","lineAlpha":0.1}}`, "crate"},
+	}
+	for _, c := range cases {
+		t.Run(c.name, func(t *testing.T) {
+			cfg, _, _ := themeEnv(t)
+			if c.shell != "" {
+				writeThemeFile(t, filepath.Join(cfg, "ryoku", "shell.json"), c.shell)
+			}
+			if got := ThemeNow().Look; got != c.want {
+				t.Errorf("look = %q, want %q", got, c.want)
+			}
+		})
+	}
+}
+
 func TestCurrentWallpaperOnlyServesKnownFiles(t *testing.T) {
 	_, _, state := themeEnv(t)
 	dir := t.TempDir()
