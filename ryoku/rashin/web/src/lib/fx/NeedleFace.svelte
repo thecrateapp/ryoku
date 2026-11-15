@@ -1,6 +1,7 @@
 <!-- The Needle's face: a blobatar seeded by the conversation, so every chat
      has its own creature and the same chat always wears the same one. The
-     hue is locked to the accent so it stays a Ryoku surface;
+     hue is locked to the accent so it stays a Ryoku surface (under the
+     Crate look it is drawn in the accent itself, see needle.ts);
      the shape, eyes and markings come from the seed. Its expression is the
      agent's state, its eyes follow the pointer, and at rest it breathes,
      bobs and glances on blobatar's own idle clock. -->
@@ -10,6 +11,8 @@
   import { happy, idle, sleepy, surprised, thinking, unsure, type Expression } from "blobatar/expression";
   import "blobatar/motion.css";
   import "blobatar/gaze.css";
+  import { theme } from "$lib/state/theme.svelte";
+  import { needleColours } from "./needle";
 
   export type NeedleMood = "idle" | "thinking" | "working" | "waiting" | "done" | "sleeping" | "failed";
 
@@ -37,12 +40,9 @@
     failed: unsure,
   };
 
-  // Hue 29 is the accent's own hue (--sun, #e2342a, in OKLCh) and tone 0.7
-  // lands the body on the vermillion swatch rather than its pastel tint, so
-  // the creature reads as the one accent on the paper; the ink eyes keep
-  // their contrast there by blobatar's own guarantee.
-  const HUE = 29;
-  const TONE = 0.7;
+  // The stock face reads as the one accent on the paper and keeps its ink eyes
+  // by blobatar's own contrast guarantee; the Crate face wears the accent.
+  const colours = $derived(needleColours(theme.look, theme.accent, theme.paper));
 
   const eyes = gaze({ travel: 3, target: "pointer" });
 
@@ -56,8 +56,9 @@
     <Blobatar
       name={seed || "the needle"}
       {size}
-      hue={HUE}
-      tone={TONE}
+      hue={colours.hue}
+      tone={colours.tone}
+      palette={colours.palette}
       background={false}
       expression={EXPRESSIONS[mood]}
       {animate}
@@ -67,7 +68,7 @@
   </span>
 {:else}
   <span class="face" style:width="{size}px" style:height="{size}px" data-mood={mood}>
-    <Blobatar name={seed || "the needle"} {size} hue={HUE} tone={TONE} background={false} expression={EXPRESSIONS[mood]} title={label} />
+    <Blobatar name={seed || "the needle"} {size} hue={colours.hue} tone={colours.tone} palette={colours.palette} background={false} expression={EXPRESSIONS[mood]} title={label} />
   </span>
 {/if}
 

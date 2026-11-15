@@ -69,4 +69,8 @@
   :global(.tab-pane) { min-height: 0; }
   :global(.tab-pane[data-state="active"]) { animation: pane-in var(--t-mid) var(--ease-out); }
   @keyframes pane-in { from { opacity: 0; transform: translateY(4px); } }
+
+  /* Crate: mono caps names over a 2 px underline in the mark. */
+  :global(:root[data-look="crate"]) :global(.tab) { font-family: var(--mono); font-size: var(--f-micro); letter-spacing: var(--track-label); text-transform: uppercase; }
+  :global(:root[data-look="crate"]) :global(.tab::after) { height: 2px; background: var(--sun-hi); }
 </style>

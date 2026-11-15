@@ -171,6 +171,20 @@
   after the first update (`palette-bridge/vesktop/quickcss.sh`).
 
 ### Added
+- **Rashin wears the Crate look under the Crate theme.** `/api/theme` names the
+  theme style's controls as `look` (`crate` when `themeStyle.controls` is
+  `crate`, the switch the shell's kit reads), and the console sets
+  `data-look="crate"` on its root. Under it the console speaks Crate:
+  Bricolage Grotesque display, Roboto UI text and JetBrains Mono caps for
+  navigation (bundled Latin subsets, fetched only under that look); the
+  current sheet is a 2 px underline in the mark instead of a filled plate;
+  chips and segments fill with the mark, picked rows and the open
+  conversation keep their ink inside a 1 px pick edge, hairlines are the 10 %
+  line, islands take 6 px corners, floating panels wear the one glass, and
+  the "//" eyebrows and the approval dock's framed seal go. The Needle keeps
+  its character and is drawn in the accent, with the status dots following
+  it. Every other theme keeps the signature look unchanged
+  (`rashin/backend/theme.go`, `rashin/web/`).
 - `ui/`: **The Ryoku.Ui kit reads the theme style.** `Tokens` exposes the
   switches and the roles derived from them (`mark`, `hoverInk`, `focus`,
   `caption`, `trackNav`, `rowWash`, and `pickFill`, `pickEdge`, `pickInk`,

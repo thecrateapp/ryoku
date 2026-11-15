@@ -41,4 +41,5 @@
     transition: transform var(--t-mid) var(--ease-out), background-color var(--t-mid) var(--ease);
   }
   :global(.sw[data-state="checked"] .sw-knob) { transform: translateX(16px); background: var(--ink-on-bone); }
+  :global(:root[data-look="crate"]) :global(.sw[data-state="checked"]) { background: var(--sun); border-color: var(--sun); }
 </style>

@@ -58,4 +58,8 @@
   :global(.seg.sm .seg-item) { height: 22px; padding: 0 var(--s2); font-size: var(--f-micro); }
   :global(.seg-item:hover) { color: var(--ink); background: var(--tint5); }
   :global(.seg-item[data-state="on"]) { background: var(--bone); color: var(--ink-on-bone); }
+
+  /* Crate: mono caps segments, the chosen one filled with the mark. */
+  :global(:root[data-look="crate"]) :global(.seg-item) { font-family: var(--mono); font-size: var(--f-micro); font-weight: 400; letter-spacing: var(--track-label); text-transform: uppercase; }
+  :global(:root[data-look="crate"]) :global(.seg-item[data-state="on"]) { background: var(--sun-hi); color: var(--ink-on-bone); }
 </style>

@@ -283,7 +283,7 @@
   .action-error { padding: var(--s3); border: 1px solid color-mix(in srgb, var(--alert) 45%, transparent); border-radius: var(--radius); color: var(--alert); font-size: var(--f-small); }
   .summary { display: grid; grid-template-columns: auto auto minmax(0, 1fr) auto; align-items: center; gap: var(--s5); padding: var(--s4) var(--s5); border: 1px solid var(--line-soft); border-radius: var(--radius); }
   .summary > div { display: flex; align-items: baseline; gap: var(--s2); }
-  .summary strong { color: var(--ink); font-family: var(--display); font-size: 32px; font-weight: 400; }
+  .summary strong { color: var(--ink); font-family: var(--display); font-size: 32px; font-weight: var(--display-weight); }
   .summary span, .summary p { color: var(--ink-mute); font-size: var(--f-small); }
   .project-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 430px), 1fr)); gap: var(--s4); align-items: start; }
   .project-filter { max-width: 420px; }

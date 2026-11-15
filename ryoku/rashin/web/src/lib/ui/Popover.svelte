@@ -53,4 +53,5 @@
     transform-origin: var(--bits-popover-content-transform-origin, top);
   }
   @keyframes pop-in { from { opacity: 0; transform: scale(0.97); } to { opacity: 1; transform: none; } }
+  :global(:root[data-look="crate"]) :global(.pop) { border-color: var(--line); background: var(--glass); backdrop-filter: var(--glass-blur); }
 </style>

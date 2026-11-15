@@ -92,4 +92,7 @@
   :global(.sel-item[data-selected]) { color: var(--ink); }
   .sel-item-label { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .sel-item-hint { color: var(--ink-faint); font-size: var(--f-micro); font-family: var(--mono); }
+  :global(:root[data-look="crate"]) :global(.sel[data-state="open"]) { border-color: var(--focus); }
+  :global(:root[data-look="crate"]) :global(.sel-menu) { border-color: var(--line); background: var(--glass); backdrop-filter: var(--glass-blur); }
+  :global(:root[data-look="crate"]) :global(.sel-item[data-selected]) { color: var(--sun-hi); }
 </style>

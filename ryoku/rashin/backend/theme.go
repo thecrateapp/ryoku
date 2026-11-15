@@ -24,6 +24,9 @@ var themeRoles = []struct{ key, base string }{
 	{"inverseSurface", "#cdc4ba"},
 	{"inverseOnSurface", "#000000"},
 	{"primary", "#e2342a"},
+	// the bright accent for marks; Tokens.qml's sunHi, which falls back to the
+	// resolved primary rather than to a colour of its own
+	{"secondary", ""},
 }
 
 // Theme is what the dashboard needs to wear the desktop's look.
@@ -31,6 +34,10 @@ type Theme struct {
 	Roles        map[string]string `json:"roles"`
 	Source       string            `json:"source"` // "scheme", "wallpaper", or "default"
 	ReduceMotion bool              `json:"reduceMotion"`
+	// Look is the theme style's control geometry: "crate" when shell.json's
+	// themeStyle names controls "crate" (Tokens.qml's controlsCrate), else
+	// "stock". The console wears the Crate language only on "crate".
+	Look string `json:"look"`
 }
 
 func cacheHome() string {
@@ -95,14 +102,28 @@ func ThemeNow() Theme {
 			}
 			continue
 		}
+		if r.base == "" {
+			th.Roles[r.key] = th.Roles["primary"]
+			continue
+		}
 		th.Roles[r.key] = r.base
 	}
+	th.Look = lookOf(shell)
 	if theme, ok := shell["theme"].(map[string]any); ok {
 		if m, ok := theme["motion"].(map[string]any); ok {
 			th.ReduceMotion, _ = m["reduce"].(bool)
 		}
 	}
 	return th
+}
+
+// lookOf reads the style switch the shell's kit reads (themestyle.js
+// controlsCrate): only an explicit controls "crate" changes the console.
+func lookOf(shell map[string]any) string {
+	if st, ok := shell["themeStyle"].(map[string]any); ok && st["controls"] == "crate" {
+		return "crate"
+	}
+	return "stock"
 }
 
 // wallpaperKinds are the files the wallpaper endpoint will hand the page; the

@@ -36,7 +36,7 @@ table.data tbody tr:hover { background: var(--tint5); }
 .prose { color: var(--ink-dim); font-size: var(--f-body); line-height: 1.6; max-width: var(--measure); overflow-wrap: anywhere; }
 .prose > * + * { margin-top: var(--s3); }
 .prose h1, .prose h2, .prose h3, .prose h4 { color: var(--ink); font-weight: 500; line-height: 1.25; }
-.prose h1 { font-family: var(--display); font-size: 24px; font-weight: 400; margin-top: var(--s5); }
+.prose h1 { font-family: var(--display); font-size: 24px; font-weight: var(--display-weight); margin-top: var(--s5); }
 .prose h2 { font-size: 18px; margin-top: var(--s5); }
 .prose h3 { font-size: var(--f-row); margin-top: var(--s4); }
 .prose h4 { font-size: var(--f-body); }
@@ -92,3 +92,8 @@ table.data tbody tr:hover { background: var(--tint5); }
 .bar { position: relative; height: 3px; border-radius: 2px; background: var(--tint10); overflow: hidden; }
 .bar > i { position: absolute; inset: 0 auto 0 0; background: var(--bone); border-radius: 2px; transition: width var(--t-slow) var(--ease-out); }
 .bar.alert > i { background: var(--alert); }
+
+/* Crate: a picked row keeps its ink inside a faint accent wash and a 1 px
+   pick edge in the mark; fills are for chips and segments. */
+:root[data-look="crate"] .plates > .plate.on { background: var(--row-wash); color: var(--ink); box-shadow: inset 0 0 0 1px var(--sun-hi); }
+:root[data-look="crate"] .plates > .plate.on .t-small, :root[data-look="crate"] .plates > .plate.on .t-label, :root[data-look="crate"] .plates > .plate.on .t-tiny { color: var(--ink-mute); }

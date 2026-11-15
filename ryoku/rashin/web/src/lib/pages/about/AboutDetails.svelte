@@ -95,7 +95,7 @@
   :global(.about-grid > .intro), :global(.about-grid > .wide) { grid-column: 1 / -1; }
   .intro-copy { display: flex; align-items: flex-start; gap: var(--s5); }
   .seal { display: grid; place-items: center; width: var(--s7); height: var(--s7); flex: none; border-radius: var(--radius); background: var(--alert); color: var(--ink-on-bone); font-size: 28px; }
-  h2 { max-width: 25ch; margin-top: var(--s1); color: var(--ink); font-family: var(--display); font-size: 28px; font-weight: 400; line-height: 1.18; }
+  h2 { max-width: 25ch; margin-top: var(--s1); color: var(--ink); font-family: var(--display); font-size: 28px; font-weight: var(--display-weight); line-height: 1.18; }
   .intro-copy p { max-width: 68ch; margin-top: var(--s3); color: var(--ink-mute); }
   .build { display: grid; grid-template-columns: auto auto 1fr; gap: var(--s5); align-items: end; margin-top: var(--s5); padding-top: var(--s4); border-top: 1px solid var(--line-soft); }
   .build > div { display: grid; gap: var(--s1); }

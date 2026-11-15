@@ -204,8 +204,8 @@
   .document-scroll { flex: 1; min-height: 0; overflow: auto; padding: var(--s6) clamp(var(--s5), 4vw, var(--s7)) var(--s7); }
   .reader-note { color: var(--ink-mute); font-size: var(--f-small); }
   :global(.vault-doc.prose) { max-width: 74ch; font-size: var(--f-row); line-height: 1.7; }
-  :global(.vault-doc.prose h1) { font-family: var(--display); font-size: 28px; font-weight: 400; line-height: 1.2; }
-  :global(.vault-doc.prose h2) { font-family: var(--display); font-size: 21px; font-weight: 400; line-height: 1.2; }
+  :global(.vault-doc.prose h1) { font-family: var(--display); font-size: 28px; font-weight: var(--display-weight); line-height: 1.2; }
+  :global(.vault-doc.prose h2) { font-family: var(--display); font-size: 21px; font-weight: var(--display-weight); line-height: 1.2; }
   :global(.vault-doc.prose h2::before) { content: "// "; color: var(--ink-faint); }
   :global(.vault-doc.prose h3) { font-size: 17px; }
   :global(.vault-doc.prose pre) { padding: var(--s4); background: var(--paper); }
@@ -218,4 +218,6 @@
     .vault-side { max-height: 360px; border-right: 0; border-bottom: 1px solid var(--line); }
     .reader { min-height: 520px; }
   }
+  /* Crate carries no "//" eyebrows. */
+  :global(:root[data-look="crate"]) :global(.vault-doc.prose h2::before) { content: none; }
 </style>

@@ -36,7 +36,7 @@ ships it and no node runs on an installed box.
 |`src/lib/fx/`|The Libraries.dev wrappers.|
 |`src/lib/app/`|The frame: `TopBar` (brand, sheets, combined lane presence), `Page`, `Offline`, and `router.svelte.ts` (hash routes and sheet order).|
 |`src/lib/api/`|`client.ts` owns Rashin daemon routes, `prowl.ts` is the only client for proxied Prowl gateway routes, and `socket.ts` owns reconnecting JSON WebSockets.|
-|`src/lib/state/`|`theme.svelte.ts` (wears the wallpaper palette), `machine.svelte.ts` (status + vitals stream).|
+|`src/lib/state/`|`theme.svelte.ts` (wears the wallpaper palette and the theme's look: `data-look="crate"` under the Crate theme), `machine.svelte.ts` (status + vitals stream).|
 |`src/lib/chat/`|`protocol.ts` (wire shapes), `store.svelte.ts` (the separate Agent and Chat lane connections).|
 |`src/lib/content/`|`markdown.ts` (escape-first renderer, tested) and `Markdown.svelte`.|
 |`src/lib/pages/chat/ChatWorkspace.svelte`|The shared sessions, transcript, approval, composer and inspector workspace used by Agent and Chat.|
@@ -66,6 +66,9 @@ ships it and no node runs on an installed box.
   plate, never a colour), hairlines not shadows, one spacing scale, a hair of
   rounding, Latin named and kanji sealed. Colour only where it is data; the
   red is the seal and the alert.
+- Wears the Crate look only under `:root[data-look="crate"]`. A component
+  keeps its Crate rules beside its stock ones, and the stock look stays
+  exactly as it is; `src/lib/state/look.test.ts` holds both to that.
 - Uses the kit. A control that is not in `src/lib/ui/` is added there once,
   not styled ad hoc in a sheet. Shared files (`app.css`, `kit.css`, the kit,
   the stores, the router) change through the integrator, not from a sheet.

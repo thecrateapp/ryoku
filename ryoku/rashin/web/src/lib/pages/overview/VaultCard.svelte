@@ -33,7 +33,7 @@
 
 <style>
   .vault-number { display: flex; align-items: baseline; gap: var(--s3); padding-bottom: var(--s4); border-bottom: 1px solid var(--line-soft); }
-  .vault-number strong { color: var(--ink); font-family: var(--display); font-size: 42px; font-weight: 300; line-height: 1; }
+  .vault-number strong { color: var(--ink); font-family: var(--display); font-size: 42px; font-weight: var(--display-weight-light); line-height: 1; }
   .vault-number span { color: var(--ink-mute); font-size: var(--f-small); }
   dl { margin: var(--s3) 0 0; }
   dl div { display: grid; grid-template-columns: 100px minmax(0, 1fr); gap: var(--s3); padding: var(--s2) 0; border-bottom: 1px solid var(--line-soft); }

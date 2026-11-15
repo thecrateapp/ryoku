@@ -14,7 +14,9 @@
   --bone: #cdc4ba;
   --ink-on-bone: #000000;
   --sun: #e2342a;
+  --sun-hi: var(--sun);
   --alert: #e2342a;
+  --focus: var(--bone);
 
   --line: color-mix(in srgb, var(--ink) 26%, transparent);
   --line-soft: color-mix(in srgb, var(--ink) 13%, transparent);
@@ -28,6 +30,8 @@
   --ui: "Space Grotesk", system-ui, sans-serif;
   --mono: "Space Mono", ui-monospace, monospace;
   --jp: "Noto Sans CJK JP", "Noto Sans JP", sans-serif;
+  --display-weight: 400;
+  --display-weight-light: 300;
 
   --f-title: 32px;
   --f-hero: 34px;
@@ -55,6 +59,32 @@
   --t-slow: 520ms;
 }
 
+/* The Crate look: theme.svelte.ts sets data-look="crate" when the theme
+   style names controls "crate" (the shell's controlsCrate). The roles already
+   carry Crate's paper, ink and cyan; this swaps the faces, thins the
+   hairlines to its 10 % line, squares islands to 6 px and turns the bone
+   inversion into marks. Components keep their own Crate rules beside their
+   stock ones. */
+:root[data-look="crate"] {
+  --display: "Bricolage Grotesque", "Roboto", system-ui, sans-serif;
+  --ui: "Roboto", system-ui, sans-serif;
+  --mono: "JetBrains Mono", "JetBrainsMono Nerd Font", ui-monospace, monospace;
+  --display-weight: 700;
+  --display-weight-light: 700;
+  --ink-mute: color-mix(in srgb, var(--ink) 62%, transparent);
+  --ink-faint: color-mix(in srgb, var(--ink) 42%, transparent);
+  --line: color-mix(in srgb, var(--ink) 10%, transparent);
+  --line-soft: color-mix(in srgb, var(--ink) 5%, transparent);
+  --line-strong: color-mix(in srgb, var(--ink) 16%, transparent);
+  --island-radius: 6px;
+  --focus: var(--sun);
+  --row-wash: color-mix(in srgb, var(--sun) 8%, transparent);
+  /* the one glass every floating panel wears (Tokens.qml glass): the raised
+     paper at 68 % over a blur; the window itself stays opaque */
+  --glass: color-mix(in srgb, var(--paper-lift) 68%, transparent);
+  --glass-blur: blur(24px);
+}
+
 @font-face { font-family: "Fraunces"; font-weight: 300 600; font-display: swap;
   src: url("./fonts/fraunces.woff2") format("woff2"); }
 @font-face { font-family: "Space Grotesk"; font-weight: 400; font-display: swap;
@@ -67,6 +97,12 @@
   src: url("./fonts/space-mono-regular.woff2") format("woff2"); }
 @font-face { font-family: "Space Mono"; font-weight: 700; font-display: swap;
   src: url("./fonts/space-mono-bold.woff2") format("woff2"); }
+@font-face { font-family: "Roboto"; font-weight: 100 900; font-display: swap;
+  src: url("./fonts/roboto-latin.woff2") format("woff2"); }
+@font-face { font-family: "Bricolage Grotesque"; font-weight: 200 800; font-display: swap;
+  src: url("./fonts/bricolage-grotesque-latin.woff2") format("woff2"); }
+@font-face { font-family: "JetBrains Mono"; font-weight: 400; font-display: swap;
+  src: url("./fonts/jetbrains-mono-latin.woff2") format("woff2"); }
 @font-face { font-family: "Noto Sans CJK JP"; font-weight: 400; font-display: swap;
   src: url("./fonts/noto-sans-jp-glosses.woff2") format("woff2"); }
 @font-face { font-family: "Noto Sans CJK JP"; font-weight: 700; font-display: swap;
@@ -102,7 +138,7 @@ hr { border: 0; border-top: 1px solid var(--line-soft); }
 ::selection { background: var(--bone); color: var(--ink-on-bone); }
 
 :focus-visible {
-  outline: 1px solid var(--bone);
+  outline: 1px solid var(--focus);
   outline-offset: 2px;
   border-radius: var(--radius);
 }
@@ -115,8 +151,8 @@ hr { border: 0; border-top: 1px solid var(--line-soft); }
 ::-webkit-scrollbar-track { background: transparent; }
 
 /* Shared text roles. A role is picked by meaning, never by number. */
-.t-title { font-family: var(--display); font-weight: 400; font-size: var(--f-title); line-height: 1.1; color: var(--ink); letter-spacing: -0.01em; }
-.t-hero { font-family: var(--display); font-weight: 300; font-size: var(--f-hero); line-height: 1.05; color: var(--ink); }
+.t-title { font-family: var(--display); font-weight: var(--display-weight); font-size: var(--f-title); line-height: 1.1; color: var(--ink); letter-spacing: -0.01em; }
+.t-hero { font-family: var(--display); font-weight: var(--display-weight-light); font-size: var(--f-hero); line-height: 1.05; color: var(--ink); }
 .t-value { font-family: var(--ui); font-weight: 500; font-size: var(--f-value); line-height: 1.1; color: var(--ink); font-variant-numeric: tabular-nums; }
 .t-row { font-size: var(--f-row); color: var(--ink); }
 .t-body { font-size: var(--f-body); color: var(--ink-dim); }
@@ -126,6 +162,9 @@ hr { border: 0; border-top: 1px solid var(--line-soft); }
 .t-tiny { font-family: var(--mono); font-size: var(--f-tiny); letter-spacing: var(--track-label); text-transform: uppercase; color: var(--ink-faint); }
 .t-mono { font-family: var(--mono); font-size: var(--f-small); color: var(--ink-dim); }
 .t-jp { font-family: var(--jp); color: var(--ink-faint); font-size: var(--f-small); }
+
+/* Crate's display is set tight; the stock Fraunces keeps its own tracking. */
+:root[data-look="crate"] .t-title, :root[data-look="crate"] .t-hero { letter-spacing: -0.02em; }
 
 /* Motion is a reply to an action; at rest the page is still. */
 @media (prefers-reduced-motion: reduce) {

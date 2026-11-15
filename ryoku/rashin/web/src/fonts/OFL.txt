@@ -2,9 +2,14 @@ Fraunces: Copyright 2020 The Fraunces Project Authors (github.com/undercasetype/
 Space Grotesk: Copyright 2020 The Space Grotesk Project Authors (https://github.com/floriankarsten/space-grotesk)
 Space Mono: Copyright 2016 The Space Mono Project Authors (https://github.com/googlefonts/spacemono)
 Noto Sans CJK JP: Copyright 2014-2021 Adobe (http://www.adobe.com/), with Reserved Font Name 'Source'
+Roboto: Copyright 2011 The Roboto Project Authors (https://github.com/googlefonts/roboto-classic)
+Bricolage Grotesque: Copyright 2022 The Bricolage Grotesque Project Authors (https://github.com/ateliertriay/bricolage)
+JetBrains Mono: Copyright 2020 The JetBrains Mono Project Authors (https://github.com/JetBrains/JetBrainsMono)
 
 The files here are subsets of those fonts (Latin, and only the kanji the
 dashboard prints); Fraunces is also pinned to SOFT 0, WONK 0, weight 300-600.
+Roboto, Bricolage Grotesque and JetBrains Mono are the unmodified Latin
+subsets the Crate look wears; a browser fetches them only under that look.
 
 This Font Software is licensed under the SIL Open Font License, Version 1.1.
 This license is copied below, and is also available with a FAQ at:

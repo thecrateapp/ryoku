@@ -61,4 +61,7 @@
   }
   .permission-actions { display: flex; flex-wrap: wrap; gap: var(--s2); }
   @keyframes permission-in { from { opacity: 0; transform: translateY(4px); } }
+
+  /* Crate: a 1 px pick edge all round instead of the lead bar. */
+  :global(:root[data-look="crate"]) .permission { border: 1px solid var(--sun-hi); }
 </style>

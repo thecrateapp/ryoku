@@ -32,4 +32,8 @@
   .plate { background: var(--bone); color: var(--ink-on-bone); border-color: var(--bone); }
   .alert { color: var(--alert); border-color: color-mix(in srgb, var(--alert) 50%, transparent); }
   .quiet { border-color: transparent; background: var(--tint10); }
+
+  /* Crate: a picked chip fills with the mark; corners match every surface. */
+  :global(:root[data-look="crate"]) .chip { border-radius: var(--radius); }
+  :global(:root[data-look="crate"]) .plate { background: var(--sun-hi); border-color: var(--sun-hi); color: var(--ink-on-bone); }
 </style>

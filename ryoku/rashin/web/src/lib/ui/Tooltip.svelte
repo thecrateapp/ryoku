@@ -42,4 +42,6 @@
     animation: tip-in var(--t-fast) var(--ease-out);
   }
   @keyframes tip-in { from { opacity: 0; transform: translateY(2px); } to { opacity: 1; transform: none; } }
+  /* Crate: a floating panel in the one glass, not an accent plate. */
+  :global(:root[data-look="crate"]) .tip { border: 1px solid var(--line); background: var(--glass); color: var(--ink); backdrop-filter: var(--glass-blur); }
 </style>
