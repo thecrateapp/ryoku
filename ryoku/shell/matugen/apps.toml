@@ -99,3 +99,11 @@ output_path = "~/.config/ryotunes/skins/matugen/skin.json"
 input_path = "~/.config/matugen/templates/starship-colors.toml"
 output_path = "~/.config/starship/ryoku-colors.toml"
 post_hook = "ryoku-hub starship refresh"
+
+# ZapFast (a WhatsApp client) lists every palette in its themes folder by file
+# name and reloads changed files by itself on Linux: choosing "Ryoku" under its
+# Settings > Appearance > Theme follows every scheme and wallpaper change.
+# Translucent roles carry a literal alpha (#RRGGBBAA, which ZapFast reads).
+[templates.zapfast]
+input_path = "~/.config/matugen/templates/zapfast.json"
+output_path = "~/.config/zapfast/themes/Ryoku.json"

@@ -87,6 +87,7 @@
         "telegram": true,
         "tmux": true,
         "yazi": true,
+        "zapfast": true,
         "zathura": true,
         "zed": true
       },

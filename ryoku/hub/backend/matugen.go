@@ -171,6 +171,7 @@ func defaultMatugenConfig() matugenConfig {
 			"tmux":      true,
 			"sidra":     true,
 			"ryotunes":  true,
+			"zapfast":   true,
 		},
 	}
 }
@@ -267,6 +268,7 @@ func renderActiveTemplates(cfg matugenConfig, pal map[string]string) {
 		filepath.Join(configHome(), "obs-studio", "themes"),
 		filepath.Join(configHome(), "zed", "themes"),
 		filepath.Join(configHome(), "heroic", "store", "styles"),
+		filepath.Join(configHome(), "zapfast", "themes"),
 		filepath.Join(dataHome, "TelegramDesktop", "tdata"),
 		filepath.Join(configHome(), "cava"),
 		filepath.Join(configHome(), "fish", "conf.d"),

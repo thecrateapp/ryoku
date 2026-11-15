@@ -31,6 +31,7 @@ var appThemeNames = map[string]string{
 	"tmux":      "tmux",
 	"sidra":     "Sidra",
 	"ryotunes":  "RyoTunes",
+	"zapfast":   "ZapFast",
 }
 
 var appThemeProbe = map[string]string{
@@ -52,6 +53,7 @@ var appThemeProbe = map[string]string{
 	"alacritty": "alacritty",
 	"tmux":      "tmux",
 	"ryotunes":  "ryotunes",
+	"zapfast":   "zapfast",
 }
 
 func hubMatugenTemplates() map[string]bool {

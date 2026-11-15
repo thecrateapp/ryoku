@@ -1,0 +1,26 @@
+{
+  "base": "{{mode}}",
+  "colors": {
+    "window": "{{colors.surface.default.hex}}",
+    "panel": "{{colors.surface_container_low.default.hex}}",
+    "surface": "{{colors.surface_container.default.hex}}",
+    "surface_hover": "{{colors.surface_container.default.hex | to_color | lighten: 4 | format: "hex"}}",
+    "surface_active": "#{{colors.primary.default.hex_stripped}}1f",
+    "outline": "#{{colors.on_surface.default.hex_stripped}}1a",
+    "text": "{{colors.on_surface.default.hex}}",
+    "secondary": "{{colors.on_surface_variant.default.hex}}",
+    "dim": "{{colors.on_surface_variant.default.hex | to_color | lighten: -15 | format: "hex"}}",
+    "accent": "{{colors.primary.default.hex}}",
+    "accent_hover": "{{colors.primary.default.hex | to_color | lighten: 10 | format: "hex"}}",
+    "on_accent": "{{colors.on_primary.default.hex}}",
+    "danger": "{{colors.error.default.hex}}",
+    "warning": "{{colors.color3.default.hex}}",
+    "overlay": "{{colors.surface_container.default.hex}}",
+    "shadow": "{{colors.shadow.default.hex}}",
+    "chat": "{{colors.surface.default.hex}}",
+    "bubble_in": "{{colors.surface_container.default.hex | to_color | lighten: 2 | format: "hex"}}",
+    "bubble_out": "#{{colors.primary.default.hex_stripped}}3d",
+    "link": "{{colors.primary.default.hex | to_color | lighten: 10 | format: "hex"}}",
+    "read": "{{colors.primary.default.hex}}"
+  }
+}
