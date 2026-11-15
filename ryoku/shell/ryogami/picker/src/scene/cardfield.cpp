@@ -39,6 +39,16 @@ QColor colorOf(const QVariantMap &map, const char *key, QColor fallback)
     return c.isValid() ? c : fallback;
 }
 
+float numberOf(const QVariantMap &map, const char *key, float fallback)
+{
+    const auto it = map.constFind(QLatin1String(key));
+    if (it == map.constEnd())
+        return fallback;
+    bool ok = false;
+    const double v = it.value().toDouble(&ok);
+    return ok && std::isfinite(v) ? float(v) : fallback;
+}
+
 // Quantised so a new card at an old card's spot lines up with it.
 qint64 cellKey(float x, float y)
 {
@@ -384,6 +394,16 @@ void CardField::setPalette(const QVariantMap &palette)
     update();
 }
 
+void CardField::setFrame(const QVariantMap &frame)
+{
+    m_frameMap = frame;
+    const SceneFrame stock;
+    m_frame.currentEdge = std::clamp(numberOf(frame, "currentEdge", stock.currentEdge), 0.0f, 32.0f);
+    m_frame.cornerRadius = std::min(numberOf(frame, "cornerRadius", stock.cornerRadius), 2048.0f);
+    emit frameChanged();
+    update();
+}
+
 void CardField::setInteractive(bool interactive)
 {
     if (interactive == m_interactive)
@@ -536,6 +556,7 @@ LayoutContext CardField::makeContext()
     ctx.params = &m_params;
     ctx.source = m_source;
     ctx.palette = m_palette;
+    ctx.frame = m_frame;
     ctx.flip.row = m_flippedRow;
     ctx.flip.progress = std::clamp(m_flip.x, 0.0, 1.0);
     ctx.flip.effect = m_flipOpts.effect;

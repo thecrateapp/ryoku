@@ -193,13 +193,15 @@ Item {
 
     Rectangle {
         id: slab
+        objectName: "mastheadSlab"
         width: Math.min(root.width - 96 * Theme.scale, 1320 * Theme.scale)
         height: head.height + 1 + line.height
         x: (root.width - width) * 0.5
         y: root.edge
         radius: Theme.radius
-        // crate: the picker is one working window, opaque popover in a hairline
-        color: Theme.crate ? Theme.surface : Theme.withAlpha(Theme.surface, 0.95)
+        // crate: the shell's one glass in a hairline, like every panel; the picker's
+        // scrim stays dark behind it
+        color: Theme.crate ? Tokens.glass : Theme.withAlpha(Theme.surface, 0.95)
         border.width: 1
         border.color: Theme.crate ? Tokens.line : Theme.withAlpha(Theme.outline, 0.5)
         enabled: root.revealed
@@ -318,7 +320,7 @@ Item {
                     anchors.verticalCenter: parent.verticalCenter
                     width: 1
                     height: 30 * Theme.scale
-                    color: Theme.withAlpha(Theme.surfaceText, 0.18)
+                    color: Theme.crate ? Tokens.line : Theme.withAlpha(Theme.surfaceText, 0.18)
                 }
                 // Wallpaper colours: matugen derives the desktop palette from each wallpaper
                 // you apply. Off holds the current colours; a theme tile picks a fixed one.
@@ -366,7 +368,7 @@ Item {
             anchors.leftMargin: 1
             anchors.rightMargin: 1
             height: 1
-            color: Theme.withAlpha(Theme.outline, 0.4)
+            color: Theme.crate ? Tokens.line : Theme.withAlpha(Theme.outline, 0.4)
         }
 
         // ── line: what the open library needs ────────────────────────────────

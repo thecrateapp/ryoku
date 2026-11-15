@@ -1,6 +1,25 @@
 # Changelog: ryoku/shell/
 
 ## Unreleased
+- **The wallpaper browser's cards and masthead speak Crate.** Under crate the
+  skewed carousel keeps its slant, but the current card's tags and name now
+  stand upright (a counter-shear undoes the card's shear on the words, never
+  on the band) in the mono's tracked caps and muted ink: `STILL`, `VIDEO`,
+  `SCENE`, the file name, and a `LIVE` tag filled with the mark where the lead
+  bar was. The current card's edge is 1 px in the mark instead of 3 px in the
+  accent, and a rounded card takes the shared 6 px corner (a new
+  `CardField.frame`, read by the slices and depth layouts). The masthead is
+  the shell's one glass in a hairline at `Tokens.radius`; its tabs and second
+  line are mono tracked caps (the kanji glosses stay), search is the kit's
+  hairline field, dropdowns share the glass and mark the chosen row with the
+  1 px pick edge, the hue ring is that edge in the mark, and the theme strip
+  is the same glass with a pick edge on the lit tile. The stock look is
+  unchanged pixel for pixel
+  (`ryogami/picker/qml/chrome/{CardLabel,CardChrome,WorkshopCardChrome,FilterBar,ThemeBar}.qml`,
+  `chrome/filterbar/{CollectionTabs,TypeSegment,BarButton,BarMenu,MenuRow,BarRule,BarSwatches,SearchTrigger}.qml`,
+  `theme/Theme.qml`, `Picker.qml`, `src/scene/{layout.h,cardfield.*}`,
+  `src/layouts/slicebase.cpp`; `tests/ui/ryogami-card-probe.sh`,
+  `src/tests/slicesframe_test.cpp`).
 - **Plugins get the kit switch and the shell's spectrum.** `Ryoku.PluginKit`
   re-exports the kit `Sw`, so a plugin's boolean (crate-mark's equalizer on/off)
   is the switch the shell draws, not a look-alike. Bar plugins and popouts also

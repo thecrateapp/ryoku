@@ -150,8 +150,9 @@ PanelWindow {
             interactive: pickerState.sheet === "" && !pickerState.multipickerOpen
                 && !pickerState.helpOpen && !pickerState.riceWorkshopOpen
                 && pickerState.riceShare === ""
+            frame: Theme.cardFrame
             palette: ({
-                primary: Theme.primary,
+                primary: Theme.cardEdge,
                 accent: Theme.primary,
                 surface: Theme.surface,
                 surfaceVariant: Theme.surfaceVariant,

@@ -1,7 +1,10 @@
 import QtQuick
+import Ryoku.Ui.Singletons
 
 // A row in a masthead dropdown. The chosen row carries a bone tick at its edge; a row that
-// cannot run yet dims and says why on the right.
+// cannot run yet dims and says why on the right. Under crate the chosen row takes the
+// kit's 1 px pick edge instead of the tick, a lead bar being Ryoku marginalia, and the
+// row holds still under the pointer.
 Item {
     id: row
 
@@ -19,12 +22,17 @@ Item {
     implicitHeight: 30 * Theme.scale
 
     Rectangle {
+        objectName: "menuRowPlate"
         anchors.fill: parent
         radius: Theme.radius
-        color: Theme.withAlpha(Theme.surfaceText, row.hovered ? 0.08 : row.selected ? 0.05 : 0)
+        color: Theme.crate ? (row.hovered ? Tokens.tint5 : "transparent")
+             : Theme.withAlpha(Theme.surfaceText, row.hovered ? 0.08 : row.selected ? 0.05 : 0)
+        border.width: Theme.crate && row.selected ? Tokens.border : 0
+        border.color: Tokens.pickEdge
         Behavior on color { ColorAnimation { duration: Theme.fast } }
     }
     Rectangle {
+        visible: !Theme.crate
         anchors.left: parent.left
         anchors.verticalCenter: parent.verticalCenter
         width: 2 * Theme.scale
@@ -41,7 +49,7 @@ Item {
         spacing: 10 * Theme.scale
         opacity: row.available ? 1 : 0.45
         transform: Translate {
-            x: row.hovered ? 3 * Theme.scale : 0
+            x: row.hovered && !Theme.crate ? 3 * Theme.scale : 0
             Behavior on x { NumberAnimation { duration: Theme.fast; easing.type: Easing.OutCubic } }
         }
 

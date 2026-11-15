@@ -68,14 +68,18 @@ Item {
             Behavior on rotation { NumberAnimation { duration: Theme.slow; easing.type: Easing.OutCubic } }
         }
         Text {
+            objectName: "barButtonLabel"
             visible: btn.label.length > 0
             anchors.verticalCenter: parent.verticalCenter
             text: btn.label
             width: btn.maxLabelWidth > 0 ? Math.min(implicitWidth, btn.maxLabelWidth * Theme.scale) : implicitWidth
             elide: Text.ElideMiddle
-            font.family: Theme.sans
+            // crate: a control's name in the mono's tracked caps, like the tabs
+            font.family: Theme.crate ? Theme.mono : Theme.sans
             font.weight: Font.Medium
-            font.pixelSize: Theme.fs(12.5)
+            font.pixelSize: Theme.crate ? Theme.fontMicro : Theme.fs(12.5)
+            font.capitalization: Theme.crate ? Font.AllUppercase : Font.MixedCase
+            font.letterSpacing: Theme.crate ? Tokens.trackLabel : 0
             color: btn.ink
             renderType: Text.NativeRendering
             Behavior on color { ColorAnimation { duration: Theme.fast } }

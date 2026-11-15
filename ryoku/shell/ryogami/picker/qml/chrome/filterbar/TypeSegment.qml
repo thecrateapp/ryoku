@@ -41,9 +41,11 @@ Item {
 
                 TextMetrics {
                     id: boldCut
-                    font.family: Theme.sans
-                    font.weight: Font.DemiBold
-                    font.pixelSize: Theme.fs(12.5)
+                    font.family: word.font.family
+                    font.weight: Theme.crate ? Font.Medium : Font.DemiBold
+                    font.pixelSize: word.font.pixelSize
+                    font.capitalization: word.font.capitalization
+                    font.letterSpacing: word.font.letterSpacing
                     text: opt.modelData.label
                 }
 
@@ -60,10 +62,14 @@ Item {
                     id: word
                     anchors.centerIn: parent
                     anchors.verticalCenterOffset: -1 * Theme.scale
+                    objectName: "typeSegmentLabel"
                     text: opt.modelData.label
-                    font.family: Theme.sans
-                    font.weight: opt.on ? Font.DemiBold : Font.Medium
-                    font.pixelSize: Theme.fs(12.5)
+                    // crate: navigation in the mono's tracked caps, one weight
+                    font.family: Theme.crate ? Theme.mono : Theme.sans
+                    font.weight: opt.on && !Theme.crate ? Font.DemiBold : Font.Medium
+                    font.pixelSize: Theme.crate ? Theme.fontMicro : Theme.fs(12.5)
+                    font.capitalization: Theme.crate ? Font.AllUppercase : Font.MixedCase
+                    font.letterSpacing: Theme.crate ? Tokens.trackLabel : 0
                     color: Theme.crate ? (opt.on ? Tokens.mark : opt.hovered ? Tokens.hoverInk : Tokens.inkSubtle)
                         : opt.on || opt.hovered ? Theme.surfaceText : Theme.withAlpha(Theme.surfaceText, 0.58)
                     renderType: Text.NativeRendering

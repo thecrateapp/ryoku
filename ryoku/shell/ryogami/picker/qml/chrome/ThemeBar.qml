@@ -1,6 +1,8 @@
 import QtQuick
 import Ryoku.Ui.Singletons
 
+// The theme strip over the cards. Under crate it is the masthead's glass in a hairline,
+// the lit tile takes the 1 px pick edge, and captions are the mono's tracked caps.
 Item {
     id: root
 
@@ -39,6 +41,7 @@ Item {
 
     Rectangle {
         id: panel
+        objectName: "themeBarPanel"
         width: parent.width - 44 * Theme.scale
         height: 168 * Theme.scale
         anchors.horizontalCenter: parent.horizontalCenter
@@ -48,9 +51,9 @@ Item {
         opacity: root.reveal
         transform: Translate { y: (1 - root.reveal) * 12 * Theme.scale }
 
-        color: Theme.withAlpha(Theme.surface, 0.97)
+        color: Theme.crate ? Tokens.glass : Theme.withAlpha(Theme.surface, 0.97)
         border.width: 1
-        border.color: Theme.withAlpha(Theme.outline, 0.55)
+        border.color: Theme.crate ? Tokens.line : Theme.withAlpha(Theme.outline, 0.55)
 
         MouseArea { anchors.fill: parent }
 
@@ -79,10 +82,12 @@ Item {
                     }
                     Text {
                         text: I18n.tr("Matugen")
-                        font.family: Theme.sans
+                        font.family: Theme.crate ? Theme.mono : Theme.sans
                         font.weight: Font.Medium
                         font.pixelSize: Theme.fontFine
-                        color: Theme.withAlpha(Theme.surfaceText, 0.55)
+                        font.capitalization: Theme.crate ? Font.AllUppercase : Font.MixedCase
+                        font.letterSpacing: Theme.crate ? Tokens.trackLabel : 0
+                        color: Theme.crate ? Tokens.inkSubtle : Theme.withAlpha(Theme.surfaceText, 0.55)
                         renderType: Text.NativeRendering
                     }
                 }
@@ -139,13 +144,16 @@ Item {
                     height: strip.height
 
                     Rectangle {
+                        objectName: "themeTile"
                         anchors.fill: parent
                         radius: Theme.radius
-                        color: tile.active ? Theme.withAlpha(Theme.surfaceText, 0.09)
+                        color: Theme.crate ? (tile.hovered ? Tokens.tint5 : "transparent")
+                             : tile.active ? Theme.withAlpha(Theme.surfaceText, 0.09)
                              : tile.hovered ? Theme.withAlpha(Theme.surfaceText, 0.05)
                              : "transparent"
-                        border.width: tile.active ? 2 : 1
-                        border.color: tile.active ? Theme.surfaceText
+                        border.width: tile.active && !Theme.crate ? 2 : 1
+                        border.color: Theme.crate ? (tile.active ? Tokens.pickEdge : tile.hovered ? Tokens.lineStrong : Tokens.line)
+                                     : tile.active ? Theme.surfaceText
                                      : tile.hovered ? Theme.withAlpha(Theme.surfaceText, 0.28)
                                      : Theme.withAlpha(Theme.outline, 0.4)
                         Behavior on color { ColorAnimation { duration: Theme.fast } }
@@ -190,10 +198,12 @@ Item {
                                 id: labelText
                                 width: parent.width
                                 text: tile.name
-                                font.family: Theme.sans
-                                font.weight: tile.active ? Font.DemiBold : Font.Medium
-                                font.pixelSize: Theme.fontBase
-                                color: Theme.surfaceText
+                                font.family: Theme.crate ? Theme.mono : Theme.sans
+                                font.weight: tile.active && !Theme.crate ? Font.DemiBold : Font.Medium
+                                font.pixelSize: Theme.crate ? Theme.fontMicro : Theme.fontBase
+                                font.capitalization: Theme.crate ? Font.AllUppercase : Font.MixedCase
+                                font.letterSpacing: Theme.crate ? Tokens.trackLabel : 0
+                                color: Theme.crate ? (tile.active ? Tokens.mark : Tokens.inkMuted) : Theme.surfaceText
                                 elide: Text.ElideRight
                                 horizontalAlignment: Text.AlignHCenter
                                 renderType: Text.NativeRendering

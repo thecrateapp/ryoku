@@ -57,7 +57,8 @@ Item {
                 anchors.bottom: parent.bottom
                 height: Math.min(parent.height, titleText.implicitHeight + 12 * Theme.scale)
                 visible: parent.width > 36 * Theme.scale && parent.height > 22 * Theme.scale
-                color: Theme.withAlpha(Theme.background, 0.68)
+                // crate: the glass band and the mono's tracked caps in muted ink
+                color: Theme.crate ? Tokens.glass : Theme.withAlpha(Theme.background, 0.68)
 
                 Text {
                     id: titleText
@@ -68,10 +69,12 @@ Item {
                     anchors.rightMargin: 10 * Theme.scale
                     text: cardLabel.entry.name || cardLabel.entry.key || ""
                     elide: Text.ElideRight
-                    font.family: Theme.sans
-                    font.weight: Font.DemiBold
-                    font.pixelSize: Theme.fontBody
-                    color: Theme.surfaceText
+                    font.family: Theme.crate ? Theme.mono : Theme.sans
+                    font.weight: Theme.crate ? Font.Medium : Font.DemiBold
+                    font.pixelSize: Theme.crate ? Theme.fontMicro : Theme.fontBody
+                    font.capitalization: Theme.crate ? Font.AllUppercase : Font.MixedCase
+                    font.letterSpacing: Theme.crate ? Tokens.trackLabel : 0
+                    color: Theme.crate ? Tokens.inkMuted : Theme.surfaceText
                     renderType: Text.NativeRendering
                 }
             }
@@ -81,9 +84,9 @@ Item {
                 visible: cardLabel.missingPreview
                     && parent.width > 80 * Theme.scale && parent.height > 52 * Theme.scale
                 radius: Theme.radius
-                color: Theme.withAlpha(Theme.background, 0.58)
+                color: Theme.crate ? Tokens.glass : Theme.withAlpha(Theme.background, 0.58)
                 border.width: 1
-                border.color: Theme.withAlpha(Theme.outline, 0.38)
+                border.color: Theme.crate ? Tokens.line : Theme.withAlpha(Theme.outline, 0.38)
                 implicitWidth: noPreviewText.implicitWidth + 14 * Theme.scale
                 implicitHeight: noPreviewText.implicitHeight + 8 * Theme.scale
 
@@ -91,10 +94,12 @@ Item {
                     id: noPreviewText
                     anchors.centerIn: parent
                     text: I18n.tr("No preview")
-                    font.family: Theme.sans
+                    font.family: Theme.crate ? Theme.mono : Theme.sans
                     font.weight: Font.Medium
                     font.pixelSize: Theme.fontFine
-                    color: Theme.withAlpha(Theme.surfaceText, 0.86)
+                    font.capitalization: Theme.crate ? Font.AllUppercase : Font.MixedCase
+                    font.letterSpacing: Theme.crate ? Tokens.trackLabel : 0
+                    color: Theme.crate ? Tokens.inkMuted : Theme.withAlpha(Theme.surfaceText, 0.86)
                     renderType: Text.NativeRendering
                 }
             }

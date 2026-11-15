@@ -1,7 +1,9 @@
 import QtQuick
+import Ryoku.Ui.Singletons
 
 // A masthead dropdown: a trigger and the list it unfolds beneath it. The list leaves when
-// the pointer has been away from both for a moment, or once a row is chosen.
+// the pointer has been away from both for a moment, or once a row is chosen. Under crate
+// the list is the masthead's glass in its hairline.
 Item {
     id: menu
 
@@ -47,6 +49,7 @@ Item {
 
     Rectangle {
         id: panel
+        objectName: "barMenuPanel"
         property real reveal: menu.open ? 1 : 0
         Behavior on reveal { NumberAnimation { duration: Theme.standard; easing.type: Easing.OutCubic } }
 
@@ -57,9 +60,9 @@ Item {
         width: menu.panelWidth * Theme.scale
         height: Math.min(list.implicitHeight, menu.maxRows * 30 * Theme.scale) + 12 * Theme.scale
         radius: Theme.radius
-        color: Theme.withAlpha(Theme.surface, 0.985)
+        color: Theme.crate ? Tokens.glass : Theme.withAlpha(Theme.surface, 0.985)
         border.width: 1
-        border.color: Theme.withAlpha(Theme.outline, 0.55)
+        border.color: Theme.crate ? Tokens.line : Theme.withAlpha(Theme.outline, 0.55)
         opacity: reveal
         transformOrigin: Item.Top
         transform: [

@@ -196,6 +196,15 @@ QtObject {
     // crate: the shared 6 px corner on every surface, whatever the picker's scale
     readonly property real radius: theme.crate ? Tokens.radius : 6 * theme.scale
     readonly property real panelSkew: 14 * theme.scale
+    // The card field's frame (CardField.frame): crate gives the current card a 1 px
+    // edge in the mark (cardEdge) and any rounded card the shared corner; the stock
+    // look keeps its 3 px accent edge and each layout's own corners.
+    readonly property color cardEdge: theme.crate ? Tokens.mark : theme.primary
+    readonly property var cardFrame: {
+        if (theme.crate)
+            return { currentEdge: 1, cornerRadius: Tokens.radius }
+        return { currentEdge: 3, cornerRadius: -1 }
+    }
 
     // Folio sheet geometry (base px; components clamp to the viewport).
     readonly property real folioSheetWidth: 1390
