@@ -1,6 +1,13 @@
 # Ryoku CLI Changelog
 
 ## Unreleased
+- **An Obsidian vault on a community theme keeps that theme's colours.**
+  Doctor turned the `ryoku` palette snippet back on in every vault on every
+  run, and the snippet outranks any theme, so a theme picked in Settings >
+  Appearance (Crate, Nord...) showed Ryoku's palette instead. The snippet now
+  follows the vault's choice: on with Obsidian's default theme, off while
+  `appearance.json` names a `cssTheme`, back on when the default is chosen again
+  (`doctor/reconcile_obsidian.go`).
 - **Materialize never queues the default rice over an applied one.** An
   account whose `rices/.previous` or `.baseline` exists already chose a look,
   so a missing `shell.json` no longer counts as a new account.
