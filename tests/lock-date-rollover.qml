@@ -28,7 +28,10 @@ ShellRoot {
         }
         return null;
     }
-    function day(d) { return Qt.formatDate(d, "dddd").toUpperCase(); }
+    // the weekday as the skin draws it: in the skin's clock locale (the system
+    // one, LC_TIME included), not Qt.formatDate's, so the check holds outside
+    // an English locale
+    function day(d) { return d.toLocaleDateString(theme.item.clockLocale, "dddd").toUpperCase(); }
     Timer {
         interval: 250; running: true; repeat: true
         onTriggered: {

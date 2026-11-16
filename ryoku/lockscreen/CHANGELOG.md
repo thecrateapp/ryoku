@@ -9,6 +9,10 @@
   or the Orbital wind-up timings.
 
 ### Fixed
+- **The Orbital date rollover test passes outside an English locale.** It
+  built the expected weekday with `Qt.formatDate`, while the skin draws it in
+  its clock locale (the system one, `LC_TIME` included), so on a Spanish or
+  German box it failed with the skin right; it now reads the skin's locale.
 - **New installs wire the login keyring once.** The SDDM setup counts the stock
   `-auth`/`-session` keyring lines, so it no longer adds a second copy on Arch.
 - **A picked skin stays on the Fedora sign-in screen.** `sddm-theme-ryoku` owned
