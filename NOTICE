@@ -2,6 +2,15 @@ Ryoku
 
 Ryoku is distributed under the GNU General Public License version 3.
 
+This tree is a modified version of Ryoku: the thecrateapp/ryoku fork
+(https://github.com/thecrateapp/ryoku), changed by Crate for Crate for Ryoku from
+Ryoku 1.0.9 onward (November 2026). It changes the shell, the Hub, the Ryoku.Ui
+kit and the theming, among them user theme roles and styles and the Crate
+controls; the git history and the changelogs date every change. The
+[crate-for-ryoku] pacman repository ships packages built from this tree, and the
+source of each build is the tag crate-<pkgver> here. It is released under the
+GNU General Public License version 3, as Ryoku is.
+
 Ryoku's alpha series (through v0.1.1-alpha) began as a fork of Omarchy, created by
 David Heinemeier Hansson and contributors (https://github.com/basecamp/omarchy).
 The beta tree was pruned and rebuilt from an empty root; its installer, shell,

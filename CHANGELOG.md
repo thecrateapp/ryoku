@@ -6,6 +6,10 @@ for finer detail.
 ## Unreleased
 
 ### Added
+- NOTICE names this tree as Crate's modified version of Ryoku (the
+  thecrateapp/ryoku fork), when the changes began, and that the source of each
+  package the [crate-for-ryoku] repository ships is the fork tag
+  `crate-<pkgver>`.
 - QS Bar adds per-monitor workspace isolation (`isolateMonitors`), allowing
   multi-monitor setups to show only the workspaces assigned to each screen on its
   respective bar. The inactive screen dims its active workspace indicator to 72%
