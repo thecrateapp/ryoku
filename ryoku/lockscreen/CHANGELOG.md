@@ -9,6 +9,10 @@
   or the Orbital wind-up timings.
 
 ### Fixed
+- **A skin that hid itself for an unlock reveal comes back after a failed or
+  cancelled unlock.** The lock put itself back without telling the skin; it
+  now emits `surfaceRevealed` again once the restored lock arms
+  (`surface_announce.js`). Skins that ignore the signal behave as before.
 - **The Orbital date rollover test passes outside an English locale.** It
   built the expected weekday with `Qt.formatDate`, while the skin draws it in
   its clock locale (the system one, `LC_TIME` included), so on a Spanish or

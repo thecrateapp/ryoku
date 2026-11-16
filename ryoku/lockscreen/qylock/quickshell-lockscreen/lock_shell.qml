@@ -19,6 +19,7 @@ import QtMultimedia
 import Quickshell.Io
 import "./shim"
 import "./unlock_reveal.js" as UnlockReveal
+import "./surface_announce.js" as SurfaceAnnounce
 import Ryoku.Ui.Singletons
 
 ShellRoot {
@@ -51,6 +52,8 @@ ShellRoot {
     property bool lockSecure: false
     property bool proofPublished: false
     property bool surfaceAnnounced: false
+    // surface_announce.js: announce on the first arm and after each recovery
+    property var surfaceAnnounce: SurfaceAnnounce.initial()
     property string proofPendingAction: ""
     property bool unlockCancelled: false
     property bool relockPending: false
@@ -82,10 +85,11 @@ ShellRoot {
                 relockProcess.running || !sddmShim.loginSessionActive)
             return
         sddmShim.armWhenReady = true
-        if (!surfaceAnnounced) {
-            surfaceAnnounced = true
+        const step = SurfaceAnnounce.armed(surfaceAnnounce)
+        surfaceAnnounce = step.state
+        surfaceAnnounced = true
+        if (step.announce)
             sddmShim.sddm.surfaceRevealed()
-        }
     }
 
     // a surface created after the reveal (an output that came back) would stay hidden
@@ -96,6 +100,9 @@ ShellRoot {
 
     function recoverUnlock(showFailure) {
         quitTimer.stop()
+        // a skin that hid itself for the reveal shows again once the restored
+        // lock arms (armAuthenticationIfSafe announces the surface once more)
+        surfaceAnnounce = SurfaceAnnounce.recovered(surfaceAnnounce)
         authenticated = false
         sddmShim.armWhenReady = false
         sddmShim.resetAuth()

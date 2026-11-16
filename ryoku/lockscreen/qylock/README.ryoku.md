@@ -64,4 +64,11 @@ The in-session shim diverges from upstream in four places:
    `enableWindup=true` hold 720 ms (password) or 2300 ms (sensor), every other
    skin 100 ms. Keys on a clockwork skin override that rule.
 
+5. **The surface is announced again after a failed unlock.** The lock emits
+   `sddm.surfaceRevealed` when authentication first arms, and
+   (`quickshell-lockscreen/surface_announce.js`) again the first time it arms
+   after a failed or cancelled unlock put the lock back, so a skin that hid its
+   UI for a reveal can show it again. A skin that ignores the signal sees no
+   change.
+
 Everything else is upstream verbatim.
