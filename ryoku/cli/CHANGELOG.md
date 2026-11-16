@@ -1,6 +1,14 @@
 # Ryoku CLI Changelog
 
 ## Unreleased
+- **`ryoku update` keeps the Ryoku build a box chose.** A repository listed
+  above `[ryoku]` in `pacman.conf` that serves its own `ryoku-desktop` (a
+  mirror, a local or third-party build of the tree) now decides for every
+  package it serves, as `pacman -Syu` already does: the update, the Hub's
+  available version and a channel move read and install those packages from it
+  instead of forcing `ryoku/<name>` whenever `[ryoku]` names a higher version.
+  Packages it does not serve, and every box with `[ryoku]` alone, update exactly
+  as before (`host/repo.go`, `updater/channelmove.go`).
 - **An Obsidian vault on a community theme keeps that theme's colours.**
   Doctor turned the `ryoku` palette snippet back on in every vault on every
   run, and the snippet outranks any theme, so a theme picked in Settings >

@@ -1,8 +1,11 @@
 package updater
 
 import (
+	"errors"
 	"os"
 	"testing"
+
+	"ryoku-cli/internal/host"
 )
 
 // Every test in this package runs against a throwaway runtime and state dir:
@@ -21,6 +24,9 @@ func TestMain(m *testing.M) {
 	os.Setenv("RYOKU_SHARE_ROOT", dir)
 	os.Unsetenv("RYOKU_SYSTEM_RICES_DIR")
 	accountRepo = func() string { return "" }
+	// never read this machine's sync databases: a test that needs the served
+	// set pins ryokuRepoPackages itself
+	ryokuRepoPackages = func() ([]host.RepoPackage, error) { return nil, errors.New("not in tests") }
 	code := m.Run()
 	os.RemoveAll(dir)
 	os.Exit(code)

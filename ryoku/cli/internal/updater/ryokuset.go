@@ -16,7 +16,9 @@ import (
 
 // ryokuRepo is the repository name in /etc/pacman.conf. Targets are qualified
 // with it ("ryoku/<name>"), so pacman resolves them from our repo even for a
-// name that also exists in core/extra, whatever the section order is.
+// name that also exists in core/extra, whatever the section order is. A
+// repository listed above [ryoku] that serves its own ryoku-desktop qualifies
+// the names it serves instead (host.RepoPackages), as pacman's order does.
 const ryokuRepo = "ryoku"
 
 // externalReleasePkgs update from their own release channel on Arch after
@@ -112,8 +114,13 @@ func targetPackageNames(targets []string) map[string]bool {
 	names := make(map[string]bool, len(targets))
 	switch updatePackageManager() {
 	case host.Pacman:
+		// a target is qualified by the repository it installs from: [ryoku], or
+		// one listed above it that serves its own Ryoku (host.RepoPackages)
 		for _, target := range targets {
-			names[strings.TrimPrefix(target, ryokuRepo+"/")] = true
+			if _, name, ok := strings.Cut(target, "/"); ok {
+				target = name
+			}
+			names[target] = true
 		}
 	case host.DNF:
 		packages, _ := repositoryHost().RepoPackages()

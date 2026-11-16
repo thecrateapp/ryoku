@@ -93,8 +93,24 @@ func ryokuTarget(name string) string {
 		}
 		return name
 	default:
+		// the repository the rest of the set comes from: [ryoku], or the one
+		// listed above it that serves its own Ryoku (host.RepoPackages), so a
+		// meta never pins a version from a different build than its umbrella
+		if packages, err := ryokuRepoPackages(); err == nil {
+			for _, pkg := range packages {
+				if pkg.Name == name && pkg.Repository != "" {
+					return pkg.Repository + "/" + name
+				}
+			}
+		}
 		return ryokuRepo + "/" + name
 	}
+}
+
+// ryokuRepoPackages is what the Ryoku repository serves, as a seam: it reads the
+// live sync databases, so tests pin it.
+var ryokuRepoPackages = func() ([]host.RepoPackage, error) {
+	return repositoryHost().RepoPackages()
 }
 
 // moveRyokuSetToChannel performs the pacman side of a channel move against the

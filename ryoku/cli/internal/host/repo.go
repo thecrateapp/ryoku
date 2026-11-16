@@ -568,7 +568,7 @@ func (a *App) RepoPackages() ([]RepoPackage, error) {
 		if len(packages) == 0 {
 			return nil, fmt.Errorf("the [ryoku] repository package list is empty")
 		}
-		return packages, nil
+		return a.pacmanShadowed(packages), nil
 	}
 	url, err := a.RepoURL()
 	if err != nil {
@@ -665,6 +665,57 @@ func parseDNFRepoPackages(output string) []RepoPackage {
 	return packages
 }
 
+// pacmanShadowed lets pacman's repository order decide where a Ryoku package
+// comes from, as `pacman -Syu` already does. A repository listed above [ryoku]
+// that serves its own ryoku-desktop (a mirror, or a local or third-party build
+// of the tree) shadows [ryoku]: every package both serve is read, compared and
+// installed from it, so an update never swaps a box's chosen build for
+// [ryoku]'s just because [ryoku] names a higher version. Packages it does not
+// serve stay with [ryoku]. The first such repository wins, like pacman's own
+// order. A distro repository never serves ryoku-desktop, so a vendored package
+// that extra or CachyOS also ships keeps updating from [ryoku]. With [ryoku]
+// alone, or when the full listing cannot be read, the list is unchanged.
+func (a *App) pacmanShadowed(packages []RepoPackage) []RepoPackage {
+	result := a.query("pacman", "-Sl")
+	if result.Code != 0 {
+		return packages
+	}
+	// pacman -Sl lists the repositories in pacman.conf order, one after another
+	type entry struct{ repo, name, version string }
+	var above []entry
+	shadow := ""
+	for _, line := range strings.Split(result.Output, "\n") {
+		fields := strings.Fields(line)
+		if len(fields) < 3 {
+			continue
+		}
+		if fields[0] == ryokuRepoName {
+			break
+		}
+		above = append(above, entry{fields[0], fields[1], fields[2]})
+		if shadow == "" && fields[1] == "ryoku-desktop" {
+			shadow = fields[0]
+		}
+	}
+	if shadow == "" {
+		return packages
+	}
+	served := map[string]string{}
+	for _, e := range above {
+		if e.repo == shadow {
+			served[e.name] = e.version
+		}
+	}
+	out := make([]RepoPackage, len(packages))
+	for i, pkg := range packages {
+		if version, ok := served[pkg.Name]; ok {
+			pkg.Version, pkg.Repository = version, shadow
+		}
+		out[i] = pkg
+	}
+	return out
+}
+
 func repoPackageVersion(packages []RepoPackage, name string) (string, error) {
 	for _, pkg := range packages {
 		if pkg.Name == name {
@@ -742,7 +793,13 @@ func (a *App) RepoInstalledSet(allowDowngrade bool, excluded map[string]bool) ([
 		}
 		target := pkg.Name
 		if manager == Pacman {
-			target = ryokuRepoName + "/" + target
+			// the repository the version above came from: [ryoku], or the one
+			// that shadows it (pacmanShadowed)
+			repo := pkg.Repository
+			if repo == "" {
+				repo = ryokuRepoName
+			}
+			target = repo + "/" + target
 		}
 		targets = append(targets, target)
 	}
