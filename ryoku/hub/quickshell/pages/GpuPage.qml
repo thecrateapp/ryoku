@@ -448,7 +448,7 @@ Item {
 for st in /sys/bus/pci/drivers/nvidia/*/power/runtime_status; do
   [ -r "$st" ] || continue
   IFS= read -r s < "$st"
-  [ "$s" = suspended ] && { echo asleep; exit 0; }
+  [ "$s" != active ] && { echo asleep; exit 0; }
   break
 done
 g=$(nvidia-smi --query-gpu=temperature.gpu,utilization.gpu --format=csv,noheader,nounits 2>/dev/null | head -1)

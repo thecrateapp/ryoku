@@ -53,3 +53,34 @@ func writeGPUFixture(t *testing.T, root, card, vendor, busy, used, total, status
 		t.Fatal(err)
 	}
 }
+
+// Only an active NVIDIA card may be probed: nvidia-smi wakes a suspended card,
+// and on a card stuck mid-transition (resuming, suspending) it blocks in
+// uninterruptible sleep, so every later poll piles up another stuck process.
+func TestDGPUAsleepUnlessRuntimeActive(t *testing.T) {
+	cases := []struct {
+		status string // "" writes no runtime_status file
+		asleep bool
+	}{
+		{"active", false},
+		{"suspended", true},
+		{"resuming", true},
+		{"suspending", true},
+		{"", false},
+	}
+	for _, c := range cases {
+		root := t.TempDir()
+		if c.status != "" {
+			power := filepath.Join(root, "0000:01:00.0", "power")
+			if err := os.MkdirAll(power, 0o755); err != nil {
+				t.Fatal(err)
+			}
+			if err := os.WriteFile(filepath.Join(power, "runtime_status"), []byte(c.status+"\n"), 0o644); err != nil {
+				t.Fatal(err)
+			}
+		}
+		if got := dgpuAsleepAt(filepath.Join(root, "*", "power", "runtime_status")); got != c.asleep {
+			t.Errorf("status %q: asleep = %v, want %v", c.status, got, c.asleep)
+		}
+	}
+}

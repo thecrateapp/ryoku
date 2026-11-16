@@ -280,16 +280,24 @@ func diskVitals() []Disk {
 	return out
 }
 
-// dgpuAsleep reports whether an NVIDIA card is currently runtime-suspended.
+const nvidiaRuntimeStatusGlob = "/sys/bus/pci/drivers/nvidia/*/power/runtime_status"
+
+// dgpuAsleep reports whether the NVIDIA card must not be probed: any runtime
+// state but "active". nvidia-smi wakes a suspended card, and on one stuck
+// mid-transition ("resuming", "suspending") it blocks in uninterruptible sleep.
 // Cheap: one sysfs read, no process spawn, and it never touches the card itself.
 func dgpuAsleep() bool {
-	paths, _ := filepath.Glob("/sys/bus/pci/drivers/nvidia/*/power/runtime_status")
+	return dgpuAsleepAt(nvidiaRuntimeStatusGlob)
+}
+
+func dgpuAsleepAt(glob string) bool {
+	paths, _ := filepath.Glob(glob)
 	for _, p := range paths {
 		b, err := os.ReadFile(p)
 		if err != nil {
 			continue
 		}
-		return strings.TrimSpace(string(b)) == "suspended"
+		return strings.TrimSpace(string(b)) != "active"
 	}
 	return false
 }

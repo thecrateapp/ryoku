@@ -1792,7 +1792,7 @@ Item {
     Process {
         id: gpuTelemetryProc
         command: ["bash", "-c",
-            "for st in /sys/bus/pci/drivers/nvidia/*/power/runtime_status; do [[ -r $st ]] || continue; IFS= read -r s < \"$st\"; [[ $s == suspended ]] && { printf 'suspended|||||||||||\\n'; exit 0; }; break; done; "
+            "for st in /sys/bus/pci/drivers/nvidia/*/power/runtime_status; do [[ -r $st ]] || continue; IFS= read -r s < \"$st\"; [[ $s != active ]] && { printf 'suspended|||||||||||\\n'; exit 0; }; break; done; "
             + "if command -v nvidia-smi >/dev/null 2>&1; then "
             + "IFS=, read -r name driver util temp used total clock power limit pstate fan < <(nvidia-smi --query-gpu=name,driver_version,utilization.gpu,temperature.gpu,memory.used,memory.total,clocks.current.graphics,power.draw,power.limit,pstate,fan.speed --format=csv,noheader,nounits 2>/dev/null | head -n1); "
             + "num='^[[:space:]]*[0-9]+([.][0-9]+)?[[:space:]]*$'; "

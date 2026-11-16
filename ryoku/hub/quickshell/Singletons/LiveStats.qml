@@ -62,7 +62,7 @@ asleep=0
 for st in /sys/bus/pci/drivers/nvidia/*/power/runtime_status; do
   [ -r "$st" ] || continue
   IFS= read -r s < "$st"
-  [ "$s" = suspended ] && asleep=1
+  [ "$s" != active ] && asleep=1
   break
 done
 if [ "$asleep" = 1 ]; then g=""

@@ -407,15 +407,26 @@ Singleton {
         }
     }
 
-    // GPU model + vendor detection in one shot. Previously nvidia-smi was
-    // called on every model fetch AND in an infinite loop. Now we run
-    // nvidia-smi exactly once on boot; if present, vendor="nvidia".
+    // GPU model + vendor detection in one shot. The NVIDIA model comes from
+    // the driver's /proc information file, which never touches the card;
+    // nvidia-smi (and lspci, which reads PCI config space) run only while the
+    // card is runtime-active. On a suspended card they wake it, and on one stuck
+    // resuming they block in uninterruptible sleep: this probe reruns whenever
+    // monitoring toggles, so each rerun used to orphan one more stuck process.
     // Otherwise the path probe inside discovers AMD/Intel via sysfs/lspci.
     Process {
         id: gpuModelProc
         command: ["bash", "-c",
+            "nvidia_awake() { for st in /sys/bus/pci/drivers/nvidia/*/power/runtime_status; do " +
+            "  [ -r \"$st\" ] || continue; IFS= read -r s < \"$st\"; [ \"$s\" != active ] && return 1; break; " +
+            "done; return 0; }; " +
             "detect_nvidia() { " +
-            "  if command -v nvidia-smi >/dev/null 2>&1; then " +
+            "  for info in /proc/driver/nvidia/gpus/*/information; do " +
+            "    [ -r \"$info\" ] || continue; " +
+            "    name=$(sed -n 's/^Model:[[:space:]]*//p' \"$info\" | head -n1); " +
+            "    if [ -n \"$name\" ]; then echo \"NVIDIA|$name\"; return 0; fi; " +
+            "  done; " +
+            "  if command -v nvidia-smi >/dev/null 2>&1 && nvidia_awake; then " +
             "    name=$(nvidia-smi --query-gpu=name --format=csv,noheader 2>/dev/null | head -n1); " +
             "    if [ -n \"$name\" ]; then echo \"NVIDIA|$name\"; return 0; fi; " +
             "    if lspci 2>/dev/null | grep -iq nvidia; then " +
@@ -633,8 +644,12 @@ Singleton {
     Process {
         id: gpuMonitorProc
         command: ["bash", "-c",
+            "nvidia_awake() { for st in /sys/bus/pci/drivers/nvidia/*/power/runtime_status; do " +
+            "  [ -r \"$st\" ] || continue; IFS= read -r s < \"$st\"; [ \"$s\" != active ] && return 1; break; " +
+            "done; return 0; }; " +
             "if [ \"$GPUVENDOR\" = \"nvidia\" ] && command -v nvidia-smi >/dev/null 2>&1; then " +
-            "  nvidia-smi --query-gpu=utilization.gpu,temperature.gpu --format=csv,noheader,nounits 2>/dev/null; " +
+            "  if nvidia_awake; then nvidia-smi --query-gpu=utilization.gpu,temperature.gpu --format=csv,noheader,nounits 2>/dev/null; " +
+            "  else echo '0, 0'; fi; " +
             "elif [ \"$GPUVENDOR\" = \"intel\" ]; then " +
             "  temp=0; " +
             "  for hw in /sys/class/hwmon/hwmon*; do " +
