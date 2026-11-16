@@ -13,7 +13,7 @@ The vendored core skin carries `themes/clockwork/orbital/preview.gif`, the
 dark-mode segment of upstream `Assets/clockwork.gif`. Optional skins and their
 catalogue previews are owned by `ryostore`; they are not duplicated here.
 
-The in-session shim diverges from upstream in three places:
+The in-session shim diverges from upstream in four places:
 
 1. **Skin compatibility** — `quickshell-lockscreen/shim/SddmShim.qml` (plus the
    matching `keyboard` export in `lock_shell.qml`). Upstream omits
@@ -48,5 +48,20 @@ The in-session shim diverges from upstream in three places:
    request reaches the field only if the skin sets `sddm.keyPrompts`; the
    Orbital skin does, and draws its hint and USE PASSWORD / USE SECURITY KEY
    button from that state, handing the PIN over without its unlock wind-up.
+
+4. **Unlock reveal hold** — `quickshell-lockscreen/unlock_reveal.js` decides how
+   long the lock surface stays raised after a successful unlock, so a skin's
+   reveal animation is not cut. A skin opts in with two optional integer keys in
+   its `theme.conf`:
+
+   | Key                    | Meaning                                              |
+   | ---------------------- | ---------------------------------------------------- |
+   | `unlockRevealMs`       | Hold after a password win, in ms (0 to 5000)         |
+   | `unlockSensorRevealMs` | Hold after a sensor win; falls back to `unlockRevealMs` |
+
+   Values above 5000 are clamped to 5000. A missing, negative or non-integer key
+   is ignored, and then the old rule applies: `clockwork` skins with
+   `enableWindup=true` hold 720 ms (password) or 2300 ms (sensor), every other
+   skin 100 ms. Keys on a clockwork skin override that rule.
 
 Everything else is upstream verbatim.

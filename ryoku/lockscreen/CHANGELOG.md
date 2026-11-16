@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+### Added
+- **A lock skin can hold the lock for its own reveal.** `theme.conf` takes
+  `unlockRevealMs` (password) and `unlockSensorRevealMs` (sensor, defaulting to
+  the first), 0 to 5000 ms. Skins without the keys behave as before: 100 ms,
+  or the Orbital wind-up timings.
+
 ### Fixed
 - **New installs wire the login keyring once.** The SDDM setup counts the stock
   `-auth`/`-session` keyring lines, so it no longer adds a second copy on Arch.

@@ -18,6 +18,7 @@ import Quickshell.Wayland
 import QtMultimedia
 import Quickshell.Io
 import "./shim"
+import "./unlock_reveal.js" as UnlockReveal
 import Ryoku.Ui.Singletons
 
 ShellRoot {
@@ -179,13 +180,8 @@ ShellRoot {
                 proofRetry.restart()
                 return
             }
-            let delay = 100
-            if (activeTheme.includes("clockwork") && sddmShim.config.enableWindup === "true") {
-                // A password win answers after the wind-up already played, so
-                // only the 560 ms reveal remains; a sensor win starts the full
-                // wind-up at this instant (1600 ms + blast + reveal).
-                delay = sddmShim.fingerprintUnlock ? 2300 : 720
-            }
+            const delay = UnlockReveal.revealDelay(
+                activeTheme, sddmShim.config, sddmShim.fingerprintUnlock)
             quitTimer.interval = delay
             quitTimer.start()
         }
