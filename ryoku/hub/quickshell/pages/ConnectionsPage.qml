@@ -10,12 +10,15 @@ import Quickshell.Bluetooth
 import Ryoku.Ui
 import Ryoku.Ui as Kit
 import Ryoku.Ui.Singletons
+import "../Singletons"
 
 // Connections (SYSTEM). A self-contained, full-bleed pluggable page: its own
-// head, a bone-pill tab strip (Wi-Fi / Bluetooth / Hotspot), and a Loader that
-// swaps between three live subtabs. Every backend is a system tool -- the
-// Quickshell Networking/Bluetooth services plus nmcli/bluetoothctl -- so the
-// page applies immediately; Bluetooth power also records the user's choice.
+// head, a bone-pill tab strip (Wi-Fi / Ethernet / Bluetooth / Hotspot / VPN /
+// DNS / Phone), and a Loader that swaps between the three live subtabs drawn
+// here; Ethernet, VPN, DNS and Phone live in their own files (fileTabs). Every
+// backend is a system tool -- the Quickshell Networking/Bluetooth services plus
+// nmcli/bluetoothctl, and the shell daemon for Ethernet, VPN and DNS -- so the page
+// applies immediately; Bluetooth power also records the user's choice.
 // The subtab bodies are
 // process wiring, identical logic; only the presentation is recast to
 // monochrome. State is by word and inversion, never colour; signal strength is
@@ -51,10 +54,21 @@ Item {
 
     readonly property var tabs: [
         { "key": "wifi", "label": I18n.tr("Wi-Fi") },
+        { "key": "ethernet", "label": I18n.tr("Ethernet") },
         { "key": "bluetooth", "label": I18n.tr("Bluetooth") },
         { "key": "hotspot", "label": I18n.tr("Hotspot") },
+        { "key": "vpn", "label": I18n.tr("VPN") },
+        { "key": "dns", "label": I18n.tr("DNS") },
         { "key": "phone", "label": I18n.tr("Phone") }
     ]
+    // subtabs that live in their own file, loaded beside the body Loader
+    readonly property var fileTabs: ({
+        "ethernet": "ConnectionsEthernetTab.qml",
+        "vpn": "ConnectionsVpnTab.qml",
+        "dns": "ConnectionsDnsTab.qml",
+        "phone": "PhoneConnectionTab.qml"
+    })
+    readonly property bool onFileTab: pg.fileTabs[pg.sub] !== undefined
     readonly property int tabW: 120
     function tabIndex(k) {
         for (var i = 0; i < tabs.length; i++)
@@ -579,9 +593,9 @@ Item {
 
         property string authFailedSsid: ""
         property string forgetArmed: ""
+        // the saved network whose IP settings are open (ConnectionsIpEditor)
+        property string ipOpen: ""
         property bool forgetBusy: false
-
-        readonly property real colMax: 720
 
         function isSecured(ssid) {
             var sec = wifi.securityMap[ssid];
@@ -1118,12 +1132,7 @@ Item {
 
         Item {
             id: wifiContent
-            // the list reads as one column; with the poster that used to fill the
-            // right side gone, that column is centred rather than pinned left.
-            anchors.top: parent.top
-            anchors.bottom: parent.bottom
-            anchors.horizontalCenter: parent.horizontalCenter
-            width: Math.min(parent.width, wifi.colMax)
+            anchors.fill: parent
 
             // header row: "WI-FI" label + hairline + scan button.
             Item {
@@ -1511,6 +1520,17 @@ Item {
                                         armed: !wifi.autoBusy
                                         onAct: wifi.setAutoconnect(netItem.ssid, !autoRow.on)
                                     }
+
+                                    Btn {
+                                        compact: true
+                                        text: I18n.tr("IP settings") + (wifi.ipOpen === netItem.ssid ? " \u25b4" : " \u25be")
+                                        primary: wifi.ipOpen === netItem.ssid
+                                        onAct: {
+                                            if (wifi.ipOpen !== netItem.ssid)
+                                                NetworkTopic.ipOpened(wifi.uuidsFor(netItem.ssid)[0] || "");
+                                            wifi.ipOpen = wifi.ipOpen === netItem.ssid ? "" : netItem.ssid;
+                                        }
+                                    }
                                 }
 
                                 Btn {
@@ -1522,6 +1542,23 @@ Item {
                                     primary: wifi.forgetArmed === netItem.ssid
                                     armed: !wifi.forgetBusy
                                     onAct: wifi.requestForget(netItem.ssid)
+                                }
+                            }
+
+                            // IPv4 settings of the saved network, under its settings row
+                            Item {
+                                width: parent.width
+                                height: netItem.known && wifi.ipOpen === netItem.ssid && ipEditor.item
+                                    ? ipEditor.item.implicitHeight + Tokens.s3 : 0
+                                clip: true
+                                visible: height > 0.5
+                                Loader {
+                                    id: ipEditor
+                                    x: bars.x + bars.width + Tokens.s3
+                                    width: parent.width - x - Tokens.s4
+                                    active: netItem.known && wifi.ipOpen === netItem.ssid
+                                    source: Qt.resolvedUrl("ConnectionsIpEditor.qml")
+                                    onLoaded: item.uuid = Qt.binding(function() { return wifi.uuidsFor(netItem.ssid)[0] || ""; })
                                 }
                             }
 
@@ -1801,7 +1838,6 @@ Item {
         function pairDevice(d) {
             if (!d || !d.address || pairProc.running)
                 return;
-            scanTimer.stop();
             if (bt.adapter && bt.adapter.discovering)
                 bt.adapter.discovering = false;
             bt.pairingAddress = d.address;
@@ -1826,15 +1862,17 @@ Item {
         // leaving the subtab (or closing the hub) mid-scan stops discovery so
         // BlueZ isn't left chewing the radio in the background.
         Component.onDestruction: {
-            scanTimer.stop();
             if (bt.adapter && bt.adapter.discovering)
                 bt.adapter.discovering = false;
         }
 
+        // armed by BlueZ confirming the scan, not by the write that asked for
+        // it, so a start that lands late still gets its stop.
         Timer {
             id: scanTimer
             interval: 25000
             repeat: false
+            running: bt.discovering
             onTriggered: if (bt.adapter) bt.adapter.discovering = false
         }
 
@@ -1857,6 +1895,39 @@ Item {
                     bt.hardBlocked = rows.some(fields => fields[2] === "blocked");
                 }
             }
+        }
+
+        // WirePlumber's own setting, read and written through ryoku-bt-audio;
+        // unknown until the first read lands, so a missing helper or a stopped
+        // WirePlumber leaves the row disabled with the reason shown.
+        property bool micKnown: false
+        property bool micOn: true
+
+        function setMic(on) {
+            if (!bt.micKnown || micWrite.running)
+                return;
+            micWrite.command = ["ryoku-bt-audio", "mic", on ? "on" : "off"];
+            micWrite.running = true;
+        }
+
+        Process {
+            id: micRead
+            command: ["ryoku-bt-audio", "mic"]
+            running: true
+            stdout: StdioCollector { id: micOut }
+            onExited: function(exitCode) {
+                var v = micOut.text.trim();
+                bt.micKnown = exitCode === 0 && (v === "on" || v === "off");
+                if (bt.micKnown)
+                    bt.micOn = v === "on";
+            }
+        }
+
+        Process {
+            id: micWrite
+            stdout: StdioCollector {}
+            stderr: StdioCollector {}
+            onExited: micRead.running = true
         }
 
         Process {
@@ -1898,10 +1969,7 @@ Item {
 
         Item {
             id: btContent
-            anchors.top: parent.top
-            anchors.left: parent.left
-            anchors.bottom: parent.bottom
-            width: Math.min(parent.width, 720)
+            anchors.fill: parent
 
             Item {
                 id: btHeader
@@ -1965,10 +2033,6 @@ Item {
                             if (!bt.adapter)
                                 return;
                             bt.adapter.discovering = !bt.adapter.discovering;
-                            if (bt.adapter.discovering)
-                                scanTimer.restart();
-                            else
-                                scanTimer.stop();
                         }
                     }
 
@@ -1999,7 +2063,8 @@ Item {
                 anchors.topMargin: Tokens.s5
                 anchors.left: parent.left
                 anchors.right: parent.right
-                anchors.bottom: parent.bottom
+                anchors.bottom: btMicRow.top
+                anchors.bottomMargin: btMicRow.visible ? Tokens.s3 : 0
 
                 // off / empty placeholder, centred so the page never looks broken.
                 Column {
@@ -2053,8 +2118,8 @@ Item {
                     visible: bt.adapterOn && bt.devices.length > 0
                     anchors.top: parent.top
                     anchors.bottom: parent.bottom
-                    anchors.horizontalCenter: parent.horizontalCenter
-                    width: Math.min(parent.width, 640)
+                    anchors.left: parent.left
+                    anchors.right: parent.right
                     contentWidth: width
                     contentHeight: devCol.implicitHeight + 8
                     clip: true
@@ -2211,6 +2276,63 @@ Item {
                     }
                 }
             }
+
+            Item {
+                id: btMicRow
+                visible: bt.hasAdapter
+                anchors.left: parent.left
+                anchors.right: parent.right
+                anchors.bottom: parent.bottom
+                height: visible ? 56 : 0
+                opacity: bt.micKnown ? 1 : 0.5
+
+                Rectangle {
+                    anchors.top: parent.top
+                    anchors.left: parent.left
+                    anchors.right: parent.right
+                    height: 1
+                    color: Tokens.lineSoft
+                }
+
+                Column {
+                    anchors.left: parent.left
+                    anchors.right: micSw.left
+                    anchors.rightMargin: Tokens.s3
+                    anchors.verticalCenter: parent.verticalCenter
+                    spacing: 2
+
+                    Text {
+                        width: parent.width
+                        text: I18n.tr("Switch headsets to call mode for the mic")
+                        color: Tokens.ink
+                        font.family: Tokens.ui
+                        font.pixelSize: Tokens.fBody
+                        font.weight: Font.Medium
+                        elide: Text.ElideRight
+                    }
+
+                    Text {
+                        width: parent.width
+                        text: !bt.micKnown ? I18n.tr("Needs WirePlumber running and wpctl installed.")
+                            : bt.micOn ? I18n.tr("Sound turns mono while an app uses the mic.")
+                            : I18n.tr("Headsets stay in stereo; their mic is not offered to apps.")
+                        color: Tokens.inkMuted
+                        font.family: Tokens.ui
+                        font.pixelSize: Tokens.fSmall
+                        font.weight: Font.Medium
+                        elide: Text.ElideRight
+                    }
+                }
+
+                Sw {
+                    id: micSw
+                    anchors.right: parent.right
+                    anchors.verticalCenter: parent.verticalCenter
+                    enabled: bt.micKnown && !micWrite.running
+                    on: bt.micOn
+                    onToggled: (v) => bt.setMic(v)
+                }
+            }
         }
     }
 
@@ -2351,9 +2473,11 @@ Item {
         Column {
             id: hsForm
             anchors.left: parent.left
+            anchors.right: parent.right
+            // the gutter the scrolling tabs keep for their scroll rail
+            anchors.rightMargin: Tokens.s4
             anchors.top: hsHead.bottom
             anchors.topMargin: Tokens.s6
-            width: Math.min(parent.width, 600)
             spacing: Tokens.s5
 
             // big toggle card: glyph, label, live status, switch. active is a
@@ -2503,7 +2627,7 @@ Item {
                 hubStyle: true
                 eyebrow: I18n.tr("DEVICES")
                 title: I18n.tr("Connections")
-                blurb: I18n.tr("Wi-Fi, Bluetooth, hotspot and phone connections, applied live.")
+                blurb: I18n.tr("Wi-Fi, Ethernet, Bluetooth, hotspot, VPN, DNS and phone connections, applied live.")
             }
         }
 
@@ -2600,8 +2724,8 @@ Item {
                 top: tabStrip.bottom; bottom: parent.bottom
                 topMargin: Tokens.s5
             }
-            opacity: pg.sub === "phone" ? 0 : 1
-            x: pg.sub === "phone" ? -Tokens.s3 : 0
+            opacity: pg.onFileTab ? 0 : 1
+            x: pg.onFileTab ? -Tokens.s3 : 0
             visible: opacity > 0.01
             Behavior on opacity {
                 enabled: !Tokens.reduceMotion
@@ -2623,10 +2747,10 @@ Item {
                 bottom: parent.bottom
                 topMargin: Tokens.s5
             }
-            active: pg.sub === "phone"
-            source: Qt.resolvedUrl("PhoneConnectionTab.qml")
-            opacity: pg.sub === "phone" ? 1 : 0
-            x: pg.sub === "phone" ? 0 : Tokens.s3
+            active: pg.onFileTab
+            source: pg.onFileTab ? Qt.resolvedUrl(pg.fileTabs[pg.sub]) : ""
+            opacity: pg.onFileTab ? 1 : 0
+            x: pg.onFileTab ? 0 : Tokens.s3
             visible: opacity > 0.01
             Behavior on opacity {
                 enabled: !Tokens.reduceMotion

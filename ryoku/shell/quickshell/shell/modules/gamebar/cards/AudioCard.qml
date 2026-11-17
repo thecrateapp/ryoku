@@ -16,6 +16,7 @@ GameBarCard {
     id: card
 
     title: I18n.tr("Audio")
+    resizable: true
 
     readonly property var sinkAudio: Audio.sink && Audio.sink.audio ? Audio.sink.audio : null
     readonly property var sourceAudio: Audio.source && Audio.source.audio ? Audio.source.audio : null
@@ -29,6 +30,7 @@ GameBarCard {
         && !Presence.dark && !card.saverIdle
 
     Column {
+        id: head
         width: parent.width
         spacing: 8 * card.s
 
@@ -114,58 +116,64 @@ GameBarCard {
             s: card.s
             text: I18n.tr("Apps")
         }
+    }
 
-        ListView {
-            id: apps
-            width: parent.width
-            height: Math.min(contentHeight, 3 * 46 * card.s)
-            clip: true
-            spacing: 4 * card.s
-            boundsBehavior: Flickable.StopAtBounds
-            interactive: contentHeight > height
-            model: card.streams
+    ListView {
+        id: apps
+        anchors.top: head.bottom
+        anchors.topMargin: 8 * card.s
+        anchors.left: parent.left
+        anchors.right: parent.right
+        anchors.bottom: parent.bottom
+        anchors.bottomMargin: 4 * card.s
+        clip: true
+        spacing: 4 * card.s
+        boundsBehavior: Flickable.StopAtBounds
+        interactive: contentHeight > height
+        model: card.streams
 
-            delegate: Item {
-                id: appRow
-                required property var modelData
-                readonly property var appAudio: appRow.modelData && appRow.modelData.audio ? appRow.modelData.audio : null
-                width: apps.width
-                height: GameBarLook.crate ? kitRow.implicitHeight : oldRow.implicitHeight
+        delegate: Item {
+            id: appRow
+            required property var modelData
+            readonly property var appAudio: appRow.modelData && appRow.modelData.audio ? appRow.modelData.audio : null
+            width: apps.width
+            height: GameBarLook.crate ? kitRow.implicitHeight : oldRow.implicitHeight
 
-                Kit.StreamRow {
-                    id: kitRow
-                    objectName: "gameBarStreamRow"
-                    visible: GameBarLook.crate
-                    width: parent.width
-                    s: card.s
-                    name: Audio.streamName(appRow.modelData)
-                    value: appRow.appAudio ? appRow.appAudio.volume : 0
-                    muted: appRow.appAudio ? appRow.appAudio.muted : false
-                    available: appRow.appAudio !== null
-                    onAdjusted: v => { if (appRow.appAudio) appRow.appAudio.volume = v; }
-                    onMuteRequested: { if (appRow.appAudio) appRow.appAudio.muted = !appRow.appAudio.muted; }
-                }
+            Kit.StreamRow {
+                id: kitRow
+                objectName: "gameBarStreamRow"
+                visible: GameBarLook.crate
+                width: parent.width
+                s: card.s
+                name: Audio.streamName(appRow.modelData)
+                value: appRow.appAudio ? appRow.appAudio.volume : 0
+                muted: appRow.appAudio ? appRow.appAudio.muted : false
+                available: appRow.appAudio !== null
+                onAdjusted: v => { if (appRow.appAudio) appRow.appAudio.volume = v; }
+                onMuteRequested: { if (appRow.appAudio) appRow.appAudio.muted = !appRow.appAudio.muted; }
+            }
 
-                AudioAppRow {
-                    id: oldRow
-                    visible: !GameBarLook.crate
-                    width: parent.width
-                    s: card.s
-                    stream: appRow.modelData
-                    // the stock row's live VU is audio work; the kit row has none
-                    open: card.polling && !GameBarLook.crate
-                }
+            AudioAppRow {
+                id: oldRow
+                visible: !GameBarLook.crate
+                width: parent.width
+                s: card.s
+                stream: appRow.modelData
+                // the stock row's live VU is audio work; the kit row has none
+                open: card.polling && !GameBarLook.crate
             }
         }
+    }
 
-        Text {
-            visible: card.streams.length === 0
-            width: parent.width
-            text: I18n.tr("Nothing playing")
-            color: GameBarLook.subtext
-            horizontalAlignment: Text.AlignHCenter
-            font.family: GameBarLook.face
-            font.pixelSize: GameBarLook.small * card.s
-        }
+    Text {
+        visible: card.streams.length === 0
+        anchors.top: head.bottom
+        anchors.topMargin: 8 * card.s
+        width: parent.width
+        text: I18n.tr("Nothing playing")
+        color: GameBarLook.subtext
+        horizontalAlignment: Text.AlignHCenter
+        font.family: GameBarLook.face
+        font.pixelSize: GameBarLook.small * card.s
     }
 }

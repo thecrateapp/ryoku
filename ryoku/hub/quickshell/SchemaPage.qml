@@ -70,6 +70,8 @@ Item {
     // to the page rather than to a group of controls. It goes last so the page
     // still opens on its first real tab.
     property var tailTabs: []
+    // a page-supplied control row above the category tabs; null draws nothing
+    property Component headerExtra: null
 
     readonly property var tabs: {
         var t = [];
@@ -99,6 +101,12 @@ Item {
             blurb: I18n.tr(page.blurb)
         }
         Item { width: 1; height: Tokens.s1 }
+
+        Loader {
+            width: parent.width
+            active: page.headerExtra !== null
+            sourceComponent: page.headerExtra
+        }
 
         // a page with one tab does not need a tab bar
         Tabs {
