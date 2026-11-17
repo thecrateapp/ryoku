@@ -79,7 +79,9 @@ ShellRoot {
             const h = matching(controls, "objectName", "pageHeader");
             const title = text(h, I18n.tr("Controls"));
             const reg = text(h, I18n.tr("CONTROL / LAYOUT"));
-            check(title && reg && title.mapToItem(h, title.width, 0).x <= reg.mapToItem(h, 0, 0).x, "register and title fit");
+            // the Hub's FILES and UPDATES chips own the title row's right end
+            // under Crate, so a register drops to the blurb line below it
+            check(title && reg && reg.mapToItem(h, 0, 0).y >= title.mapToItem(h, 0, title.height).y, "Crate register clears the Hub chrome lane");
             check(!text(h, I18n.tr("DESKTOP")) && h.height < probe.stockHeight, "crate releases the eyebrow height");
             check(!text(variants, "///") && !text(variants, "+") && !text(variants, "力") && text(variants, "画面"), "crate chrome and optional gloss");
             const card = matching(rashin, "objectName", "rashinFunctionCard");
@@ -89,6 +91,8 @@ ShellRoot {
             const button = text(variants, "MIRROR");
             check(button && button.width > 0 && button.height > 0, "visible trailing action");
             check(button.mapToItem(variants, button.width, 0).x <= variants.width, "trailing action fits on the page");
+            const vtitle = text(variants, "Displays");
+            check(button.mapToItem(variants, 0, 0).y >= vtitle.mapToItem(variants, 0, vtitle.height).y, "Crate action clears the Hub chrome lane");
             button.act();
             check(probe.actionsTaken === 1, "trailing action callback");
             UiPreferences.showJapaneseGloss = false;

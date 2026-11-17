@@ -94,16 +94,17 @@ Item {
         Item {
             id: titleRow
             width: parent.width
-            visible: head.title !== "" || trailing.children.length > 0
-            implicitHeight: Tokens.controlsCrate
+            visible: head.title !== "" || (!head.lowLane && endCluster.occupied)
+            implicitHeight: Tokens.controlsCrate && !head.lowLane
                 ? Math.max(titleLabel.implicitHeight, trailing.implicitHeight, crateRegister.implicitHeight)
                 : titleLabel.implicitHeight
 
             Text {
                 id: titleLabel
                 anchors.left: parent.left
-                anchors.right: trailing.left
-                anchors.rightMargin: Tokens.controlsCrate && (trailing.children.length > 0 || head.register) ? Tokens.s2 : 0
+                anchors.right: parent.right
+                anchors.rightMargin: head.lowLane ? 0
+                    : endCluster.width + (Tokens.controlsCrate && (trailing.children.length > 0 || head.register) ? Tokens.s2 : 0)
                 anchors.verticalCenter: parent.verticalCenter
                 text: head.title
                 color: head.titleColor
@@ -111,20 +112,6 @@ Item {
                 font.weight: Tokens.displayWeight
                 font.pixelSize: head.titleSize
                 elide: Text.ElideRight
-            }
-            Row {
-                id: trailing
-                anchors.right: crateRegister.left
-                anchors.verticalCenter: parent.verticalCenter
-                spacing: Tokens.s2
-            }
-            TrackLabel {
-                id: crateRegister
-                visible: Tokens.controlsCrate && head.register !== ""
-                anchors.right: parent.right
-                anchors.verticalCenter: parent.verticalCenter
-                width: visible ? Math.min(implicitWidth, titleRow.width / 2) : 0
-                text: visible ? head.register : ""
             }
         }
         Text {
@@ -134,14 +121,61 @@ Item {
             font.family: Tokens.jp
             font.pixelSize: Tokens.fBody
         }
-        Text {
-            visible: head.blurb.length > 0
-            width: head.blurbWidth
-            text: head.blurb
-            color: Tokens.controlsCrate ? Tokens.inkSecondary : Tokens.inkMuted
-            font.family: Tokens.ui
-            font.pixelSize: head.hubStyle ? Tokens.fBody : Tokens.fSmall
-            wrapMode: Text.WordWrap
+        Item {
+            id: blurbRow
+            width: parent.width
+            visible: head.blurb.length > 0 || head.lowLane
+            implicitHeight: Math.max(blurbText.visible ? blurbText.implicitHeight : 0,
+                                     head.lowLane ? endCluster.implicitHeight : 0)
+
+            Text {
+                id: blurbText
+                visible: head.blurb.length > 0
+                width: head.lowLane
+                    ? Math.max(0, Math.min(head.blurbWidth, parent.width - endCluster.width - Tokens.s4))
+                    : head.blurbWidth
+                text: head.blurb
+                color: Tokens.controlsCrate ? Tokens.inkSecondary : Tokens.inkMuted
+                font.family: Tokens.ui
+                font.pixelSize: head.hubStyle ? Tokens.fBody : Tokens.fSmall
+                wrapMode: Text.WordWrap
+            }
+        }
+    }
+
+    // A Crate Hub page's title row ends under the Hub's own FILES and UPDATES
+    // chips (the Crate head drops the eyebrow row that kept them apart in the
+    // stock look), so there the trailing actions and register move down to
+    // the blurb line, right-aligned. Everywhere else they end the title row.
+    // read from the declared inputs, never an item's effective `visible`:
+    // that follows the parent, and the parent follows these
+    readonly property bool showRegister: Tokens.controlsCrate && register !== ""
+    readonly property bool lowLane: Tokens.controlsCrate && hubStyle && endCluster.occupied
+
+    Item {
+        id: endCluster
+        readonly property bool occupied: trailing.children.length > 0 || head.showRegister
+        parent: head.lowLane ? blurbRow : titleRow
+        anchors.right: parent.right
+        anchors.top: head.lowLane ? parent.top : undefined
+        anchors.verticalCenter: head.lowLane ? undefined : parent.verticalCenter
+        width: trailing.width + crateRegister.width
+        implicitHeight: Math.max(trailing.implicitHeight, head.showRegister ? crateRegister.implicitHeight : 0)
+        height: implicitHeight
+
+        Row {
+            id: trailing
+            anchors.right: crateRegister.left
+            anchors.verticalCenter: parent.verticalCenter
+            spacing: Tokens.s2
+        }
+        TrackLabel {
+            id: crateRegister
+            visible: head.showRegister
+            anchors.right: parent.right
+            anchors.verticalCenter: parent.verticalCenter
+            width: head.showRegister ? Math.min(implicitWidth, head.width / 2) : 0
+            text: head.showRegister ? head.register : ""
         }
     }
 }

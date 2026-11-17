@@ -43,6 +43,12 @@
   reason when WirePlumber or `wpctl` is missing (`quickshell/pages/ConnectionsPage.qml`).
 
 ### Fixed
+- **Page buttons no longer sit on Files and Updates under Crate.** The Crate
+  head drops the eyebrow row, so a page's trailing buttons and register landed
+  in the title row's right end, under the Hub's own Files and Updates chips
+  (Displays, Fastfetch, Controls, Add-ons and Lockscreen). On a Crate Hub page
+  they now sit on the blurb line, right-aligned; the stock look is unchanged
+  (`../ui/PageHeader.qml`, `tests/ui/hub-header-probe.qml`).
 - **Applying a rice keeps the look it replaces.** The `.previous` slot an
   apply overwrites moves to `rices/.history/<stamp>` first, and the newest ten
   stay. `ryoku-hub rice restore history/<stamp>` brings one back, so a second
