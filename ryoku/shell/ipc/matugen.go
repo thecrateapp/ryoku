@@ -1236,6 +1236,7 @@ func matugenRenderTemplates(shell, dark, light map[string]string, mode string, k
 	if k.ThemeRyokuApps && themeAppsEnabled() {
 		matugenRenderFiltered(filepath.Join(dir, "apps.toml"), carrierPath, enabled)
 		matugenRenderFiltered(filepath.Join(ryokuConfigDir(), "palette-bridge", "matugen.toml"), carrierPath, enabled)
+		ensureGtkUserCSS(matugenConfigHome())
 		// matugen wrote the shared snippet target; poke each vault's symlink so
 		// Obsidian's watcher, which never sees the out-of-vault target change,
 		// reloads the new palette without a restart.
@@ -1246,6 +1247,25 @@ func matugenRenderTemplates(shell, dark, light map[string]string, mode string, k
 		blankGtk(matugenConfigHome())
 	}
 	return coreRendered
+}
+
+// ensureGtkUserCSS creates an empty user.css beside each generated GTK
+// stylesheet when there is none. The gtk templates end with
+// `@import url("user.css")`, the user's own last-wins include (like kitty's
+// user.conf): CSS written there survives every palette render, and GTK reports
+// a parse error for an import whose file is missing. An existing user.css is
+// the user's and is never written.
+func ensureGtkUserCSS(cfgBase string) {
+	for _, rel := range []string{"gtk-3.0/user.css", "gtk-4.0/user.css"} {
+		p := filepath.Join(cfgBase, rel)
+		if _, err := os.Lstat(p); err == nil {
+			continue
+		}
+		_ = os.MkdirAll(filepath.Dir(p), 0o755)
+		if f, err := os.OpenFile(p, os.O_WRONLY|os.O_CREATE|os.O_EXCL, 0o644); err == nil {
+			_ = f.Close()
+		}
+	}
 }
 
 // nudgeObsidian re-links the palette snippet inside every registered Obsidian

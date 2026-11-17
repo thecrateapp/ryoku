@@ -1,6 +1,11 @@
 # Changelog: ryoku/shell/
 
 ## Unreleased
+- **GTK apps load a user.css that survives palette renders.** The generated
+  `gtk-3.0/gtk.css` and `gtk-4.0/gtk.css` end with `@import url("user.css")`,
+  the user's own last-wins include, like kitty's `user.conf`; the render creates
+  an empty `user.css` beside each when there is none and never writes an
+  existing one (`matugen/templates/gtk{3,4}-colors.css`, `ipc/matugen.go`).
 - **The wallpaper browser's cards and masthead speak Crate.** Under crate the
   skewed carousel keeps its slant, but the current card's tags and name now
   stand upright (a counter-shear undoes the card's shear on the words, never
